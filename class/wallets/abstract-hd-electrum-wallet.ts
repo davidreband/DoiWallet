@@ -1617,7 +1617,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
 
   getBIP47FromSeed(): BIP47Interface {
     if (!this._bip47_instance || !this._bip47_instance.getNotificationAddress) {
-      this._bip47_instance = bip47.fromBip39Seed(this.secret, undefined, this.passphrase);
+      this._bip47_instance = bip47.fromBip39Seed(this.secret, {network: DOICHAIN, coin: 'DOICHAIN'}, this.passphrase);
     }
 
     return this._bip47_instance;
@@ -1721,7 +1721,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
 
     // utxo selected. lets create op_return payload using the correct (first!) utxo and correct targets with that payload
 
-    const keyPair = ECPair.fromWIF(inputsTemp[0].wif);
+    const keyPair = ECPair.fromWIF(inputsTemp[0].wif, DOICHAIN);
     const outputNumber = Buffer.from('00000000', 'hex');
     outputNumber.writeUInt32LE(inputsTemp[0].vout);
     const blindedPaymentCode = aliceBip47.getBlindedPaymentCode(
@@ -1793,7 +1793,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
 
         // final check if PC is even valid (could've been constructed by a buggy code, and our code would crash with that):
         try {
-          bip47.fromPaymentCode(paymentCode);
+          bip47.fromPaymentCode(paymentCode, {network: DOICHAIN, coin: 'DOICHAIN'});
         } catch (_) {
           continue;
         }

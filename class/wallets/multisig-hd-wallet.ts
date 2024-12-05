@@ -254,7 +254,7 @@ export class MultisigHDWallet extends AbstractHDElectrumWallet {
   }
 
   static convertXprvToXpub(xprv: string) {
-    const restored = bip32.fromBase58(MultisigHDWallet.convertMultisigXprvToRegularXprv(xprv),  DOICHAIN);
+    const restored = bip32.fromBase58(MultisigHDWallet.convertMultisigXprvToRegularXprv(xprv));
     return restored.neutered().toBase58();
   }
 
@@ -1155,7 +1155,7 @@ export class MultisigHDWallet extends AbstractHDElectrumWallet {
    * Tries to signs passed psbt object (by reference). If there are enough signatures - tries to finalize psbt
    * and returns Transaction (ready to extract hex)
    */
-  cosignPsbt(psbt: Psbt): { tx: Transaction | false } {
+  cosignPsbt(psbt: Psbt): { tx: Transaction | false, psbt: Psbt } {
     for (let cc = 0; cc < psbt.inputCount; cc++) {
       for (const [cosignerIndex, cosigner] of this._cosigners.entries()) {
         if (MultisigHDWallet.isXpubString(cosigner)) continue;
@@ -1210,10 +1210,10 @@ export class MultisigHDWallet extends AbstractHDElectrumWallet {
 
     if (this.calculateHowManySignaturesWeHaveFromPsbt(psbt) >= this.getM()) {
       const tx = psbt.finalizeAllInputs().extractTransaction();
-      return { tx };
+      return { tx, psbt };
     }
 
-    return { tx: false };
+    return { tx: false, psbt };
   }
 
   /**
