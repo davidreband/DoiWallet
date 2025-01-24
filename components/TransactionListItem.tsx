@@ -366,7 +366,7 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = React.mem
         handleOnViewOnBlockExplorer,
       ],
     );
-    const toolTipActions = useMemo((): Action[] | Action[][] => {
+    const toolTipActions = useMemo((): Action[] => {
       const actions: (Action | Action[])[] = [];
 
       if (rowTitle !== loc.lnd.expired) {
@@ -385,7 +385,7 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = React.mem
         actions.push([CommonToolTipActions.ExpandNote]);
       }
 
-      return actions as Action[] | Action[][];
+      return actions as Action[];
     }, [item.hash, subtitle, rowTitle, subtitleNumberOfLines]);
 
     const accessibilityState = useMemo(() => {
