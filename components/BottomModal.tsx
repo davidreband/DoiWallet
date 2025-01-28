@@ -178,9 +178,8 @@ const BottomModal = forwardRef<BottomModalHandle, BottomModalProps>(
       if (React.isValidElement(footer)) {
         return footerDefaultMargins ? <View style={styles.footerContainer}>{footer}</View> : footer;
       } else if (typeof footer === 'function') {
-        // Render the footer component dynamically
-        const FooterComponent = footer as ComponentType<any>;
-        return <FooterComponent />;
+        const ModalFooterComponent = footer as ComponentType<any>;
+        return <ModalFooterComponent />;
       }
 
       return undefined;
@@ -200,9 +199,9 @@ const BottomModal = forwardRef<BottomModalHandle, BottomModalProps>(
         FooterComponent={FooterComponent as ReactElement}
         {...props}
       >
-        {renderHeader()}
         <View style={styles.childrenContainer}>{children}</View>
         {Platform.OS === 'android' && (renderFooter() as ReactNode)}
+        {renderHeader()}
       </TrueSheet>
     );
   },
@@ -216,10 +215,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerContainer: {
+    position: 'absolute',
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 8,
     minHeight: 22,
+    right: 16,
+    top: 16,
   },
   headerContent: {
     flex: 1,
@@ -250,7 +252,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   childrenContainer: {
-    marginTop: 0,
+    paddingTop: 66,
+    paddingHorizontal: 16,
     width: '100%',
   },
 });
