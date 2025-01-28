@@ -126,7 +126,7 @@ jobs:
         run: bundle exec fastlane ios build_app_lane
         working-directory: ./ios
       - name: Upload IPA as Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: BlueWallet.${{env.PROJECT_VERSION}}(${{env.NEW_BUILD_NUMBER}}).ipa
           path: ./build/BlueWallet.${{env.PROJECT_VERSION}}(${{env.NEW_BUILD_NUMBER}}).ipa
@@ -160,7 +160,7 @@ jobs:
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3 --quiet
       - name: Download IPA from Artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: BlueWallet.${{ needs.build.outputs.project_version }}(${{ needs.build.outputs.new_build_number }}).ipa
           path: ./
