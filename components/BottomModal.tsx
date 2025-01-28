@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle, useRef, ReactElement, ComponentType, JSXElementConstructor, ReactNode } from 'react';
+import React, { forwardRef, useImperativeHandle, useRef, ReactElement, ComponentType, ReactNode } from 'react';
 import { SheetSize, SizeInfo, TrueSheet, TrueSheetProps } from '@lodev09/react-native-true-sheet';
 import { Keyboard, StyleSheet, View, TouchableOpacity, Platform, GestureResponderEvent, Text } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -202,6 +202,7 @@ const BottomModal = forwardRef<BottomModalHandle, BottomModalProps>(
       >
         {renderHeader()}
         <View style={styles.childrenContainer}>{children}</View>
+        {Platform.OS === 'android' && (renderFooter() as ReactNode)}
       </TrueSheet>
     );
   },
