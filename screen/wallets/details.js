@@ -218,10 +218,10 @@ const WalletDetails = () => {
       externalAddresses = wallet.getAllExternalAddresses();
     } catch (_) {}
     Notifications.unsubscribe(externalAddresses, [], []);
-    popToTop();
     deleteWallet(wallet);
     saveToDisk(true);
     triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
+    popToTop();
   };
 
   const presentWalletHasBalanceAlert = useCallback(async () => {
