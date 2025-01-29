@@ -1410,7 +1410,7 @@ const SendDetails = () => {
           address={item.address}
           isLoading={isLoading}
           /* @ts-ignore marcos fixme */
-          inputAccessoryViewID={BlueDismissKeyboardInputAccessory.InputAccessoryViewID}
+          inputAccessoryViewID={DismissKeyboardInputAccessoryViewID}
           launchedBy={name}
           editable={isEditable}
         />
