@@ -84,6 +84,8 @@ android {
 
         testBuildType System.getProperty('testBuildType', 'debug')
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        firebaseMessagingAutoInitEnabled false
+        firebaseAnalyticsCollectionEnabled false
     }
 
     lintOptions {
