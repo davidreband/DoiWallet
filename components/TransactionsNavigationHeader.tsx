@@ -32,7 +32,9 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
 
   const menuRef = useRef<ToolTipMenuProps>(null);
 
-  
+  const verifyIfWalletAllowsOnchainAddress = useCallback(() => {
+    
+  }, [wallet]);
 
   useEffect(() => {
     setWallet(initialWallet);
