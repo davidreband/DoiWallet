@@ -117,9 +117,7 @@ const SendDetails = () => {
   const { isEditable } = routeParams;
   // if utxo is limited we use it to calculate available balance
   const balance: number = utxo ? utxo.reduce((prev, curr) => prev + curr.value, 0) : wallet?.getBalance() ?? 0;
-  const allBalance = formatBalanceWithoutSuffix(balance, DoichainUnit.DOI, true);
-  const [isProgress, setProgress] = useState(false);
-
+  const allBalance = formatBalanceWithoutSuffix(balance, BitcoinUnit.BTC, true);
 
   // if cutomFee is not set, we need to choose highest possible fee for wallet balance
   // if there are no funds for even Slow option, use 1 sat/vbyte fee
@@ -1184,27 +1182,32 @@ const SendDetails = () => {
     const options = {
       title: loc.send.details_adv_full,
       message,
-
-      options: [loc._.cancel, loc._.ok],
-      cancelButtonIndex: 0,
-      anchor: anchor ?? undefined,
-    };
-
-    ActionSheet.showActionSheetWithOptions(options, buttonIndex => {
-      if (buttonIndex === 1) {
-        Keyboard.dismiss();
-        setAddresses(addrs => {
-          addrs[scrollIndex.current].amount = DoichainUnit.MAX;
-          addrs[scrollIndex.current].amountSats = DoichainUnit.MAX;
-          return [...addrs];
-        });
-        setUnits(u => {
-          u[scrollIndex.current] = DoichainUnit.MAX;
-          return [...u];
-        });
-      }
-    });
-};
+      [
+        {
+          text: loc._.ok,
+          onPress: () => {
+            Keyboard.dismiss();
+            setAddresses(addrs => {
+              addrs[scrollIndex.current].amount = BitcoinUnit.MAX;
+              addrs[scrollIndex.current].amountSats = BitcoinUnit.MAX;
+              return [...addrs];
+            });
+            setUnits(u => {
+              u[scrollIndex.current] = BitcoinUnit.BTC;
+              return [...u];
+            });
+          },
+          style: 'default',
+        },
+        {
+          text: loc._.cancel,
+          onPress: () => {},
+          style: 'cancel',
+        },
+      ],
+      { cancelable: false },
+    );
+  };
 
   const formatFee = (fee: number) => formatBalance(fee, feeUnit!, true);
 
