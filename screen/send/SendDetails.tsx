@@ -119,10 +119,6 @@ const SendDetails = () => {
   const [isProgress, setProgress] = useState(false);
 
 
- // const aaa = BlueDismissKeyboardInputAccessory
-
- // console.log("________InputAccessoryViewID_aaa", BlueDismissKeyboardInputAccessory.InputAccessoryViewID )
-
   // if cutomFee is not set, we need to choose highest possible fee for wallet balance
   // if there are no funds for even Slow option, use 1 sat/vbyte fee
   const feeRate = useMemo(() => {
