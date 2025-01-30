@@ -15,6 +15,12 @@ import { TTXMetadata } from '../../class';
 import { ExtendedTransaction, LightningTransaction, Transaction, TWallet } from '../../class/wallets/types';
 import { DoichainUnit} from '../../models/doichainUnits';
 import useBounceAnimation from '../../hooks/useBounceAnimation';
+import { unlockWithBiometrics, useBiometrics } from '../../hooks/useBiometrics';
+import presentAlert from '../../components/Alert';
+import prompt from '../../helpers/prompt';
+import HeaderRightButton from '../../components/HeaderRightButton';
+import { ManageWalletsListItem } from '../../components/ManageWalletsListItem';
+import { useSettings } from '../../hooks/context/useSettings';
 
 enum ItemType {
   WalletSection = 'wallet',
@@ -102,8 +108,9 @@ const reducer = (state: State, action: Action): State => {
 const ManageWallets: React.FC = () => {
   const sortableList = useRef(null);
   const { colors, closeImage } = useTheme();
-  const { wallets, setWalletsWithNewOrder, txMetadata } = useStorage();
-  const colorScheme = useColorScheme();
+  const { wallets: storedWallets, setWalletsWithNewOrder, txMetadata } = useStorage();
+  const { setIsDrawerShouldHide } = useSettings();
+  const walletsRef = useRef<TWallet[]>(deepCopyWallets(storedWallets)); // Create a deep copy of wallets for the DraggableFlatList
   const { navigate, setOptions, goBack } = useExtendedNavigation();
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -203,7 +210,136 @@ const ManageWallets: React.FC = () => {
         placeholder: loc.wallets.manage_wallets_search_placeholder,
       },
     });
-  }, [setOptions]);
+  }, [setOptions, HeaderLeftButton, SaveButton]);
+
+  useFocusEffect(
+    useCallback(() => {
+      setIsDrawerShouldHide(true);
+      const beforeRemoveListener = (e: { preventDefault: () => void; data: { action: any } }) => {
+        if (!hasUnsavedChanges) {
+          return;
+        }
+
+        e.preventDefault();
+
+        Alert.alert(loc._.discard_changes, loc._.discard_changes_explain, [
+          { text: loc._.cancel, style: 'cancel', onPress: () => {} },
+          {
+            text: loc._.ok,
+            style: 'default',
+            onPress: () => navigation.dispatch(e.data.action),
+          },
+        ]);
+      };
+
+      // @ts-ignore: fix later
+      beforeRemoveListenerRef.current = beforeRemoveListener;
+
+      navigation.addListener('beforeRemove', beforeRemoveListener);
+
+      return () => {
+        if (beforeRemoveListenerRef.current) {
+          navigation.removeListener('beforeRemove', beforeRemoveListenerRef.current);
+        }
+        setIsDrawerShouldHide(false);
+      };
+    }, [hasUnsavedChanges, navigation, setIsDrawerShouldHide]),
+  );
+
+  const renderHighlightedText = useCallback(
+    (text: string, query: string) => {
+      const parts = text.split(new RegExp(`(${query})`, 'gi'));
+      return (
+        <Text>
+          {parts.map((part, index) =>
+            query && part.toLowerCase().includes(query.toLowerCase()) ? (
+              <Animated.View key={`${index}-${query}`} style={[styles.highlightedContainer, { transform: [{ scale: bounceAnim }] }]}>
+                <Text style={styles.highlighted}>{part}</Text>
+              </Animated.View>
+            ) : (
+              <Text key={`${index}-${query}`} style={query ? styles.dimmedText : styles.defaultText}>
+                {part}
+              </Text>
+            ),
+          )}
+        </Text>
+      );
+    },
+    [bounceAnim],
+  );
+
+  const presentWalletHasBalanceAlert = useCallback(async (wallet: TWallet) => {
+    triggerHapticFeedback(HapticFeedbackTypes.NotificationWarning);
+    try {
+      const walletBalanceConfirmation = await prompt(
+        loc.wallets.details_delete_wallet,
+        loc.formatString(loc.wallets.details_del_wb_q, { balance: wallet.getBalance() }),
+        true,
+        'plain-text',
+        true,
+        loc.wallets.details_delete,
+      );
+      if (Number(walletBalanceConfirmation) === wallet.getBalance()) {
+        dispatch({ type: REMOVE_WALLET, payload: wallet.getID() });
+      } else {
+        triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
+        presentAlert({ message: loc.wallets.details_del_wb_err });
+      }
+    } catch (_) {}
+  }, []);
+
+  const handleDeleteWallet = useCallback(
+    async (wallet: TWallet) => {
+      triggerHapticFeedback(HapticFeedbackTypes.NotificationWarning);
+      Alert.alert(
+        loc.wallets.details_delete_wallet,
+        loc.wallets.details_are_you_sure,
+        [
+          {
+            text: loc.wallets.details_yes_delete,
+            onPress: async () => {
+              const isBiometricsEnabled = await isBiometricUseCapableAndEnabled();
+
+              if (isBiometricsEnabled) {
+                if (!(await unlockWithBiometrics())) {
+                  return;
+                }
+              }
+              if (wallet.getBalance() > 0 && wallet.allowSend()) {
+                presentWalletHasBalanceAlert(wallet);
+              } else {
+                LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                dispatch({ type: REMOVE_WALLET, payload: wallet.getID() });
+              }
+            },
+            style: 'destructive',
+          },
+          { text: loc.wallets.details_no_cancel, onPress: () => {}, style: 'cancel' },
+        ],
+        { cancelable: false },
+      );
+    },
+    [isBiometricUseCapableAndEnabled, presentWalletHasBalanceAlert],
+  );
+
+  const handleToggleHideBalance = useCallback(
+    (wallet: TWallet) => {
+      const updatedOrder = state.tempOrder.map(item => {
+        if (item.type === ItemType.WalletSection && item.data.getID() === wallet.getID()) {
+          item.data.hideBalance = !item.data.hideBalance;
+          return {
+            ...item,
+            data: item.data,
+          };
+        }
+        return item;
+      });
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+
+      dispatch({ type: SET_TEMP_ORDER, payload: updatedOrder });
+    },
+    [state.tempOrder],
+  );
 
   const navigateToWallet = useCallback(
     (wallet: TWallet) => {

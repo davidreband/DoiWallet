@@ -85,6 +85,8 @@ interface SettingsContextType {
   setIsTotalBalanceEnabledStorage: (value: boolean) => Promise<void>;
   totalBalancePreferredUnit: DoichainUnit;
   setTotalBalancePreferredUnitStorage: (unit: DoichainUnit) => Promise<void>;
+  isDrawerShouldHide: boolean;
+  setIsDrawerShouldHide: (value: boolean) => void;
 }
 
 const defaultSettingsContext: SettingsContextType = {
@@ -112,6 +114,8 @@ const defaultSettingsContext: SettingsContextType = {
   setIsTotalBalanceEnabledStorage: async () => {},
   totalBalancePreferredUnit: DoichainUnit.DOI,
   setTotalBalancePreferredUnitStorage: async (unit: DoichainUnit) => {},
+  isDrawerShouldHide: false,
+  setIsDrawerShouldHide: () => { },
 };
 
 export const SettingsContext = createContext<SettingsContextType>(defaultSettingsContext);
@@ -140,6 +144,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Total Balance
   const [isTotalBalanceEnabled, setIsTotalBalanceEnabled] = useState<boolean>(true);
   const [totalBalancePreferredUnit, setTotalBalancePreferredUnitState] = useState<DoichainUnit>(DoichainUnit.DOI);
+
+  // Toggle Drawer (for screens like Manage Wallets or ScanQRCode)
+  const [isDrawerShouldHide, setIsDrawerShouldHide] = useState<boolean>(false);
 
   const advancedModeStorage = useAsyncStorage(BlueApp.ADVANCED_MODE_ENABLED);
   const languageStorage = useAsyncStorage(STORAGE_KEY);
@@ -337,6 +344,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       setIsTotalBalanceEnabledStorage,
       totalBalancePreferredUnit,
       setTotalBalancePreferredUnitStorage,
+      isDrawerShouldHide,
+      setIsDrawerShouldHide,
     }),
     [
       preferredFiatCurrency,
@@ -363,6 +372,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       setIsTotalBalanceEnabledStorage,
       totalBalancePreferredUnit,
       setTotalBalancePreferredUnitStorage,
+      isDrawerShouldHide,
+      setIsDrawerShouldHide,
     ],
   );
 
