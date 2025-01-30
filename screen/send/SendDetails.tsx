@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   Alert,
   Dimensions,
+  findNodeHandle,
   FlatList,
   I18nManager,
   Keyboard,
@@ -61,6 +62,7 @@ import { Action } from '../../components/types';
 import SelectFeeModal from '../../components/SelectFeeModal';
 import { useKeyboard } from '../../hooks/useKeyboard';
 import { DismissKeyboardInputAccessory, DismissKeyboardInputAccessoryViewID } from '../../components/DismissKeyboardInputAccessory';
+import ActionSheet from '../ActionSheet';
 
 interface IPaymentDestinations {
   address: string; // btc address or payment code
@@ -1177,35 +1179,32 @@ const SendDetails = () => {
   const onUseAllPressed = () => {
     triggerHapticFeedback(HapticFeedbackTypes.NotificationWarning);
     const message = frozenBalance > 0 ? loc.send.details_adv_full_sure_frozen : loc.send.details_adv_full_sure;
-    Alert.alert(
-      loc.send.details_adv_full,
+
+    const anchor = findNodeHandle(scrollView.current);
+    const options = {
+      title: loc.send.details_adv_full,
       message,
-      [
-        {
-          text: loc._.ok,
-          onPress: () => {
-            Keyboard.dismiss();
-            setAddresses(addrs => {
-              addrs[scrollIndex.current].amount = DoichainUnit.MAX;
-              addrs[scrollIndex.current].amountSats = DoichainUnit.MAX;
-              return [...addrs];
-            });
-            setUnits(u => {
-              u[scrollIndex.current] = DoichainUnit.DOI;
-              return [...u];
-            });
-          },
-          style: 'default',
-        },
-        {
-          text: loc._.cancel,
-          onPress: () => {},
-          style: 'cancel',
-        },
-      ],
-      { cancelable: false },
-    );
-  };
+
+      options: [loc._.cancel, loc._.ok],
+      cancelButtonIndex: 0,
+      anchor: anchor ?? undefined,
+    };
+
+    ActionSheet.showActionSheetWithOptions(options, buttonIndex => {
+      if (buttonIndex === 1) {
+        Keyboard.dismiss();
+        setAddresses(addrs => {
+          addrs[scrollIndex.current].amount = DoichainUnit.MAX;
+          addrs[scrollIndex.current].amountSats = DoichainUnit.MAX;
+          return [...addrs];
+        });
+        setUnits(u => {
+          u[scrollIndex.current] = DoichainUnit.MAX;
+          return [...u];
+        });
+      }
+    });
+};
 
   const formatFee = (fee: number) => formatBalance(fee, feeUnit!, true);
 
