@@ -89,4 +89,38 @@ export const CommonToolTipActions = {
     text: loc.total_balance_view.view_in_bitcoin,
     icon: icons.ViewInBitcoin,
   },
+  Entropy: {
+    id: keys.Entropy,
+    text: loc.wallets.add_entropy_provide,
+    icon: icons.Entropy,
+  },
+  SearchAccount: {
+    id: keys.SearchAccount,
+    text: loc.wallets.import_search_accounts,
+    icon: icons.SearchAccount,
+    menuState: false,
+  },
+  Passphrase: {
+    id: keys.Passphrase,
+    text: loc.wallets.import_passphrase,
+    icon: icons.Passphrase,
+    menuState: false,
+  },
+  MoreInfo: {
+    id: keys.MoreInfo,
+    text: loc.wallets.more_info,
+    icon: icons.MoreInfo,
+    hidden: false,
+  },
+  SaveChanges: {
+    id: keys.SaveChanges,
+    text: loc._.save,
+    icon: icons.SaveChanges,
+  },
+  PaymentCode: {
+    id: keys.PaymentsCode,
+    text: loc.bip47.purpose,
+    icon: icons.PaymentsCode,
+    menuState: false,
+  },
 };
