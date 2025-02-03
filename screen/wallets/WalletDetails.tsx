@@ -4,6 +4,7 @@ import {
   Alert,
   I18nManager,
   InteractionManager,
+  LayoutAnimation,
   ScrollView,
   StyleSheet,
   Switch,
@@ -64,7 +65,7 @@ const WalletDetails: React.FC = () => {
   );
 
   const [hideTransactionsInWalletsList, setHideTransactionsInWalletsList] = useState<boolean>(
-    wallet.getHideTransactionsInWalletsList ? wallet.getHideTransactionsInWalletsList() : false,
+    wallet.getHideTransactionsInWalletsList ? !wallet.getHideTransactionsInWalletsList() : true,
   );
   const { setOptions, navigate, addListener } = useExtendedNavigation();
   const { colors } = useTheme();
@@ -74,7 +75,7 @@ const WalletDetails: React.FC = () => {
   const walletTransactionsLength = useMemo<number>(() => wallet.getTransactions().length, [wallet]);
   const derivationPath = useMemo<string | null>(() => {
     try {
-      // @ts-expect-error: Need to fix later
+      // @ts--error: Need to fix later
       if (wallet.getDerivationPath) {
         // @ts-expect-error: Need to fix later
         const path = wallet.getDerivationPath();
@@ -86,6 +87,7 @@ const WalletDetails: React.FC = () => {
     }
   }, [wallet]);
   const [isToolTipMenuVisible, setIsToolTipMenuVisible] = useState<boolean>(false);
+  const [isMasterFingerPrintVisible, setIsMasterFingerPrintVisible] = useState<boolean>(false);
 
   const onMenuWillShow = () => setIsToolTipMenuVisible(true);
   const onMenuWillHide = () => setIsToolTipMenuVisible(false);
@@ -97,17 +99,19 @@ const WalletDetails: React.FC = () => {
   useFocusEffect(
     useCallback(() => {
       const task = InteractionManager.runAfterInteractions(() => {
-        if (wallet.allowMasterFingerprint && wallet.allowMasterFingerprint()) {
+        if (isMasterFingerPrintVisible && wallet.allowMasterFingerprint && wallet.allowMasterFingerprint()) {
           // @ts-expect-error: Need to fix later
           if (wallet.getMasterFingerprintHex) {
             // @ts-expect-error: Need to fix later
             setMasterFingerprint(wallet.getMasterFingerprintHex());
           }
+        } else {
+          setMasterFingerprint(undefined);
         }
       });
 
       return () => task.cancel();
-    }, [wallet]),
+    }, [isMasterFingerPrintVisible, wallet]),
   );
 
   const stylesHook = StyleSheet.create({
@@ -280,16 +284,18 @@ const WalletDetails: React.FC = () => {
   };
 
   const walletNameTextInputOnBlur = useCallback(async () => {
-    if (walletName.trim().length === 0) {
+    const trimmedWalletName = walletName.trim();
+    if (trimmedWalletName.length === 0) {
       const walletLabel = wallet.getLabel();
       setWalletName(walletLabel);
-    } else {
-      wallet.setLabel(walletName.trim());
+    } else if (wallet.getLabel() !== trimmedWalletName) {
+      // Only save if the name has changed
+      wallet.setLabel(trimmedWalletName);
       try {
-        console.warn('saving wallet name:', walletName.trim());
+        console.warn('saving wallet name:', trimmedWalletName);
         await saveToDisk();
       } catch (error) {
-        console.log((error as Error).message);
+        console.error((error as Error).message);
       }
     }
   }, [wallet, walletName, saveToDisk]);
@@ -374,6 +380,11 @@ const WalletDetails: React.FC = () => {
     return `${label}-history.csv`;
   }, [wallet]);
 
+  const onViewMasterFingerPrintPress = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setIsMasterFingerPrintVisible(true);
+  };
+
   return (
     <ScrollView
       automaticallyAdjustKeyboardInsets
@@ -431,7 +442,9 @@ const WalletDetails: React.FC = () => {
             </View>
             <BlueSpacing20 />
             <Text style={[styles.textLabel1, stylesHook.textLabel1]}>{loc.wallets.details_type.toLowerCase()}</Text>
-            <Text style={[styles.textValue, stylesHook.textValue]}>{wallet.typeReadable}</Text>
+            <Text style={[styles.textValue, stylesHook.textValue]} selectable>
+              {wallet.typeReadable}
+            </Text>
 
             {wallet.type === MultisigHDWallet.type && (
               <>
@@ -469,9 +482,9 @@ const WalletDetails: React.FC = () => {
                   disabled={isToolTipMenuVisible}
                   value={hideTransactionsInWalletsList}
                   onValueChange={async (value: boolean) => {
-                    setHideTransactionsInWalletsList(value);
                     if (wallet.setHideTransactionsInWalletsList) {
-                      wallet.setHideTransactionsInWalletsList(value);
+                      wallet.setHideTransactionsInWalletsList(!value);
+                      setHideTransactionsInWalletsList(!wallet.getHideTransactionsInWalletsList());
                     }
                     try {
                       await saveToDisk();
@@ -541,14 +554,22 @@ const WalletDetails: React.FC = () => {
                 {wallet.allowMasterFingerprint && wallet.allowMasterFingerprint() && (
                   <View style={styles.marginRight16}>
                     <Text style={[styles.textLabel2, stylesHook.textLabel2]}>{loc.wallets.details_master_fingerprint.toLowerCase()}</Text>
-                    <BlueText>{masterFingerprint ?? <ActivityIndicator />}</BlueText>
+                    {isMasterFingerPrintVisible ? (
+                      <BlueText selectable>{masterFingerprint ?? <ActivityIndicator />}</BlueText>
+                    ) : (
+                      <TouchableOpacity onPress={onViewMasterFingerPrintPress}>
+                        <BlueText>{loc.multisig.view}</BlueText>
+                      </TouchableOpacity>
+                    )}
                   </View>
                 )}
 
                 {derivationPath && (
                   <View>
                     <Text style={[styles.textLabel2, stylesHook.textLabel2]}>{loc.wallets.details_derivation_path}</Text>
-                    <BlueText testID="DerivationPath">{derivationPath}</BlueText>
+                    <BlueText selectable testID="DerivationPath">
+                      {derivationPath}
+                    </BlueText>
                   </View>
                 )}
               </View>
