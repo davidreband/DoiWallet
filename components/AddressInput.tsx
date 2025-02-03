@@ -74,7 +74,7 @@ const AddressInput = ({
     triggerHapticFeedback(isValid ? HapticFeedbackTypes.NotificationSuccess : HapticFeedbackTypes.NotificationError);
     return {
       isValid,
-      type: isBitcoinAddress ? 'bitcoin' : isLightningInvoice ? 'lightning' : 'invalid'
+      type: isBitcoinAddress ? 'bitcoin' : isLightningInvoice ? 'lightning' : 'invalid',
     };
   }, []);
 
@@ -227,11 +227,12 @@ const styles = StyleSheet.create({
     height: 44,
     alignItems: 'center',
     marginVertical: 8,
+    marginHorizontal: 18,
     borderRadius: 4,
   },
   input: {
     flex: 1,
-    marginHorizontal: 8,
+    paddingHorizontal: 8,
     minHeight: 33,
   },
 });
