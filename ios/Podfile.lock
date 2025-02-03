@@ -1,5 +1,5 @@
 PODS:
-  - boost (1.83.0)
+  - boost (1.84.0)
   - BugsnagReactNative (7.25.1):
     - React-Core
   - BVLinearGradient (2.8.3):
@@ -3222,7 +3222,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  boost: d3f49c53809116a5d38da093a8aa78bf551aed09
+  boost: 4cb898d0bf20404aab1850c656dcea009429d6c1
   BugsnagReactNative: 0e335dab2447e0cb761ca271d6d26699e4ae61db
   BVLinearGradient: 880f91a7854faff2df62518f0281afb1c60d49a3
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
