@@ -12,11 +12,10 @@ import {
   DoneAndDismissKeyboardInputAccessory,
   DoneAndDismissKeyboardInputAccessoryViewID,
 } from '../../components/DoneAndDismissKeyboardInputAccessory';
-import { Icon } from '@rneui/themed';
 import { CommonToolTipActions } from '../../typings/CommonToolTipActions';
 import { useKeyboard } from '../../hooks/useKeyboard';
-import ToolTipMenu from '../../components/TooltipMenu';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
+import HeaderMenuButton from '../../components/HeaderMenuButton';
 
 const WalletsImport = () => {
   const navigation = useNavigation();
@@ -124,6 +123,39 @@ const WalletsImport = () => {
       return 0;
     });
   };
+
+  const toolTipOnPressMenuItem = useCallback(
+    menuItem => {
+      if (menuItem === CommonToolTipActions.Passphrase.id) {
+        setAskPassphrase(!askPassphrase);
+      } else if (menuItem === CommonToolTipActions.SearchAccount.id) {
+        setSearchAccounts(!searchAccounts);
+      }
+    },
+    [askPassphrase, searchAccounts],
+  );
+
+  // ToolTipMenu actions for advanced options
+  const toolTipActions = useMemo(() => {
+    const askPassphraseAction = CommonToolTipActions.Passphrase;
+    askPassphraseAction.menuState = askPassphrase;
+
+    const searchAccountsAction = CommonToolTipActions.SearchAccount;
+    searchAccountsAction.menuState = searchAccounts;
+    return [askPassphraseAction, searchAccountsAction];
+  }, [askPassphrase, searchAccounts]);
+
+  const HeaderRight = useMemo(
+    () => <HeaderMenuButton onPressMenuItem={toolTipOnPressMenuItem} actions={toolTipActions} />,
+    [toolTipOnPressMenuItem, toolTipActions],
+  );
+
+  // Adding the ToolTipMenu to the header
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => HeaderRight,
+    });
+  }, [askPassphrase, searchAccounts, colors.foregroundColor, navigation, toolTipActions, HeaderRight]);
 
   const renderOptionsAndImportButton = (
     <>

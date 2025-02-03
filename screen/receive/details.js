@@ -25,6 +25,8 @@ import { useStorage } from '../../hooks/context/useStorage';
 import { HandOffActivityType } from '../../components/types';
 import SegmentedControl from '../../components/SegmentControl';
 import { DOICHAIN } from '../../blue_modules/network';
+import { CommonToolTipActions } from '../../typings/CommonToolTipActions';
+import HeaderMenuButton from '../../components/HeaderMenuButton';
 
 const segmentControlValues = [loc.wallets.details_address, loc.bip47.payment_code];
 
@@ -86,6 +88,51 @@ const ReceiveDetails = () => {
       triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
     }
   }, [showConfirmedBalance]);
+
+  const toolTipActions = useMemo(() => {
+    const action = CommonToolTipActions.PaymentCode;
+    action.menuState = wallet.isBIP47Enabled();
+    return [action];
+  }, [wallet]);
+
+  const onPressMenuItem = useCallback(() => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    onEnablePaymentsCodeSwitchValue();
+  }, [onEnablePaymentsCodeSwitchValue]);
+
+  const HeaderRight = useMemo(
+    () => <HeaderMenuButton actions={toolTipActions} onPressMenuItem={onPressMenuItem} />,
+
+    [onPressMenuItem, toolTipActions],
+  );
+
+  const handleClose = useCallback(() => {
+    goBack();
+  }, [goBack]);
+
+  const HeaderLeft = useMemo(
+    () => (
+      <TouchableOpacity
+        accessibilityRole="button"
+        accessibilityLabel={loc._.close}
+        style={styles.button}
+        onPress={handleClose}
+        testID="NavigationCloseButton"
+      >
+        <Image source={closeImage} />
+      </TouchableOpacity>
+    ),
+    [closeImage, handleClose],
+  );
+
+  useEffect(() => {
+    wallet.allowBIP47() &&
+      !wallet.isBIP47Enabled() &&
+      setOptions({
+        headerLeft: () => (wallet.isBIP47Enabled() ? null : HeaderLeft),
+        headerRight: () => (wallet.isBIP47Enabled() ? HeaderLeft : HeaderRight),
+      });
+  }, [HeaderLeft, HeaderRight, colors.foregroundColor, setOptions, wallet]);
 
   // re-fetching address balance periodically
   useEffect(() => {
