@@ -188,4 +188,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  boldText: {
+    fontWeight: 'bold',
+  },
+  resultText: {
+    textAlignVertical: 'center',
+    marginVertical: 10,
+    textAlign: 'center',
+  },
 });
