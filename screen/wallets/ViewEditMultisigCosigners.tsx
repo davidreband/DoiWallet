@@ -612,7 +612,6 @@ const ViewEditMultisigCosigners: React.FC = () => {
         renderItem={_renderKeyItem}
         automaticallyAdjustKeyboardInsets
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={styles.contentContainerStyle}
         automaticallyAdjustContentInsets
         keyExtractor={(_item, index) => `${index}`}
       />
