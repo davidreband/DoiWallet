@@ -76,7 +76,7 @@ const icons: { [key: string]: { iconValue: string } } = {
   ImportTransactionQR: { iconValue: 'qrcode.viewfinder' },
   CoinControl: { iconValue: 'switch.2' },
   CoSignTransaction: { iconValue: 'signature' },
-  PaymentsCode: { iconValue: 'qrcode' },
+  PaymentCode: { iconValue: 'qrcode' },
   RemoveAllRecipients: { iconValue: 'person.2.slash' },
   AddRecipient: { iconValue: 'person.badge.plus' },
   RemoveRecipient: { iconValue: 'person.badge.minus' },
@@ -192,9 +192,9 @@ export const CommonToolTipActions: { [key: string]: Action } = {
     icon: icons.SaveChanges,
   },
   PaymentCode: {
-    id: keys.PaymentsCode,
+    id: keys.PaymentCode,
     text: loc.bip47.purpose,
-    icon: icons.PaymentsCode,
+    icon: icons.PaymentCode,
     menuState: false,
   },
   ScanQR: {
