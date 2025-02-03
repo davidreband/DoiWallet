@@ -92,7 +92,7 @@ const AddressInput = ({
       CommonToolTipActions.ChoosePhoto,
       CommonToolTipActions.ImportFile,
       {
-        ...CommonToolTipActions.CopyFromClipboard,
+        ...CommonToolTipActions.PasteFromClipboard,
         hidden: !isClipboardGetContentEnabled,
       },
     ];
