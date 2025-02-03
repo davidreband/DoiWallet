@@ -641,7 +641,6 @@ const SendDetails = () => {
 
     if (tx && routeParams.launchedBy && psbt) {
       console.warn('navigating back to ', routeParams.launchedBy);
-      feeModalRef.current?.dismiss();
 
       // @ts-ignore idk how to fix FIXME?
 
@@ -649,8 +648,6 @@ const SendDetails = () => {
     }
 
     if (wallet?.type === WatchOnlyWallet.type) {
-      feeModalRef.current?.dismiss();
-
       // watch-only wallets with enabled HW wallet support have different flow. we have to show PSBT to user as QR code
       // so he can scan it and sign it. then we have to scan it back from user (via camera and QR code), and ask
       // user whether he wants to broadcast it
@@ -665,8 +662,6 @@ const SendDetails = () => {
     }
 
     if (wallet?.type === MultisigHDWallet.type) {
-      feeModalRef.current?.dismiss();
-
       navigation.navigate('PsbtMultisig', {
         memo: transactionMemo,
         psbtBase64: psbt.toBase64(),
@@ -691,7 +686,6 @@ const SendDetails = () => {
       // (ez can be the case for single-address wallet when doing self-payment for consolidation)
       recipients = outputs;
     }
-    feeModalRef.current?.dismiss();
 
     navigation.navigate('Confirm', {
       fee: new BigNumber(fee).dividedBy(100000000).toNumber(),
@@ -741,8 +735,6 @@ const SendDetails = () => {
       // this looks like NOT base64, so maybe its transaction's hex
       // we dont support it in this flow
     } else {
-      feeModalRef.current?.dismiss();
-
       // psbt base64?
 
       // we construct PSBT object and pass to next screen
@@ -1268,8 +1260,6 @@ const SendDetails = () => {
             accessibilityRole="button"
             style={styles.selectTouch}
             onPress={() => {
-              feeModalRef.current?.dismiss();
-
               navigation.navigate('SelectWallet', { chainType: Chain.ONCHAIN });
             }}
           >
