@@ -2,19 +2,12 @@
 //  MarketAPI.swift
 //
 //  Created by Marcos Rodriguez on 11/2/19.
+//
 
 //
 
 import Foundation
 import os
-
-var numberFormatter: NumberFormatter {
-  let formatter = NumberFormatter()
-  formatter.numberStyle = .decimal
-  formatter.maximumFractionDigits = 0
-  formatter.locale = Locale.current
-  return formatter
-}
 
 class MarketAPI {
   
@@ -149,6 +142,10 @@ class MarketAPI {
                }
            }
 
+         let urlString = buildURLString(source: source, endPointKey: endPointKey)
+         guard let url = URL(string: urlString) else {
+             throw CurrencyError(errorDescription: "Invalid URL.")
+         }
 
       default:
           completion(nil, CurrencyError(errorDescription: "Unsupported data source \(source)"))

@@ -99,8 +99,8 @@ struct PriceWidgetEntryView : View {
 }
 
 struct PriceWidget: Widget {
-  let kind: String = "PriceWidget"
-  
+    let kind: String = "PriceWidget"
+
   var body: some WidgetConfiguration {
     if #available(iOSApplicationExtension 17.0, *) {
       return StaticConfiguration(kind: kind, provider: PriceWidgetProvider()) { entry in
@@ -120,9 +120,9 @@ struct PriceWidget: Widget {
       .supportedFamilies([.systemSmall])
       .contentMarginsDisabledIfAvailable()
     }
-  }
 }
 
+@available(iOS 16.0, *)
 struct PriceWidget_Previews: PreviewProvider {
   static var previews: some View {
     Group {
@@ -137,5 +137,4 @@ struct PriceWidget_Previews: PreviewProvider {
           .previewContext(WidgetPreviewContext(family: .accessoryRectangular))
       }
     }
-  }
 }
