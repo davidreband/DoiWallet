@@ -289,7 +289,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
 
   const _keyExtractor = (_item: any, index: number) => index.toString();
 
-  const copyFromClipboard = async () => {
+  const pasteFromClipboard = async () => {
     onBarCodeRead({ data: await BlueClipboard().getClipboardContent() });
   };
 
@@ -354,7 +354,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
           }
           case 3:
             if (!isClipboardEmpty) {
-              copyFromClipboard();
+              pasteFromClipboard();
             }
             break;
         }

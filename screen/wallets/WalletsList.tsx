@@ -369,7 +369,7 @@ const WalletsList: React.FC = () => {
     [navigate],
   );
 
-  const copyFromClipboard = useCallback(async () => {
+  const pasteFromClipboard = useCallback(async () => {
     onBarScanned(await BlueClipboard().getClipboardContent());
   }, [onBarScanned]);
 
@@ -406,12 +406,12 @@ const WalletsList: React.FC = () => {
           break;
         case 3:
           if (!isClipboardEmpty) {
-            copyFromClipboard();
+            pasteFromClipboard();
           }
           break;
       }
     });
-  }, [copyFromClipboard, onBarScanned, routeName]);
+  }, [pasteFromClipboard, onBarScanned, routeName]);
 
   const onRefresh = useCallback(() => {
     console.debug('WalletsList onRefresh');

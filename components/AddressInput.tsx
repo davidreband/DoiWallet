@@ -120,7 +120,7 @@ const AddressInput = ({
           }
 
           break;
-        case CommonToolTipActions.CopyFromClipboard.id:
+        case CommonToolTipActions.PasteFromClipboard.id:
           try {
             let getImage: string | null = null;
 
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
 
 const actionKeys = {
   ScanQR: 'scan_qr',
-  CopyFromClipboard: 'copy_from_clipboard',
+  PasteFromClipboard: 'copy_from_clipboard',
   ChoosePhoto: 'choose_photo',
   ImportFile: 'import_file',
 };
@@ -289,7 +289,7 @@ const actions = [
     icon: actionIcons.ScanQR,
   },
   {
-    id: actionKeys.CopyFromClipboard,
+    id: actionKeys.PasteFromClipboard,
     text: loc.wallets.paste_from_clipboard,
     icon: actionIcons.Clipboard,
   },
