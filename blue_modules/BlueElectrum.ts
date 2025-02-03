@@ -9,6 +9,7 @@ import { DOICHAIN} from './network.js';
 import { LegacyWallet, SegwitBech32Wallet, SegwitP2SHWallet, TaprootWallet } from '../class';
 import presentAlert from '../components/Alert';
 import loc from '../loc';
+import { GROUP_IO_BLUEWALLET } from './currency';
 
 const ElectrumClient = require('electrum-client');
 const net = require('net');

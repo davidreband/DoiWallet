@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useReducer } from 'react';
 import {
@@ -29,8 +28,11 @@ import loc from '../../loc';
 
 import { Chain } from '../../models/doichainUnits';
 import { useStorage } from '../../hooks/context/useStorage';
-import { useSettings } from '../../hooks/context/useSettings';
-
+import ToolTipMenu from '../../components/TooltipMenu';
+import { Icon } from '@rneui/themed';
+import { CommonToolTipActions } from '../../typings/CommonToolTipActions';
+import { Action } from '../../components/types';
+import { getLNDHub } from '../../helpers/lndHub';
 
 enum ButtonSelected {
   // @ts-ignore: Return later to update
@@ -408,7 +410,7 @@ const WalletsAdd: React.FC = () => {
   }, [HeaderRight, colorScheme, colors.foregroundColor, navigateToEntropy, setOptions, toolTipActions]);
 
   useEffect(() => {
-    AsyncStorage.getItem(BlueApp.LNDHUB)
+    getLNDHub()
       .then(url => (url ? setWalletBaseURI(url) : setWalletBaseURI('')))
       .catch(() => setWalletBaseURI(''))
       .finally(() => setIsLoading(false));
