@@ -15,6 +15,7 @@ import { Chain } from '../models/doichainUnits';
 import { navigationRef } from '../NavigationService';
 import ActionSheet from '../screen/ActionSheet';
 import { useStorage } from '../hooks/context/useStorage';
+import RNQRGenerator from 'rn-qr-generator';
 
 const MenuElements = lazy(() => import('../components/MenuElements'));
 const DeviceQuickActions = lazy(() => import('../components/DeviceQuickActions'));
@@ -106,34 +107,45 @@ const CompanionDelegates = () => {
     async (event: { url: string }): Promise<void> => {
       const { url } = event;
 
-      if (url) {
-        const decodedUrl = decodeURIComponent(url);
-        const fileName = decodedUrl.split('/').pop()?.toLowerCase();
+      if (url && (url.endsWith('.jpg') || url.endsWith('.png') || url.endsWith('.jpeg'))) {
+        try {
+          const response = await fetch(url);
+          const imageData = await response.blob();
 
-        if (fileName && (fileName.endsWith('.jpg') || fileName.endsWith('.png') || fileName.endsWith('.jpeg'))) {
-          try {
-            const values = await RNQRGenerator.detect({
-              uri: decodedUrl,
-            });
+          const reader = new FileReader();
+          reader.onloadend = async () => {
+            const base64Image = reader.result as string;
+            const base64Data = base64Image.replace(/^data:image\/jpeg;base64,/, ''); //
+            try {
+              const values = await RNQRGenerator.detect({
+                base64: base64Data,
+              });
 
-            if (values && values.values.length > 0) {
-              DeeplinkSchemaMatch.navigationRouteFor(
-                { url: values.values[0] },
-                (value: [string, any]) => navigationRef.navigate(...value),
-                {
-                  wallets,
-                  addWallet,
-                  saveToDisk,
-                  setSharedCosigner,
-                },
-              );
+              if (values && values.values.length > 0) {
+                DeeplinkSchemaMatch.navigationRouteFor(
+                  { url: values.values[0] },
+                  (value: [string, any]) => navigationRef.navigate(...value),
+                  {
+                    wallets,
+                    addWallet,
+                    saveToDisk,
+                    setSharedCosigner,
+                  },
+                );
+              } else {
+                console.log('No QR code detected in the image.');
+              }
+            } catch (error) {
+              console.error('Error detecting QR code:', error);
             }
-          } catch (error) {
-            console.error('Error detecting QR code:', error);
-          }
+          };
+          reader.readAsDataURL(imageData);
+        } catch (error) {
+          console.error('Error fetching image:', error);
         }
       } else {
-        DeeplinkSchemaMatch.navigationRouteFor(event, (value: [string, any]) => navigationRef.navigate(...value), {
+        // Handle other deeplinks if it's not an image
+        DeeplinkSchemaMatch.navigationRouteFor(event, value => navigationRef.navigate(...value), {
           wallets,
           addWallet,
           saveToDisk,
@@ -141,7 +153,7 @@ const CompanionDelegates = () => {
         });
       }
     },
-    [addWallet, saveToDisk, setSharedCosigner, wallets],
+    [wallets, addWallet, saveToDisk, setSharedCosigner],
   );
   const showClipboardAlert = useCallback(
     ({ contentType }: { contentType: undefined | string }) => {

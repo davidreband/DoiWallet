@@ -19,6 +19,7 @@ import { useTheme } from '../../components/themes';
 import { isCameraAuthorizationStatusGranted } from '../../helpers/scan-qr';
 import loc from '../../loc';
 import { useSettings } from '../../hooks/context/useSettings';
+import RNQRGenerator from 'rn-qr-generator';
 
 let decoder = false;
 
@@ -315,15 +316,21 @@ const ScanQRCode = () => {
           } else {
             const asset = response.assets[0];
             if (asset.uri) {
-              const uri = asset.uri.toString().replace('file://', '');
-              LocalQRCode.decode(uri, (error, result) => {
-                if (!error) {
-                  onBarCodeRead({ data: result });
-                } else {
+              RNQRGenerator.detect({
+                uri: decodeURI(asset.uri.toString()),
+              })
+                .then(result => {
+                  if (result) {
+                    onBarCodeRead({ data: result.values[0] });
+                  }
+                })
+                .catch(error => {
+                  console.error(error);
                   presentAlert({ message: loc.send.qr_error_no_qrcode });
+                })
+                .finally(() => {
                   setIsLoading(false);
-                }
-              });
+                });
             } else {
               setIsLoading(false);
             }

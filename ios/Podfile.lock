@@ -1319,8 +1319,6 @@ PODS:
     - React-Core
   - react-native-menu (1.1.2):
     - React
-  - react-native-qrcode-local-image (1.0.4):
-    - React
   - react-native-randombytes (3.6.1):
     - React-Core
   - react-native-safe-area-context (4.11.1):
@@ -1635,8 +1633,9 @@ PODS:
     - React-Core
   - RNPermissions (4.1.5):
     - React-Core
-  - RNPrivacySnapshot (1.0.0):
+  - RNQrGenerator (1.4.2):
     - React
+    - ZXingObjC
   - RNQuickAction (0.3.13):
     - React
   - RNRate (1.2.12):
@@ -1821,6 +1820,9 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - Yoga (0.0.0)
+  - ZXingObjC (3.6.9):
+    - ZXingObjC/All (= 3.6.9)
+  - ZXingObjC/All (3.6.9)
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
@@ -1866,7 +1868,6 @@ DEPENDENCIES:
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-ios-context-menu (from `../node_modules/react-native-ios-context-menu`)
   - "react-native-menu (from `../node_modules/@react-native-menu/menu`)"
-  - "react-native-qrcode-local-image (from `../node_modules/@remobile/react-native-qrcode-local-image`)"
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-secure-key-store (from `../node_modules/react-native-secure-key-store`)
@@ -1907,7 +1908,7 @@ DEPENDENCIES:
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNLocalize (from `../node_modules/react-native-localize`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
-  - RNPrivacySnapshot (from `../node_modules/react-native-privacy-snapshot`)
+  - RNQrGenerator (from `../node_modules/rn-qr-generator`)
   - RNQuickAction (from `../node_modules/react-native-quick-actions`)
   - RNRate (from `../node_modules/react-native-rate`)
   - RNReactNativeHapticFeedback (from `../node_modules/react-native-haptic-feedback`)
@@ -1925,6 +1926,7 @@ SPEC REPOS:
     - CocoaAsyncSocket
     - lottie-ios
     - SocketRocket
+    - ZXingObjC
 
 EXTERNAL SOURCES:
   boost:
@@ -2010,8 +2012,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-ios-context-menu"
   react-native-menu:
     :path: "../node_modules/@react-native-menu/menu"
-  react-native-qrcode-local-image:
-    :path: "../node_modules/@remobile/react-native-qrcode-local-image"
   react-native-randombytes:
     :path: "../node_modules/react-native-randombytes"
   react-native-safe-area-context:
@@ -2092,8 +2092,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-localize"
   RNPermissions:
     :path: "../node_modules/react-native-permissions"
-  RNPrivacySnapshot:
-    :path: "../node_modules/react-native-privacy-snapshot"
+  RNQrGenerator:
+    :path: "../node_modules/rn-qr-generator"
   RNQuickAction:
     :path: "../node_modules/react-native-quick-actions"
   RNRate:
@@ -2211,7 +2211,7 @@ SPEC CHECKSUMS:
   RNKeychain: bfe3d12bf4620fe488771c414530bf16e88f3678
   RNLocalize: 4f22418187ecd5ca693231093ff1d912d1b3c9bc
   RNPermissions: 9fa74223844f437bc309e112994859dc47194829
-  RNPrivacySnapshot: 71919dde3c6a29dd332115409c2aec564afee8f4
+  RNQrGenerator: 5c12ab86443a07e923735800679da7b6fcaaeb31
   RNQuickAction: 6d404a869dc872cde841ad3147416a670d13fa93
   RNRate: ef3bcff84f39bb1d1e41c5593d3eea4aab2bd73a
   RNReactNativeHapticFeedback: 0d591ea1e150f36cb96d868d4e8d77272243d78a
@@ -2224,6 +2224,7 @@ SPEC CHECKSUMS:
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   TrueSheet: 49bf7af5d5a29f018f02879c26a1afe595c85829
   Yoga: 055f92ad73f8c8600a93f0e25ac0b2344c3b07e6
+  ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
 PODFILE CHECKSUM: 95cd28e70ae47c36e1e0b30f60bba0bd6ffa77d8
 

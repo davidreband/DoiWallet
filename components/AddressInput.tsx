@@ -106,7 +106,7 @@ const AddressInput = ({
   }, [launchedBy, onBarScanned, scanButtonTapped]);
 
   const onMenuItemPressed = useCallback(
-    (action: string) => {
+    async (action: string) => {
       if (onBarScanned === undefined) throw new Error('onBarScanned is required');
       switch (action) {
         case CommonToolTipActions.ScanQR.id:
@@ -121,11 +121,41 @@ const AddressInput = ({
 
           break;
         case CommonToolTipActions.CopyFromClipboard.id:
-          Clipboard.getString()
-            .then(onChangeText)
-            .catch(error => {
-              presentAlert({ message: error.message });
-            });
+          try {
+            let getImage: string | null = null;
+
+            if (Platform.OS === 'android') {
+              getImage = await Clipboard.getImage();
+            } else {
+              const hasImage = await Clipboard.hasImage();
+              if (hasImage) {
+                getImage = await Clipboard.getImageJPG();
+              }
+            }
+
+            if (getImage) {
+              try {
+                const base64Data = getImage.replace(/^data:image\/jpeg;base64,/, '');
+
+                const values = await RNQRGenerator.detect({
+                  base64: base64Data,
+                });
+
+                if (values && values.values.length > 0) {
+                  onChangeText(values.values[0]);
+                } else {
+                  presentAlert({ message: loc.send.qr_error_no_qrcode });
+                }
+              } catch (error) {
+                presentAlert({ message: (error as Error).message });
+              }
+            } else {
+              const clipboardText = await Clipboard.getString();
+              onChangeText(clipboardText);
+            }
+          } catch (error) {
+            presentAlert({ message: (error as Error).message });
+          }
           break;
         case CommonToolTipActions.ChoosePhoto.id:
           showImagePickerAndReadImage()
