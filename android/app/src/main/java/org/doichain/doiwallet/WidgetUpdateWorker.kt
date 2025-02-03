@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
 import androidx.work.*
-import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -35,9 +34,6 @@ class WidgetUpdateWorker(context: Context, workerParams: WorkerParameters) : Wor
         }
     }
 
-    private lateinit var sharedPref: SharedPreferences
-    private lateinit var preferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
-
     override fun doWork(): Result {
         Log.d(TAG, "Widget update worker running")
         val appWidgetManager = AppWidgetManager.getInstance(applicationContext)
@@ -48,9 +44,7 @@ class WidgetUpdateWorker(context: Context, workerParams: WorkerParameters) : Wor
         val sharedPref = applicationContext.getSharedPreferences("widget_prefs", Context.MODE_PRIVATE)
         val sharedPrefDoiwallet = applicationContext.getSharedPreferences("group.org.doichain.doiwallet", Context.MODE_PRIVATE)
 
-        val allEntries: Map<String, *> = sharedPrefDoiwallet.all
-        val allEntriesDoiwallet: Map<String, *> = sharedPref.all 
-
+        
         val preferredCurrency = sharedPrefDoiwallet.getString("preferredCurrency", "USD")
 
         val fiatUnitsJson = applicationContext.assets.open("fiatUnits.json").bufferedReader().use { it.readText() }
@@ -74,40 +68,6 @@ class WidgetUpdateWorker(context: Context, workerParams: WorkerParameters) : Wor
         return Result.success()
     }
 
-    private fun registerPreferenceChangeListener() {
-        preferenceChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
-            if (key == "preferredCurrency" || key == "preferredCurrencyLocale" || key == "previous_price") {
-                Log.d(TAG, "Preference changed: $key")
-                updateWidgetOnPreferenceChange()
-            }
-        }
-        sharedPref.registerOnSharedPreferenceChangeListener(preferenceChangeListener)
-    }
-
-    override fun onStopped() {
-        super.onStopped()
-        sharedPref.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener)
-    }
-
-    private fun updateWidgetOnPreferenceChange() {
-        val appWidgetManager = AppWidgetManager.getInstance(applicationContext)
-        val thisWidget = ComponentName(applicationContext, BitcoinPriceWidget::class.java)
-        val appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget)
-        val views = RemoteViews(applicationContext.packageName, R.layout.widget_layout)
-
-        val preferredCurrency = sharedPref.getString("preferredCurrency", null) ?: "USD"
-        val preferredCurrencyLocale = sharedPref.getString("preferredCurrencyLocale", null) ?: "en-US"
-        val previousPrice = sharedPref.getString("previous_price", null)
-        val currentTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
-
-        fetchPrice(preferredCurrency) { fetchedPrice, error ->
-            handlePriceResult(
-                appWidgetManager, appWidgetIds, views, sharedPref,
-                fetchedPrice, previousPrice, currentTime, preferredCurrency, preferredCurrencyLocale, error
-            )
-        }
-    }
-
     private fun handlePriceResult(
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray,
@@ -116,7 +76,6 @@ class WidgetUpdateWorker(context: Context, workerParams: WorkerParameters) : Wor
         fetchedPrice: String?,
         previousPrice: String?,
         currentTime: String,
-        preferredCurrency: String?,
         preferredCurrencyLocale: String?,
         error: String?,
         volume: String?,
@@ -244,30 +203,6 @@ class WidgetUpdateWorker(context: Context, workerParams: WorkerParameters) : Wor
                 setViewVisibility(R.id.percent_container, View.GONE)
             }
         }
-    }
-
-    private fun getCurrencyFormat(currencyCode: String?, localeString: String?): NumberFormat {
-        val localeParts = localeString?.split("-") ?: listOf("en", "US")
-        val locale = if (localeParts.size == 2) {
-            Locale(localeParts[0], localeParts[1])
-        } else {
-            Locale.getDefault()
-        }
-        val currencyFormat = NumberFormat.getCurrencyInstance(locale)
-        val currency = try {
-            Currency.getInstance(currencyCode ?: "USD")
-        } catch (e: IllegalArgumentException) {
-            Currency.getInstance("USD") // Default to USD if an invalid code is provided
-        }
-        currencyFormat.currency = currency
-        currencyFormat.maximumFractionDigits = 0 // No cents
-
-        // Remove the ISO country code and keep only the symbol
-        val decimalFormatSymbols = (currencyFormat as java.text.DecimalFormat).decimalFormatSymbols
-        decimalFormatSymbols.currencySymbol = currency.symbol
-        currencyFormat.decimalFormatSymbols = decimalFormatSymbols
-
-        return currencyFormat
     }
 
     private fun fetchPrice(currency: String?, callback: (String?, String?) -> Unit) {

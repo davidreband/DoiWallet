@@ -357,27 +357,7 @@ const ManageWallets: React.FC = () => {
 
   const bounceAnim = useBounceAnimation(state.searchQuery);
 
-  const renderHighlightedText = useCallback(
-    (text: string, query: string) => {
-      const parts = text.split(new RegExp(`(${query})`, 'gi'));
-      return (
-        <Text>
-          {parts.map((part, index) =>
-            query && part.toLowerCase().includes(query.toLowerCase()) ? (
-              <Animated.View key={`${index}-${query}`} style={[iStyles.highlightedContainer, { transform: [{ scale: bounceAnim }] }]}>
-                <Text style={iStyles.highlighted}>{part}</Text>
-              </Animated.View>
-            ) : (
-              <Text key={`${index}-${query}`} style={query ? iStyles.dimmedText : iStyles.defaultText}>
-                {part}
-              </Text>
-            ),
-          )}
-        </Text>
-      );
-    },
-    [bounceAnim],
-  );
+ 
   const renderItem = useCallback(
     // eslint-disable-next-line react/no-unused-prop-types
     ({ item, drag, isActive }: { item: Item; drag: () => void; isActive: boolean }) => {
