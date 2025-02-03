@@ -1,19 +1,22 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
-import { Keyboard, Platform, StyleSheet, Switch, TouchableWithoutFeedback, View } from 'react-native';
-
-import { BlueButtonLink, BlueFormLabel, BlueFormMultiInput, BlueSpacing20, BlueText } from '../../BlueComponents';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { useRoute } from '@react-navigation/native';
+import { Keyboard, Platform, StyleSheet, TouchableWithoutFeedback, View, ScrollView } from 'react-native';
+import { BlueButtonLink, BlueFormLabel, BlueFormMultiInput, BlueSpacing20 } from '../../BlueComponents';
 import Button from '../../components/Button';
 import SafeArea from '../../components/SafeArea';
 import { useTheme } from '../../components/themes';
 import { requestCameraAuthorization } from '../../helpers/scan-qr';
 import usePrivacy from '../../hooks/usePrivacy';
 import loc from '../../loc';
-import { useSettings } from '../../hooks/context/useSettings';
 import {
   DoneAndDismissKeyboardInputAccessory,
   DoneAndDismissKeyboardInputAccessoryViewID,
 } from '../../components/DoneAndDismissKeyboardInputAccessory';
+import { Icon } from '@rneui/themed';
+import { CommonToolTipActions } from '../../typings/CommonToolTipActions';
+import { useKeyboard } from '../../hooks/useKeyboard';
+import ToolTipMenu from '../../components/TooltipMenu';
+import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 
 const WalletsImport = () => {
   const navigation = useNavigation();
