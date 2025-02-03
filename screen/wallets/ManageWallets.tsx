@@ -426,21 +426,40 @@ const ManageWallets: React.FC = () => {
   }, [state.searchQuery, state.walletData.length, state.txMetadata, stylesHook.noResultsText]);
 
   return (
-    <GestureHandlerRootView style={[styles.root, stylesHook.root]}>
-      <DraggableFlatList
-        ref={sortableList}
-        contentInsetAdjustmentBehavior="automatic"
-        automaticallyAdjustContentInsets
-        data={state.order}
-        keyExtractor={_keyExtractor}
-        renderItem={renderItem}
-        onChangeOrder={onChangeOrder}
-        onDragBegin={onDragBegin}
-        onRelease={onRelease}
-        onDragEnd={onDragEnd}
-        containerStyle={styles.root}
-        ListHeaderComponent={renderHeader}
-      />
+    <GestureHandlerRootView style={[{ backgroundColor: colors.background }, styles.root]}>
+      <NestableScrollContainer contentInsetAdjustmentBehavior="automatic" automaticallyAdjustContentInsets scrollEnabled>
+        {renderHeader}
+        <NestableDraggableFlatList
+          data={state.tempOrder.filter((item): item is WalletItem => item.type === ItemType.WalletSection)}
+          extraData={state.tempOrder}
+          keyExtractor={keyExtractor}
+          renderItem={renderWalletItem}
+          onChangeOrder={onChangeOrder}
+          onDragBegin={onDragBegin}
+          onPlaceholderIndexChange={onChangeOrder}
+          onRelease={onRelease}
+          delayLongPress={150}
+          useNativeDriver={true}
+          dragItemOverflow
+          autoscrollThreshold={1}
+          renderPlaceholder={renderPlaceholder}
+          autoscrollSpeed={0.5}
+          contentInsetAdjustmentBehavior="automatic"
+          automaticallyAdjustContentInsets
+          onDragEnd={onDragEnd}
+          containerStyle={styles.root}
+        />
+        <NestableDraggableFlatList
+          data={state.tempOrder.filter((item): item is TransactionItem => item.type === ItemType.TransactionSection)}
+          keyExtractor={keyExtractor}
+          renderItem={renderWalletItem}
+          dragItemOverflow
+          containerStyle={styles.root}
+          contentInsetAdjustmentBehavior="automatic"
+          automaticallyAdjustContentInsets
+          useNativeDriver={true}
+        />
+      </NestableScrollContainer>
     </GestureHandlerRootView>
   );
 };
