@@ -91,7 +91,7 @@ const ReceiveDetails = () => {
 
   const toolTipActions = useMemo(() => {
     const action = CommonToolTipActions.PaymentCode;
-    action.menuState = wallet.isBIP47Enabled();
+    action.menuState = wallet?.isBIP47Enabled();
     return [action];
   }, [wallet]);
 
@@ -126,11 +126,11 @@ const ReceiveDetails = () => {
   );
 
   useEffect(() => {
-    wallet.allowBIP47() &&
-      !wallet.isBIP47Enabled() &&
+    wallet?.allowBIP47() &&
+      wallet?.isBIP47Enabled() &&
       setOptions({
-        headerLeft: () => (wallet.isBIP47Enabled() ? null : HeaderLeft),
-        headerRight: () => (wallet.isBIP47Enabled() ? HeaderLeft : HeaderRight),
+        headerLeft: () => (wallet?.isBIP47Enabled() ? null : HeaderLeft),
+        headerRight: () => (wallet?.isBIP47Enabled() ? HeaderLeft : HeaderRight),
       });
   }, [HeaderLeft, HeaderRight, colors.foregroundColor, setOptions, wallet]);
 
@@ -462,7 +462,7 @@ const ReceiveDetails = () => {
         contentContainerStyle={[styles.root, stylesHook.root]}
         keyboardShouldPersistTaps="always"
       >
-        {wallet?.allowBIP47() && wallet.isBIP47Enabled() && (
+        {wallet?.allowBIP47() && wallet?.isBIP47Enabled() && (
           <View style={styles.tabsContainer}>
             <SegmentedControl
               values={segmentControlValues}
