@@ -1,6 +1,4 @@
 
-
-import * as bitcoin from "@doichain/doichainjs-lib";
 import { TextDecoder } from 'text-decoding';
 import bs58check from 'bs58check';
 
@@ -27,7 +25,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RouteProp, StackActions, useFocusEffect, useRoute } from '@react-navigation/native';
 import BigNumber from 'bignumber.js';
-
+import * as bitcoin from 'bitcoinjs-lib';
 import DocumentPicker from 'react-native-document-picker';
 import { Icon } from '@rneui/themed';
 import RNFS from 'react-native-fs';
