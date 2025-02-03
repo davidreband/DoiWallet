@@ -203,7 +203,7 @@ const TransactionDetails = () => {
   };
 
   const handleCopyPress = (stringToCopy: string) => {
-    Clipboard.setString(stringToCopy !== actionKeys.CopyToClipboard ? stringToCopy : `${selectedBlockExplorer}/${tx?.hash}`);
+    Clipboard.setString(stringToCopy !== actionKeys.CopyToClipboard ? stringToCopy : `${selectedBlockExplorer}/tx/${tx?.hash}`);
   };
 
   if (isLoading || !tx) {
@@ -274,7 +274,7 @@ const TransactionDetails = () => {
       <HandOffComponent
         title={loc.transactions.details_title}
         type={HandOffActivityType.ViewInBlockExplorer}
-        url={`${selectedBlockExplorer}/${tx.hash}`}
+        url={`${selectedBlockExplorer}/tx/${tx.hash}`}
       />
       <BlueCard>
         <View>
