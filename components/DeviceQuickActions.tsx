@@ -122,7 +122,19 @@ function DeviceQuickActions() {
       addWallet,
       saveToDisk,
       setSharedCosigner,
-    });
+    })
+      // @ts-ignore: DeeplinkSchemaMatch type is not defined
+      .then((navigationParams: [string, any] | undefined) => {
+        if (navigationParams) {
+          const [route, params] = navigationParams;
+          NavigationService.navigate(route, params);
+        } else {
+          console.warn('No navigation parameters returned for the given deeplink.');
+        }
+      })
+      .catch((error: unknown) => {
+        console.error('Failed to handle deep link:', error);
+      });
   };
 
   const walletQuickActions = (data: any): void => {
