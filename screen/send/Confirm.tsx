@@ -341,7 +341,11 @@ const Confirm: React.FC = () => {
           {state.isLoading ? (
             <ActivityIndicator />
           ) : (
-            <Button disabled={isElectrumDisabled || state.isButtonDisabled} onPress={handleSendTransaction} title={loc.send.confirm_sendNow} />
+            <Button
+              disabled={isElectrumDisabled || state.isButtonDisabled}
+              onPress={handleSendTransaction}
+              title={loc.send.confirm_sendNow}
+            />
           )}
         </BlueCard>
       </View>

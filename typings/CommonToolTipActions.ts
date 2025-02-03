@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import loc from '../loc';
 
 const keys = {
@@ -36,6 +37,10 @@ const keys = {
   RemoveAllRecipients: 'RemoveAllRecipients',
   AddRecipient: 'AddRecipient',
   RemoveRecipient: 'RemoveRecipient',
+  ScanQR: 'scan_qr',
+  CopyFromClipboard: 'copy_from_clipboard',
+  ChoosePhoto: 'choose_photo',
+  ImportFile: 'import_file',
 };
 
 const icons = {
@@ -44,12 +49,6 @@ const icons = {
   },
   EyeSlash: {
     iconValue: 'eye.slash',
-  },
-  Clipboard: {
-    iconValue: 'doc.on.doc',
-  },
-  ClearClipboard: {
-    iconValue: 'clipboard',
   },
   Link: {
     iconValue: 'link',
@@ -104,6 +103,18 @@ const icons = {
   RemoveAllRecipients: { iconValue: 'person.2.slash' },
   AddRecipient: { iconValue: 'person.badge.plus' },
   RemoveRecipient: { iconValue: 'person.badge.minus' },
+  ScanQR: {
+    iconValue: Platform.OS === 'ios' ? 'qrcode' : 'ic_menu_camera',
+  },
+  ImportFile: {
+    iconValue: 'doc',
+  },
+  ChoosePhoto: {
+    iconValue: Platform.OS === 'ios' ? 'photo' : 'ic_menu_gallery',
+  },
+  Clipboard: {
+    iconValue: Platform.OS === 'ios' ? 'doc.on.doc' : 'ic_menu_file',
+  },
 };
 
 export const CommonToolTipActions = {
@@ -217,68 +228,26 @@ export const CommonToolTipActions = {
     icon: icons.PaymentsCode,
     menuState: false,
   },
-  InsertContact: {
-    id: keys.InsertContact,
-    text: loc.send.details_insert_contact,
-    icon: icons.InsertContact,
+  ScanQR: {
+    id: keys.ScanQR,
+    text: loc.wallets.list_long_scan,
+    icon: icons.ScanQR,
   },
-  SignPSBT: {
-    id: keys.SignPSBT,
-    text: loc.send.psbt_sign,
-    icon: icons.SignPSBT,
+  CopyFromClipboard: {
+    id: keys.CopyFromClipboard,
+    text: loc.wallets.list_long_clipboard,
+    icon: icons.Clipboard,
+    subtitle: '',
+    hidden: false,
   },
-  SendMax: {
-    id: keys.SendMax,
-    text: loc.send.details_adv_full,
-    icon: icons.SendMax,
-
-    disabled: true,
-    menuState: false,
+  ChoosePhoto: {
+    id: keys.ChoosePhoto,
+    text: loc.wallets.list_long_choose,
+    icon: icons.ChoosePhoto,
   },
-  AddRecipient: {
-    id: keys.AddRecipient,
-    text: loc.send.details_add_rec_add,
-    icon: icons.AddRecipient,
-  },
-  RemoveRecipient: {
-    id: keys.RemoveRecipient,
-    text: loc.send.details_add_rec_rem,
-    icon: icons.RemoveRecipient,
-  },
-  RemoveAllRecipients: {
-    id: keys.RemoveAllRecipients,
-    text: loc.send.details_add_rec_rem_all,
-    icon: icons.RemoveAllRecipients,
-  },
-  AllowRBF: {
-    id: keys.AllowRBF,
-    text: loc.send.details_adv_fee_bump,
-    icon: icons.AllowRBF,
-    menuState: false,
-  },
-  ImportTransaction: {
-    id: keys.ImportTransaction,
-    text: loc.send.details_adv_import,
-    icon: icons.ImportTransaction,
-  },
-  ImportTransactionMultsig: {
-    id: keys.ImportTransactionMultsig,
-    text: loc.send.details_adv_import,
-    icon: icons.ImportTransactionMultsig,
-  },
-  ImportTransactionQR: {
-    id: keys.ImportTransactionQR,
-    text: loc.send.details_adv_import_qr,
-    icon: icons.ImportTransactionQR,
-  },
-  CoSignTransaction: {
-    id: keys.CoSignTransaction,
-    text: loc.multisig.co_sign_transaction,
-    icon: icons.CoSignTransaction,
-  },
-  CoinControl: {
-    id: keys.CoinControl,
-    text: loc.cc.header,
-    icon: icons.CoinControl,
+  ImportFile: {
+    id: keys.ImportFile,
+    text: loc.wallets.import_file,
+    icon: icons.ImportFile,
   },
 };
