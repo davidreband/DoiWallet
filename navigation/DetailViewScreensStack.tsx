@@ -201,6 +201,7 @@ const DetailViewStackScreensStack = () => {
       <DetailViewStack.Screen
         name="IsItMyAddress"
         component={IsItMyAddress}
+        initialParams={{ address: undefined }}
         options={navigationStyle({ title: loc.is_it_my_address.title })(theme)}
       />
       <DetailViewStack.Screen
