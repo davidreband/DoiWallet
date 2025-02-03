@@ -102,7 +102,9 @@ const IsItMyAddress: React.FC = () => {
   };
 
   const onBarScanned = (value: string) => {
+    const cleanAddress = value.replace(/^bitcoin(:|=)/i, '').split('?')[0];
     setAddress(value);
+    setResultCleanAddress(cleanAddress);
   };
 
   const importScan = async () => {
