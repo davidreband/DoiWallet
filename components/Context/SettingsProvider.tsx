@@ -13,7 +13,6 @@ import { isBalanceDisplayAllowed, setBalanceDisplayAllowed } from '../WidgetComm
 import { useStorage } from '../../hooks/context/useStorage';
 import { DoichainUnit} from '../../models/doichainUnits';
 import { TotalWalletsBalanceKey, TotalWalletsBalancePreferredUnit } from '../TotalWalletsBalance';
-import { LayoutAnimation } from 'react-native';
 import { BLOCK_EXPLORERS, getBlockExplorerUrl, saveBlockExplorer, BlockExplorer, normalizeUrl } from '../../models/blockExplorer';
 
 const getDoNotTrackStorage = async () => {
@@ -27,7 +26,6 @@ export const setTotalBalanceViewEnabledStorage = async (value: boolean) => {
     await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
     await DefaultPreference.set(TotalWalletsBalanceKey, value ? 'true' : 'false');
     console.debug('setTotalBalanceViewEnabledStorage value:', value);
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   } catch (e) {
     console.error('Error setting TotalBalanceViewEnabled:', e);
   }
@@ -51,7 +49,6 @@ export const setTotalBalancePreferredUnitStorageFunc = async (unit: DoichainUnit
   try {
     await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
     await DefaultPreference.set(TotalWalletsBalancePreferredUnit, unit);
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   } catch (e) {
     console.error('Error setting TotalBalancePreferredUnit:', e);
   }
@@ -314,7 +311,6 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
     try {
       console.debug('setIsHandOffUseEnabledAsyncStorage', value);
       setIsHandOffUseEnabled(value);
-      setIsHandOffUseEnabledState(value);
     } catch (e) {
       console.error('Error setting isHandOffUseEnabled:', e);
     }
