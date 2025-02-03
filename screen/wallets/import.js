@@ -5,7 +5,7 @@ import { BlueButtonLink, BlueFormLabel, BlueFormMultiInput, BlueSpacing20 } from
 import Button from '../../components/Button';
 import SafeArea from '../../components/SafeArea';
 import { useTheme } from '../../components/themes';
-import { requestCameraAuthorization } from '../../helpers/scan-qr';
+import { scanQrHelper } from '../../helpers/scan-qr';
 import usePrivacy from '../../hooks/usePrivacy';
 import loc from '../../loc';
 import {
@@ -103,16 +103,9 @@ const WalletsImport = () => {
     setTimeout(() => importMnemonic(value), 500);
   };
 
-  const importScan = () => {
-    requestCameraAuthorization().then(() =>
-      navigation.navigate('ScanQRCodeRoot', {
-        screen: 'ScanQRCode',
-        params: {
-          launchedBy: route.name,
-          showFileImportButton: true,
-        },
-      }),
-    );
+  const importScan = async () => {
+    const data = await scanQrHelper(route.name, true);
+    onBarScanned(data);
   };
 
   const speedBackdoorTap = () => {
