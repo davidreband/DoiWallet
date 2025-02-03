@@ -88,6 +88,13 @@ const SendDetails = () => {
   const setParams = navigation.setParams;
   const route = useRoute<RouteProps>();
   const name = route.name;
+  const feeUnit = route.params?.feeUnit ?? BitcoinUnit.BTC;
+  const amountUnit = route.params?.amountUnit ?? BitcoinUnit.BTC;
+  const frozenBalance = route.params?.frozenBalance ?? 0;
+  const transactionMemo = route.params?.transactionMemo;
+  const utxos = route.params?.utxos;
+  const payjoinUrl = route.params?.payjoinUrl;
+  const isTransactionReplaceable = route.params?.isTransactionReplaceable;
   const routeParams = route.params;
   const scrollView = useRef<FlatList<any>>(null);
   const scrollIndex = useRef(0);
@@ -100,9 +107,7 @@ const SendDetails = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [wallet, setWallet] = useState<TWallet | null>(null);
   const feeModalRef = useRef<BottomModalHandle>(null);
-  const [walletSelectionOrCoinsSelectedHidden, setWalletSelectionOrCoinsSelectedHidden] = useState(false);
-  const [isAmountToolbarVisibleForAndroid, setIsAmountToolbarVisibleForAndroid] = useState(false);
-  const [isTransactionReplaceable, setIsTransactionReplaceable] = useState<boolean | undefined>(false);
+  const { isVisible } = useKeyboard();
   const [addresses, setAddresses] = useState<IPaymentDestinations[]>([]);
   const [units, setUnits] = useState<DoichainUnit[]>([]);
   const [transactionMemo, setTransactionMemo] = useState<string>('');
@@ -119,7 +124,7 @@ const SendDetails = () => {
   const [dumb, setDumb] = useState(false);
   const { isEditable } = routeParams;
   // if utxo is limited we use it to calculate available balance
-  const balance: number = utxo ? utxo.reduce((prev, curr) => prev + curr.value, 0) : (wallet?.getBalance() ?? 0);
+  const balance: number = utxos ? utxos.reduce((prev, curr) => prev + curr.value, 0) : (wallet?.getBalance() ?? 0);
   const allBalance = formatBalanceWithoutSuffix(balance, BitcoinUnit.BTC, true);
 
   // if customFee is not set, we need to choose highest possible fee for wallet balance
@@ -681,10 +686,11 @@ const SendDetails = () => {
         });
 
         if (memo?.trim().length > 0) {
-          setTransactionMemo(memo);
+          setParams({ transactionMemo: memo });
         }
         setAmountUnit(DoichainUnit.DOI);
         setPayjoinUrl(pjUrl);
+        setParams({ payjoinUrl: pjUrl, amountUnit: BitcoinUnit.BTC });
       } catch (error) {
         console.log(error);
         presentAlert({ title: loc.errors.error, message: loc.send.details_error_decode });
@@ -701,9 +707,6 @@ const SendDetails = () => {
           return [...value, { address: routeParams.address, key: String(Math.random()), amount, amountSats }];
         }
       });
-      if (routeParams.memo && routeParams.memo?.trim().length > 0) {
-        setTransactionMemo(routeParams.memo);
-      }
       setUnits(u => {
         u[scrollIndex.current] = unit;
         return [...u];
@@ -743,8 +746,7 @@ const SendDetails = () => {
     }
     const newWallet = (routeParams.walletID && wallets.find(w => w.getID() === routeParams.walletID)) || suitable[0];
     setWallet(newWallet);
-    setFeeUnit(newWallet.getPreferredBalanceUnit());
-    setAmountUnit(newWallet.preferredBalanceUnit); // default for whole screen
+    setParams({ feeUnit: newWallet.getPreferredBalanceUnit(), amountUnit: newWallet.getPreferredBalanceUnit() });
 
     // we are ready!
     setIsLoading(false);
@@ -780,9 +782,11 @@ const SendDetails = () => {
     setSelectedWalletID(wallet.getID());
 
     // reset other values
-    setUtxo(null);
     setChangeAddress(null);
-    setIsTransactionReplaceable(wallet.type === HDSegwitBech32Wallet.type && !routeParams.noRbf ? true : undefined);
+    setParams({
+      utxos: null,
+      isTransactionReplaceable: wallet.type === HDSegwitBech32Wallet.type && !routeParams.noRbf ? true : undefined,
+    });
     // update wallet UTXO
     wallet
       .fetchUtxo()
@@ -798,9 +802,9 @@ const SendDetails = () => {
     if (!wallet) return; // wait for it
     const fees = networkTransactionFees;
     const requestedSatPerByte = Number(feeRate);
-    const lutxo = utxo || wallet.getUtxo();
+    const lutxo = utxos || wallet.getUtxo();
     let frozen = 0;
-    if (!utxo) {
+    if (!utxos) {
       // if utxo is not limited search for frozen outputs and calc it's balance
       frozen = wallet
         .getUtxo(true)
@@ -877,6 +881,8 @@ const SendDetails = () => {
   }, [wallet, networkTransactionFees, utxo, addresses, feeRate, dumb]);
   
   // eslint-disable-line react-hooks/exhaustive-deps
+    setParams({ frozenBalance: frozen });
+  }, [wallet, networkTransactionFees, utxos, addresses, feeRate, dumb]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // we need to re-calculate fees if user opens-closes coin control
   useFocusEffect(
@@ -979,6 +985,8 @@ const SendDetails = () => {
       setTransactionMemo(options.label || ''); // there used to be `options.message` here as well. bug?
       setAmountUnit(DoichainUnit.DOI);
       setPayjoinUrl(options.pj || '');
+      setParams({ transactionMemo: options.label || '', amountUnit: BitcoinUnit.BTC }); // there used to be `options.message` here as well. bug?
+      setParams({ payjoinUrl: options.pj || '' });
       // RN Bug: contentOffset gets reset to 0 when state changes. Remove code once this bug is resolved.
       setTimeout(() => scrollView.current?.scrollToIndex({ index: currentIndex, animated: false }), 50);
     }
@@ -1174,6 +1182,10 @@ const SendDetails = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routeParams.walletID]);
+
+  const setTransactionMemo = (memo: string) => {
+    setParams({ transactionMemo: memo });
+  };
 
   /**
    * same as `importTransaction`, but opens camera instead.
@@ -1407,7 +1419,6 @@ const SendDetails = () => {
     if (!wallet) return;
     navigation.navigate('CoinControl', {
       walletID: wallet?.getID(),
-      onUTXOChoose: (u: CreateTransactionUtxo[]) => setUtxo(u),
     });
   };
 
@@ -1610,7 +1621,7 @@ const SendDetails = () => {
   };
 
   const onReplaceableFeeSwitchValueChanged = (value: boolean) => {
-    setIsTransactionReplaceable(value);
+    setParams({ isTransactionReplaceable: value });
   };
 
   const handleRecipientsScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -1684,15 +1695,17 @@ const SendDetails = () => {
   };
 
   const renderWalletSelectionOrCoinsSelected = () => {
-    if (walletSelectionOrCoinsSelectedHidden) return null;
-    if (utxo !== null) {
+    if (isVisible) return null;
+    if (utxos !== null) {
       return (
         <View style={styles.select}>
           <CoinsSelected
-            number={utxo.length}
+            number={utxos?.length || 0}
             onContainerPress={handleCoinControl}
             onClose={() => {
               setUtxo(null);
+              LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+              setParams({ utxos: null });
             }}
           />
         </View>
@@ -1809,9 +1822,11 @@ const SendDetails = () => {
               addrs[index] = item;
               return [...addrs];
             });
-            setTransactionMemo(memo || transactionMemo);
+            if (memo) {
+              setParams({ transactionMemo: memo });
+            }
             setIsLoading(false);
-            setPayjoinUrl(pjUrl);
+            setParams({ payjoinUrl: pjUrl });
           }}
           onBarScanned={processAddressData}
           address={item.address}
@@ -1901,7 +1916,7 @@ const SendDetails = () => {
       <DismissKeyboardInputAccessory />
       {Platform.select({
         ios: <InputAccessoryAllFunds canUseAll={balance > 0} onUseAllPressed={onUseAllPressed} balance={String(allBalance)} />,
-        android: isAmountToolbarVisibleForAndroid && (
+        android: isVisible && (
           <InputAccessoryAllFunds canUseAll={balance > 0} onUseAllPressed={onUseAllPressed} balance={String(allBalance)} />
         ),
       })}
