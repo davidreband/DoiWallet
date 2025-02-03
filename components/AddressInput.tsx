@@ -20,6 +20,8 @@ interface AddressInputProps {
   editable?: boolean;
   inputAccessoryViewID?: string;
   onBlur?: () => void;
+  onFocus?: () => void;
+  testID?: string;
   keyboardType?:
     | 'default'
     | 'numeric'
@@ -39,6 +41,7 @@ interface AddressInputProps {
 const AddressInput = ({
   isLoading = false,
   address = '',
+  testID = 'AddressInput',
   placeholder = loc.send.details_address,
   onChangeText,
   onBarScanned,
@@ -130,7 +133,7 @@ const AddressInput = ({
   return (
     <View style={[styles.root, stylesHook.root]}>
       <TextInput
-        testID="AddressInput"
+        testID={testID}
         onChangeText={onChangeText}
         placeholder={placeholder}
         placeholderTextColor="#81868e"

@@ -13,6 +13,14 @@ const keys = {
   ViewInBitcoin: 'viewInBitcoin',
   ViewInSats: 'viewInSats',
   ViewInFiat: 'viewInFiat',
+  Entropy: 'entropy',
+  SearchAccount: 'searchAccount',
+  Passphrase: 'passphrase',
+  MoreInfo: 'moreInfo',
+  SaveChanges: 'saveChanges',
+  PaymentsCode: 'paymentsCode',
+  ResetToDefault: 'resetToDefault',
+  ClearHistory: 'clearHistory',
 };
 
 const icons = {
@@ -42,6 +50,27 @@ const icons = {
   },
   ViewInFiat: {
     iconValue: 'coloncurrencysign.circle',
+  },
+  Entropy: {
+    iconValue: 'dice',
+  },
+  SearchAccount: {
+    iconValue: 'magnifyingglass',
+  },
+  Passphrase: {
+    iconValue: 'rectangle.and.pencil.and.ellipsis',
+  },
+  MoreInfo: {
+    iconValue: 'info.circle',
+  },
+  SaveChanges: {
+    iconValue: 'checkmark',
+  },
+  PaymentsCode: {
+    iconValue: 'qrcode',
+  },
+  ClearHistory: {
+    iconValue: 'trash',
   },
 };
 
@@ -140,5 +169,14 @@ export const CommonToolTipActions = {
     text: loc.bip47.purpose,
     icon: icons.PaymentsCode,
     menuState: false,
+  },
+  ResetToDefault: {
+    id: keys.ResetToDefault,
+    text: loc.settings.electrum_reset,
+  },
+  ClearHistory: {
+    id: keys.ClearHistory,
+    text: loc.settings.electrum_clear,
+    icon: icons.ClearHistory,
   },
 };
