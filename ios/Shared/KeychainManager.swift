@@ -1,97 +1,156 @@
-import Security
-import Foundation
+// KeychainManager.swift
 
-class KeychainManager {
+import Foundation
+import Security
+
+// MARK: - KeychainError
+
+/// Defines possible errors that can occur during Keychain operations.
+enum KeychainError: Error, LocalizedError {
+    case unhandledError(status: OSStatus)
+    case unexpectedData
+    case encodingError
+    case decodingError
+    
+    var errorDescription: String? {
+        switch self {
+        case .unhandledError(let status):
+            return "Unhandled Keychain error with status: \(status)"
+        case .unexpectedData:
+            return "Unexpected data retrieved from Keychain."
+        case .encodingError:
+            return "Failed to encode object for Keychain."
+        case .decodingError:
+            return "Failed to decode object from Keychain."
+        }
+    }
+}
+
+// MARK: - KeychainManager
+
+/// Manages Keychain operations for storing and retrieving data securely.
+final class KeychainManager {
+    
+    // MARK: - Singleton Instance
+    
     static let shared = KeychainManager()
     
-    // Access group and service identifiers to match the TS implementation
-    private let accessGroup = "group.io.bluewallet.bluewallet"
-    private let service = "io.bluewallet.bluewallet.receivebitcoin"
+    // MARK: - Constants
+    
+  private let accessGroup = "A7W54YZ4WU.group.io.bluewallet.bluewallet"
+    
+    // MARK: - Initializer
     
     private init() {}
     
-    /**
-     * Stores data in the Keychain for the given key.
-     * @param value The string value to store.
-     * @param key The key for the value in the Keychain.
-     */
-    func storeInKeychain(value: String, forKey key: String) {
-        let data = value.data(using: .utf8)!
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: "\(service).\(key)", // Unique service identifier
-            kSecAttrAccessGroup as String: accessGroup,
-            kSecValueData as String: data
-        ]
+    // MARK: - Public Methods
+    
+    /// Saves raw data to the Keychain for a given service and account.
+    /// - Parameters:
+    ///   - data: Data to be saved.
+    ///   - service: Service identifier.
+    ///   - account: Account identifier.
+    func save(data: Data, service: String, account: String) throws {
+        // Delete any existing item to prevent duplicates
+        try delete(service: service, account: account)
         
-        // Delete any existing item before adding
-        SecItemDelete(query as CFDictionary)
+        let query: [String: Any] = [
+            kSecClass as String       : kSecClassGenericPassword,
+            kSecAttrService as String : service,
+            kSecAttrAccount as String : account,
+            kSecAttrAccessGroup as String : accessGroup,
+            kSecValueData as String   : data,
+            kSecAttrAccessible as String : kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+        ]
         
         let status = SecItemAdd(query as CFDictionary, nil)
         
-        if status == errSecSuccess {
-            print("Successfully stored value for key: \(key)")
-        } else {
-            print("Error storing value for key: \(key), status: \(status)")
+        guard status == errSecSuccess else {
+            throw KeychainError.unhandledError(status: status)
         }
     }
     
-    /**
-     * Retrieves data from the Keychain for the given key.
-     * @param key The key for the value in the Keychain.
-     * @returns The value if found, otherwise nil.
-     */
-    func getFromKeychain(forKey key: String) -> String? {
+    /// Retrieves raw data from the Keychain for a given service and account.
+    /// - Parameters:
+    ///   - service: Service identifier.
+    ///   - account: Account identifier.
+    /// - Returns: Retrieved data or nil if not found.
+    func retrieve(service: String, account: String) throws -> Data? {
         let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: "\(service).\(key)", // Unique service identifier
-            kSecAttrAccessGroup as String: accessGroup,
-            kSecReturnData as String: kCFBooleanTrue!,
-            kSecMatchLimit as String: kSecMatchLimitOne
+            kSecClass as String       : kSecClassGenericPassword,
+            kSecAttrService as String : service,
+            kSecAttrAccount as String : account,
+            kSecAttrAccessGroup as String : accessGroup,
+            kSecReturnData as String  : kCFBooleanTrue!,
+            kSecMatchLimit as String  : kSecMatchLimitOne
         ]
         
-        var dataTypeRef: AnyObject?
-        let status = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
+        var item: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &item)
         
         if status == errSecSuccess {
-            if let data = dataTypeRef as? Data {
-                return String(data: data, encoding: .utf8)
+            guard let data = item as? Data else {
+                throw KeychainError.unexpectedData
             }
+            return data
+        } else if status == errSecItemNotFound {
+            return nil
         } else {
-            print("Error fetching value for key: \(key), status: \(status)")
+            throw KeychainError.unhandledError(status: status)
         }
-        return nil
     }
     
-    /**
-     * Deletes data from the Keychain for the given key.
-     * @param key The key for the value in the Keychain.
-     */
-    func deleteFromKeychain(forKey key: String) {
+    /// Deletes data from the Keychain for a given service and account.
+    /// - Parameters:
+    ///   - service: Service identifier.
+    ///   - account: Account identifier.
+    func delete(service: String, account: String) throws {
         let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: "\(service).\(key)", // Unique service identifier
-            kSecAttrAccessGroup as String: accessGroup
+            kSecClass as String       : kSecClassGenericPassword,
+            kSecAttrService as String : service,
+            kSecAttrAccount as String : account,
+            kSecAttrAccessGroup as String : accessGroup
         ]
         
         let status = SecItemDelete(query as CFDictionary)
         
-        if status == errSecSuccess {
-            print("Successfully deleted value for key: \(key)")
-        } else {
-            print("Error deleting value for key: \(key), status: \(status)")
+        guard status == errSecSuccess || status == errSecItemNotFound else {
+            throw KeychainError.unhandledError(status: status)
         }
     }
     
-    /**
-     * Fetches QR code data (label and address) from the Keychain.
-     * @returns A tuple containing the label and address if found, otherwise nil.
-     */
-    func fetchQRCodeData() -> (label: String, address: String)? {
-        guard let label = getFromKeychain(forKey: "label"),
-              let address = getFromKeychain(forKey: "address") else {
+    /// Saves a Codable object to the Keychain.
+    /// - Parameters:
+    ///   - object: Codable object to be saved.
+    ///   - service: Service identifier.
+    ///   - account: Account identifier.
+    func saveCodable<T: Codable>(object: T, service: String, account: String) throws {
+        let encoder = JSONEncoder()
+        let data: Data
+        do {
+            data = try encoder.encode(object)
+        } catch {
+            throw KeychainError.encodingError
+        }
+        try save(data: data, service: service, account: account)
+    }
+    
+    /// Retrieves a Codable object from the Keychain.
+    /// - Parameters:
+    ///   - service: Service identifier.
+    ///   - account: Account identifier.
+    ///   - type: Type of the Codable object to retrieve.
+    /// - Returns: Decoded Codable object or nil if not found.
+    func retrieveCodable<T: Codable>(service: String, account: String, type: T.Type) throws -> T? {
+        guard let data = try retrieve(service: service, account: account) else {
             return nil
         }
-        return (label, address)
+        let decoder = JSONDecoder()
+        do {
+            let object = try decoder.decode(T.self, from: data)
+            return object
+        } catch {
+            throw KeychainError.decodingError
+        }
     }
 }
