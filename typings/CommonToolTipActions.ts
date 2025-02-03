@@ -20,8 +20,19 @@ const keys = {
   SaveChanges: 'saveChanges',
   ClearClipboard: 'clearClipboard',
   PaymentsCode: 'paymentsCode',
-  ResetToDefault: 'resetToDefault',
-  ClearHistory: 'clearHistory',
+
+  InsertContact: 'InsertContact',
+  SignPSBT: 'SignPSBT',
+  SendMax: 'SendMax',
+  AddRecipient: 'AddRecipient',
+  RemoveRecipient: 'RemoveRecipient',
+  RemoveAllRecipients: 'RemoveAllRecipients',
+  AllowRBF: 'AllowRBF',
+  ImportTransaction: 'ImportTransaction',
+  ImportTransactionMultsig: 'ImportTransactionMultisig',
+  ImportTransactionQR: 'ImportTransactionQR',
+  CoinControl: 'CoinControl',
+  CoSignTransaction: 'CoSignTransaction',
 };
 
 const icons = {
