@@ -641,20 +641,27 @@ const WalletsAddMultisigStep2 = () => {
           setAskPassphrase(false);
         }}
       >
-        <BlueTextCentered>{loc.multisig.type_your_mnemonics}</BlueTextCentered>
-        <BlueSpacing20 />
-        <View style={styles.multiLineTextInput}>
-          <BlueFormMultiInput value={importText} onChangeText={setImportText} />
-        </View>
-        {isAdvancedModeEnabled && (
-          <>
-            <BlueSpacing10 />
-            <View style={styles.row}>
-              <BlueText>{loc.wallets.import_passphrase}</BlueText>
-              <Switch testID="AskPassphrase" value={askPassphrase} onValueChange={setAskPassphrase} />
-            </View>
-          </>
-        )}
+        <>
+          <ToolTipMenu
+            isButton
+            isMenuPrimaryAction
+            onPressMenuItem={_id => {
+              LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+              setAskPassphrase(!askPassphrase);
+            }}
+            actions={toolTipActions}
+            style={[styles.askPassprase, stylesHook.askPassphrase]}
+          >
+            <Icon size={22} name="more-horiz" type="material" color={colors.foregroundColor} />
+          </ToolTipMenu>
+
+          <BlueTextCentered>{loc.multisig.type_your_mnemonics}</BlueTextCentered>
+          <BlueSpacing20 />
+          <View style={styles.multiLineTextInput}>
+            <BlueFormMultiInput value={importText} onChangeText={setImportText} />
+            <BlueSpacing20 />
+          </View>
+        </>
       </BottomModal>
     );
   };
@@ -744,6 +751,7 @@ const styles = StyleSheet.create({
   modalContent: {
     paddingHorizontal: 22,
     paddingVertical: 32,
+    alignItems: 'center',
     justifyContent: 'center',
     minHeight: 450,
   },
@@ -768,6 +776,8 @@ const styles = StyleSheet.create({
     paddingRight: 8,
     borderRadius: 4,
   },
+  askPassprase: { top: -44, left: 0, justifyContent: 'center', width: 33, height: 33, borderRadius: 33 / 2 },
+
   secretContainer: {
     flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
     justifyContent: 'flex-start',
