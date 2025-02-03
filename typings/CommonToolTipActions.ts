@@ -73,9 +73,20 @@ const icons = {
   PaymentsCode: {
     iconValue: 'qrcode',
   },
-  ClearHistory: {
-    iconValue: 'trash',
+  CoinControl: {
+    iconValue: 'switch.2',
   },
+  InsertContact: { iconValue: 'at.badge.plus' },
+  SignPSBT: { iconValue: 'signature' },
+  SendMax: { iconValue: 'dial.high' },
+  AddRecipient: { iconValue: 'person.badge.plus' },
+  RemoveRecipient: { iconValue: 'person.badge.minus' },
+  RemoveAllRecipients: { iconValue: 'person.2.slash' },
+  AllowRBF: { iconValue: 'pencil' },
+  ImportTransaction: { iconValue: 'square.and.arrow.down' },
+  ImportTransactionMultsig: { iconValue: 'square.and.arrow.down.on.square' },
+  ImportTransactionQR: { iconValue: 'qrcode.viewfinder' },
+  CoSignTransaction: { iconValue: 'signature' },
 };
 
 export const CommonToolTipActions = {
@@ -174,10 +185,68 @@ export const CommonToolTipActions = {
     icon: icons.PaymentsCode,
     menuState: false,
   },
-  ClearClipboard: {
-    id: keys.ClearClipboard,
-    text: loc.wallets.clear_clipboard_on_import,
-    icon: icons.ClearClipboard,
-    menuState: true,
+  InsertContact: {
+    id: keys.InsertContact,
+    text: loc.send.details_insert_contact,
+    icon: icons.InsertContact,
+  },
+  SignPSBT: {
+    id: keys.SignPSBT,
+    text: loc.send.psbt_sign,
+    icon: icons.SignPSBT,
+  },
+  SendMax: {
+    id: keys.SendMax,
+    text: loc.send.details_adv_full,
+    icon: icons.SendMax,
+
+    disabled: true,
+    menuState: false,
+  },
+  AddRecipient: {
+    id: keys.AddRecipient,
+    text: loc.send.details_add_rec_add,
+    icon: icons.AddRecipient,
+  },
+  RemoveRecipient: {
+    id: keys.RemoveRecipient,
+    text: loc.send.details_add_rec_rem,
+    icon: icons.RemoveRecipient,
+  },
+  RemoveAllRecipients: {
+    id: keys.RemoveAllRecipients,
+    text: loc.send.details_add_rec_rem_all,
+    icon: icons.RemoveAllRecipients,
+  },
+  AllowRBF: {
+    id: keys.AllowRBF,
+    text: loc.send.details_adv_fee_bump,
+    icon: icons.AllowRBF,
+    menuState: false,
+  },
+  ImportTransaction: {
+    id: keys.ImportTransaction,
+    text: loc.send.details_adv_import,
+    icon: icons.ImportTransaction,
+  },
+  ImportTransactionMultsig: {
+    id: keys.ImportTransactionMultsig,
+    text: loc.send.details_adv_import,
+    icon: icons.ImportTransactionMultsig,
+  },
+  ImportTransactionQR: {
+    id: keys.ImportTransactionQR,
+    text: loc.send.details_adv_import_qr,
+    icon: icons.ImportTransactionQR,
+  },
+  CoSignTransaction: {
+    id: keys.CoSignTransaction,
+    text: loc.multisig.co_sign_transaction,
+    icon: icons.CoSignTransaction,
+  },
+  CoinControl: {
+    id: keys.CoinControl,
+    text: loc.cc.header,
+    icon: icons.CoinControl,
   },
 };
