@@ -57,7 +57,6 @@ import { SendDetailsStackParamList } from '../../navigation/SendDetailsStackPara
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import { ContactList } from '../../class/contact-list';
 import { useStorage } from '../../hooks/context/useStorage';
-import { Action } from '../../components/types';
 import SelectFeeModal from '../../components/SelectFeeModal';
 import { useKeyboard } from '../../hooks/useKeyboard';
 import { DismissKeyboardInputAccessory, DismissKeyboardInputAccessoryViewID } from '../../components/DismissKeyboardInputAccessory';
@@ -1538,68 +1537,57 @@ const SendDetails = () => {
   };
 
   const headerRightActions = () => {
-    const actions: Action[] & Action[][] = [];
-    if (isEditable) {
+    const transactionActions = [
+      {
+        ...CommonToolTipActions.SendMax,
+        hidden: !(isEditable && Number(wallet?.getBalance()) > 0),
+      },
+      {
+        ...CommonToolTipActions.AllowRBF,
+        hidden: !(wallet?.type === HDSegwitBech32Wallet.type && isTransactionReplaceable !== undefined),
+        menuState: isTransactionReplaceable,
+      },
+    ];
 
-      if (wallet?.allowBIP47() && wallet?.isBIP47Enabled()) {
-        actions.push([
-          { id: SendDetails.actionKeys.InsertContact, text: loc.send.details_insert_contact, icon: SendDetails.actionIcons.InsertContact },
-        ]);
-      }
+    const importActions = [
+      {
+        ...CommonToolTipActions.ImportTransaction,
+        hidden: !(wallet?.type === WatchOnlyWallet.type && wallet.isHd()),
+      },
+      {
+        ...CommonToolTipActions.ImportTransactionQR,
+        hidden: !(wallet?.type === WatchOnlyWallet.type && wallet.isHd()),
+      },
+      {
+        ...CommonToolTipActions.ImportTransactionMultsig,
+        hidden: !(wallet?.type === MultisigHDWallet.type && wallet.howManySignaturesCanWeMake() > 0),
+      },
+      {
+        ...CommonToolTipActions.CoSignTransaction,
+        hidden: !(wallet?.type === MultisigHDWallet.type && wallet.howManySignaturesCanWeMake() > 0),
+      },
+    ];
 
+    const recipientActions = [
+      CommonToolTipActions.AddRecipient,
+      CommonToolTipActions.RemoveRecipient,
+      {
+        ...CommonToolTipActions.RemoveAllRecipients,
+        hidden: addresses.length <= 1,
+      },
+    ];
 
-      if (Number(wallet?.getBalance()) > 0) {
-        const isSendMaxUsed = addresses.some(element => element.amount === DoichainUnit.MAX);
+    const walletActions = [
+      {
+        ...CommonToolTipActions.InsertContact,
+        hidden: !(isEditable && wallet?.allowBIP47() && wallet?.isBIP47Enabled()),
+      },
+      CommonToolTipActions.CoinControl,
+    ];
 
-        actions.push([{ id: SendDetails.actionKeys.SendMax, text: loc.send.details_adv_full, disabled: balance === 0 || isSendMaxUsed }]);
-      }
-      if (wallet?.type === HDSegwitBech32Wallet.type && isTransactionReplaceable !== undefined) {
-        actions.push([{ id: SendDetails.actionKeys.AllowRBF, text: loc.send.details_adv_fee_bump, menuState: !!isTransactionReplaceable }]);
-      }
-      const transactionActions = [];
-      if (wallet?.type === WatchOnlyWallet.type && wallet.isHd()) {
-        transactionActions.push(
-          {
-            id: SendDetails.actionKeys.ImportTransaction,
-            text: loc.send.details_adv_import,
-            icon: SendDetails.actionIcons.ImportTransaction,
-          },
-          {
-            id: SendDetails.actionKeys.ImportTransactionQR,
-            text: loc.send.details_adv_import_qr,
-            icon: SendDetails.actionIcons.ImportTransactionQR,
-          },
-        );
-      }
-      if (wallet?.type === MultisigHDWallet.type) {
-        transactionActions.push({
-          id: SendDetails.actionKeys.ImportTransactionMultsig,
-          text: loc.send.details_adv_import,
-          icon: SendDetails.actionIcons.ImportTransactionMultsig,
-        });
-      }
-      if (wallet?.type === MultisigHDWallet.type && wallet.howManySignaturesCanWeMake() > 0) {
-        transactionActions.push({
-          id: SendDetails.actionKeys.CoSignTransaction,
-          text: loc.multisig.co_sign_transaction,
-          icon: SendDetails.actionIcons.SignPSBT,
-        });
-      }
-      if ((wallet as MultisigHDWallet)?.allowCosignPsbt()) {
-        transactionActions.push({ id: SendDetails.actionKeys.SignPSBT, text: loc.send.psbt_sign, icon: SendDetails.actionIcons.SignPSBT });
-      }
-      actions.push(transactionActions);
+    const availableActions = [walletActions, transactionActions, importActions, recipientActions];
 
-      const recipientActions: Action[] = [CommonToolTipActions.AddRecipient, CommonToolTipActions.RemoveRecipient];
-      if (addresses.length > 1) {
-        recipientActions.push(CommonToolTipActions.RemoveAllRecipients);
-      }
-      actions.push(recipientActions);
-    }
-
-    actions.push({ id: SendDetails.actionKeys.CoinControl, text: loc.cc.header, icon: SendDetails.actionIcons.CoinControl });
-
-    return actions;
+    return availableActions;
   };
 
   const setHeaderRightOptions = () => {
