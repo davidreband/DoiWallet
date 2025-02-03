@@ -37,6 +37,8 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
   }, [wallet]);
 
   useEffect(() => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+
     setWallet(initialWallet);
   }, [initialWallet]);
 
@@ -71,9 +73,9 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
       newWalletPreferredUnit = DoichainUnit.DOI;
     }
 
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 
     const updatedWallet = updateWalletWithNewUnit(wallet, newWalletPreferredUnit);
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setWallet(updatedWallet);
     onWalletUnitChange?.(updatedWallet);
   };
@@ -121,8 +123,7 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
         ? formatBalance(wallet.getBalance(), balanceUnit, true)
         : formatBalanceWithoutSuffix(wallet.getBalance(), balanceUnit, true);
     return !hideBalance && balanceFormatted;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallet.hideBalance, wallet.getPreferredBalanceUnit()]);
+  }, [wallet]);
 
   const toolTipWalletBalanceActions = useMemo(() => {
     return wallet.hideBalance
