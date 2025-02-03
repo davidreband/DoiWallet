@@ -14,7 +14,7 @@ import { useStorage } from '../../hooks/context/useStorage';
 import { DoichainUnit} from '../../models/doichainUnits';
 import { TotalWalletsBalanceKey, TotalWalletsBalancePreferredUnit } from '../TotalWalletsBalance';
 import { LayoutAnimation } from 'react-native';
-import {  BLOCK_EXPLORERS, getBlockExplorer, saveBlockExplorer } from '../../models/blockExplorer';
+import { BLOCK_EXPLORERS, getBlockExplorerUrl, saveBlockExplorer, BlockExplorer, normalizeUrl } from '../../models/blockExplorer';
 
 // DefaultPreference and AsyncStorage get/set
 
@@ -88,8 +88,8 @@ interface SettingsContextType {
   setTotalBalancePreferredUnitStorage: (unit: DoichainUnit) => Promise<void>;
   isDrawerShouldHide: boolean;
   setIsDrawerShouldHide: (value: boolean) => void;
-  selectedBlockExplorer: string;
-  setBlockExplorerStorage: (url: string) => Promise<boolean>;
+  selectedBlockExplorer: BlockExplorer;
+  setBlockExplorerStorage: (explorer: BlockExplorer) => Promise<boolean>;
 }
 
 const defaultSettingsContext: SettingsContextType = {
@@ -119,8 +119,8 @@ const defaultSettingsContext: SettingsContextType = {
   setTotalBalancePreferredUnitStorage: async (unit: DoichainUnit) => {},
   isDrawerShouldHide: false,
   setIsDrawerShouldHide: () => {},
-  selectedBlockExplorer: BLOCK_EXPLORERS.DEFAULT,
-  setBlockExplorerStorage: async () => false,
+  selectedBlockExplorer: BLOCK_EXPLORERS.default,
+  setBlockExplorerStorage: async (explorer: BlockExplorer) => false,
 };
 
 export const SettingsContext = createContext<SettingsContextType>(defaultSettingsContext);
@@ -153,8 +153,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Toggle Drawer (for screens like Manage Wallets or ScanQRCode)
   const [isDrawerShouldHide, setIsDrawerShouldHide] = useState<boolean>(false);
 
-  const advancedModeStorage = useAsyncStorage(BlueApp.ADVANCED_MODE_ENABLED);
-  const [selectedBlockExplorer, setSelectedBlockExplorer] = useState<string>(BLOCK_EXPLORERS.DEFAULT);
+  const [selectedBlockExplorer, setSelectedBlockExplorer] = useState<BlockExplorer>(BLOCK_EXPLORERS.default);
 
   const languageStorage = useAsyncStorage(STORAGE_KEY);
   const { walletsInitialized } = useStorage();
@@ -233,11 +232,15 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setTotalBalancePreferredUnitState(unit);
       })
       .catch(error => console.error('Error fetching total balance preferred unit:', error));
-
-    getBlockExplorer()
+    getBlockExplorerUrl()
       .then(url => {
         console.debug('SettingsContext blockExplorer:', url);
-        setSelectedBlockExplorer(url);
+        const predefinedExplorer = Object.values(BLOCK_EXPLORERS).find(explorer => normalizeUrl(explorer.url) === normalizeUrl(url));
+        if (predefinedExplorer) {
+          setSelectedBlockExplorer(predefinedExplorer);
+        } else {
+          setSelectedBlockExplorer({ key: 'custom', name: 'Custom', url });
+        }
       })
       .catch(error => console.error('Error fetching block explorer settings:', error));
 
@@ -333,14 +336,13 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setTotalBalancePreferredUnitState(unit);
   }, []);
 
-  const setBlockExplorerStorage = useCallback(async (url: string): Promise<boolean> => {
-    const success = await saveBlockExplorer(url);
+  const setBlockExplorerStorage = useCallback(async (explorer: BlockExplorer): Promise<boolean> => {
+    const success = await saveBlockExplorer(explorer.url);
     if (success) {
-      setSelectedBlockExplorer(url);
+      setSelectedBlockExplorer(explorer);
     }
     return success;
   }, []);
-
   const value = useMemo(
     () => ({
       preferredFiatCurrency,
