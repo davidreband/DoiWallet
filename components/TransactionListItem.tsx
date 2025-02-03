@@ -28,7 +28,7 @@ import { pop } from '../NavigationService';
 import { getIPFSImageUrl } from '../utils/ipfs';
 
 interface TransactionListItemProps {
-  itemPriceUnit: DoichainUnit;
+  itemPriceUnit?: DoichainUnit;
   walletID: string;
   item: Transaction & Partial<NameOpTransaction>; // using type intersection to have less issues with ts
   searchQuery?: string;

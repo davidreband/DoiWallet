@@ -1,5 +1,5 @@
 import { useFocusEffect, useRoute } from '@react-navigation/native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -57,9 +57,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { walletID } = route.params;
   const { name } = useRoute();
-  const wallet = wallets.find(w => w.getID() === walletID);
-  const [itemPriceUnit, setItemPriceUnit] = useState<DoichainUnit>(wallet?.getPreferredBalanceUnit() ?? DoichainUnit.DOI);
-  
+  const wallet = useMemo(() => wallets.find(w => w.getID() === walletID), [walletID, wallets]);
   const [limit, setLimit] = useState(15);
   const [pageSize] = useState(20);
   const navigation = useExtendedNavigation();
@@ -253,7 +251,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
   });
 
   const renderItem = (item: { item: Transaction }) => (
-    <TransactionListItem item={item.item} itemPriceUnit={itemPriceUnit} walletID={walletID} />
+    <TransactionListItem item={item.item} itemPriceUnit={wallet?.preferredBalanceUnit} walletID={walletID} />
   );
 
   const onBarCodeRead = useCallback(
@@ -383,10 +381,11 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
       {wallet && (
         <TransactionsNavigationHeader
           wallet={wallet}
-          onWalletUnitChange={async passedWallet => {
-            setItemPriceUnit(passedWallet.getPreferredBalanceUnit());
+          onWalletUnitChange={async selectedUnit => {
+            wallet.preferredBalanceUnit = selectedUnit;
             await saveToDisk();
           }}
+          unit={wallet.preferredBalanceUnit}
           onWalletBalanceVisibilityChange={async isShouldBeVisible => {
             const isBiometricsEnabled = await isBiometricUseCapableAndEnabled();
             if (wallet?.hideBalance && isBiometricsEnabled) {
@@ -394,7 +393,6 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
               if (!unlocked) throw new Error('Biometrics failed');
             }
             wallet!.hideBalance = isShouldBeVisible;
-            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
             await saveToDisk();
           }}
           onManageFundsPressed={id => {
