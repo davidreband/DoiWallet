@@ -6,7 +6,7 @@ import Button from '../../components/Button';
 import SafeArea from '../../components/SafeArea';
 import { useTheme } from '../../components/themes';
 import { scanQrHelper } from '../../helpers/scan-qr';
-import usePrivacy from '../../hooks/usePrivacy';
+import { disallowScreenshot } from 'react-native-screen-capture';
 import loc from '../../loc';
 import {
   DoneAndDismissKeyboardInputAccessory,
@@ -29,10 +29,8 @@ const WalletsImport = () => {
   const [importText, setImportText] = useState(label);
   const [isToolbarVisibleForAndroid, setIsToolbarVisibleForAndroid] = useState(false);
   const [, setSpeedBackdoor] = useState(0);
-  const [searchAccountsMenuState, setSearchAccountsMenuState] = useState(false);
-  const [askPassphraseMenuState, setAskPassphraseMenuState] = useState(false);
-  const [clearClipboardMenuState, setClearClipboardMenuState] = useState(true);
-  const { enableBlur, disableBlur } = usePrivacy();
+  const [searchAccounts, setSearchAccounts] = useState(false);
+  const [askPassphrase, setAskPassphrase] = useState(false);
 
   const styles = StyleSheet.create({
     root: {
@@ -60,20 +58,11 @@ const WalletsImport = () => {
   };
 
   useEffect(() => {
-    enableBlur();
-
-    const showSubscription = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', () =>
-      setIsToolbarVisibleForAndroid(true),
-    );
-    const hideSubscription = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () =>
-      setIsToolbarVisibleForAndroid(false),
-    );
+    disallowScreenshot(true);
     return () => {
-      showSubscription.remove();
-      hideSubscription.remove();
-      disableBlur();
+      disallowScreenshot(false);
     };
-  }, [disableBlur, enableBlur]);
+  }, []);
 
   useEffect(() => {
     if (triggerImport) importButtonPressed();

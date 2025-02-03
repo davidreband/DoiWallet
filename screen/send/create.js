@@ -20,7 +20,7 @@ import { BlueText } from "../../BlueComponents";
 import presentAlert from "../../components/Alert";
 import { DynamicQRCode } from "../../components/DynamicQRCode";
 import { useTheme } from '../../components/themes';
-import usePrivacy from '../../hooks/usePrivacy';
+import { disallowScreenshot } from 'react-native-screen-capture';
 import loc from '../../loc';
 import { useStorage } from '../../hooks/context/useStorage';
 import { useBiometrics, unlockWithBiometrics } from '../../hooks/useBiometrics';
@@ -132,12 +132,12 @@ const SendCreate = () => {
   });
 
   useEffect(() => {
-    console.log("send/create - useEffect");
-    enableBlur();
+    console.log('send/create - useEffect');
+    disallowScreenshot(true);
     return () => {
-      disableBlur();
+      disallowScreenshot(false);
     };
-  }, [disableBlur, enableBlur]);
+  }, []);
 
   const exportTXN = useCallback(async () => {
     const fileName = `${Date.now()}.txn`;

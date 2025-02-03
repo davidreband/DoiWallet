@@ -30,7 +30,7 @@ import QRCodeComponent from '../../components/QRCodeComponent';
 import { useTheme } from '../../components/themes';
 import confirm from '../../helpers/confirm';
 import prompt from '../../helpers/prompt';
-import usePrivacy from '../../hooks/usePrivacy';
+import { disallowScreenshot } from 'react-native-screen-capture';
 import loc from '../../loc';
 import { useStorage } from '../../hooks/context/useStorage';
 import { useSettings } from '../../hooks/context/useSettings';
@@ -61,15 +61,14 @@ const WalletsAddMultisigStep2 = () => {
   const [askPassphrase, setAskPassphrase] = useState(false);
   const openScannerButton = useRef();
   const data = useRef(new Array(n));
-  const { enableBlur, disableBlur } = usePrivacy();
 
   useFocusEffect(
     useCallback(() => {
-      enableBlur();
+      disallowScreenshot(true);
       return () => {
-        disableBlur();
+        disallowScreenshot(false);
       };
-    }, [disableBlur, enableBlur]),
+    }, []),
   );
 
   useEffect(() => {
