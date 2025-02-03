@@ -484,12 +484,14 @@ const WalletDetails: React.FC = () => {
                   onValueChange={async (value: boolean) => {
                     if (wallet.setHideTransactionsInWalletsList) {
                       wallet.setHideTransactionsInWalletsList(!value);
+                      triggerHapticFeedback(HapticFeedbackTypes.ImpactLight);
                       setHideTransactionsInWalletsList(!wallet.getHideTransactionsInWalletsList());
                     }
                     try {
                       await saveToDisk();
                     } catch (error: any) {
-                      console.log(error.message);
+                      triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
+                      console.error(error.message);
                     }
                   }}
                 />
@@ -513,11 +515,13 @@ const WalletDetails: React.FC = () => {
                       setIsBIP47Enabled(value);
                       if (wallet.switchBIP47) {
                         wallet.switchBIP47(value);
+                        triggerHapticFeedback(HapticFeedbackTypes.ImpactLight);
                       }
                       try {
                         await saveToDisk();
-                      } catch (error: any) {
-                        console.log(error.message);
+                      } catch (error: unknown) {
+                        triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
+                        console.error((error as Error).message);
                       }
                     }}
                     testID="BIP47Switch"
@@ -539,11 +543,13 @@ const WalletDetails: React.FC = () => {
                         setWalletUseWithHardwareWallet(value);
                         if (wallet.setUseWithHardwareWalletEnabled) {
                           wallet.setUseWithHardwareWalletEnabled(value);
+                          triggerHapticFeedback(HapticFeedbackTypes.ImpactLight);
                         }
                         try {
                           await saveToDisk();
-                        } catch (error: any) {
-                          console.log(error.message);
+                        } catch (error: unknown) {
+                          triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
+                          console.error((error as Error).message);
                         }
                       }}
                     />
