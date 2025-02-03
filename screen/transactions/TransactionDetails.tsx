@@ -22,6 +22,7 @@ import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamList';
 import { useStorage } from '../../hooks/context/useStorage';
 import { HandOffActivityType } from '../../components/types';
+import { useSettings } from '../../hooks/context/useSettings';
 
 const actionKeys = {
   CopyToClipboard: 'copyToClipboard',
@@ -66,6 +67,7 @@ const TransactionDetails = () => {
   const { setOptions, navigate } = useExtendedNavigation<NavigationProps>();
   const { hash, walletID } = useRoute<RouteProps>().params;
   const { saveToDisk, txMetadata, counterpartyMetadata, wallets, getTransactions } = useStorage();
+  const { selectedBlockExplorer } = useSettings();
   const [from, setFrom] = useState<string[]>([]);
   const [to, setTo] = useState<string[]>([]);
   const [nameOps, setNameOps] = useState<{ name: string; value: string }[]>([]);  
@@ -201,7 +203,7 @@ const TransactionDetails = () => {
   };
 
   const handleCopyPress = (stringToCopy: string) => {
-    Clipboard.setString(stringToCopy !== actionKeys.CopyToClipboard ? stringToCopy : `https://mempool.space/tx/${tx?.hash}`);
+    Clipboard.setString(stringToCopy !== actionKeys.CopyToClipboard ? stringToCopy : `${selectedBlockExplorer}/${tx?.hash}`);
   };
 
   if (isLoading || !tx) {
@@ -272,7 +274,7 @@ const TransactionDetails = () => {
       <HandOffComponent
         title={loc.transactions.details_title}
         type={HandOffActivityType.ViewInBlockExplorer}
-        url={`https://mempool.space/tx/${tx.hash}`}
+        url={`${selectedBlockExplorer}/${tx.hash}`}
       />
       <BlueCard>
         <View>
