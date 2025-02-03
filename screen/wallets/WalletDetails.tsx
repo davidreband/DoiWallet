@@ -52,7 +52,6 @@ const WalletDetails: React.FC = () => {
   const { saveToDisk, wallets, deleteWallet, setSelectedWalletID, txMetadata } = useStorage();
   const { isBiometricUseCapableAndEnabled } = useBiometrics();
   const { walletID } = useRoute<RouteProps>().params;
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [backdoorPressed, setBackdoorPressed] = useState<number>(0);
   const walletRef = useRef<TWallet | undefined>(wallets.find(w => w.getID() === walletID));
@@ -73,6 +72,8 @@ const WalletDetails: React.FC = () => {
   );
   const { setOptions, navigate } = useExtendedNavigation();
   const { colors } = useTheme();
+  const [walletName, setWalletName] = useState<string>(wallet.getLabel());
+
   const [masterFingerprint, setMasterFingerprint] = useState<string | undefined>();
   const walletTransactionsLength = useMemo<number>(() => wallet.getTransactions().length, [wallet]);
   const derivationPath = useMemo<string | null>(() => {
@@ -409,6 +410,10 @@ const WalletDetails: React.FC = () => {
                 <TextInput
                   value={walletName}
                   onChangeText={(text: string) => {
+                    setWalletName(text);
+                  }}
+                  onChange={event => {
+                    const text = event.nativeEvent.text;
                     setWalletName(text);
                   }}
                   onBlur={walletNameTextInputOnBlur}
