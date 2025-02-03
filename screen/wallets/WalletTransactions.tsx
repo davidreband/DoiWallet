@@ -131,17 +131,23 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
     }
   }, [wallet, isElectrumDisabled, isLoading, saveToDisk, pageSize]);
 
-  useEffect(() => {
-    if (wallet && wallet.getLastTxFetch() === 0) {
-      refreshTransactions();
-    }
-  }, [wallet, refreshTransactions]);
+  useFocusEffect(
+    useCallback(() => {
+      const task = InteractionManager.runAfterInteractions(() => {
+        if (wallet && wallet.getLastTxFetch() === 0) {
+          refreshTransactions();
+        }
+      });
+
+      return () => task.cancel();
+    }, [refreshTransactions, wallet]),
+  );
 
   useEffect(() => {
     if (wallet) {
-      setSelectedWalletID(wallet.getID());
+      setSelectedWalletID(walletID);
     }
-  }, [wallet, setSelectedWalletID]);
+  }, [wallet, setSelectedWalletID, walletID]);
 
   const isLightning = (): boolean => wallet?.chain === Chain.OFFCHAIN || false;
 
@@ -176,7 +182,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
     navigate('SendDetailsRoot', {
       screen: 'SendDetails',
       params: {
-        walletID: wallet?.getID(),
+        walletID,
       },
     });
   };
@@ -185,8 +191,8 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
     assert(wallet?.type === LightningCustodianWallet.type, `internal error, wallet is not ${LightningCustodianWallet.type}`);
     navigate('WalletTransactions', {
       walletType: wallet?.type,
-      walletID: wallet?.getID(),
-      key: `WalletTransactions-${wallet?.getID()}`,
+      walletID,
+      key: `WalletTransactions-${walletID}`,
     }); // navigating back to ln wallet screen
 
     // getting refill address, either cached or from the server:
@@ -255,7 +261,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
       if (!isLoading) {
         setIsLoading(true);
         const params = {
-          walletID: wallet?.getID(),
+          walletID,
           uri: ret?.data ? ret.data : ret,
         };
         if (wallet?.chain === Chain.ONCHAIN) {
@@ -266,7 +272,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
         setIsLoading(false);
       }
     },
-    [wallet, navigate, isLoading],
+    [isLoading, walletID, wallet?.chain, navigate],
   );
 
   const choosePhoto = () => {
@@ -291,7 +297,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
 
   const sendButtonPress = () => {
     if (wallet?.chain === Chain.OFFCHAIN) {
-      return navigate('ScanLndInvoiceRoot', { screen: 'ScanLndInvoice', params: { walletID: wallet.getID() } });
+      return navigate('ScanLndInvoiceRoot', { screen: 'ScanLndInvoice', params: { walletID } });
     }
 
     if (wallet?.type === WatchOnlyWallet.type && wallet.isHd() && !wallet.useWithHardwareWalletEnabled()) {
@@ -411,7 +417,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
                     navigate('WalletExportRoot', {
                       screen: 'WalletExport',
                       params: {
-                        walletID: wallet!.getID(),
+                        walletID,
                       },
                     });
                   });
@@ -465,9 +471,9 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
             text={loc.receive.header}
             onPress={() => {
               if (wallet.chain === Chain.OFFCHAIN) {
-                navigate('LNDCreateInvoiceRoot', { screen: 'LNDCreateInvoice', params: { walletID: wallet.getID() } });
+                navigate('LNDCreateInvoiceRoot', { screen: 'LNDCreateInvoice', params: { walletID } });
               } else {
-                navigate('ReceiveDetailsRoot', { screen: 'ReceiveDetails', params: { walletID: wallet.getID() } });
+                navigate('ReceiveDetailsRoot', { screen: 'ReceiveDetails', params: { walletID } });
               }
             }}
             icon={
