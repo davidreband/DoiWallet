@@ -41,8 +41,8 @@ struct PriceIntent: AppIntent {
 
         do {
             guard let data = try await MarketAPI.fetchPrice(currency: userPreferredCurrency) else {
-                throw NSError(domain: "PriceIntentErrorDomain", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch price data."])
-            }       
+                throw PriceIntentError.fetchFailed
+            }
 
             resultValue = data.rateDouble
             lastUpdated = formattedDate(from: data.lastUpdate)
