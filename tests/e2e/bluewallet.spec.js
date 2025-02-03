@@ -104,6 +104,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await element(by.id('ElectrumSettingsScrollView')).swipe('up', 'fast', 1); // in case emu screen is small and it doesnt fit
     await element(by.id('HostInput')).replaceText('electrum.blockstream.info\n');
     await element(by.id('PortInput')).replaceText('50001\n');
+    await element(by.id('ElectrumSettingsScrollView')).swipe('up', 'fast', 1); // in case emu screen is small and it doesnt fit
     await element(by.id('Save')).tap();
     await sup('OK');
     await element(by.text('OK')).tap();

@@ -11,7 +11,8 @@ const GeneralSettings = lazy(() => import('../screen/settings/GeneralSettings'))
 const Licensing = lazy(() => import('../screen/settings/Licensing'));
 const NetworkSettings = lazy(() => import('../screen/settings/NetworkSettings'));
 const About = lazy(() => import('../screen/settings/About'));
-const ElectrumSettings = lazy(() => import('../screen/settings/electrumSettings'));
+const DefaultView = lazy(() => import('../screen/settings/DefaultView'));
+const ElectrumSettings = lazy(() => import('../screen/settings/ElectrumSettings'));
 const EncryptStorage = lazy(() => import('../screen/settings/EncryptStorage'));
 const NotificationSettings = lazy(() => import('../screen/settings/notificationSettings'));
 const SelfTest = lazy(() => import('../screen/settings/SelfTest'));

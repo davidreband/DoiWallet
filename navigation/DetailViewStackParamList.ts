@@ -1,4 +1,5 @@
 import { LightningTransaction } from '../class/wallets/types';
+import { ElectrumServerItem } from '../screen/settings/ElectrumSettings';
 import { SendDetailsParams } from './SendDetailsStackParamList';
 
 export type DetailViewStackParamList = {
@@ -52,8 +53,8 @@ export type DetailViewStackParamList = {
   Licensing: undefined;
   NetworkSettings: undefined;
   About: undefined;
-  ShortcutsSettings: undefined;
-  ElectrumSettings: undefined;
+  DefaultView: undefined;
+  ElectrumSettings: { server?: ElectrumServerItem };
   SettingsBlockExplorer: undefined;
   EncryptStorage: undefined;
   Language: undefined;

@@ -3,12 +3,7 @@ import { Image, Keyboard, StyleSheet, Text, TextInput, View } from 'react-native
 
 import { scanQrHelper } from '../helpers/scan-qr';
 import loc from '../loc';
-import presentAlert from './Alert';
-import ToolTipMenu from './TooltipMenu';
-import { CommonToolTipActions } from '../typings/CommonToolTipActions';
-import Clipboard from '@react-native-clipboard/clipboard';
-import RNQRGenerator from 'rn-qr-generator';
-import { showFilePickerAndReadFile, showImagePickerAndReadImage } from '../blue_modules/fs';
+import { AddressInputScanButton } from './AddressInputScanButton';
 import { useTheme } from './themes';
 import { useSettings } from '../hooks/context/useSettings';
 import DeeplinkSchemaMatch from '../class/deeplink-schema-match';
@@ -55,6 +50,7 @@ const AddressInput = ({
   editable = true,
   inputAccessoryViewID,
   onBlur = () => {},
+  onFocus = () => {},
   keyboardType = 'default',
 }: AddressInputProps) => {
   const { colors } = useTheme();
@@ -65,11 +61,8 @@ const AddressInput = ({
       borderBottomColor: colors.formBorder,
       backgroundColor: colors.inputBackgroundColor,
     },
-    scan: {
-      backgroundColor: colors.scanLabel,
-    },
-    scanText: {
-      color: colors.inverseForegroundColor,
+    input: {
+      color: colors.foregroundColor,
     },
   });
 
@@ -196,33 +189,25 @@ const AddressInput = ({
         placeholder={placeholder}
         placeholderTextColor="#81868e"
         value={address}
-        style={styles.input}
+        style={[styles.input, stylesHook.input]}
         editable={!isLoading && editable}
         multiline={!editable}
         inputAccessoryViewID={inputAccessoryViewID}
         clearButtonMode="while-editing"
         onBlur={onBlurEditing}
+        onFocus={onFocus}
         autoCapitalize="none"
         autoCorrect={false}
         keyboardType={keyboardType}
       />
       {editable ? (
-        <ToolTipMenu
-          actions={actions}
-          isButton
-          onPressMenuItem={onMenuItemPressed}
-          testID="BlueAddressInputScanQrButton"
-          disabled={isLoading}
-          onPress={toolTipOnPress}
-          buttonStyle={buttonStyle}
-          accessibilityLabel={loc.send.details_scan}
-          accessibilityHint={loc.send.details_scan_hint}
-        >
-          <Image source={require('../img/scan-white.png')} accessible={false} />
-          <Text style={[styles.scanText, stylesHook.scanText]} accessible={false}>
-            {loc.send.details_scan}
-          </Text>
-        </ToolTipMenu>
+        <AddressInputScanButton
+          isLoading={isLoading}
+          launchedBy={launchedBy}
+          scanButtonTapped={scanButtonTapped}
+          onBarScanned={onBarScanned}
+          onChangeText={onChangeText}
+        />
       ) : null}
     </View>
   );
@@ -235,7 +220,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     minHeight: 44,
     height: 44,
-    marginHorizontal: 20,
     alignItems: 'center',
     marginVertical: 8,
     borderRadius: 4,
@@ -244,66 +228,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 8,
     minHeight: 33,
-    color: '#81868e',
-  },
-  scan: {
-    height: 36,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderRadius: 4,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    marginHorizontal: 4,
-  },
-  scanText: {
-    marginLeft: 4,
   },
 });
-
-const actionKeys = {
-  ScanQR: 'scan_qr',
-  PasteFromClipboard: 'copy_from_clipboard',
-  ChoosePhoto: 'choose_photo',
-  ImportFile: 'import_file',
-};
-
-const actionIcons = {
-  ScanQR: {
-    iconValue: Platform.OS === 'ios' ? 'qrcode' : 'ic_menu_camera',
-  },
-  ImportFile: {
-    iconValue: 'doc',
-  },
-  ChoosePhoto: {
-    iconValue: Platform.OS === 'ios' ? 'photo' : 'ic_menu_gallery',
-  },
-  Clipboard: {
-    iconValue: Platform.OS === 'ios' ? 'doc' : 'ic_menu_file',
-  },
-};
-
-const actions = [
-  {
-    id: actionKeys.ScanQR,
-    text: loc.wallets.list_long_scan,
-    icon: actionIcons.ScanQR,
-  },
-  {
-    id: actionKeys.PasteFromClipboard,
-    text: loc.wallets.paste_from_clipboard,
-    icon: actionIcons.Clipboard,
-  },
-  {
-    id: actionKeys.ChoosePhoto,
-    text: loc.wallets.list_long_choose,
-    icon: actionIcons.ChoosePhoto,
-  },
-  {
-    id: actionKeys.ImportFile,
-    text: loc.wallets.import_file,
-    icon: actionIcons.ImportFile,
-  },
-];
 
 export default AddressInput;

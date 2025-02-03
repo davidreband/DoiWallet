@@ -35,6 +35,9 @@ const keys = {
   ImportTransactionQR: 'ImportTransactionQR',
   CoinControl: 'CoinControl',
   CoSignTransaction: 'CoSignTransaction',
+  ResetToDefault: 'resetToDefault',
+  ClearHistory: 'clearHistory',
+  ScanQR: 'scan_qr',
   RemoveAllRecipients: 'RemoveAllRecipients',
   AddRecipient: 'AddRecipient',
   RemoveRecipient: 'RemoveRecipient',
@@ -56,32 +59,59 @@ const keys = {
   SignVerify: 'signVerify',
   ExportPrivateKey: 'exportPrivateKey',
   PasteFromClipboard: 'pasteFromClipboard',
+  ChoosePhoto: 'choosePhoto',
+  ImportFile: 'importFile',
 };
 
-const icons: { [key: string]: { iconValue: string } } = {
-  Eye: { iconValue: 'eye' },
-  EyeSlash: { iconValue: 'eye.slash' },
-  Link: { iconValue: 'link' },
-  Note: { iconValue: 'note.text' },
-  ManageWallets: { iconValue: 'slider.horizontal.3' },
-  ImportWallet: { iconValue: 'square.and.arrow.down.on.square' },
-  ViewInBitcoin: { iconValue: 'bitcoinsign.circle' },
-  ViewInFiat: { iconValue: 'coloncurrencysign.circle' },
-  Entropy: { iconValue: 'dice' },
-  SearchAccount: { iconValue: 'magnifyingglass' },
-  Passphrase: { iconValue: 'rectangle.and.pencil.and.ellipsis' },
-  MoreInfo: { iconValue: 'info.circle' },
-  SaveChanges: { iconValue: 'checkmark' },
-  InsertContact: { iconValue: 'at.badge.plus' },
-  SignPSBT: { iconValue: 'signature' },
-  SendMax: { iconValue: 'dial.high' },
-  AllowRBF: { iconValue: 'arrowshape.up.circle' },
-  ImportTransaction: { iconValue: 'square.and.arrow.down' },
-  ImportTransactionMultsig: { iconValue: 'square.and.arrow.down.on.square' },
-  ImportTransactionQR: { iconValue: 'qrcode.viewfinder' },
-  CoinControl: { iconValue: 'switch.2' },
-  CoSignTransaction: { iconValue: 'signature' },
-  PaymentCode: { iconValue: 'qrcode.viewfinder' },
+const icons = {
+  Eye: {
+    iconValue: 'eye',
+  },
+  EyeSlash: {
+    iconValue: 'eye.slash',
+  },
+  Clipboard: {
+    iconValue: 'doc.on.doc',
+  },
+  Link: {
+    iconValue: 'link',
+  },
+  Note: {
+    iconValue: 'note.text',
+  },
+  ManageWallets: {
+    iconValue: 'slider.horizontal.3',
+  },
+  ImportWallet: {
+    iconValue: 'square.and.arrow.down.on.square',
+  },
+  ViewInBitcoin: {
+    iconValue: 'bitcoinsign.circle',
+  },
+  ViewInFiat: {
+    iconValue: 'coloncurrencysign.circle',
+  },
+  Entropy: {
+    iconValue: 'dice',
+  },
+  SearchAccount: {
+    iconValue: 'magnifyingglass',
+  },
+  Passphrase: {
+    iconValue: 'rectangle.and.pencil.and.ellipsis',
+  },
+  MoreInfo: {
+    iconValue: 'info.circle',
+  },
+  SaveChanges: {
+    iconValue: 'checkmark',
+  },
+  PaymentsCode: {
+    iconValue: 'qrcode',
+  },
+  ClearHistory: {
+    iconValue: 'trash',
+  },
   RemoveAllRecipients: { iconValue: 'person.2.slash' },
   AddRecipient: { iconValue: 'person.badge.plus' },
   RemoveRecipient: { iconValue: 'person.badge.minus' },
@@ -93,6 +123,9 @@ const icons: { [key: string]: { iconValue: string } } = {
   Share: { iconValue: 'square.and.arrow.up' },
   Signature: { iconValue: 'signature' },
   PasteFromClipboard: { iconValue: 'document.on.clipboard' },
+  ScanQR: { iconValue: 'qrcode.viewfinder' },
+  ChoosePhoto: { iconValue: 'photo.on.rectangle' },
+  ImportFile: { iconValue: 'doc.badge.plus' },
 };
 
 export const CommonToolTipActions: { [key: string]: Action } = {
@@ -306,9 +339,34 @@ export const CommonToolTipActions: { [key: string]: Action } = {
     id: keys.ExportPrivateKey,
     text: loc.addresses.copy_private_key,
     icon: icons.ExportPrivateKey,
+  },
+  ResetToDefault: {
+    id: keys.ResetToDefault,
+    text: loc.settings.electrum_reset,
+  },
+  ClearHistory: {
+    id: keys.ClearHistory,
+    text: loc.settings.electrum_clear,
+    icon: icons.ClearHistory,
+  },
   PasteFromClipboard: {
     id: keys.PasteFromClipboard,
     text: loc.transactions.details_copy_amount,
     icon: icons.PasteFromClipboard,
+  },
+  ScanQR: {
+    id: keys.ScanQR,
+    text: loc.send.details_scan,
+    icon: icons.ScanQR,
+  },
+  ChoosePhoto: {
+    id: keys.ChoosePhoto,
+    text: loc._.pick_image,
+    icon: icons.ChoosePhoto,
+  },
+  ImportFile: {
+    id: keys.ImportFile,
+    text: loc.wallets.import_file,
+    icon: icons.ImportFile,
   },
 };
