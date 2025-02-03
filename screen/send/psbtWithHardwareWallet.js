@@ -25,19 +25,18 @@ import { DOICHAIN } from "../../blue_modules/network";
 
 
 const PsbtWithHardwareWallet = () => {
-  const { txMetadata, fetchAndSaveWalletTransactions, isElectrumDisabled } = useStorage();
+  const { txMetadata, fetchAndSaveWalletTransactions, isElectrumDisabled, wallets } = useStorage();
   const { isBiometricUseCapableAndEnabled } = useBiometrics();
   const navigation = useExtendedNavigation();
   const route = useRoute();
-  const { fromWallet, memo, psbt, deepLinkPSBT, launchedBy } = route.params;
-  const routeParamsPSBT = useRef(route.params.psbt);
-  const routeParamsTXHex = route.params.txhex;
-  const { colors } = useTheme();
-  const [isLoading, setIsLoading] = useState(false);
-  const [txHex, setTxHex] = useState(route.params.txhex);
+  const { walletID, memo, deepLinkPSBT, launchedBy } = route.params;
+  const wallet = wallets.find(w => w.getID() === walletID);
+  const { psbt, txhex } = route.params;
   const openScannerButton = useRef();
   const dynamicQRCode = useRef();
   const isFocused = useIsFocused();
+  const { colors } = useTheme();
+  const [isLoading, setIsLoading] = useState(false);
 
   const stylesHook = StyleSheet.create({
     scrollViewContent: {
@@ -63,7 +62,7 @@ const PsbtWithHardwareWallet = () => {
   });
 
   const _combinePSBT = receivedPSBT => {
-    return fromWallet.combinePsbt(psbt, receivedPSBT);
+    return wallet.combinePsbt(psbt, receivedPSBT);
   };
 
   const onBarScanned = ret => {
@@ -74,18 +73,14 @@ const PsbtWithHardwareWallet = () => {
     }
     if (ret.data.indexOf('+') === -1 && ret.data.indexOf('=') === -1 && ret.data.indexOf('=') === -1) {
       // this looks like NOT base64, so maybe its transaction's hex
-      setTxHex(ret.data);
+      navigation.setParams({ txhex: ret.data });
       return;
     }
     try {
       const Tx = _combinePSBT(ret.data);
-      setTxHex(Tx.toHex());
+      navigation.setParams({ txhex: Tx.toHex() });
       if (launchedBy) {
-        // we must navigate back to the screen who requested psbt (instead of broadcasting it ourselves)
-        // most likely for LN channel opening
         navigation.navigate({ name: launchedBy, params: { psbt }, merge: true });
-        // ^^^ we just use `psbt` variable sinse it was finalized in the above _combinePSBT()
-        // (passed by reference)
       }
     } catch (Err) {
       presentAlert({ message: Err.message });
@@ -101,23 +96,20 @@ const PsbtWithHardwareWallet = () => {
   }, [isFocused]);
 
   useEffect(() => {
-    if (!psbt && !route.params.txhex) {
+    if (!psbt && !txhex) {
       presentAlert({ message: loc.send.no_tx_signing_in_progress });
     }
 
     if (deepLinkPSBT) {
       const newPsbt = bitcoin.Psbt.fromBase64(deepLinkPSBT, { network: DOICHAIN });
       try {
-        const Tx = fromWallet.combinePsbt(routeParamsPSBT.current, newPsbt);
-        setTxHex(Tx.toHex());
+        const Tx = wallet.combinePsbt(psbt, newPsbt);
+        navigation.setParams({ txhex: Tx.toHex() });
       } catch (Err) {
         presentAlert({ message: Err });
       }
-    } else if (routeParamsTXHex) {
-      setTxHex(routeParamsTXHex);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deepLinkPSBT, routeParamsTXHex]);
+  }, [deepLinkPSBT, wallet, navigation, psbt, txhex]);
 
   const broadcast = async () => {
     setIsLoading(true);
@@ -132,10 +124,10 @@ const PsbtWithHardwareWallet = () => {
     try {
       await BlueElectrum.ping();
       await BlueElectrum.waitTillConnected();
-      const result = await fromWallet.broadcastTx(txHex);
+      const result = await wallet.broadcastTx(txhex);
       if (result) {
         setIsLoading(false);
-        const txDecoded = bitcoin.Transaction.fromHex(txHex);
+        const txDecoded = bitcoin.Transaction.fromHex(txhex);
         const txid = txDecoded.getId();
         Notifications.majorTomToGroundControl([], [], [txid]);
         if (memo) {
@@ -143,7 +135,7 @@ const PsbtWithHardwareWallet = () => {
         }
         navigation.navigate('Success', { amount: undefined });
         await new Promise(resolve => setTimeout(resolve, 3000)); // sleep to make sure network propagates
-        fetchAndSaveWalletTransactions(fromWallet.getID());
+        fetchAndSaveWalletTransactions(wallet.getID());
       } else {
         triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
         setIsLoading(false);
@@ -157,11 +149,11 @@ const PsbtWithHardwareWallet = () => {
   };
 
   const handleOnVerifyPressed = () => {
-    Linking.openURL('https://coinb.in/?verify=' + txHex);
+    Linking.openURL('https://coinb.in/?verify=' + txhex);
   };
 
   const copyHexToClipboard = () => {
-    Clipboard.setString(txHex);
+    Clipboard.setString(txhex);
   };
 
   const _renderBroadcastHex = () => {
@@ -169,7 +161,7 @@ const PsbtWithHardwareWallet = () => {
       <View style={[styles.rootPadding, stylesHook.rootPadding]}>
         <BlueCard style={[styles.hexWrap, stylesHook.hexWrap]}>
           <BlueText style={[styles.hexLabel, stylesHook.hexLabel]}>{loc.send.create_this_is_hex}</BlueText>
-          <TextInput style={[styles.hexInput, stylesHook.hexInput]} height={112} multiline editable value={txHex} />
+          <TextInput style={[styles.hexInput, stylesHook.hexInput]} height={112} multiline editable value={txhex} />
 
           <TouchableOpacity accessibilityRole="button" style={styles.hexTouch} onPress={copyHexToClipboard}>
             <Text style={[styles.hexText, stylesHook.hexText]}>{loc.send.create_copy}</Text>
@@ -223,7 +215,7 @@ const PsbtWithHardwareWallet = () => {
     onBarScanned({ data: scannedData });
   };
 
-  if (txHex) return _renderBroadcastHex();
+  if (txhex) return _renderBroadcastHex();
 
   const renderView = isLoading ? (
     <ActivityIndicator />

@@ -653,7 +653,7 @@ const SendDetails = () => {
       // user whether he wants to broadcast it
       navigation.navigate('PsbtWithHardwareWallet', {
         memo: transactionMemo,
-        fromWallet: wallet,
+        walletID: wallet.getID(),
         psbt,
         launchedBy: routeParams.launchedBy,
       });
@@ -742,7 +742,7 @@ const SendDetails = () => {
       const psbt = bitcoin.Psbt.fromBase64(ret.data, { network: DOICHAIN });
       navigation.navigate('PsbtWithHardwareWallet', {
         memo: transactionMemo,
-        fromWallet: wallet,
+        walletID: wallet.getID(),
         psbt,
       });
       setIsLoading(false);
@@ -776,7 +776,7 @@ const SendDetails = () => {
         const file = await RNFS.readFile(res.uri, 'ascii');
         const psbt = bitcoin.Psbt.fromBase64(file, { network: DOICHAIN });
         const txhex = psbt.extractTransaction().toHex();
-        navigation.navigate('PsbtWithHardwareWallet', { memo: transactionMemo, fromWallet: wallet, txhex });
+        navigation.navigate('PsbtWithHardwareWallet', { memo: transactionMemo, walletID: wallet.getID(), txhex });
         setIsLoading(false);
 
         return;
@@ -786,8 +786,10 @@ const SendDetails = () => {
         // looks like transaction is UNsigned, so we construct PSBT object and pass to next screen
         // so user can do smth with it:
         const file = await RNFS.readFile(res.uri, 'ascii');
+
         const psbt = bitcoin.Psbt.fromBase64(file, { network: DOICHAIN });
-        navigation.navigate('PsbtWithHardwareWallet', { memo: transactionMemo, fromWallet: wallet, psbt });
+        navigation.navigate('PsbtWithHardwareWallet', { memo: transactionMemo, walletID: wallet.getID(), psbt });
+
         setIsLoading(false);
 
         return;
@@ -796,7 +798,7 @@ const SendDetails = () => {
       if (DeeplinkSchemaMatch.isTXNFile(res.uri)) {
         // plain text file with txhex ready to broadcast
         const file = (await RNFS.readFile(res.uri, 'ascii')).replace('\n', '').replace('\r', '');
-        navigation.navigate('PsbtWithHardwareWallet', { memo: transactionMemo, fromWallet: wallet, txhex: file });
+        navigation.navigate('PsbtWithHardwareWallet', { memo: transactionMemo, walletID: wallet.getID(), txhex: file });
         setIsLoading(false);
 
         return;
