@@ -9,7 +9,7 @@
 import SwiftUI
 import WidgetKit
 
-@available(iOS 14.0, *)
+@available(iOS 16.0, *)
 struct PriceView: View {
   var entry: PriceWidgetEntry
   
