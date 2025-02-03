@@ -76,7 +76,7 @@ export type DetailViewStackParamList = {
   ReceiveDetailsRoot: {
     screen: 'ReceiveDetails';
     params: {
-      walletID: string;
+      walletID?: string;
       address: string;
     };
   };
