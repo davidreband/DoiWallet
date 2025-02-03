@@ -260,4 +260,49 @@ const styles = StyleSheet.create({
   },
 });
 
+const actionKeys = {
+  ScanQR: 'scan_qr',
+  CopyFromClipboard: 'copy_from_clipboard',
+  ChoosePhoto: 'choose_photo',
+  ImportFile: 'import_file',
+};
+
+const actionIcons = {
+  ScanQR: {
+    iconValue: Platform.OS === 'ios' ? 'qrcode' : 'ic_menu_camera',
+  },
+  ImportFile: {
+    iconValue: 'doc',
+  },
+  ChoosePhoto: {
+    iconValue: Platform.OS === 'ios' ? 'photo' : 'ic_menu_gallery',
+  },
+  Clipboard: {
+    iconValue: Platform.OS === 'ios' ? 'doc' : 'ic_menu_file',
+  },
+};
+
+const actions = [
+  {
+    id: actionKeys.ScanQR,
+    text: loc.wallets.list_long_scan,
+    icon: actionIcons.ScanQR,
+  },
+  {
+    id: actionKeys.CopyFromClipboard,
+    text: loc.wallets.paste_from_clipboard,
+    icon: actionIcons.Clipboard,
+  },
+  {
+    id: actionKeys.ChoosePhoto,
+    text: loc.wallets.list_long_choose,
+    icon: actionIcons.ChoosePhoto,
+  },
+  {
+    id: actionKeys.ImportFile,
+    text: loc.wallets.import_file,
+    icon: actionIcons.ImportFile,
+  },
+];
+
 export default AddressInput;
