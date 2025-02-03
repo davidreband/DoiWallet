@@ -7,6 +7,8 @@ const keys = {
   OpenInBlockExplorer: 'open_in_blockExplorer',
   CopyAmount: 'copyAmount',
   CopyNote: 'copyNote',
+  ManageWallets: 'manageWallets',
+  ImportWallet: 'importWallet',
   HideBalance: 'hideBalance',
   ViewInBitcoin: 'viewInBitcoin',
   ViewInSats: 'viewInSats',
@@ -28,6 +30,12 @@ const icons = {
   },
   Note: {
     iconValue: 'note.text',
+  },
+  ManageWallets: {
+    iconValue: 'slider.horizontal.3',
+  },
+  ImportWallet: {
+    iconValue: 'square.and.arrow.down.on.square',
   },
   ViewInBitcoin: {
     iconValue: 'bitcoinsign.circle',
@@ -67,6 +75,16 @@ export const CommonToolTipActions = {
     id: keys.CopyNote,
     text: loc.transactions.details_copy_note,
     icon: icons.Clipboard,
+  },
+  ManageWallet: {
+    id: keys.ManageWallets,
+    text: loc.wallets.manage_title,
+    icon: icons.ManageWallets,
+  },
+  ImportWallet: {
+    id: keys.ImportWallet,
+    text: loc.wallets.add_import_wallet,
+    icon: icons.ImportWallet,
   },
   HideBalance: {
     id: keys.HideBalance,
