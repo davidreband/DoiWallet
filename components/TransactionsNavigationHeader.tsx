@@ -233,11 +233,7 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
       </View>
       
       {wallet.type === MultisigHDWallet.type && (
-        <TouchableOpacity
-          style={styles.manageFundsButton}
-          accessibilityRole="button"
-          onPress={() => handleManageFundsPressed()}
-        >
+        <TouchableOpacity style={styles.manageFundsButton} accessibilityRole="button" onPress={() => handleManageFundsPressed()}>
           <Text style={styles.manageFundsButtonText}>{loc.multisig.manage_keys}</Text>
         </TouchableOpacity>
       )}
