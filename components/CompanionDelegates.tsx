@@ -16,6 +16,8 @@ import { navigationRef } from '../NavigationService';
 import ActionSheet from '../screen/ActionSheet';
 import { useStorage } from '../hooks/context/useStorage';
 import TransactionsMonitor from './TransactionsMonitor';
+import RNQRGenerator from 'rn-qr-generator';
+import presentAlert from './Alert';
 
 const MenuElements = lazy(() => import('../components/MenuElements'));
 const DeviceQuickActions = lazy(() => import('../components/DeviceQuickActions'));

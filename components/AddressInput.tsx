@@ -7,6 +7,7 @@ import presentAlert from './Alert';
 import ToolTipMenu from './TooltipMenu';
 import { CommonToolTipActions } from '../typings/CommonToolTipActions';
 import Clipboard from '@react-native-clipboard/clipboard';
+import RNQRGenerator from 'rn-qr-generator';
 import { showFilePickerAndReadFile, showImagePickerAndReadImage } from '../blue_modules/fs';
 import { useTheme } from './themes';
 import { useSettings } from '../hooks/context/useSettings';
