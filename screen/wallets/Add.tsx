@@ -378,7 +378,14 @@ const WalletsAdd: React.FC = () => {
       menuState: !!entropy,
     };
 
-    return selectedWalletType === ButtonSelected.ONCHAIN ? [walletAction, entropyAction] : [walletAction];
+    const entropyActions: Action = {
+      id: 'entropy',
+      text: loc._.customize,
+      subactions: [entropyAction],
+      displayInline: true,
+    };
+
+    return selectedWalletType === ButtonSelected.ONCHAIN ? [walletAction, entropyActions] : [walletAction];
   }, [entropy, entropyButtonText, selectedIndex, selectedWalletType]);
   const handleOnLightningButtonPressed = useCallback(() => {
     confirmResetEntropy(ButtonSelected.OFFCHAIN);
