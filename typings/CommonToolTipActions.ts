@@ -59,8 +59,6 @@ const keys = {
   SignVerify: 'signVerify',
   ExportPrivateKey: 'exportPrivateKey',
   PasteFromClipboard: 'pasteFromClipboard',
-  ChoosePhoto: 'choosePhoto',
-  ImportFile: 'importFile',
 };
 
 const icons: { [key: string]: { iconValue: string } } = {
@@ -94,16 +92,13 @@ const icons: { [key: string]: { iconValue: string } } = {
   AddRecipient: { iconValue: 'person.badge.plus' },
   RemoveRecipient: { iconValue: 'person.badge.minus' },
   ScanQR: { iconValue: Platform.OS === 'ios' ? 'qrcode.viewfinder' : 'ic_menu_camera' },
-  ImportFile: { iconValue: 'doc' },
-  ChoosePhoto: { iconValue: Platform.OS === 'ios' ? 'photo' : 'ic_menu_gallery' },
-  Clipboard: { iconValue: Platform.OS === 'ios' ? 'doc.on.doc' : 'ic_menu_file' },
+  ChoosePhoto: { iconValue: Platform.OS === 'ios' ? 'photo.on.rectangle' : 'ic_menu_gallery' },
+  Clipboard: { iconValue: Platform.OS === 'ios' ? 'document.on.clipboard' : 'ic_menu_file' },
   ExportPrivateKey: { iconValue: 'key' },
   Share: { iconValue: 'square.and.arrow.up' },
   Signature: { iconValue: 'signature' },
   PasteFromClipboard: { iconValue: 'document.on.clipboard' },
-  ScanQR: { iconValue: 'qrcode.viewfinder' },
-  ChoosePhoto: { iconValue: 'photo.on.rectangle' },
-  ImportFile: { iconValue: 'doc.badge.plus' },
+  ImportFile: { iconValue: 'document.viewfinder' },
 };
 
 export const CommonToolTipActions: { [key: string]: Action } = {
@@ -215,8 +210,8 @@ export const CommonToolTipActions: { [key: string]: Action } = {
     text: loc._.save,
     icon: icons.SaveChanges,
   },
-  PaymentCode: {
-    id: keys.PaymentCode,
+  PaymentsCode: {
+    id: keys.PaymentsCode,
     text: loc.bip47.purpose,
     icon: icons.PaymentCode,
     menuState: false,
@@ -331,20 +326,5 @@ export const CommonToolTipActions: { [key: string]: Action } = {
     id: keys.PasteFromClipboard,
     text: loc.wallets.paste_from_clipboard,
     icon: icons.PasteFromClipboard,
-  },
-  ScanQR: {
-    id: keys.ScanQR,
-    text: loc.send.details_scan,
-    icon: icons.ScanQR,
-  },
-  ChoosePhoto: {
-    id: keys.ChoosePhoto,
-    text: loc._.pick_image,
-    icon: icons.ChoosePhoto,
-  },
-  ImportFile: {
-    id: keys.ImportFile,
-    text: loc.wallets.import_file,
-    icon: icons.ImportFile,
   },
 };
