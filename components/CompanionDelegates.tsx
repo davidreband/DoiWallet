@@ -103,17 +103,46 @@ const CompanionDelegates = () => {
   }, [fetchAndSaveWalletTransactions, refreshAllWalletTransactions, wallets]);
 
   const handleOpenURL = useCallback(
-    (event: { url: string }) => {
-      DeeplinkSchemaMatch.navigationRouteFor(event, value => navigationRef.navigate(...value), {
-        wallets,
-        addWallet,
-        saveToDisk,
-        setSharedCosigner,
-      });
+    async (event: { url: string }): Promise<void> => {
+      const { url } = event;
+
+      if (url) {
+        const decodedUrl = decodeURIComponent(url);
+        const fileName = decodedUrl.split('/').pop()?.toLowerCase();
+
+        if (fileName && (fileName.endsWith('.jpg') || fileName.endsWith('.png') || fileName.endsWith('.jpeg'))) {
+          try {
+            const values = await RNQRGenerator.detect({
+              uri: decodedUrl,
+            });
+
+            if (values && values.values.length > 0) {
+              DeeplinkSchemaMatch.navigationRouteFor(
+                { url: values.values[0] },
+                (value: [string, any]) => navigationRef.navigate(...value),
+                {
+                  wallets,
+                  addWallet,
+                  saveToDisk,
+                  setSharedCosigner,
+                },
+              );
+            }
+          } catch (error) {
+            console.error('Error detecting QR code:', error);
+          }
+        }
+      } else {
+        DeeplinkSchemaMatch.navigationRouteFor(event, (value: [string, any]) => navigationRef.navigate(...value), {
+          wallets,
+          addWallet,
+          saveToDisk,
+          setSharedCosigner,
+        });
+      }
     },
     [addWallet, saveToDisk, setSharedCosigner, wallets],
   );
-
   const showClipboardAlert = useCallback(
     ({ contentType }: { contentType: undefined | string }) => {
       triggerHapticFeedback(HapticFeedbackTypes.ImpactLight);
