@@ -107,7 +107,8 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await element(by.id('Save')).tap();
     await sup('OK');
     await element(by.text('OK')).tap();
-    await element(by.id('ResetToDefault')).tap();
+    await element(by.id('HeaderMenuButton')).tap();
+    await element(by.text('Reset to default')).tap();
     await sup('OK');
     await element(by.text('OK')).tap();
     await element(by.id('ElectrumSettingsScrollView')).swipe('up', 'fast', 1); // in case emu screen is small and it doesnt fit
