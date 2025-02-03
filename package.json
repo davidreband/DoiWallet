@@ -75,7 +75,7 @@
   },
   "dependencies": {
     "@babel/preset-env": "7.25.8",
-    "@bugsnag/react-native": "8.1.1",
+    "@bugsnag/react-native": "8.1.2",
     "@bugsnag/source-maps": "2.3.3",
     "@doichain/doichainjs-lib": "^6.1.7",
     "@keystonehq/bc-ur-registry": "0.7.0",
