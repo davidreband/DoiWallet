@@ -63,49 +63,30 @@ const keys = {
   ImportFile: 'importFile',
 };
 
-const icons = {
-  Eye: {
-    iconValue: 'eye',
-  },
-  EyeSlash: {
-    iconValue: 'eye.slash',
-  },
-  Clipboard: {
-    iconValue: 'doc.on.doc',
-  },
-  Link: {
-    iconValue: 'link',
-  },
-  Note: {
-    iconValue: 'note.text',
-  },
-  ManageWallets: {
-    iconValue: 'slider.horizontal.3',
-  },
-  ImportWallet: {
-    iconValue: 'square.and.arrow.down.on.square',
-  },
-  ViewInBitcoin: {
-    iconValue: 'bitcoinsign.circle',
-  },
-  ViewInFiat: {
-    iconValue: 'coloncurrencysign.circle',
-  },
-  Entropy: {
-    iconValue: 'dice',
-  },
-  SearchAccount: {
-    iconValue: 'magnifyingglass',
-  },
-  Passphrase: {
-    iconValue: 'rectangle.and.pencil.and.ellipsis',
-  },
-  MoreInfo: {
-    iconValue: 'info.circle',
-  },
-  SaveChanges: {
-    iconValue: 'checkmark',
-  },
+const icons: { [key: string]: { iconValue: string } } = {
+  Eye: { iconValue: 'eye' },
+  EyeSlash: { iconValue: 'eye.slash' },
+  Link: { iconValue: 'link' },
+  Note: { iconValue: 'note.text' },
+  ManageWallets: { iconValue: 'slider.horizontal.3' },
+  ImportWallet: { iconValue: 'square.and.arrow.down.on.square' },
+  ViewInBitcoin: { iconValue: 'bitcoinsign.circle' },
+  ViewInFiat: { iconValue: 'coloncurrencysign.circle' },
+  Entropy: { iconValue: 'dice' },
+  SearchAccount: { iconValue: 'magnifyingglass' },
+  Passphrase: { iconValue: 'rectangle.and.pencil.and.ellipsis' },
+  MoreInfo: { iconValue: 'info.circle' },
+  SaveChanges: { iconValue: 'checkmark' },
+  InsertContact: { iconValue: 'at.badge.plus' },
+  SignPSBT: { iconValue: 'signature' },
+  SendMax: { iconValue: 'dial.high' },
+  AllowRBF: { iconValue: 'arrowshape.up.circle' },
+  ImportTransaction: { iconValue: 'square.and.arrow.down' },
+  ImportTransactionMultsig: { iconValue: 'square.and.arrow.down.on.square' },
+  ImportTransactionQR: { iconValue: 'qrcode.viewfinder' },
+  CoinControl: { iconValue: 'switch.2' },
+  CoSignTransaction: { iconValue: 'signature' },
+  PaymentsCode: { iconValue: 'qrcode.viewfinder' },
   PaymentsCode: {
     iconValue: 'qrcode',
   },
