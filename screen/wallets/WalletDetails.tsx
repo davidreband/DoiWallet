@@ -490,7 +490,8 @@ const WalletDetails: React.FC = () => {
                     try {
                       await saveToDisk();
                     } catch (error: any) {
-                      console.log(error.message);
+                      triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
+                      console.error(error.message);
                     }
                   }}
                 />
