@@ -155,17 +155,20 @@ export const CommonToolTipActions: { [key: string]: Action } = {
     id: keys.ViewInFiat,
     text: loc.total_balance_view.view_in_fiat,
     icon: icons.ViewInFiat,
+    hidden: false,
   },
 
   ViewInSats: {
     id: keys.ViewInSats,
     text: loc.total_balance_view.view_in_sats,
     icon: icons.ViewInBitcoin,
+    hidden: false,
   },
   ViewInBitcoin: {
     id: keys.ViewInBitcoin,
     text: loc.total_balance_view.view_in_bitcoin,
     icon: icons.ViewInBitcoin,
+    hidden: false,
   },
   Entropy: {
     id: keys.Entropy,

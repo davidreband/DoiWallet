@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { TouchableOpacity, Text, StyleSheet, LayoutAnimation, View } from 'react-native';
 import { useStorage } from '../hooks/context/useStorage';
 import loc, { formatBalanceWithoutSuffix } from '../loc';
@@ -18,31 +18,28 @@ const TotalWalletsBalance: React.FC = () => {
     useSettings();
   const { colors } = useTheme();
 
-  const styleHooks = StyleSheet.create({
-    balance: {
-      color: colors.foregroundColor,
-    },
-    currency: {
-      color: colors.foregroundColor,
-    },
-  });
+  const styleHooks = useMemo(
+    () => ({
+      balance: { color: colors.foregroundColor },
+      currency: { color: colors.foregroundColor },
+    }),
+    [colors.foregroundColor],
+  );
 
-  // Calculate total balance from all wallets
-  const totalBalance = wallets.reduce((prev, curr) => {
-    if (!curr.hideBalance) {
-      return prev + curr.getBalance();
-    }
-    return prev;
-  }, 0);
+  const totalBalance = useMemo(() => wallets.reduce((prev, curr) => (!curr.hideBalance ? prev + curr.getBalance() : prev), 0), [wallets]);
 
   const formattedBalance = useMemo(
-    () => formatBalanceWithoutSuffix(Number(totalBalance), totalBalancePreferredUnit, true),
+    () => formatBalanceWithoutSuffix(totalBalance, totalBalancePreferredUnit, true),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [totalBalance, totalBalancePreferredUnit, preferredFiatCurrency],
   );
 
   const toolTipActions = useMemo(() => {
-    let viewIn;
+    const viewInFiat = {
+      ...CommonToolTipActions.ViewInFiat,
+      text: loc.formatString(loc.total_balance_view.view_in_fiat, { currency: preferredFiatCurrency.endPointKey }),
+      hidden: totalBalancePreferredUnit === BitcoinUnit.LOCAL_CURRENCY,
+    };
 
     if (totalBalancePreferredUnit === DoichainUnit.SWARTZ) {
       viewIn = {
@@ -56,8 +53,24 @@ const TotalWalletsBalance: React.FC = () => {
     } else {
       viewIn = CommonToolTipActions.ViewInBitcoin;
     }
+    const viewInSats = {
+      ...CommonToolTipActions.ViewInSats,
+      hidden: totalBalancePreferredUnit === BitcoinUnit.SATS,
+    };
 
-    return [viewIn, CommonToolTipActions.CopyAmount, CommonToolTipActions.HideBalance];
+    const viewInBitcoin = {
+      ...CommonToolTipActions.ViewInBitcoin,
+      hidden: totalBalancePreferredUnit === BitcoinUnit.BTC,
+    };
+
+    const viewInActions = {
+      id: 'viewInActions',
+      text: '',
+      subactions: [viewInFiat, viewInSats, viewInBitcoin],
+      displayInline: true,
+    };
+
+    return [viewInActions, CommonToolTipActions.CopyAmount, CommonToolTipActions.HideBalance];
   }, [preferredFiatCurrency.endPointKey, totalBalancePreferredUnit]);
 
   const onPressMenuItem = useMemo(
@@ -91,8 +104,21 @@ const TotalWalletsBalance: React.FC = () => {
           break;
       }
     },
-    [totalBalancePreferredUnit, setIsTotalBalanceEnabledStorage, formattedBalance, setTotalBalancePreferredUnitStorage],
+    [setIsTotalBalanceEnabledStorage, formattedBalance, setTotalBalancePreferredUnitStorage],
   );
+
+  const handleBalanceOnPress = useCallback(async () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    const nextUnit =
+      totalBalancePreferredUnit === BitcoinUnit.BTC
+        ? BitcoinUnit.SATS
+        : totalBalancePreferredUnit === BitcoinUnit.SATS
+          ? BitcoinUnit.LOCAL_CURRENCY
+          : BitcoinUnit.BTC;
+    await setTotalBalancePreferredUnitStorage(nextUnit);
+  }, [totalBalancePreferredUnit, setTotalBalancePreferredUnitStorage]);
+
+  if (wallets.length <= 1) return null;
 
   return (
     (wallets.length > 1 && (
