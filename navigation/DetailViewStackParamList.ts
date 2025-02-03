@@ -52,8 +52,9 @@ export type DetailViewStackParamList = {
   Licensing: undefined;
   NetworkSettings: undefined;
   About: undefined;
-  DefaultView: undefined;
-  ElectrumSettings: { server?: ElectrumServerItem };
+  ShortcutsSettings: undefined;
+  ElectrumSettings: undefined;
+  SettingsBlockExplorer: undefined;
   EncryptStorage: undefined;
   Language: undefined;
   LightningSettings: {
