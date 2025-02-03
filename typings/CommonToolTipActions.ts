@@ -18,6 +18,7 @@ const keys = {
   Passphrase: 'passphrase',
   MoreInfo: 'moreInfo',
   SaveChanges: 'saveChanges',
+  ClearClipboard: 'clearClipboard',
   PaymentsCode: 'paymentsCode',
   ResetToDefault: 'resetToDefault',
   ClearHistory: 'clearHistory',
@@ -32,6 +33,9 @@ const icons = {
   },
   Clipboard: {
     iconValue: 'doc.on.doc',
+  },
+  ClearClipboard: {
+    iconValue: 'clipboard',
   },
   Link: {
     iconValue: 'link',
@@ -170,13 +174,10 @@ export const CommonToolTipActions = {
     icon: icons.PaymentsCode,
     menuState: false,
   },
-  ResetToDefault: {
-    id: keys.ResetToDefault,
-    text: loc.settings.electrum_reset,
-  },
-  ClearHistory: {
-    id: keys.ClearHistory,
-    text: loc.settings.electrum_clear,
-    icon: icons.ClearHistory,
+  ClearClipboard: {
+    id: keys.ClearClipboard,
+    text: loc.wallets.clear_clipboard_on_import,
+    icon: icons.ClearClipboard,
+    menuState: true,
   },
 };
