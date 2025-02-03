@@ -154,7 +154,14 @@ const WalletsImport = () => {
   );
 
   return (
-    <SafeArea style={styles.root}>
+    <ScrollView
+      contentContainerStyle={styles.root}
+      automaticallyAdjustContentInsets
+      automaticallyAdjustsScrollIndicatorInsets
+      keyboardShouldPersistTaps="always"
+      automaticallyAdjustKeyboardInsets
+      contentInsetAdjustmentBehavior="automatic"
+    >
       <BlueSpacing20 />
       <TouchableWithoutFeedback accessibilityRole="button" onPress={speedBackdoorTap} testID="SpeedBackdoor">
         <BlueFormLabel>{loc.wallets.import_explanation}</BlueFormLabel>
