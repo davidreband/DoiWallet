@@ -166,7 +166,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
         setIsHandOffUseEnabledState(handOff);
       } catch (e) {
         console.error('Error loading isHandOffUseEnabled:', e);
-        setIsHandOffUseEnabledState(true);
+        setIsHandOffUseEnabledState(false);
       }
 
       try {
@@ -310,7 +310,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
   const setIsHandOffUseEnabledAsyncStorage = useCallback(async (value: boolean) => {
     try {
       console.debug('setIsHandOffUseEnabledAsyncStorage', value);
-      setIsHandOffUseEnabled(value);
+      await setIsHandOffUseEnabled(value);
+      setIsHandOffUseEnabledState(value);
     } catch (e) {
       console.error('Error setting isHandOffUseEnabled:', e);
     }
