@@ -29,8 +29,9 @@ const WalletsImport = () => {
   const [importText, setImportText] = useState(label);
   const [isToolbarVisibleForAndroid, setIsToolbarVisibleForAndroid] = useState(false);
   const [, setSpeedBackdoor] = useState(0);
-  const [searchAccounts, setSearchAccounts] = useState(false);
-  const [askPassphrase, setAskPassphrase] = useState(false);
+  const [searchAccountsMenuState, setSearchAccountsMenuState] = useState(false);
+  const [askPassphraseMenuState, setAskPassphraseMenuState] = useState(false);
+  const [clearClipboardMenuState, setClearClipboardMenuState] = useState(true);
 
   const styles = StyleSheet.create({
     root: {
