@@ -15,13 +15,13 @@ import { DoichainUnit} from '../../models/doichainUnits';
 import { TotalWalletsBalanceKey, TotalWalletsBalancePreferredUnit } from '../TotalWalletsBalance';
 import { BLOCK_EXPLORERS, getBlockExplorerUrl, saveBlockExplorer, BlockExplorer, normalizeUrl } from '../../models/blockExplorer';
 
-const getDoNotTrackStorage = async () => {
+const getDoNotTrackStorage = async (): Promise<boolean> => {
   await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
   const doNotTrack = await DefaultPreference.get(BlueApp.DO_NOT_TRACK);
   return doNotTrack === '1';
 };
 
-export const setTotalBalanceViewEnabledStorage = async (value: boolean) => {
+export const setTotalBalanceViewEnabledStorage = async (value: boolean): Promise<void> => {
   try {
     await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
     await DefaultPreference.set(TotalWalletsBalanceKey, value ? 'true' : 'false');
@@ -44,8 +44,7 @@ export const getIsTotalBalanceViewEnabled = async (): Promise<boolean> => {
   }
 };
 
-
-export const setTotalBalancePreferredUnitStorageFunc = async (unit: DoichainUnit) => {
+export const setTotalBalancePreferredUnitStorageFunc = async (unit: DoichainUnit): Promise<void> => {
   try {
     await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
     await DefaultPreference.set(TotalWalletsBalancePreferredUnit, unit);
@@ -59,9 +58,8 @@ export const setTotalBalancePreferredUnitStorageFunc = async (unit: DoichainUnit
 export const getTotalBalancePreferredUnit = async (): Promise<DoichainUnit> => {
   try {
     await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
-    const unit = ((await DefaultPreference.get(TotalWalletsBalancePreferredUnit)) as DoichainUnit) ?? DoichainUnit.DOI;
+    const unit = (await DefaultPreference.get(TotalWalletsBalancePreferredUnit)) as DoichainUnit | null;
     return unit ?? DoichainUnit.DOI;
-
   } catch (e) {
     console.error('Error getting TotalBalancePreferredUnit:', e);
     return DoichainUnit.DOI;
@@ -127,7 +125,7 @@ const defaultSettingsContext: SettingsContextType = {
   isDrawerShouldHide: false,
   setIsDrawerShouldHide: () => {},
   selectedBlockExplorer: BLOCK_EXPLORERS.default,
-  setBlockExplorerStorage: async (explorer: BlockExplorer) => false,
+  setBlockExplorerStorage: async () => false,
 };
 
 export const SettingsContext = createContext<SettingsContextType>(defaultSettingsContext);
@@ -146,7 +144,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
   const [isClipboardGetContentEnabled, setIsClipboardGetContentEnabled] = useState<boolean>(true);
   const [isQuickActionsEnabled, setIsQuickActionsEnabled] = useState<boolean>(true);
   const [isTotalBalanceEnabled, setIsTotalBalanceEnabled] = useState<boolean>(true);
-  const [totalBalancePreferredUnit, setTotalBalancePreferredUnit] = useState<BitcoinUnit>(BitcoinUnit.BTC);
+  const [totalBalancePreferredUnit, setTotalBalancePreferredUnit] = useState<DoichainUnit>(DoichainUnit.DOI);
   const [isDrawerShouldHide, setIsDrawerShouldHide] = useState<boolean>(false);
   const [selectedBlockExplorer, setSelectedBlockExplorer] = useState<BlockExplorer>(BLOCK_EXPLORERS.default);
 
@@ -161,92 +159,49 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
         console.error('Error setting preference name:', e);
       }
 
-      try {
-        const handOff = await getIsHandOffUseEnabled();
-        setIsHandOffUseEnabledState(handOff);
-      } catch (e) {
-        console.error('Error loading isHandOffUseEnabled:', e);
-        setIsHandOffUseEnabledState(false);
-      }
+      const promises: Promise<void>[] = [
+        getIsHandOffUseEnabled().then(handOff => {
+          setIsHandOffUseEnabledState(handOff);
+        }),
+        languageStorage.getItem().then(lang => {
+          setLanguage(lang ?? 'en');
+        }),
+        isBalanceDisplayAllowed().then(balanceDisplayAllowed => {
+          setIsWidgetBalanceDisplayAllowed(balanceDisplayAllowed);
+        }),
+        isURv1Enabled().then(urv1Enabled => {
+          setIsLegacyURv1Enabled(urv1Enabled);
+        }),
+        BlueClipboard()
+          .isReadClipboardAllowed()
+          .then(clipboardEnabled => {
+            setIsClipboardGetContentEnabled(clipboardEnabled);
+          }),
+        getIsDeviceQuickActionsEnabled().then(quickActionsEnabled => {
+          setIsQuickActionsEnabled(quickActionsEnabled);
+        }),
+        getDoNotTrackStorage().then(doNotTrack => {
+          setIsDoNotTrackEnabled(doNotTrack);
+        }),
+        getIsTotalBalanceViewEnabled().then(totalBalanceEnabled => {
+          setIsTotalBalanceEnabled(totalBalanceEnabled);
+        }),
+        getTotalBalancePreferredUnit().then(preferredUnit => {
+          setTotalBalancePreferredUnit(preferredUnit);
+        }),
+        getBlockExplorerUrl().then(url => {
+          const predefinedExplorer = Object.values(BLOCK_EXPLORERS).find(explorer => normalizeUrl(explorer.url) === normalizeUrl(url));
+          setSelectedBlockExplorer(predefinedExplorer ?? ({ key: 'custom', name: 'Custom', url } as BlockExplorer));
+        }),
+      ];
 
-      try {
-        const lang = await languageStorage.getItem();
-        setLanguage(lang ?? 'en');
-      } catch (e) {
-        console.error('Error loading language:', e);
-        setLanguage('en');
-      }
+      const results = await Promise.allSettled(promises);
 
-      try {
-        const balanceDisplayAllowed = await isBalanceDisplayAllowed();
-        setIsWidgetBalanceDisplayAllowed(balanceDisplayAllowed);
-      } catch (e) {
-        console.error('Error loading isBalanceDisplayAllowed:', e);
-        setIsWidgetBalanceDisplayAllowed(true);
-      }
-
-      try {
-        const urv1Enabled = await isURv1Enabled();
-        setIsLegacyURv1Enabled(urv1Enabled);
-      } catch (e) {
-        console.error('Error loading isURv1Enabled:', e);
-        setIsLegacyURv1Enabled(false);
-      }
-
-      try {
-        const clipboardEnabled = await BlueClipboard().isReadClipboardAllowed();
-        setIsClipboardGetContentEnabled(clipboardEnabled);
-      } catch (e) {
-        console.error('Error loading isClipboardGetContentEnabled:', e);
-        setIsClipboardGetContentEnabled(true);
-      }
-
-      try {
-        const quickActionsEnabledStorage = await getIsDeviceQuickActionsEnabled();
-        setIsQuickActionsEnabled(quickActionsEnabledStorage);
-      } catch (e) {
-        console.error('Error loading isQuickActionsEnabled:', e);
-        setIsQuickActionsEnabled(true);
-      }
-
-      try {
-        const doNotTrack = await getDoNotTrackStorage();
-        setIsDoNotTrackEnabled(doNotTrack);
-      } catch (e) {
-        console.error('Error loading isDoNotTrackEnabled:', e);
-        setIsDoNotTrackEnabled(false);
-      }
-
-      try {
-        const totalBalanceEnabled = await getIsTotalBalanceViewEnabled();
-        setIsTotalBalanceEnabled(totalBalanceEnabled);
-      } catch (e) {
-        console.error('Error loading isTotalBalanceEnabled:', e);
-        setIsTotalBalanceEnabled(true);
-      }
-
-      try {
-        const preferredUnit = await getTotalBalancePreferredUnit();
-        setTotalBalancePreferredUnit(preferredUnit);
-      } catch (e) {
-        console.error('Error loading totalBalancePreferredUnit:', e);
-        setTotalBalancePreferredUnit(BitcoinUnit.BTC);
-      }
-
-      try {
-        const blockExplorerUrl = await getBlockExplorerUrl();
-        const predefinedExplorer = Object.values(BLOCK_EXPLORERS).find(
-          explorer => normalizeUrl(explorer.url) === normalizeUrl(blockExplorerUrl),
-        );
-        if (predefinedExplorer) {
-          setSelectedBlockExplorer(predefinedExplorer);
-        } else {
-          setSelectedBlockExplorer({ key: 'custom', name: 'Custom', url: blockExplorerUrl });
+      results.forEach((result, index) => {
+        if (result.status === 'rejected') {
+          console.error(`Error loading setting ${index}:`, result.reason);
         }
-      } catch (e) {
-        console.error('Error loading selectedBlockExplorer:', e);
-        setSelectedBlockExplorer(BLOCK_EXPLORERS.default);
-      }
+      });
     };
 
     loadSettings();
@@ -255,7 +210,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
   useEffect(() => {
     if (walletsInitialized) {
       initCurrencyDaemon()
-        .then(() => getPreferredCurrency())
+        .then(getPreferredCurrency)
         .then(currency => {
           console.debug('SettingsContext currency:', currency);
           setPreferredFiatCurrency(currency as TFiatUnit);
@@ -266,7 +221,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
     }
   }, [walletsInitialized]);
 
-  const setPreferredFiatCurrencyStorage = useCallback(async (currency: TFiatUnit) => {
+  const setPreferredFiatCurrencyStorage = useCallback(async (currency: TFiatUnit): Promise<void> => {
     try {
       setPreferredFiatCurrency(currency);
       await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
@@ -276,7 +231,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
     }
   }, []);
 
-  const setLanguageStorage = useCallback(async (newLanguage: string) => {
+  const setLanguageStorage = useCallback(async (newLanguage: string): Promise<void> => {
     try {
       await saveLanguage(newLanguage);
       setLanguage(newLanguage);
@@ -285,15 +240,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
     }
   }, []);
 
-  const setIsAdvancedModeEnabledStorage = useCallback(
-    async (value: boolean) => {
-      await advancedModeStorage.setItem(JSON.stringify(value));
-      setIsAdvancedModeEnabled(value);
-    },
-    [advancedModeStorage],
-  );
-
-  const setDoNotTrackStorage = useCallback(async (value: boolean) => {
+  const setDoNotTrackStorage = useCallback(async (value: boolean): Promise<void> => {
     try {
       await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
       if (value) {
@@ -307,7 +254,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
     }
   }, []);
 
-  const setIsHandOffUseEnabledAsyncStorage = useCallback(async (value: boolean) => {
+  const setIsHandOffUseEnabledAsyncStorage = useCallback(async (value: boolean): Promise<void> => {
     try {
       console.debug('setIsHandOffUseEnabledAsyncStorage', value);
       await setIsHandOffUseEnabled(value);
@@ -317,7 +264,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
     }
   }, []);
 
-  const setIsWidgetBalanceDisplayAllowedStorage = useCallback(async (value: boolean) => {
+  const setIsWidgetBalanceDisplayAllowedStorage = useCallback(async (value: boolean): Promise<void> => {
     try {
       await setBalanceDisplayAllowed(value);
       setIsWidgetBalanceDisplayAllowed(value);
@@ -326,7 +273,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
     }
   }, []);
 
-  const setIsLegacyURv1EnabledStorage = useCallback(async (value: boolean) => {
+  const setIsLegacyURv1EnabledStorage = useCallback(async (value: boolean): Promise<void> => {
     try {
       if (value) {
         await setUseURv1();
@@ -339,7 +286,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
     }
   }, []);
 
-  const setIsClipboardGetContentEnabledStorage = useCallback(async (value: boolean) => {
+  const setIsClipboardGetContentEnabledStorage = useCallback(async (value: boolean): Promise<void> => {
     try {
       await BlueClipboard().setReadClipboardAllowed(value);
       setIsClipboardGetContentEnabled(value);
@@ -348,7 +295,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
     }
   }, []);
 
-  const setIsQuickActionsEnabledStorage = useCallback(async (value: boolean) => {
+  const setIsQuickActionsEnabledStorage = useCallback(async (value: boolean): Promise<void> => {
     try {
       await setIsDeviceQuickActionsEnabled(value);
       setIsQuickActionsEnabled(value);
@@ -357,7 +304,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
     }
   }, []);
 
-  const setIsPrivacyBlurEnabledState = useCallback((value: boolean) => {
+  const setIsPrivacyBlurEnabledState = useCallback((value: boolean): void => {
     try {
       setIsPrivacyBlurEnabled(value);
       console.debug(`Privacy blur: ${value}`);
@@ -366,7 +313,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
     }
   }, []);
 
-  const setIsTotalBalanceEnabledStorage = useCallback(async (value: boolean) => {
+  const setIsTotalBalanceEnabledStorage = useCallback(async (value: boolean): Promise<void> => {
     try {
       await setTotalBalanceViewEnabledStorage(value);
       setIsTotalBalanceEnabled(value);
@@ -375,7 +322,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
     }
   }, []);
 
-  const setTotalBalancePreferredUnitStorage = useCallback(async (unit: DoichainUnit) => {
+  const setTotalBalancePreferredUnitStorage = useCallback(async (unit: DoichainUnit): Promise<void> => {
     try {
       await setTotalBalancePreferredUnitStorageFunc(unit);
       setTotalBalancePreferredUnit(unit);
