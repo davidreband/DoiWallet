@@ -180,6 +180,7 @@ struct PriceView: View {
   }
 }
 
+@available(iOS 16.0, *)
 struct PriceView_Previews: PreviewProvider {
   static var previews: some View {
     Group {

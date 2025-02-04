@@ -1364,7 +1364,7 @@
 				B44033E42BCC36FF00162242 /* WalletData.swift in Sources */,
 				B44033BF2BCC32F800162242 /* BitcoinUnit.swift in Sources */,
 				B44034052BCC389200162242 /* XMLParserDelegate.swift in Sources */,
-				B4C0752A2CDDB3C500322A84 /* MenuElementsEmitter.m in Sources */,
+				B48630DD2CCEE7AC00A8425C /* PriceWidgetEntry.swift in Sources */,
 				B44033F92BCC379200162242 /* WidgetDataStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
