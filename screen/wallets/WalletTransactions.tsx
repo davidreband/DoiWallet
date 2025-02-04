@@ -44,6 +44,7 @@ import { presentWalletExportReminder } from '../../helpers/presentWalletExportRe
 import selectWallet from '../../helpers/select-wallet';
 import assert from 'assert';
 import { useSettings } from '../../hooks/context/useSettings';
+import useMenuElements from '../../hooks/useMenuElements';
 
 const buttonFontSize =
   PixelRatio.roundToNearestPixel(Dimensions.get('window').width / 26) > 22
@@ -53,8 +54,8 @@ const buttonFontSize =
 type WalletTransactionsProps = NativeStackScreenProps<DetailViewStackParamList, 'WalletTransactions'>;
 
 const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
-  const { wallets, saveToDisk, setSelectedWalletID, setReloadTransactionsMenuActionFunction } = useStorage();
-  const { isElectrumDisabled } = useSettings();
+  const { wallets, saveToDisk, setSelectedWalletID, isElectrumDisabled } = useStorage();
+  const { setReloadTransactionsMenuActionFunction } = useMenuElements();
   const { isBiometricUseCapableAndEnabled } = useBiometrics();
   const [isLoading, setIsLoading] = useState(false);
   const { walletID } = route.params;
@@ -373,7 +374,8 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
         task.cancel();
         setReloadTransactionsMenuActionFunction(() => {});
       };
-    }, [setReloadTransactionsMenuActionFunction, refreshTransactions]),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [refreshTransactions]),
   );
 
   const refreshProps = isDesktop || isElectrumDisabled ? {} : { refreshing: isLoading, onRefresh: refreshTransactions };
