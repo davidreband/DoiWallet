@@ -9,9 +9,9 @@
 import Foundation
 
 struct UserDefaultsElectrumSettings {
-  let host: String?
-  let port: UInt16?
-  let sslPort: UInt16?
+    var host: String?
+    var port: UInt16?
+    var sslPort: UInt16?
 }
 
 let hardcodedPeers = [
@@ -28,34 +28,19 @@ class UserDefaultsGroup {
   static private let suite = UserDefaults(suiteName: UserDefaultsGroupKey.GroupName.rawValue)
 
   static func getElectrumSettings() -> UserDefaultsElectrumSettings {
-         // Ensure the suite exists
-         guard let suite = UserDefaultsGroup.suite else {
-             // Return a default Electrum setting if suite is unavailable
-             return UserDefaultsElectrumSettings(host: "electrum.blockstream.info", port: 50002, sslPort: 50001)
-         }
-         
-         // Retrieve Electrum host
-         guard let electrumSettingsHost = suite.string(forKey: UserDefaultsGroupKey.ElectrumSettingsHost.rawValue),
-               !electrumSettingsHost.isEmpty else {
-             // Return a random default Electrum peer if host is not set
-             if let defaultPeer = DefaultElectrumPeers.randomElement() {
-                 return defaultPeer
-             } else {
-                 // Fallback to a known default
-                 return UserDefaultsElectrumSettings(host: "electrum.blockstream.info", port: 50002, sslPort: 50001)
-             }
-         }
-         
-         // Retrieve and convert TCP port
-         let electrumSettingsTCPPortString = suite.string(forKey: UserDefaultsGroupKey.ElectrumSettingsTCPPort.rawValue) ?? "50001"
-         let electrumSettingsSSLPortString = suite.string(forKey: UserDefaultsGroupKey.ElectrumSettingsSSLPort.rawValue) ?? "50002"
-         
-         // Safely convert port strings to UInt16
-         let port: UInt16 = UInt16(electrumSettingsTCPPortString) ?? 50001
-         let sslPort: UInt16 = UInt16(electrumSettingsSSLPortString) ?? 50002
-         
-         return UserDefaultsElectrumSettings(host: electrumSettingsHost, port: port, sslPort: sslPort)
-     }
+    guard let electrumSettingsHost = suite?.string(forKey: UserDefaultsGroupKey.ElectrumSettingsHost.rawValue) else {
+      return DefaultElectrumPeers.randomElement()!
+    }
+    
+    let electrumSettingsTCPPort = suite?.value(forKey: UserDefaultsGroupKey.ElectrumSettingsTCPPort.rawValue) ?? 50001
+    let electrumSettingsSSLPort = suite?.value(forKey: UserDefaultsGroupKey.ElectrumSettingsSSLPort.rawValue) ?? 443
+    
+    let host = electrumSettingsHost
+    let sslPort = electrumSettingsSSLPort
+    let port = electrumSettingsTCPPort
+
+    return UserDefaultsElectrumSettings(host: host, port: port as! UInt16, sslPort: sslPort as! UInt16)
+  }
   
   static func getAllWalletsBalance() -> Double {
     guard let allWalletsBalance = suite?.string(forKey: UserDefaultsGroupKey.AllWalletsBalance.rawValue) else {
