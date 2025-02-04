@@ -246,10 +246,14 @@ const DetailViewStackScreensStack = () => {
         options={navigationStyle({ title: loc.addresses.addresses_title, statusBarStyle: 'auto' })(theme)}
       />
 
-      <DetailViewStack.Screen name="AddWalletRoot" component={AddWalletStack} options={NavigationFormModalOptions} />
-      <DetailViewStack.Screen name="SendDetailsRoot" component={SendDetailsStack} options={NavigationDefaultOptions} />
-      {/* <DetailViewStack.Screen name="LNDCreateInvoiceRoot" component={LNDCreateInvoiceRoot} options={NavigationDefaultOptions} /> */}
-      {/* <DetailViewStack.Screen name="ScanLndInvoiceRoot" component={ScanLndInvoiceRoot} options={NavigationDefaultOptions} /> */}
+      <DetailViewStack.Screen
+        name="AddWalletRoot"
+        component={AddWalletStack}
+        options={navigationStyle({ closeButtonPosition: CloseButtonPosition.Left, ...NavigationFormModalOptions })(theme)}
+      />
+      <DetailViewStack.Screen name="SendDetailsRoot" component={SendDetailsStack} options={NavigationFormModalOptions} />
+      <DetailViewStack.Screen name="LNDCreateInvoiceRoot" component={LNDCreateInvoiceRoot} options={NavigationDefaultOptions} />
+      <DetailViewStack.Screen name="ScanLndInvoiceRoot" component={ScanLndInvoiceRoot} options={NavigationDefaultOptions} />
       <DetailViewStack.Screen name="AztecoRedeemRoot" component={AztecoRedeemStackRoot} options={NavigationDefaultOptions} />
       {/* screens */}
       <DetailViewStack.Screen
