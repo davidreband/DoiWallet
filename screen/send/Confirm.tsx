@@ -7,7 +7,6 @@ import * as bitcoin from '@doichain/doichainjs-lib';
 import { BlueText, BlueCard } from '../../BlueComponents';
 import { DoichainUnit} from '../../models/doichainUnits';
 import loc, { formatBalance, formatBalanceWithoutSuffix } from '../../loc';
-import Notifications from '../../blue_modules/notifications';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import presentAlert from '../../components/Alert';
 import { useTheme } from '../../components/themes';
@@ -27,6 +26,7 @@ import { useStorage } from '../../hooks/context/useStorage';
 import { HDSegwitBech32Wallet } from '../../class';
 import { useSettings } from '../../hooks/context/useSettings';
 import { DOICHAIN } from '../../blue_modules/network';
+import { majorTomToGroundControl } from '../../blue_modules/notifications';
 
 enum ActionType {
   SET_LOADING = 'SET_LOADING',
@@ -217,8 +217,7 @@ const Confirm: React.FC = () => {
 
       const txid = bitcoin.Transaction.fromHex(tx).getId();
       txidsToWatch.push(txid);
-      // @ts-ignore: Notifications has to be TSed
-      Notifications.majorTomToGroundControl([], [], txidsToWatch);
+      majorTomToGroundControl([], [], txidsToWatch);
       let amount = 0;
       for (const recipient of recipients) {
         if (recipient.value) {

@@ -7,10 +7,11 @@ import A from '../blue_modules/analytics';
 import { getClipboardContent } from '../blue_modules/clipboard';
 import { updateExchangeRate } from '../blue_modules/currency';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../blue_modules/hapticFeedback';
-import Notifications, {
+import {
   clearStoredNotifications,
   getDeliveredNotifications,
   getStoredNotifications,
+  initializeNotifications,
   removeAllDeliveredNotifications,
   setApplicationIconBadgeNumber,
 } from '../blue_modules/notifications';
@@ -44,7 +45,6 @@ const CompanionDelegates = () => {
   const clipboardContent = useRef<undefined | string>();
 
   useWatchConnectivity();
-
   useWidgetCommunication();
   useMenuElements();
 
@@ -109,6 +109,10 @@ const CompanionDelegates = () => {
 
     return false;
   }, [fetchAndSaveWalletTransactions, refreshAllWalletTransactions, wallets]);
+
+  useEffect(() => {
+    initializeNotifications(processPushNotifications);
+  }, [processPushNotifications]);
 
   const handleOpenURL = useCallback(
     async (event: { url: string }): Promise<void> => {
@@ -248,13 +252,10 @@ const CompanionDelegates = () => {
   }, [addListeners]);
 
   return (
-    <>
-      <Notifications onProcessNotifications={processPushNotifications} />
-      <Suspense fallback={null}>
-        {isQuickActionsEnabled && <DeviceQuickActions />}
-        {isHandOffUseEnabled && <HandOffComponentListener />}
-      </Suspense>
-    </>
+    <Suspense fallback={null}>
+      {isQuickActionsEnabled && <DeviceQuickActions />}
+      {isHandOffUseEnabled && <HandOffComponentListener />}
+    </Suspense>
   );
 };
 
