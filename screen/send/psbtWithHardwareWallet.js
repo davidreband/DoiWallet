@@ -25,7 +25,8 @@ import { DOICHAIN } from "../../blue_modules/network";
 
 
 const PsbtWithHardwareWallet = () => {
-  const { txMetadata, fetchAndSaveWalletTransactions, isElectrumDisabled, wallets } = useStorage();
+  const { txMetadata, fetchAndSaveWalletTransactions, wallets } = useStorage();
+  const { isElectrumDisabled } = useSettings();
   const { isBiometricUseCapableAndEnabled } = useBiometrics();
   const navigation = useExtendedNavigation();
   const route = useRoute();

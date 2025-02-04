@@ -14,6 +14,7 @@ import { useStorage } from '../../hooks/context/useStorage';
 import { DoichainUnit} from '../../models/doichainUnits';
 import { TotalWalletsBalanceKey, TotalWalletsBalancePreferredUnit } from '../TotalWalletsBalance';
 import { BLOCK_EXPLORERS, getBlockExplorerUrl, saveBlockExplorer, BlockExplorer, normalizeUrl } from '../../models/blockExplorer';
+import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 
 const getDoNotTrackStorage = async (): Promise<boolean> => {
   try {
@@ -99,6 +100,8 @@ interface SettingsContextType {
   setIsDrawerShouldHide: (value: boolean) => void;
   selectedBlockExplorer: BlockExplorer;
   setBlockExplorerStorage: (explorer: BlockExplorer) => Promise<boolean>;
+  isElectrumDisabled: boolean;
+  setIsElectrumDisabled: (value: boolean) => void;
 }
 
 const defaultSettingsContext: SettingsContextType = {
@@ -130,6 +133,8 @@ const defaultSettingsContext: SettingsContextType = {
   setIsDrawerShouldHide: () => {},
   selectedBlockExplorer: BLOCK_EXPLORERS.default,
   setBlockExplorerStorage: async () => false,
+  isElectrumDisabled: false,
+  setIsElectrumDisabled: () => {},
 };
 
 export const SettingsContext = createContext<SettingsContextType>(defaultSettingsContext);
@@ -148,6 +153,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
   const [totalBalancePreferredUnit, setTotalBalancePreferredUnit] = useState<DoichainUnit>(DoichainUnit.DOI);
   const [isDrawerShouldHide, setIsDrawerShouldHide] = useState<boolean>(false);
   const [selectedBlockExplorer, setSelectedBlockExplorer] = useState<BlockExplorer>(BLOCK_EXPLORERS.default);
+  const [isElectrumDisabled, setIsElectrumDisabled] = useState<boolean>(true);
 
   const languageStorage = useAsyncStorage(STORAGE_KEY);
   const { walletsInitialized } = useStorage();
@@ -161,6 +167,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
       }
 
       const promises: Promise<void>[] = [
+        BlueElectrum.isDisabled().then(disabled => {
+          setIsElectrumDisabled(disabled);
+        }),
         getIsHandOffUseEnabled().then(handOff => {
           setIsHandOffUseEnabledState(handOff);
         }),
@@ -221,6 +230,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
         });
     }
   }, [walletsInitialized]);
+
+  useEffect(() => {
+    if (walletsInitialized) {
+      isElectrumDisabled ? BlueElectrum.forceDisconnect() : BlueElectrum.connectMain();
+    }
+  }, [isElectrumDisabled, walletsInitialized]);
 
   const setPreferredFiatCurrencyStorage = useCallback(async (currency: TFiatUnit): Promise<void> => {
     try {
@@ -375,6 +390,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
       setIsDrawerShouldHide,
       selectedBlockExplorer,
       setBlockExplorerStorage,
+      isElectrumDisabled,
+      setIsElectrumDisabled,
     }),
     [
       preferredFiatCurrency,
@@ -405,6 +422,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
       setIsDrawerShouldHide,
       selectedBlockExplorer,
       setBlockExplorerStorage,
+      isElectrumDisabled,
     ],
   );
 
