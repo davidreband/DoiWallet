@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import BigNumber from 'bignumber.js';
 import * as bitcoin from '@doichain/doichainjs-lib';
 import { Alert } from 'react-native';
@@ -10,6 +9,7 @@ import { LegacyWallet, SegwitBech32Wallet, SegwitP2SHWallet, TaprootWallet } fro
 import presentAlert from '../components/Alert';
 import loc from '../loc';
 import { GROUP_IO_BLUEWALLET } from './currency';
+import { ElectrumServerItem } from '../screen/settings/ElectrumSettings';
 
 const ElectrumClient = require('electrum-client');
 const net = require('net');
@@ -71,12 +71,12 @@ type MempoolTransaction = {
 type Peer =
   | {
       host: string;
-      ssl: string;
+      ssl: number;
       tcp?: undefined;
     }
   | {
       host: string;
-      tcp: string;
+      tcp: number;
       ssl?: undefined;
     };
 
@@ -138,23 +138,56 @@ async function _getRealm() {
   return _realm;
 }
 
+export const getPreferredServer = async (): Promise<ElectrumServerItem | undefined> => {
+  await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
+  const host = (await DefaultPreference.get(ELECTRUM_HOST)) as string;
+  const tcpPort = await DefaultPreference.get(ELECTRUM_TCP_PORT);
+  const sslPort = await DefaultPreference.get(ELECTRUM_SSL_PORT);
+
+  console.log('Getting preferred server:', { host, tcpPort, sslPort });
+
+  if (!host) {
+    console.warn('Preferred server host is undefined');
+    return;
+  }
+
+  return {
+    host,
+    tcp: tcpPort ? Number(tcpPort) : undefined,
+    ssl: sslPort ? Number(sslPort) : undefined,
+  };
+};
+
+export const removePreferredServer = async () => {
+  await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
+  console.log('Removing preferred server');
+  await DefaultPreference.clear(ELECTRUM_HOST);
+  await DefaultPreference.clear(ELECTRUM_TCP_PORT);
+  await DefaultPreference.clear(ELECTRUM_SSL_PORT);
+};
+
 export async function isDisabled(): Promise<boolean> {
   let result;
   try {
-    const savedValue = await AsyncStorage.getItem(ELECTRUM_CONNECTION_DISABLED);
+    await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
+    const savedValue = await DefaultPreference.get(ELECTRUM_CONNECTION_DISABLED);
+    console.log('Getting Electrum connection disabled state:', savedValue);
     if (savedValue === null) {
       result = false;
     } else {
       result = savedValue;
     }
-  } catch {
+  } catch (error) {
+    console.error('Error getting Electrum connection disabled state:', error);
     result = false;
   }
   return !!result;
 }
 
 export async function setDisabled(disabled = true) {
-  return AsyncStorage.setItem(ELECTRUM_CONNECTION_DISABLED, disabled ? '1' : '');
+  await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
+  console.log('Setting Electrum connection disabled state to:', disabled);
+  return DefaultPreference.set(ELECTRUM_CONNECTION_DISABLED, disabled ? '1' : '');
 }
 
 function getCurrentPeer() {
@@ -172,20 +205,23 @@ function getNextPeer() {
 }
 
 async function getSavedPeer(): Promise<Peer | null> {
-  const host = await AsyncStorage.getItem(ELECTRUM_HOST);
-  const tcpPort = await AsyncStorage.getItem(ELECTRUM_TCP_PORT);
-  const sslPort = await AsyncStorage.getItem(ELECTRUM_SSL_PORT);
+  await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
+  const host = (await DefaultPreference.get(ELECTRUM_HOST)) as string;
+  const tcpPort = await DefaultPreference.get(ELECTRUM_TCP_PORT);
+  const sslPort = await DefaultPreference.get(ELECTRUM_SSL_PORT);
+
+  console.log('Getting saved peer:', { host, tcpPort, sslPort });
 
   if (!host) {
     return null;
   }
 
   if (sslPort) {
-    return { host, ssl: sslPort };
+    return { host, ssl: Number(sslPort) };
   }
 
   if (tcpPort) {
-    return { host, tcp: tcpPort };
+    return { host, tcp: Number(tcpPort) };
   }
 
   return null;
@@ -209,10 +245,6 @@ export async function connectMain(): Promise<void> {
       await DefaultPreference.set(ELECTRUM_HOST, randomPeer.host);
       await DefaultPreference.set(ELECTRUM_TCP_PORT, randomPeer.tcp ?? '');
       await DefaultPreference.set(ELECTRUM_SSL_PORT, randomPeer.ssl ?? '');
-    } else {
-      await DefaultPreference.set(ELECTRUM_HOST, usingPeer.host);
-      await DefaultPreference.set(ELECTRUM_TCP_PORT, usingPeer.tcp ?? '');
-      await DefaultPreference.set(ELECTRUM_SSL_PORT, usingPeer.ssl ?? '');
     }
   } catch (e) {
     // Must be running on Android
@@ -293,6 +325,38 @@ export async function connectMain(): Promise<void> {
   }
 }
 
+export async function presentResetToDefaultsAlert(): Promise<boolean> {
+  return new Promise(resolve => {
+    presentAlert({
+      title: loc.settings.electrum_reset,
+      message: loc.settings.electrum_reset_to_default,
+      buttons: [
+        {
+          text: loc._.cancel,
+          style: 'cancel',
+          onPress: () => resolve(false),
+        },
+        {
+          text: loc._.ok,
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
+              await DefaultPreference.clear(ELECTRUM_HOST);
+              await DefaultPreference.clear(ELECTRUM_SSL_PORT);
+              await DefaultPreference.clear(ELECTRUM_TCP_PORT);
+            } catch (e) {
+              console.log(e); // Must be running on Android
+            }
+            resolve(true);
+          },
+        },
+      ],
+      options: { cancelable: true },
+    });
+  });
+}
+
 const presentNetworkErrorAlert = async (usingPeer?: Peer) => {
   if (await isDisabled()) {
     console.log(
@@ -300,6 +364,7 @@ const presentNetworkErrorAlert = async (usingPeer?: Peer) => {
     );
     return;
   }
+
   presentAlert({
     allowRepeat: false,
     title: loc.errors.network,
@@ -351,8 +416,6 @@ const presentNetworkErrorAlert = async (usingPeer?: Peer) => {
             ],
             options: { cancelable: true },
           });
-          connectionAttempt = 0;
-          mainClient.close() && mainClient.close();
         },
         style: 'destructive',
       },
@@ -378,13 +441,18 @@ const presentNetworkErrorAlert = async (usingPeer?: Peer) => {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function getRandomDynamicPeer(): Promise<Peer> {
   try {
-    let peers = JSON.parse((await AsyncStorage.getItem(storageKey)) as string);
+    let peers = JSON.parse((await DefaultPreference.get(storageKey)) as string);
     peers = peers.sort(() => Math.random() - 0.5); // shuffle
     for (const peer of peers) {
-      const ret = {
-        host: peer[1] as string,
-        tcp: '',
-      };
+      const ret: Peer = { host: peer[0], ssl: peer[1] };
+      ret.host = peer[1];
+
+      if (peer[1] === 's') {
+        ret.ssl = peer[2];
+      } else {
+        ret.tcp = peer[2];
+      }
+
       for (const item of peer[2]) {
         if (item.startsWith('t')) {
           ret.tcp = item.replace('t', '');
