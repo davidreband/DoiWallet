@@ -29,8 +29,6 @@ import HeaderMenuButton from '../../components/HeaderMenuButton';
 import ListItem from '../../components/ListItem';
 import SafeArea from '../../components/SafeArea';
 import { useTheme } from '../../components/themes';
-
-
 import { Action } from '../../components/types';
 import { useStorage } from '../../hooks/context/useStorage';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
