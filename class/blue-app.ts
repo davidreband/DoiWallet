@@ -286,6 +286,7 @@ export class BlueApp {
       schema,
       path,
       encryptionKey,
+      excludeFromIcloudBackup: true,
     });
   }
 
@@ -328,6 +329,7 @@ export class BlueApp {
       schema,
       path,
       encryptionKey,
+      excludeFromIcloudBackup: true,
     });
   }
 

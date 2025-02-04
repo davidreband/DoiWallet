@@ -132,6 +132,7 @@ async function _getRealm() {
     schema,
     path,
     encryptionKey,
+    excludeFromIcloudBackup: true,
   });
 
   return _realm;
