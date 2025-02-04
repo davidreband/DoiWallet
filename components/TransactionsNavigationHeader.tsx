@@ -22,13 +22,13 @@ interface TransactionsNavigationHeaderProps {
 }
 
 const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> = ({
-  wallet: initialWallet,
+  wallet,
   onWalletUnitChange,
   onManageFundsPressed,
   onWalletBalanceVisibilityChange,
   unit = DoichainUnit.DOI,
 }) => {
-  const [wallet, setWallet] = useState(initialWallet);
+  const { hideBalance } = wallet;
   const [allowOnchainAddress, setAllowOnchainAddress] = useState(false);
   const { preferredFiatCurrency } = useSettings();
 
@@ -45,10 +45,9 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
   }, [wallet]);
 
   useEffect(() => {
-    setWallet(initialWallet);
-  }, [initialWallet]);
+    verifyIfWalletAllowsOnchainAddress();
+  }, [wallet, verifyIfWalletAllowsOnchainAddress]);
 
-  
   const handleCopyPress = useCallback(() => {
     const value = formatBalance(wallet.getBalance(), unit);
     if (value) {
@@ -57,8 +56,8 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
   }, [unit, wallet]);
 
   const handleBalanceVisibility = useCallback(() => {
-    onWalletBalanceVisibilityChange?.(!wallet.hideBalance);
-  }, [onWalletBalanceVisibilityChange, wallet.hideBalance]);
+    onWalletBalanceVisibilityChange?.(!hideBalance);
+  }, [onWalletBalanceVisibilityChange, hideBalance]);
 
   const changeWalletBalanceUnit = () => {
     let newWalletPreferredUnit = wallet.getPreferredBalanceUnit();
@@ -110,16 +109,15 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
   }, []);
 
   const balance = useMemo(() => {
-    const hideBalance = wallet.hideBalance;
     const balanceFormatted =
       unit === DoichainUnit.LOCAL_CURRENCY
         ? formatBalance(wallet.getBalance(), unit, true)
         : formatBalanceWithoutSuffix(wallet.getBalance(), unit, true);
     return !hideBalance && balanceFormatted;
-  }, [unit, wallet]);
+  }, [unit, wallet, hideBalance]);
 
   const toolTipWalletBalanceActions = useMemo(() => {
-    return wallet.hideBalance
+    return hideBalance
       ? [
           {
             id: 'walletBalanceVisibility',
@@ -145,7 +143,7 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
             },
           },
         ];
-  }, [wallet.hideBalance]);
+  }, [hideBalance]);
 
   const imageSource = useMemo(() => {
     switch (wallet.type) {     
@@ -157,7 +155,7 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
   }, [wallet.type]);
 
   useAnimateOnChange(balance);
-  useAnimateOnChange(wallet.hideBalance);
+  useAnimateOnChange(hideBalance);
   useAnimateOnChange(unit);
   useAnimateOnChange(wallet.getID?.());
 
@@ -182,7 +180,7 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
           actions={toolTipWalletBalanceActions}
         >
           <View style={styles.walletBalance}>
-            {wallet.hideBalance ? (
+            {hideBalance ? (
               <BlurredBalanceView />
             ) : (
               <View>
