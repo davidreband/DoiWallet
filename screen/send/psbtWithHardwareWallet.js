@@ -18,11 +18,11 @@ import { useTheme } from '../../components/themes';
 import { scanQrHelper } from '../../helpers/scan-qr';
 import { useBiometrics, unlockWithBiometrics } from '../../hooks/useBiometrics';
 import loc from '../../loc';
+import { DOICHAIN } from '../../blue_modules/network'
 
 import { useStorage } from '../../hooks/context/useStorage';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
-import { DOICHAIN } from "../../blue_modules/network";
-
+import { useSettings } from '../../hooks/context/useSettings';
 
 const PsbtWithHardwareWallet = () => {
   const { txMetadata, fetchAndSaveWalletTransactions, wallets } = useStorage();

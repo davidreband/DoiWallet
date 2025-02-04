@@ -26,6 +26,7 @@ import { ContactList } from '../../class/contact-list';
 import { useStorage } from '../../hooks/context/useStorage';
 import { HDSegwitBech32Wallet } from '../../class';
 import { useSettings } from '../../hooks/context/useSettings';
+import { DOICHAIN } from '../../blue_modules/network';
 
 enum ActionType {
   SET_LOADING = 'SET_LOADING',
