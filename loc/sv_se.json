@@ -23,7 +23,7 @@
   },
   "azteco": {
     "codeIs": "Din kupong är",
-    "errorBeforeRefeem": "Innan inlösen måste du först skapa en Doi plånbok.",
+    "errorBeforeRefeem": "Innan du löser in måste du skapa en bitcoin-plånbok.",
     "errorSomething": "Något gick fel. Är din kupong fortfarande giltig?",
     "redeem": "Lös in till en plånbok",
     "redeemButton": "Lös in",
@@ -172,7 +172,7 @@
     "about": "Om",
     "about_awesome": "Byggd med det fantastiska",
     "about_backup": "Backa alltid upp dina nycklar!",
-    "about_free": "DoiWallet är ett fritt och öppen källkods projekt. Skapad av Doi användare.",
+    "about_free": "BlueWallet är gratis och byggs av bitcoin-användare med hjälp av öppen källkod.",
     "about_license": "MIT-licens",
     "about_release_notes": "Versionsinformation",
     "about_review": "Lämna oss en recension",
