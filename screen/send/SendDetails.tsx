@@ -1836,10 +1836,10 @@ const SendDetails = () => {
           onBarScanned={processAddressData}
           address={item.address}
           isLoading={isLoading}
-          /* @ts-ignore marcos fixme */
           inputAccessoryViewID={DismissKeyboardInputAccessoryViewID}
           launchedBy={name}
           editable={isEditable}
+          style={styles.addressInput}
         />
         {addresses.length > 1 && (
           <Text style={[styles.of, stylesHook.of]}>{loc.formatString(loc._.of, { number: index + 1, total: addresses.length })}</Text>
@@ -1884,7 +1884,6 @@ const SendDetails = () => {
             style={styles.memoText}
             editable={!isLoading}
             onSubmitEditing={Keyboard.dismiss}
-            /* @ts-ignore marcos fixme */
             inputAccessoryViewID={DismissKeyboardInputAccessoryViewID}
           />
         </View>
@@ -1990,7 +1989,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     minHeight: 44,
     height: 44,
-    marginHorizontal: 20,
+    marginHorizontal: 16,
     alignItems: 'center',
     marginVertical: 8,
     borderRadius: 4,
@@ -2003,7 +2002,7 @@ const styles = StyleSheet.create({
   },
   fee: {
     flexDirection: 'row',
-    marginHorizontal: 20,
+    marginHorizontal: 16,
     justifyContent: 'space-between',
     alignItems: 'center',
   },
@@ -2025,7 +2024,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 8,
   },
-  progress: {
-    alignItems: 'center',
+  addressInput: {
+    marginHorizontal: 16,
+    marginVertical: 8,
   },
 });

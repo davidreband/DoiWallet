@@ -1,7 +1,5 @@
-import React, { useCallback, useMemo } from 'react';
-import { Image, Keyboard, StyleSheet, Text, TextInput, View } from 'react-native';
-
-import { scanQrHelper } from '../helpers/scan-qr';
+import React, { useCallback } from 'react';
+import { Keyboard, StyleProp, StyleSheet, TextInput, View, ViewStyle } from 'react-native';
 import loc from '../loc';
 import { AddressInputScanButton } from './AddressInputScanButton';
 import { useTheme } from './themes';
@@ -22,6 +20,7 @@ interface AddressInputProps {
   onBlur?: () => void;
   onFocus?: () => void;
   testID?: string;
+  style?: StyleProp<ViewStyle>;
   keyboardType?:
     | 'default'
     | 'numeric'
@@ -52,6 +51,7 @@ const AddressInput = ({
   onBlur = () => {},
   onFocus = () => {},
   keyboardType = 'default',
+  style,
 }: AddressInputProps) => {
   const { colors } = useTheme();
   const { isClipboardGetContentEnabled } = useSettings();
@@ -187,7 +187,7 @@ const AddressInput = ({
   const buttonStyle = useMemo(() => [styles.scan, stylesHook.scan], [stylesHook.scan]);
 
   return (
-    <View style={[styles.root, stylesHook.root]}>
+    <View style={[styles.root, stylesHook.root, style]}>
       <TextInput
         testID={testID}
         onChangeText={onChangeText}
@@ -226,8 +226,6 @@ const styles = StyleSheet.create({
     minHeight: 44,
     height: 44,
     alignItems: 'center',
-    marginVertical: 8,
-    marginHorizontal: 18,
     borderRadius: 4,
   },
   input: {
