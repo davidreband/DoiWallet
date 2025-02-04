@@ -156,7 +156,7 @@ const ViewEditMultisigCosigners: React.FC = () => {
   );
 
   const onSave = async () => {
-    dismissAllModals();
+    await dismissAllModals();
     if (!wallet) {
       throw new Error('Wallet is undefined');
     }
@@ -179,9 +179,10 @@ const ViewEditMultisigCosigners: React.FC = () => {
       await wallet?.fetchBalance();
     }
     newWallets.push(wallet);
-    navigate('WalletsList');
+    setIsSaveButtonDisabled(true);
     setTimeout(() => {
       setWalletsWithNewOrder(newWallets);
+      navigate('WalletsList');
     }, 500);
   };
   useFocusEffect(
@@ -519,6 +520,20 @@ const ViewEditMultisigCosigners: React.FC = () => {
         contentContainerStyle={styles.newKeyModalContent}
         backgroundColor={colors.elevated}
         footerDefaultMargins
+        header={
+          <ToolTipMenu
+            isButton
+            isMenuPrimaryAction
+            onPressMenuItem={(id: string) => {
+              LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+              setAskPassphrase(!askPassphrase);
+            }}
+            actions={toolTipActions}
+            style={[styles.askPassprase, stylesHook.askPassphrase]}
+          >
+            <Icon size={22} name="more-horiz" type="material" color={colors.foregroundColor} />
+          </ToolTipMenu>
+        }
         footer={
           <>
             {isLoading ? (
@@ -533,18 +548,13 @@ const ViewEditMultisigCosigners: React.FC = () => {
           </>
         }
       >
-        <BlueTextCentered>{loc.multisig.type_your_mnemonics}</BlueTextCentered>
-        <BlueSpacing20 />
-        <BlueFormMultiInput value={importText} onChangeText={setImportText} />
-        {isAdvancedModeEnabled && (
-          <>
-            <BlueSpacing10 />
-            <View style={styles.row}>
-              <BlueText>{loc.wallets.import_passphrase}</BlueText>
-              <Switch testID="AskPassphrase" value={askPassphrase} onValueChange={setAskPassphrase} />
-            </View>
-          </>
-        )}
+        <>
+          <BlueTextCentered>{loc.multisig.type_your_mnemonics}</BlueTextCentered>
+          <BlueSpacing20 />
+          <View style={styles.multiLineTextInput}>
+            <BlueFormMultiInput value={importText} onChangeText={setImportText} />
+          </View>
+        </>
       </BottomModal>
     );
   };
@@ -642,7 +652,10 @@ const styles = StyleSheet.create({
   vaultKeyTextWrapper: { justifyContent: 'center', alignItems: 'center', paddingLeft: 16 },
   newKeyModalContent: {
     paddingHorizontal: 22,
-    minHeight: 320,
+    minHeight: 350,
+  },
+  multiLineTextInput: {
+    minHeight: 200,
   },
   contentContainerStyle: {
     padding: 16,
