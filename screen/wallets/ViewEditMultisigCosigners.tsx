@@ -1,4 +1,3 @@
-
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CommonActions, RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import {
