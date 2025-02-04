@@ -241,6 +241,11 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = React.mem
             label: loc.transactions.expired_transaction,
             icon: <TransactionExpiredIcon />,
           };
+        } else if (!item.ispaid) {
+          return {
+            label: loc.transactions.expired_transaction,
+            icon: <TransactionPendingIcon />,
+          };
         } else {
           return {
             label: loc.transactions.incoming_transaction,
