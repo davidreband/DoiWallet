@@ -43,12 +43,36 @@ const ToolTipMenu = React.memo((props: ToolTipMenuProps, ref?: Ref<any>) => {
 
   const mapMenuItemForMenuView = useCallback((action: Action): MenuAction | null => {
     if (!action.id) return null;
+
+    // Check for subactions
+    const subactions =
+      action.subactions?.map(subaction => ({
+        id: subaction.id.toString(),
+        title: subaction.text,
+        subtitle: subaction.subtitle,
+        image: subaction.icon?.iconValue ? subaction.icon.iconValue : undefined,
+        state: subaction.menuState === undefined ? undefined : ((subaction.menuState ? 'on' : 'off') as MenuState),
+        attributes: {
+          disabled: subaction.disabled,
+          destructive: subaction.destructive,
+          hidden: subaction.hidden,
+        },
+        subactions: subaction.subactions ? subaction.subactions.map(mapMenuItemForMenuView).filter(Boolean) : undefined,
+        displayInline: subaction.displayInline || false,
+      })) || [];
+
     return {
       id: action.id.toString(),
       title: action.text,
       image: action.icon?.iconValue ? action.icon.iconValue : undefined,
       state: action.menuState === undefined ? undefined : ((action.menuState ? 'on' : 'off') as MenuState),
-      attributes: { disabled: action.disabled },
+      attributes: {
+        disabled: action.disabled,
+        destructive: action.destructive,
+        hidden: action.hidden,
+      },
+      subactions: subactions.length > 0 ? (subactions.filter(Boolean) as MenuAction[]) : undefined,
+      displayInline: action.displayInline || false,
     };
   }, []);
 
@@ -69,6 +93,7 @@ const ToolTipMenu = React.memo((props: ToolTipMenuProps, ref?: Ref<any>) => {
               .map(mapMenuItemForMenuView)
               .filter(item => item !== null) as MenuAction[],
             displayInline: true,
+            keepsMenuPresented: true,
           };
         } else if (!Array.isArray(actionGroup) && actionGroup.id) {
           return mapMenuItemForMenuView(actionGroup);
