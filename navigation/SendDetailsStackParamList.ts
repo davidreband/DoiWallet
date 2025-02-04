@@ -2,17 +2,20 @@ import { Psbt } from '@doichain/doichainjs-lib';
 import { CreateTransactionTarget, CreateTransactionUtxo, TWallet } from '../class/wallets/types';
 import { DoichainUnit, Chain } from '../models/doichainUnits';
 
+import { ScanQRCodeParamList } from './DetailViewStackParamList';
+
 export type SendDetailsParams = {
   transactionMemo?: string;
   isTransactionReplaceable?: boolean;
   payjoinUrl?: string;
-  feeUnit?: BitcoinUnit;
+  feeUnit?: DoichainUnit;
   frozenBalance?: number;
-  amountUnit?: BitcoinUnit;
+  amountUnit?: DoichainUnit;
   address?: string;
   amount?: number;
   amountSats?: number;
   unit?: DoichainUnit;
+  onBarScanned?: string;
   noRbf?: boolean;
   walletID: string;
   launchedBy?: string;
@@ -84,4 +87,5 @@ export type SendDetailsStackParamList = {
   PaymentCodeList: {
     walletID: string;
   };
+  ScanQRCode: ScanQRCodeParamList;
 };

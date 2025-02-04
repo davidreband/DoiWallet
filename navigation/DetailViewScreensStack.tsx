@@ -65,6 +65,7 @@ import SelfTest from '../screen/settings/SelfTest';
 import ReleaseNotes from '../screen/settings/ReleaseNotes';
 import ToolsScreen from '../screen/settings/tools';
 import SettingsPrivacy from '../screen/settings/SettingsPrivacy';
+import { ScanQRCodeComponent } from './LazyLoadScanQRCodeStack';
 
 const DetailViewStackScreensStack = () => {
   const theme = useTheme();
@@ -361,15 +362,6 @@ const DetailViewStackScreensStack = () => {
       />
       <DetailViewStack.Screen name="ReceiveDetailsRoot" component={ReceiveDetailsStackRoot} options={NavigationDefaultOptions} />
       <DetailViewStack.Screen
-        name="ScanQRCodeRoot"
-        component={ScanQRCodeStackRoot}
-        options={{
-          headerShown: false,
-          presentation: 'fullScreenModal',
-          statusBarHidden: true,
-        }}
-      />
-      <DetailViewStack.Screen
         name="ManageWallets"
         component={ManageWallets}
         options={navigationStyle({
@@ -378,6 +370,16 @@ const DetailViewStackScreensStack = () => {
           gestureEnabled: false,
           presentation: 'modal',
           title: loc.wallets.manage_title,
+        })(theme)}
+      />
+      <DetailViewStack.Screen
+        name="ScanQRCode"
+        component={ScanQRCodeComponent}
+        options={navigationStyle({
+          headerShown: false,
+          statusBarHidden: true,
+          presentation: 'fullScreenModal',
+          headerShadowVisible: false,
         })(theme)}
       />
     </DetailViewStack.Navigator>
