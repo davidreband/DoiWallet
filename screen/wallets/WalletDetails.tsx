@@ -208,8 +208,6 @@ const WalletDetails: React.FC = () => {
     return `${label}-history.csv`;
   }, [wallet]);
 
-
-
   const toolTipOnPressMenuItem = useCallback(
     async (id: string) => {
       if (id === CommonToolTipActions.Delete.id) {
@@ -423,9 +421,6 @@ const WalletDetails: React.FC = () => {
 
     return subscribe;
   }, [addListener, walletName, walletNameTextInputOnBlur]);
-
-
-
 
   const onViewMasterFingerPrintPress = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
