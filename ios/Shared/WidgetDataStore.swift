@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 struct WidgetDataStore: Codable {
   let rate: String
   let lastUpdate: String
@@ -72,3 +71,5 @@ struct WidgetDataStore: Codable {
     return nil
   }
 }
+
+
