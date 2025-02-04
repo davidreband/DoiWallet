@@ -10,6 +10,7 @@ import presentAlert from '../components/Alert';
 import loc from '../loc';
 import { GROUP_IO_BLUEWALLET } from './currency';
 import { ElectrumServerItem } from '../screen/settings/ElectrumSettings';
+import { triggerWarningHapticFeedback } from './hapticFeedback';
 
 const ElectrumClient = require('electrum-client');
 const net = require('net');
@@ -321,6 +322,7 @@ export async function connectMain(): Promise<void> {
 
 export async function presentResetToDefaultsAlert(): Promise<boolean> {
   return new Promise(resolve => {
+    triggerWarningHapticFeedback();
     presentAlert({
       title: loc.settings.electrum_reset,
       message: loc.settings.electrum_reset_to_default,
