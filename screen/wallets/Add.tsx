@@ -1,5 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useReducer } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -175,134 +174,38 @@ const WalletsAdd: React.FC = () => {
     setEntropyButtonText(entropyTitle);
   };
 
-  const setIsLoading = (value: boolean) => {
-    dispatch({ type: 'SET_LOADING', payload: value });
-  };
-
-  const setWalletBaseURI = (value: string) => {
-    dispatch({ type: 'SET_WALLET_BASE_URI', payload: value });
-  };
-
-  const setSelectedIndex = (value: number) => {
-    dispatch({ type: 'SET_SELECTED_INDEX', payload: value });
-  };
-
-  const setLabel = (value: string) => {
-    dispatch({ type: 'SET_LABEL', payload: value });
-  };
-
-  const setSelectedWalletType = (value: ButtonSelected) => {
-    dispatch({ type: 'SET_SELECTED_WALLET_TYPE', payload: value });
-  };
-
-  const setBackdoorPressed = (value: number) => {
-    dispatch({ type: 'INCREMENT_BACKDOOR_PRESSED', payload: value });
-  };
-
-  const setEntropy = (value: Buffer) => {
-    dispatch({ type: 'SET_ENTROPY', payload: value });
-  };
-
-  const setEntropyButtonText = (value: string) => {
-    dispatch({ type: 'SET_ENTROPY_BUTTON_TEXT', payload: value });
-  };
-
-  const createWallet = async () => {
-    setIsLoading(true);
-
-    if (selectedWalletType === ButtonSelected.OFFCHAIN) {
-     // createLightningWallet();
-    } else if (selectedWalletType === ButtonSelected.ONCHAIN) {
-      let w: HDSegwitBech32Wallet | SegwitP2SHWallet | HDSegwitP2SHWallet;
-      if (selectedIndex === 2) {
-        // zero index radio - HD segwit
-        w = new HDSegwitP2SHWallet();
-        w.setLabel(label || loc.wallets.details_title);
-      } else if (selectedIndex === 1) {
-        // btc was selected
-        // index 1 radio - segwit single address
-        w = new SegwitP2SHWallet();
-        w.setLabel(label || loc.wallets.details_title);
+  const confirmResetEntropy = useCallback(
+    (newWalletType: ButtonSelected) => {
+      if (entropy) {
+        Alert.alert(
+          loc.wallets.add_entropy_reset_title,
+          loc.wallets.add_entropy_reset_message,
+          [
+            {
+              text: loc._.cancel,
+              style: 'cancel',
+            },
+            {
+              text: loc._.ok,
+              style: 'destructive',
+              onPress: () => {
+                setEntropy(undefined);
+                setEntropyButtonText(loc.wallets.add_entropy_provide);
+                setSelectedWalletType(newWalletType);
+              },
+            },
+          ],
+          { cancelable: true },
+        );
       } else {
-        // btc was selected
-        // index 2 radio - hd bip84
-        w = new HDSegwitBech32Wallet();
-        w.setLabel(label || loc.wallets.details_title);
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        setSelectedWalletType(newWalletType);
       }
-      if (selectedWalletType === ButtonSelected.ONCHAIN) {
-        if (entropy) {
-          try {
-            await w.generateFromEntropy(entropy);
-          } catch (e: any) {
-            console.log(e.toString());
-            presentAlert({ message: e.toString() });
-            goBack();
-            return;
-          }
-        } else {
-          await w.generate();
-        }
-        addWallet(w);
-        await saveToDisk();
-        A(A.ENUM.CREATED_WALLET);
-        triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
-        if (w.type === HDSegwitP2SHWallet.type || w.type === HDSegwitBech32Wallet.type) {
-          // @ts-ignore: Return later to update
-          navigate('PleaseBackup', {
-            walletID: w.getID(),
-          });
-        } else {
-          goBack();
-        }
-      }
-    } else if (selectedWalletType === ButtonSelected.VAULT) {
-      setIsLoading(false);
-      // @ts-ignore: Return later to update
-      navigate('WalletsAddMultisig', { walletLabel: label.trim().length > 0 ? label : loc.multisig.default_label });
-    }
-  };
+    },
+    [entropy],
+  );
 
-  // const createLightningWallet = async () => {
-  //   const wallet = new LightningCustodianWallet();
-  //   wallet.setLabel(label || loc.wallets.details_title);
-
-  //   try {
-  //     const lndhub = walletBaseURI?.trim();
-  //     if (lndhub) {
-  //       const isValidNodeAddress = await LightningCustodianWallet.isValidNodeAddress(lndhub);
-  //       if (isValidNodeAddress) {
-  //         wallet.setBaseURI(lndhub);
-  //         await wallet.init();
-  //       } else {
-  //         throw new Error('The provided node address is not valid LNDHub node.');
-  //       }
-  //     }
-  //     await wallet.createAccount();
-  //     await wallet.authorize();
-  //   } catch (Err: any) {
-  //     setIsLoading(false);
-  //     console.warn('lnd create failure', Err);
-  //     if (Err.message) {
-  //       return presentAlert({ message: Err.message });
-  //     } else {
-  //       return presentAlert({ message: loc.wallets.add_lndhub_error });
-  //     }
-  //     // giving app, not adding anything
-  //   }
-  //   A(A.ENUM.CREATED_LIGHTNING_WALLET);
-  //   await wallet.generate();
-  //   addWallet(wallet);
-  //   await saveToDisk();
-
-  //   A(A.ENUM.CREATED_WALLET);
-  //   triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
-  //   // @ts-ignore: Return later to update
-  //   navigate('PleaseBackupLNDHub', {
-  //     walletID: wallet.getID(),
-  //   });
-  // };
-
-  const navigateToEntropy = () => {
+  const navigateToEntropy = useCallback(() => {
     Alert.alert(
       loc.wallets.add_wallet_seed_length,
       loc.wallets.add_wallet_seed_length_message,
