@@ -71,6 +71,7 @@ interface IPaymentDestinations {
   amountSats?: number | string;
   amount?: string | number | 'MAX';
   key: string; // random id to look up this record
+  unit?: BitcoinUnit;
 }
 
 interface IFee {
@@ -702,14 +703,11 @@ const SendDetails = () => {
         if (currentAddress && currentAddress.address && routeParams.address) {
           currentAddress.address = routeParams.address;
           value[scrollIndex.current] = currentAddress;
+          value[scrollIndex.current].unit = unit;
           return [...value];
         } else {
           return [...value, { address: routeParams.address, key: String(Math.random()), amount, amountSats }];
         }
-      });
-      setUnits(u => {
-        u[scrollIndex.current] = unit;
-        return [...u];
       });
     } else if (routeParams.addRecipientParams) {
       const index = addresses.length === 0 ? 0 : scrollIndex.current;
@@ -1554,7 +1552,10 @@ const SendDetails = () => {
 
     const recipientActions: Action[] = [
       CommonToolTipActions.AddRecipient,
-      CommonToolTipActions.RemoveRecipient,
+      {
+        ...CommonToolTipActions.RemoveRecipient,
+        hidden: addresses.length <= 1,
+      },
       {
         ...CommonToolTipActions.RemoveAllRecipients,
         hidden: !(addresses.length > 1),
@@ -1633,6 +1634,35 @@ const SendDetails = () => {
     const viewSize = e.nativeEvent.layoutMeasurement;
     const index = Math.floor(contentOffset.x / viewSize.width);
     scrollIndex.current = index;
+  };
+
+  const onUseAllPressed = () => {
+    triggerHapticFeedback(HapticFeedbackTypes.NotificationWarning);
+    const message = frozenBalance > 0 ? loc.send.details_adv_full_sure_frozen : loc.send.details_adv_full_sure;
+
+    const anchor = findNodeHandle(scrollView.current);
+    const options = {
+      title: loc.send.details_adv_full,
+      message,
+      options: [loc._.cancel, loc._.ok],
+      cancelButtonIndex: 0,
+      anchor: anchor ?? undefined,
+    };
+
+    ActionSheet.showActionSheetWithOptions(options, buttonIndex => {
+      if (buttonIndex === 1) {
+        Keyboard.dismiss();
+        setAddresses(addrs => {
+          addrs[scrollIndex.current].amount = BitcoinUnit.MAX;
+          addrs[scrollIndex.current].amountSats = BitcoinUnit.MAX;
+          return [...addrs];
+        });
+        setAddresses(addrs => {
+          addrs[scrollIndex.current].unit = BitcoinUnit.BTC;
+          return [...addrs];
+        });
+      }
+    });
   };
 
   const formatFee = (fee: number) => formatBalance(fee, feeUnit!, true);
@@ -1776,9 +1806,9 @@ const SendDetails = () => {
               addrs[index] = addr;
               return [...addrs];
             });
-            setUnits(u => {
-              u[index] = unit;
-              return [...u];
+            setAddresses(addrs => {
+              addrs[index].unit = unit;
+              return [...addrs];
             });
           }}
           onChangeText={(text: string) => {
@@ -1802,7 +1832,7 @@ const SendDetails = () => {
               return [...addrs];
             });
           }}
-          unit={units[index] || amountUnit}
+          unit={item.unit || amountUnit}
           editable={isEditable}
           disabled={!isEditable}
           inputAccessoryViewID={InputAccessoryAllFundsAccessoryViewID}
