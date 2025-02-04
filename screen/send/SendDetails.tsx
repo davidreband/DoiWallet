@@ -1814,7 +1814,7 @@ const SendDetails = () => {
 
   const renderWalletSelectionOrCoinsSelected = () => {
     if (isVisible) return null;
-    if (utxos !== null) {
+    if (utxos && utxos?.length > 0) {
       return (
         <View style={styles.select}>
           <CoinsSelected
