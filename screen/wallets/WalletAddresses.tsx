@@ -13,6 +13,8 @@ import SegmentedControl from '../../components/SegmentControl';
 import loc from '../../loc';
 import { DoichainUnit} from '../../models/doichainUnits';
 
+import { isDesktop } from '../../blue_modules/environment';
+
 export const TABS = {
   EXTERNAL: 'receive',
   INTERNAL: 'change',
@@ -176,10 +178,10 @@ const WalletAddresses: React.FC = () => {
 
   useFocusEffect(
     useCallback(() => {
-      disallowScreenshot(true);
+      if (!isDesktop) disallowScreenshot(true);
       getAddresses();
       return () => {
-        disallowScreenshot(false);
+        if (!isDesktop) disallowScreenshot(false);
       };
     }, [getAddresses]),
   );

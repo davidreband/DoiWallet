@@ -190,7 +190,7 @@ const ViewEditMultisigCosigners: React.FC = () => {
       if (hasLoaded.current) return;
       setIsLoading(true);
 
-      disallowScreenshot(isPrivacyBlurEnabled);
+      if (!isDesktop) disallowScreenshot(isPrivacyBlurEnabled);
 
       const task = InteractionManager.runAfterInteractions(async () => {
         if (!w.current) {
@@ -206,7 +206,7 @@ const ViewEditMultisigCosigners: React.FC = () => {
         setIsLoading(false);
       });
       return () => {
-        disallowScreenshot(false);
+        if (!isDesktop) disallowScreenshot(false);
         task.cancel();
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps

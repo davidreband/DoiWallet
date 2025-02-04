@@ -21,6 +21,7 @@ import { THDWalletForWatchOnly, TWallet } from '../../class/wallets/types';
 import { navigate } from '../../NavigationService';
 import { keepAwake, disallowScreenshot } from 'react-native-screen-capture';
 import { useSettings } from '../../hooks/context/useSettings';
+import { isDesktop } from '../../blue_modules/environment';
 
 type RouteProps = RouteProp<AddWalletStackParamList, 'ImportWalletDiscovery'>;
 type NavigationProp = NativeStackNavigationProp<AddWalletStackParamList, 'ImportWalletDiscovery'>;
@@ -112,7 +113,7 @@ const ImportWalletDiscovery: React.FC = () => {
       }
     };
 
-    keepAwake(true);
+    if (!isDesktop) keepAwake(true);
     task.current = startImport(importText, askPassphrase, searchAccounts, isElectrumDisabled, onProgress, onWallet, onPassword);
 
     task.current.promise
@@ -132,10 +133,11 @@ const ImportWalletDiscovery: React.FC = () => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         setLoading(false);
         IdleTimerManager.setIdleTimerDisabled(false);
+        if (!isDesktop) keepAwake(false);
       });
 
     return () => {
-      keepAwake(false);
+      if (!isDesktop) keepAwake(false);
       task.current?.stop();
     };
     // ignoring "navigation" here, because it is constantly mutating
@@ -144,8 +146,11 @@ const ImportWalletDiscovery: React.FC = () => {
 
   const handleCustomDerivation = () => {
     task.current?.stop();
-    keepAwake(false);
-    disallowScreenshot(false);
+    if (!isDesktop) {
+      keepAwake(false);
+      disallowScreenshot(false);
+    }
+
     navigation.navigate('ImportCustomDerivationPath', { importText, password });
   };
 
