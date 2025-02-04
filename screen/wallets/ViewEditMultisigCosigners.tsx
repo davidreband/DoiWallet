@@ -675,6 +675,7 @@ const ViewEditMultisigCosigners: React.FC = () => {
         keyExtractor={(_item, index) => `${index}`}
       />
       <BlueCard>{footer}</BlueCard>
+      <BlueSpacing20 />
 
       {renderProvideMnemonicsModal()}
 
