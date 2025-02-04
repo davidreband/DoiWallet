@@ -7,7 +7,6 @@
 //
 import Foundation
 
-
 /// Represents the various balance units used in the application.
 /// Conforms to `String`, `Codable`, `Equatable`, and `CustomStringConvertible` for easy encoding/decoding, comparisons, and descriptions.
 enum BitcoinUnit: String, Codable, Equatable, CustomStringConvertible {
