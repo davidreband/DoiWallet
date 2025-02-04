@@ -71,7 +71,7 @@ interface IPaymentDestinations {
   amountSats?: number | string;
   amount?: string | number | 'MAX';
   key: string; // random id to look up this record
-  unit?: BitcoinUnit;
+  unit: DoichainUnit;
 }
 
 interface IFee {
@@ -109,9 +109,13 @@ const SendDetails = () => {
   const [wallet, setWallet] = useState<TWallet | null>(null);
   const feeModalRef = useRef<BottomModalHandle>(null);
   const { isVisible } = useKeyboard();
-  const [addresses, setAddresses] = useState<IPaymentDestinations[]>([]);
+
+  const [addresses, setAddresses] = useState<IPaymentDestinations[]>([
+    { address: '', key: String(Math.random()), unit: amountUnit } as IPaymentDestinations,
+  ]);
   const [units, setUnits] = useState<DoichainUnit[]>([]);
   const [transactionMemo, setTransactionMemo] = useState<string>('');
+
   const [networkTransactionFees, setNetworkTransactionFees] = useState(new NetworkTransactionFee(3, 2, 1));
   const [networkTransactionFeesIsLoading, setNetworkTransactionFeesIsLoading] = useState(false);
   const [customFee, setCustomFee] = useState<string | null>(null);
@@ -126,7 +130,7 @@ const SendDetails = () => {
   const { isEditable } = routeParams;
   // if utxo is limited we use it to calculate available balance
   const balance: number = utxos ? utxos.reduce((prev, curr) => prev + curr.value, 0) : (wallet?.getBalance() ?? 0);
-  const allBalance = formatBalanceWithoutSuffix(balance, BitcoinUnit.BTC, true);
+  const allBalance = formatBalanceWithoutSuffix(balance, DoichainUnit.DOI, true);
 
   // if customFee is not set, we need to choose highest possible fee for wallet balance
   // if there are no funds for even Slow option, use 1 sat/vbyte fee
