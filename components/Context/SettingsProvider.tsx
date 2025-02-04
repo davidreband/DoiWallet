@@ -139,9 +139,6 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
   const [language, setLanguage] = useState<string>('en');
   const [isHandOffUseEnabled, setIsHandOffUseEnabledState] = useState<boolean>(false);
   const [isPrivacyBlurEnabled, setIsPrivacyBlurEnabled] = useState<boolean>(true);
-  // AdvancedMode
-  const [isAdvancedModeEnabled, setIsAdvancedModeEnabled] = useState<boolean>(false);
-  // DoNotTrack
   const [isDoNotTrackEnabled, setIsDoNotTrackEnabled] = useState<boolean>(false);
   const [isWidgetBalanceDisplayAllowed, setIsWidgetBalanceDisplayAllowed] = useState<boolean>(true);
   const [isLegacyURv1Enabled, setIsLegacyURv1Enabled] = useState<boolean>(false);

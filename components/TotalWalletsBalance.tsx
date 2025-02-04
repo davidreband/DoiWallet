@@ -49,7 +49,7 @@ const TotalWalletsBalance: React.FC = React.memo(() => {
     const viewInFiat = {
       ...CommonToolTipActions.ViewInFiat,
       text: loc.formatString(loc.total_balance_view.view_in_fiat, { currency: preferredFiatCurrency.endPointKey }),
-      hidden: totalBalancePreferredUnit === BitcoinUnit.LOCAL_CURRENCY,
+      hidden: totalBalancePreferredUnit === DoichainUnit.LOCAL_CURRENCY,
     };
 
     if (totalBalancePreferredUnit === DoichainUnit.SWARTZ) {
@@ -66,12 +66,12 @@ const TotalWalletsBalance: React.FC = React.memo(() => {
     }
     const viewInSats = {
       ...CommonToolTipActions.ViewInSats,
-      hidden: totalBalancePreferredUnit === BitcoinUnit.SATS,
+      hidden: totalBalancePreferredUnit === DoichainUnit.SWARTZ,
     };
 
     const viewInBitcoin = {
       ...CommonToolTipActions.ViewInBitcoin,
-      hidden: totalBalancePreferredUnit === BitcoinUnit.BTC,
+      hidden: totalBalancePreferredUnit === DoichainUnit.DOI,
     };
 
     const viewInActions = {
@@ -89,24 +89,16 @@ const TotalWalletsBalance: React.FC = React.memo(() => {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       switch (id) {
         case CommonToolTipActions.ViewInFiat.id:
-        case CommonToolTipActions.ViewInBitcoin.id:
+          await setTotalBalancePreferredUnitStorage(DoichainUnit.LOCAL_CURRENCY);
+          break;
         case CommonToolTipActions.ViewInSats.id:
-          switch (totalBalancePreferredUnit) {
-            case DoichainUnit.DOI:
-              await setTotalBalancePreferredUnitStorage(DoichainUnit.SWARTZ);
-              break;
-            case DoichainUnit.SWARTZ:
-              await setTotalBalancePreferredUnitStorage(DoichainUnit.LOCAL_CURRENCY);
-              break;
-            case DoichainUnit.LOCAL_CURRENCY:
-              await setTotalBalancePreferredUnitStorage(DoichainUnit.DOI);
-              break;
-            default:
-              break;
-          }
+          await setTotalBalancePreferredUnitStorage(DoichainUnit.SWARTZ);
+          break;
+        case CommonToolTipActions.ViewInBitcoin.id:
+          await setTotalBalancePreferredUnitStorage(DoichainUnit.DOI);
           break;
         case CommonToolTipActions.HideBalance.id:
-          setIsTotalBalanceEnabledStorage(false);
+          await setIsTotalBalanceEnabledStorage(false);
           break;
         case CommonToolTipActions.CopyAmount.id:
           Clipboard.setString(formattedBalance.toString());
@@ -120,16 +112,16 @@ const TotalWalletsBalance: React.FC = React.memo(() => {
 
   const handleBalanceOnPress = useCallback(async () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    let nextUnit: BitcoinUnit;
+    let nextUnit: DoichainUnit;
     switch (totalBalancePreferredUnit) {
-      case BitcoinUnit.BTC:
-        nextUnit = BitcoinUnit.SATS;
+      case DoichainUnit.DOI:
+        nextUnit = DoichainUnit.SWARTZ;
         break;
-      case BitcoinUnit.SATS:
-        nextUnit = BitcoinUnit.LOCAL_CURRENCY;
+      case DoichainUnit.SWARTZ:
+        nextUnit = DoichainUnit.LOCAL_CURRENCY;
         break;
       default:
-        nextUnit = BitcoinUnit.BTC;
+        nextUnit = DoichainUnit.DOI;
     }
     await setTotalBalancePreferredUnitStorage(nextUnit);
   }, [totalBalancePreferredUnit, setTotalBalancePreferredUnitStorage]);
