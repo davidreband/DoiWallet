@@ -25,7 +25,41 @@ jobs:
       - name: Checkout Project
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetches all history
+          fetch-depth: 0 # Ensures the full Git history is available
+
+      - name: Ensure Correct Branch
+        if: github.ref != 'refs/heads/master'
+        run: |
+          if [ -n "${GITHUB_HEAD_REF}" ]; then
+            git fetch origin ${GITHUB_HEAD_REF}:${GITHUB_HEAD_REF}
+            git checkout ${GITHUB_HEAD_REF}
+          else
+            git fetch origin ${GITHUB_REF##*/}:${GITHUB_REF##*/}
+            git checkout ${GITHUB_REF##*/}
+          fi
+          echo "Checked out branch: $(git rev-parse --abbrev-ref HEAD)"
+
+      - name: Get Latest Commit Details
+        id: get_latest_commit_details
+        run: |
+          # Check if we are in a detached HEAD state
+          if [ "$(git rev-parse --abbrev-ref HEAD)" == "HEAD" ]; then
+            CURRENT_BRANCH=$(git show-ref --head -s HEAD | xargs -I {} git branch --contains {} | grep -v "detached" | head -n 1 | sed 's/^[* ]*//')
+          else
+            CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          fi
+          
+          LATEST_COMMIT_MESSAGE=$(git log -1 --pretty=format:"%s")
+          
+          echo "CURRENT_BRANCH=${CURRENT_BRANCH}" >> $GITHUB_ENV
+          echo "LATEST_COMMIT_MESSAGE=${LATEST_COMMIT_MESSAGE}" >> $GITHUB_ENV
+          echo "branch_name=${CURRENT_BRANCH}" >> $GITHUB_OUTPUT
+          echo "commit_message=${LATEST_COMMIT_MESSAGE}" >> $GITHUB_OUTPUT
+
+      - name: Print Commit Details
+        run: |
+          echo "Commit Message: ${{ env.LATEST_COMMIT_MESSAGE }}"
+          echo "Branch Name: ${{ env.CURRENT_BRANCH }}"
 
       - name: Specify Node.js Version
         uses: actions/setup-node@v4
