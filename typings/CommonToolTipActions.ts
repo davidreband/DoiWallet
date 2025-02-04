@@ -231,8 +231,9 @@ export const CommonToolTipActions = {
   },
   PaymentsCode: {
     id: keys.PaymentsCode,
-    text: loc.bip47.purpose,
-    icon: icons.PaymentCode,
+    text: loc.bip47.bip47_explain,
+    subtitle: loc.bip47.bip47_explain_subtitle,
+    icon: icons.PaymentsCode,
     menuState: false,
   },
   ScanQR: {
