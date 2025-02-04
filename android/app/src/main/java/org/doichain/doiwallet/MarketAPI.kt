@@ -2,6 +2,10 @@ package org.doichain.doiwallet
 
 import android.content.Context
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.json.JSONObject
 import org.json.JSONArray
 import java.io.InputStreamReader
@@ -11,12 +15,12 @@ import java.net.URL
 object MarketAPI {
 
     private const val TAG = "MarketAPI"
+    private val client = OkHttpClient()
 
     var baseUrl: String? = null
 
-    fun fetchPrice(context: Context, currency: String): String? {
+    suspend fun fetchPrice(context: Context, currency: String): String? {
         return try {
-            // Load the JSON data from the assets
             val fiatUnitsJson = context.assets.open("fiatUnits.json").bufferedReader().use { it.readText() }
             val json = JSONObject(fiatUnitsJson)
             val currencyInfo = json.getJSONObject(currency)
@@ -26,14 +30,11 @@ object MarketAPI {
             val urlString = buildURLString(source, endPointKey)
             Log.d(TAG, "Fetching price from URL: $urlString")
 
-            val url = URL(urlString)
-            val urlConnection = url.openConnection() as HttpURLConnection
-            urlConnection.requestMethod = "GET"
-            urlConnection.connect()
+            val request = Request.Builder().url(urlString).build()
+            val response = withContext(Dispatchers.IO) { client.newCall(request).execute() }
 
-            val responseCode = urlConnection.responseCode
-            if (responseCode != 200) {
-                Log.e(TAG, "Failed to fetch price. Response code: $responseCode")
+            if (!response.isSuccessful) {
+                Log.e(TAG, "Failed to fetch price. Response code: ${response.code}")
                 return null
             }
 
