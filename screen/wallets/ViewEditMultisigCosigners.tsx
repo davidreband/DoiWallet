@@ -219,10 +219,11 @@ const ViewEditMultisigCosigners: React.FC = () => {
       <BottomModal
         ref={mnemonicsModalRef}
         backgroundColor={colors.elevated}
-        contentContainerStyle={styles.newKeyModalContent}
+        contentContainerStyle={[styles.newKeyModalContent, styles.paddingTop44]}
         shareButtonOnPress={() => {
           shareModalRef.current?.present();
         }}
+        sizes={[Platform.OS === 'ios' ? 'auto' : '50%']}
         header={
           <View style={styles.itemKeyUnprovidedWrapper}>
             <View style={[styles.vaultKeyCircleSuccess, stylesHook.vaultKeyCircleSuccess]}>
@@ -572,8 +573,8 @@ const ViewEditMultisigCosigners: React.FC = () => {
           <Text style={[styles.headerText, stylesHook.textDestination]}>
             {loc.multisig.this_is_cosigners_xpub} {Platform.OS === 'ios' ? loc.multisig.this_is_cosigners_xpub_airdrop : ''}
           </Text>
-          <QRCodeComponent value={exportStringURv2} size={260} isLogoRendered={false} />
           <BlueSpacing20 />
+          <QRCodeComponent value={exportStringURv2} size={260} isLogoRendered={false} />
         </View>
       </BottomModal>
     );
@@ -630,9 +631,7 @@ const ViewEditMultisigCosigners: React.FC = () => {
         automaticallyAdjustContentInsets
         keyExtractor={(_item, index) => `${index}`}
       />
-      <BlueSpacing10 />
-      {footer}
-      <BlueSpacing40 />
+      <BlueCard>{footer}</BlueCard>
 
       {renderProvideMnemonicsModal()}
 
@@ -654,6 +653,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 22,
     minHeight: 350,
   },
+  paddingTop44: { paddingTop: 44 },
   multiLineTextInput: {
     minHeight: 200,
   },
