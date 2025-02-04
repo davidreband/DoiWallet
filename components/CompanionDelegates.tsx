@@ -54,24 +54,11 @@ const CompanionDelegates = () => {
       const notifications2process = await getStoredNotifications();
       await clearStoredNotifications();
       await setApplicationIconBadgeNumber(0);
-      const deliveredNotifications = await getDeliveredNotifications();
-      setTimeout(async () => {
-        try {
-          await removeAllDeliveredNotifications();
-        } catch (error) {
-          console.error('Failed to remove delivered notifications:', error);
-        }
-      }, 5000);
-      return notifications2process;
-    } catch (error) {
-      console.error('Failed to process notifications:', error);
-      return [];
-    }
 
       const deliveredNotifications = await getDeliveredNotifications();
       setTimeout(async () => {
         try {
-          removeAllDeliveredNotifications();
+          await removeAllDeliveredNotifications();
         } catch (error) {
           console.error('Failed to remove delivered notifications:', error);
         }
