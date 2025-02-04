@@ -1,4 +1,3 @@
-
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { RouteProp, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
