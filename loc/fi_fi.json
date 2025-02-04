@@ -275,8 +275,7 @@
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "Haluatko saada ilmoituksia, kun saat saapuvia maksuja?",
-    "no_and_dont_ask": "En, ja Älä Kysy Minulta Uudelleen.",
-    "ask_me_later": "Kysy Minulta Myöhemmin."
+    "no_and_dont_ask": "En, ja Älä Kysy Minulta Uudelleen."
   },
   "transactions": {
     "cancel_explain": "Korvaamme tämän siirtotapahtuman sellaisella, joka maksaa sinulle ja jossa on korkeammat siirtomaksut. Tämä käytännössä peruuttaa nykyisen siirtotapahtuman. Tätä kutsutaan nimellä RBF-Replace by Fee.",
@@ -292,7 +291,6 @@
     "details_balance_hide": "Piilota Saldo",
     "details_balance_show": "Näytä Saldo",
     "details_copy": "Kopioi",
-    "details_copy_amount": "Kopioi määrä",
     "details_copy_block_explorer_link": "Kopioi linkki lohkoketjuselaimeen",
     "details_copy_note": "Kopioi muistiinpanot",
     "details_copy_txid": "Kopioi tapahtumatunnus",
@@ -514,7 +512,9 @@
     "header": "Kolikoiden hallinta",
     "use_coin": "Käytä kolikko",
     "use_coins": "Käytä kolikkoja",
-    "tip": "Antaa sinun nähdä, merkitä, jäädyttää tai valita kolikoita parempaan lompakon hallintaan. Voit valita useita kolikoita napauttamalla värillisiä ympyröitä. "
+    "tip": "Antaa sinun nähdä, merkitä, jäädyttää tai valita kolikoita parempaan lompakon hallintaan. Voit valita useita kolikoita napauttamalla värillisiä ympyröitä. ",
+    "sort_label": "Etiketti",
+    "sort_status": "Tila"
   },
   "units": {
     "DOI": "DOI",

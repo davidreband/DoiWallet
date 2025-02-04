@@ -113,9 +113,6 @@
     "widgets": "اوزارکیا",
     "tools": "اوزاریا"
   },
-  "notifications": {
-    "ask_me_later": "دماتر دم بپورس."
-  },
   "transactions": {
     "copy_link": "لٛف گری لینگ",
     "details_copy": "لٛف گری",
@@ -134,6 +131,9 @@
     "co_sign_transaction": "امزا کردن تراکونش",
     "of": "د",
     "ms_help_title5": "هالت پؽش رته"
+  },
+  "cc": {
+    "sort_status": "وزیت"
   },
   "addresses": {
     "sign_placeholder_address": "آدرس",

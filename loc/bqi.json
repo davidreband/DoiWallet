@@ -217,9 +217,6 @@
     "widgets": "اوزارکا",
     "tools": "اوزارا"
   },
-  "notifications": {
-    "ask_me_later": "دینداتر زوم بپورس."
-  },
   "transactions": {
     "copy_link": "لف گیری لینگ",
     "cpfp_create": "وورکل",
@@ -243,6 +240,9 @@
     "create": "وورکل",
     "co_sign_transaction": "امزا کردن تراکونش",
     "ms_help_title5": "هالت پؽش رئڌه"
+  },
+  "cc": {
+    "sort_status": "وزیت"
   },
   "addresses": {
     "sign_placeholder_address": "آدرس",
