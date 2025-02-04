@@ -16,37 +16,6 @@ const NOTIFICATIONS_NO_AND_DONT_ASK_FLAG = 'NOTIFICATIONS_NO_AND_DONT_ASK_FLAG';
 let alreadyConfigured = false;
 let baseURI = groundControlUri;
 
-// Function to check notification permission status at the system level
-export const checkNotificationPermissionStatus = async () => {
-  try {
-    const { status } = await checkNotifications();
-    return status;
-  } catch (error) {
-    console.error('Failed to check notification permissions:', error);
-    return 'unavailable'; // Return 'unavailable' if the status cannot be retrieved
-  }
-};
-
-// Listener to monitor notification permission status changes while app is running
-let currentPermissionStatus = 'unavailable';
-const handleAppStateChange = async nextAppState => {
-  if (nextAppState === 'active') {
-    const newPermissionStatus = await checkNotificationPermissionStatus();
-    if (newPermissionStatus !== currentPermissionStatus) {
-      currentPermissionStatus = newPermissionStatus;
-      if (newPermissionStatus === 'granted') {
-        // Re-initialize notifications if permissions are granted
-        await initializeNotifications();
-      } else {
-        // Optionally, handle the case where permissions are revoked (e.g., disable in-app notifications)
-        console.warn('Notifications have been disabled at the system level.');
-      }
-    }
-  }
-};
-
-AppState.addEventListener('change', handleAppStateChange);
-
 export const cleanUserOptOutFlag = async () => {
   return AsyncStorage.removeItem(NOTIFICATIONS_NO_AND_DONT_ASK_FLAG);
 };
@@ -345,6 +314,186 @@ export const configureNotifications = async onProcessNotifications => {
           requestPermissions: true,
         });
       }
+      }
+    } else {
+      return {}; // Return an empty object if there is no response body
+    }
+  } catch (error) {
+    console.error('Error in majorTomToGroundControl:', error);
+  }
+};
+
+/**
+ * Returns a permissions object:
+ * alert: boolean
+ * badge: boolean
+ * sound: boolean
+ *
+ * @returns {Promise<Object>}
+ */
+export const checkPermissions = async () => {
+  return new Promise(function (resolve) {
+    PushNotification.checkPermissions(result => {
+      resolve(result);
+    });
+  });
+};
+
+/**
+ * Posts to groundcontrol info whether we want to opt in or out of specific notifications level
+ *
+ * @param levelAll {Boolean}
+ * @returns {Promise<*>}
+ */
+export const setLevels = async levelAll => {
+  const pushToken = await getPushToken();
+  if (!pushToken || !pushToken.token || !pushToken.os) return;
+
+  try {
+    const response = await fetch(`${baseURI}/setTokenConfiguration`, {
+      method: 'POST',
+      headers: _getHeaders(),
+      body: JSON.stringify({
+        level_all: !!levelAll,
+        token: pushToken.token,
+        os: pushToken.os,
+      }),
+    });
+    if (!response.ok) {
+      throw Error('Failed to set token configuration:', response.statusText);
+    }
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const addNotification = async notification => {
+  let notifications = [];
+  try {
+    const stringified = await AsyncStorage.getItem(NOTIFICATIONS_STORAGE);
+    notifications = JSON.parse(stringified);
+    if (!Array.isArray(notifications)) notifications = [];
+  } catch (e) {
+    console.error(e);
+    // Start fresh with just the new notification
+    notifications = [];
+  }
+
+  notifications.push(notification);
+  await AsyncStorage.setItem(NOTIFICATIONS_STORAGE, JSON.stringify(notifications));
+};
+
+const postTokenConfig = async () => {
+  const pushToken = await getPushToken();
+  if (!pushToken || !pushToken.token || !pushToken.os) return;
+
+  try {
+    const lang = (await AsyncStorage.getItem('lang')) || 'en';
+    const appVersion = getSystemName() + ' ' + getSystemVersion() + ';' + getApplicationName() + ' ' + getVersion();
+
+    await fetch(`${baseURI}/setTokenConfiguration`, {
+      method: 'POST',
+      headers: _getHeaders(),
+      body: JSON.stringify({
+        token: pushToken.token,
+        os: pushToken.os,
+        lang,
+        app_version: appVersion,
+      }),
+    });
+  } catch (e) {
+    console.error(e);
+    await AsyncStorage.setItem('lang', 'en');
+    throw e;
+  }
+};
+
+const _setPushToken = async token => {
+  token = JSON.stringify(token);
+  return AsyncStorage.setItem(PUSH_TOKEN, token);
+};
+
+/**
+ * Calls `configure`, which tries to obtain push token, save it, and registers all associated with
+ * notifications callbacks
+ *
+ * @returns {Promise<boolean>} TRUE if acquired token, FALSE if not
+ */
+export const configureNotifications = async onProcessNotifications => {
+  return new Promise(function (resolve) {
+    requestNotifications(['alert', 'sound', 'badge']).then(({ status, _ }) => {
+      if (status === 'granted') {
+        PushNotification.configure({
+          // (optional) Called when Token is generated (iOS and Android)
+          onRegister: async token => {
+            console.debug('TOKEN:', token);
+            alreadyConfigured = true;
+            await _setPushToken(token);
+            resolve(true);
+          },
+
+          // (required) Called when a remote is received or opened, or local notification is opened
+          onNotification: async notification => {
+            // since we do not know whether we:
+            // 1) received notification while app is in background (and storage is not decrypted so wallets are not loaded)
+            // 2) opening this notification right now but storage is still unencrypted
+            // 3) any of the above but the storage is decrypted, and app wallets are loaded
+            //
+            // ...we save notification in internal notifications queue thats gona be processed later (on unsuspend with decrypted storage)
+
+            const payload = Object.assign({}, notification, notification.data);
+            if (notification.data && notification.data.data) Object.assign(payload, notification.data.data);
+            delete payload.data;
+            // ^^^ weird, but sometimes payload data is not in `data` but in root level
+            console.debug('got push notification', payload);
+
+            await addNotification(payload);
+
+            // (required) Called when a remote is received or opened, or local notification is opened
+            notification.finish(PushNotificationIOS.FetchResult.NoData);
+
+            // if user is staring at the app when he receives the notification we process it instantly
+            // so app refetches related wallet
+            if (payload.foreground && onProcessNotifications) {
+              await onProcessNotifications();
+            }
+          },
+
+          // (optional) Called when Registered Action is pressed and invokeApp is false, if true onNotification will be called (Android)
+          onAction: notification => {
+            console.debug('ACTION:', notification.action);
+            console.debug('NOTIFICATION:', notification);
+
+            // process the action
+          },
+
+          // (optional) Called when the user fails to register for remote notifications. Typically occurs when APNS is having issues, or the device is a simulator. (iOS)
+          onRegistrationError: function (err) {
+            console.error(err.message, err);
+            resolve(false);
+          },
+
+          // IOS ONLY (optional): default: all - Permissions to register.
+          permissions: {
+            alert: true,
+            badge: true,
+            sound: true,
+          },
+
+          // Should the initial notification be popped automatically
+          // default: true
+          popInitialNotification: true,
+
+          /**
+           * (optional) default: true
+           * - Specified if permissions (ios) and token (android and ios) will requested or not,
+           * - if not, you must call PushNotificationsHandler.requestPermissions() later
+           * - if you are not using remote notification or do not have Firebase installed, use this:
+           *     requestPermissions: Platform.OS === 'ios'
+           */
+          requestPermissions: true,
+        });
+      }
     });
   });
   // …
@@ -551,6 +700,7 @@ export const getStoredNotifications = async () => {
 
 // on app launch (load module):
 export const initializeNotifications = async onProcessNotifications => {
+  // Fetch custom GroundControl URI
   try {
     const baseUriStored = await AsyncStorage.getItem(GROUNDCONTROL_BASE_URI);
     baseURI = baseUriStored || groundControlUri;
@@ -560,15 +710,13 @@ export const initializeNotifications = async onProcessNotifications => {
     await AsyncStorage.setItem(GROUNDCONTROL_BASE_URI, groundControlUri).catch(err => console.error('Failed to reset URI:', err));
   }
 
+  // Set the application icon badge to 0
   setApplicationIconBadgeNumber(0);
 
   try {
-    currentPermissionStatus = await checkNotificationPermissionStatus();
-    if (currentPermissionStatus === 'granted' && (await getPushToken())) {
+    if (await getPushToken()) {
       await configureNotifications(onProcessNotifications);
       await postTokenConfig();
-    } else {
-      console.warn('Notifications are disabled at the system level.');
     }
   } catch (error) {
     console.error('Failed to initialize notifications:', error);

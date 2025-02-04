@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { I18nManager, Linking, ScrollView, StyleSheet, TextInput, View, Pressable, AppState } from 'react-native';
 import { Button as ButtonRNElements } from '@rneui/themed';
+// @ts-ignore: no declaration file
 import {
   getDefaultUri,
   getPushToken,
@@ -24,6 +25,7 @@ import { useTheme } from '../../components/themes';
 import loc from '../../loc';
 import { Divider } from '@rneui/base';
 import { openSettings } from 'react-native-permissions';
+import PushNotification from 'react-native-push-notification';
 
 const NotificationSettings: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -86,19 +88,21 @@ const NotificationSettings: React.FC = () => {
     try {
       setNotificationsEnabledState(value);
       if (value) {
+        // User is enabling notifications
         await cleanUserOptOutFlag();
-        const permissionsGranted = await tryToObtainPermissions();
-        if (permissionsGranted) {
-          if (await getPushToken()) {
-            await setLevels(true);
-          }
+        if (await getPushToken()) {
+          // we already have a token, so we just need to reenable ALL level on groundcontrol:
+          await setLevels(true);
         } else {
-          // If permissions are denied, show alert and reset the toggle
-          showNotificationPermissionAlert();
-          setNotificationsEnabledState(false); // Reset the toggle to reflect the denied status
+          // ok, we dont have a token. we need to try to obtain permissions, configure callbacks and save token locally:
+          await tryToObtainPermissions();
         }
       } else {
+        // User is disabling notifications
         await setLevels(false);
+        console.debug('Abandoning notifications Permissions...');
+        PushNotification.abandonPermissions();
+        console.debug('Abandoned notifications Permissions...');
       }
 
       setNotificationsEnabledState(await isNotificationsEnabled());
@@ -155,6 +159,7 @@ const NotificationSettings: React.FC = () => {
     setIsLoading(true);
     try {
       if (URI) {
+        // validating only if its not empty. empty means use default
         if (await isGroundControlUriValid(URI)) {
           await saveUri(URI);
           presentAlert({ message: loc.settings.saved });
