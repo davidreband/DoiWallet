@@ -96,25 +96,33 @@ const ManageWalletsListItem: React.FC<ManageWalletsListItemProps> = ({
     }
   }, [item, navigateToWallet]);
 
-  const handleLeftPress = (reset: () => void) => {
-    handleToggleHideBalance(item.data as TWallet);
-    reset();
-  };
-
-  const leftContent = (reset: () => void) => (
-    <LeftSwipeContent onPress={() => handleLeftPress(reset)} hideBalance={(item.data as TWallet).hideBalance} colors={colors} />
+  const handleLeftPress = useCallback(
+    (reset: () => void) => {
+      handleToggleHideBalance(item.data as TWallet);
+      reset();
+    },
+    [handleToggleHideBalance, item.data],
   );
 
-  const handleRightPress = (reset: () => void) => {
-    handleDeleteWallet(item.data as TWallet);
-    reset();
-  };
+  const leftContent = useCallback(
+    (reset: () => void) => (
+      <LeftSwipeContent onPress={() => handleLeftPress(reset)} hideBalance={(item.data as TWallet).hideBalance} colors={colors} />
+    ),
+    [colors, handleLeftPress, item.data],
+  );
 
-  const rightContent = (reset: () => void) => <RightSwipeContent onPress={() => handleRightPress(reset)} />;
+  const handleRightPress = useCallback(
+    (reset: () => void) => {
+      handleDeleteWallet(item.data as TWallet);
+      reset();
+    },
+    [handleDeleteWallet, item.data],
+  );
 
-  if (isLoading) {
-    return <ActivityIndicator size="large" color={colors.brandingColor} />;
-  }
+  const rightContent = useCallback(
+    (reset: () => void) => <RightSwipeContent onPress={() => handleRightPress(reset)} />,
+    [handleRightPress],
+  );
 
   if (isLoading) {
     return <ActivityIndicator size="large" color={colors.brandingColor} />;
