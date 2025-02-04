@@ -45,6 +45,7 @@ import selectWallet from '../../helpers/select-wallet';
 import assert from 'assert';
 import { useSettings } from '../../hooks/context/useSettings';
 import useMenuElements from '../../hooks/useMenuElements';
+import { useSettings } from '../../hooks/context/useSettings';
 
 const buttonFontSize =
   PixelRatio.roundToNearestPixel(Dimensions.get('window').width / 26) > 22
@@ -54,8 +55,8 @@ const buttonFontSize =
 type WalletTransactionsProps = NativeStackScreenProps<DetailViewStackParamList, 'WalletTransactions'>;
 
 const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
-  const { wallets, saveToDisk, setSelectedWalletID, setReloadTransactionsMenuActionFunction } = useStorage();
-  const { isElectrumDisabled } = useSettings();
+  const { wallets, saveToDisk, setSelectedWalletID } = useStorage();
+  const { setReloadTransactionsMenuActionFunction } = useMenuElements();
   const { isBiometricUseCapableAndEnabled } = useBiometrics();
   const [isLoading, setIsLoading] = useState(false);
   const { walletID } = route.params;
@@ -66,6 +67,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
   const navigation = useExtendedNavigation();
   const { setOptions, navigate } = navigation;
   const { colors } = useTheme();
+  const { isElectrumDisabled } = useSettings();
   const walletActionButtonsRef = useRef<View>(null);
 
   const stylesHook = StyleSheet.create({
