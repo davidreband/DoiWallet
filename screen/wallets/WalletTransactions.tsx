@@ -374,8 +374,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
         task.cancel();
         setReloadTransactionsMenuActionFunction(() => {});
       };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [refreshTransactions]),
+    }, [refreshTransactions, setReloadTransactionsMenuActionFunction]),
   );
 
   const refreshProps = isDesktop || isElectrumDisabled ? {} : { refreshing: isLoading, onRefresh: refreshTransactions };
