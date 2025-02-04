@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler'; // should be on top
 
 import { CommonActions } from '@react-navigation/native';
-import React, { lazy, Suspense, useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { AppState, AppStateStatus, Linking } from 'react-native';
 import A from '../blue_modules/analytics';
 import { getClipboardContent } from '../blue_modules/clipboard';
@@ -26,12 +26,10 @@ import TransactionsMonitor from './TransactionsMonitor';
 import RNQRGenerator from 'rn-qr-generator';
 import presentAlert from './Alert';
 import useMenuElements from '../hooks/useMenuElements';
-import { useSettings } from '../hooks/context/useSettings';
 import useWidgetCommunication from '../hooks/useWidgetCommunication';
 import useWatchConnectivity from '../hooks/useWatchConnectivity';
 import useDeviceQuickActions from '../hooks/useDeviceQuickActions';
-
-const HandOffComponentListener = lazy(() => import('../components/HandOffComponentListener'));
+import useHandoffListener from '../hooks/useHandoffListener';
 
 const ClipboardContentType = Object.freeze({
   BITCOIN: 'BITCOIN',
@@ -41,13 +39,13 @@ const ClipboardContentType = Object.freeze({
 const CompanionDelegates = () => {
   const { wallets, addWallet, saveToDisk, fetchAndSaveWalletTransactions, refreshAllWalletTransactions, setSharedCosigner } = useStorage();
   const appState = useRef<AppStateStatus>(AppState.currentState);
-  const { isHandOffUseEnabled } = useSettings();
   const clipboardContent = useRef<undefined | string>();
 
   useWatchConnectivity();
   useWidgetCommunication();
   useMenuElements();
   useDeviceQuickActions();
+  useHandoffListener();
 
   const processPushNotifications = useCallback(async () => {
     await new Promise(resolve => setTimeout(resolve, 200));
@@ -313,7 +311,7 @@ const CompanionDelegates = () => {
     };
   }, [addListeners]);
 
-  return <Suspense fallback={null}>{isHandOffUseEnabled && <HandOffComponentListener />}</Suspense>;
+  return null;
 };
 
 export default CompanionDelegates;

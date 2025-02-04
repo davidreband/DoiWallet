@@ -45,6 +45,8 @@ import assert from 'assert';
 import useMenuElements from '../../hooks/useMenuElements';
 import { useSettings } from '../../hooks/context/useSettings';
 import { getClipboardContent } from '../../blue_modules/clipboard';
+import HandOffComponent from '../../components/HandOffComponent';
+import { HandOffActivityType } from '../../components/types';
 
 const buttonFontSize =
   PixelRatio.roundToNearestPixel(Dimensions.get('window').width / 26) > 22
@@ -499,6 +501,13 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
           />
         )}
       </FContainer>
+      {wallet?.chain === Chain.ONCHAIN && wallet.type !== MultisigHDWallet.type && wallet.getXpub && wallet.getXpub() ? (
+        <HandOffComponent
+          title={wallet.getLabel()}
+          type={HandOffActivityType.Xpub}
+          url={`https://www.blockonomics.co/#/search?q=${wallet.getXpub()}`}
+        />
+      ) : null}
     </View>
   );
 };
