@@ -292,7 +292,27 @@ platform :ios do
   end
 
   desc "Upload IPA to TestFlight"
-lane :upload_to_testflight_lane do
+  lane :upload_to_testflight_lane do
+
+  branch_name = ENV['BRANCH_NAME'] || "unknown-branch"
+  last_commit_message = ENV['LATEST_COMMIT_MESSAGE'] || "No commit message found"
+
+
+  changelog = <<~CHANGELOG
+    Build Information:
+  CHANGELOG
+
+  # Include the branch name only if it is not 'master'
+  if branch_name != 'master'
+    changelog += <<~CHANGELOG
+      - Branch: #{branch_name}
+    CHANGELOG
+  end
+
+  changelog += <<~CHANGELOG
+    - Commit: #{last_commit_message}
+  CHANGELOG
+
   ipa_path = ENV['IPA_OUTPUT_PATH']
   changelog = ENV["LATEST_COMMIT_MESSAGE"]
 
