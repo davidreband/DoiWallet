@@ -1814,11 +1814,11 @@ const SendDetails = () => {
 
   const renderWalletSelectionOrCoinsSelected = () => {
     if (isVisible) return null;
-    if (utxos && utxos?.length > 0) {
+    if (utxos !== null) {
       return (
         <View style={styles.select}>
           <CoinsSelected
-            number={utxos.length || 0}
+            number={utxos?.length || 0}
             onContainerPress={handleCoinControl}
             onClose={() => {
               setUtxo(null);
