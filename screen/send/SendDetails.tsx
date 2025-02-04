@@ -675,6 +675,10 @@ const SendDetails = () => {
           u[scrollIndex.current] = DoichainUnit.DOI; // also resetting current unit to BTC
           return [...u];
         });
+        setAddresses(addrs => {
+          addrs[scrollIndex.current].unit = DoichainUnit.DOI;
+          return [...addrs];
+        });
 
         setAddresses(addrs => {
           if (currentAddress) {
@@ -987,7 +991,7 @@ const SendDetails = () => {
       setTransactionMemo(options.label || ''); // there used to be `options.message` here as well. bug?
       setAmountUnit(DoichainUnit.DOI);
       setPayjoinUrl(options.pj || '');
-      setParams({ transactionMemo: options.label || '', amountUnit: BitcoinUnit.BTC }); // there used to be `options.message` here as well. bug?
+      setParams({ transactionMemo: options.label || '', amountUnit: DoichainUnit.DOI }); // there used to be `options.message` here as well. bug?
       setParams({ payjoinUrl: options.pj || '' });
       // RN Bug: contentOffset gets reset to 0 when state changes. Remove code once this bug is resolved.
       setTimeout(() => scrollView.current?.scrollToIndex({ index: currentIndex, animated: false }), 50);
@@ -1947,7 +1951,7 @@ const SendDetails = () => {
           feeRate={feeRate}
           setCustomFee={setCustomFee}
           setFeePrecalc={setFeePrecalc}
-          feeUnit={feeUnit || DoichainUnit.DOI}
+          feeUnit={addresses[scrollIndex.current]?.unit ?? DoichainUnit.DOI}
         />
       </View>
       <DismissKeyboardInputAccessory />
