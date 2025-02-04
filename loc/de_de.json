@@ -575,7 +575,7 @@
     "ms_help_title": "Tipps und Tricks zur Funktionsweise von Multisig",
     "ms_help_text": "Ein Wallet mit mehreren Schlüsseln zur gemeinsamen Verwahrung oder zur Erhöhung der Sicherheit.",
     "ms_help_title1": "Dazu sind mehrere Geräte empfohlen.",
-    "ms_help_1": "Der Tresor funktioniert mit weiteren DoiWallet Apps und PSBT kompatiblen wallets wie Electrum, Specter, Coldcard, Cobovault, etc.",
+    "ms_help_1": "Der Tresor funktioniert mit weiteren BlueWallet Apps und PSBT kompatiblen Wallets wie Electrum, Specter, Coldcard, Keystone, etc.",
     "ms_help_title2": "Schlüssel bearbeiten",
     "ms_help_2": "Alle Tresor Schlüssel lassen sich auf diesem Geräts erstellen und später löschen. Dazu in den Wallet-Einstellungen die Mitsignierer bearbeiten. Sind alle Tresorschlüssel auf dem gleichen Gerät, ist die Sicherheit, die eines regulären Doi Wallet.",
     "ms_help_title3": "Tresor-Sicherungen",
