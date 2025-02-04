@@ -24,6 +24,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [MenuElementsEmitter sharedInstance];
   [CustomSegmentedControlManager registerIfNecessary];
   [self clearFilesIfNeeded];
   self.userDefaultsGroup = [[NSUserDefaults alloc] initWithSuiteName:@"group.org.doichain.doiwallet"];
