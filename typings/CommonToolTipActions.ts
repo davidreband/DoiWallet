@@ -35,7 +35,6 @@ const keys = {
   CoinControl: 'CoinControl',
   CoSignTransaction: 'CoSignTransaction',
   ResetToDefault: 'resetToDefault',
-  ClearHistory: 'clearHistory',
   ScanQR: 'scan_qr',
   RemoveAllRecipients: 'RemoveAllRecipients',
   AddRecipient: 'AddRecipient',
@@ -93,9 +92,6 @@ const icons = {
   CoinControl: { iconValue: 'switch.2' },
   CoSignTransaction: { iconValue: 'signature' },
   PaymentsCode: { iconValue: 'qrcode.viewfinder' },
-  ClearHistory: {
-    iconValue: 'trash',
-  },
   RemoveAllRecipients: { iconValue: 'person.2.slash' },
   AddRecipient: { iconValue: 'person.badge.plus' },
   RemoveRecipient: { iconValue: 'person.badge.minus' },
@@ -349,12 +345,6 @@ export const CommonToolTipActions: Record<string, ToolTipAction> = {
     id: keys.ResetToDefault,
     text: loc.settings.electrum_reset,
     hidden: false,
-  },
-  ClearHistory: {
-    id: keys.ClearHistory,
-    text: loc.settings.electrum_clear,
-    icon: icons.ClearHistory,
-    destructive: true,
   },
   PasteFromClipboard: {
     id: keys.PasteFromClipboard,
