@@ -100,6 +100,7 @@ const icons: { [key: string]: { iconValue: string } } = {
   Signature: { iconValue: 'signature' },
   PasteFromClipboard: { iconValue: 'document.on.clipboard' },
   ImportFile: { iconValue: 'document.viewfinder' },
+  Hide: { iconValue: 'eye.slash' },
   ClearClipboard: { iconValue: 'clipboard' },
   Hide: { iconValue: 'eye.slash' },
 };
