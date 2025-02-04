@@ -65,7 +65,15 @@
   },
   "lndViewInvoice": {
     "additional_info": "Additional Information",
-    "lightning_invoice": "Lightning Invoice"
+    "for": "For:",
+    "lightning_invoice": "Lightning Invoice",
+    "open_direct_channel": "Open direct channel with this node:",
+    "please_pay_between_and": "Please pay between {min} and {max}",
+    "please_pay": "Please pay",
+    "preimage": "Pre-image",
+    "sats": "sats.",
+    "date_time": "Date and Time",
+    "wasnt_paid_and_expired": "This invoice was not paid and has expired."
   },
   "plausibledeniability": {
     "create_fake_storage": "Create Encrypted Storage",
