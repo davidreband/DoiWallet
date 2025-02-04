@@ -33,6 +33,7 @@ class WatchDataSource: NSObject, ObservableObject, WCSessionDelegate {
     @Published var wallets: [Wallet] = []
     
     @Published var isDataLoaded: Bool = false
+    @Published var dataLoadError: String? = nil  // Add this property
     
     // MARK: - Private Properties
     
@@ -158,6 +159,10 @@ class WatchDataSource: NSObject, ObservableObject, WCSessionDelegate {
         if applicationContext.isEmpty { return }
         processReceivedData(applicationContext)
     }
+  
+  func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
+    processReceivedData(userInfo)
+  }
     
     // MARK: - Data Processing
     
@@ -172,63 +177,85 @@ class WatchDataSource: NSObject, ObservableObject, WCSessionDelegate {
             updateMarketData(for: preferredFiatCurrency)
         } else {
             // Assume the data contains wallets information.
-            processWalletsData(walletsInfo: data)
+            do {
+                try processWalletsData(walletsInfo: data)
+                DispatchQueue.main.async { [weak self] in
+                    self?.dataLoadError = nil  // Clear any previous errors
+                }
+            } catch {
+                DispatchQueue.main.async { [weak self] in
+                    self?.dataLoadError = "We couldn't update your wallets data. Please ensure your iPhone is connected and try again."
+                }
+            }
         }
     }
-    
+
     /// Processes wallets data received from the iOS app.
     /// - Parameter walletsInfo: The wallets data received as a dictionary.
-    private func processWalletsData(walletsInfo: [String: Any]) {
+    private func processWalletsData(walletsInfo: [String: Any]) throws {
         guard let walletsToProcess = walletsInfo["wallets"] as? [[String: Any]] else {
-            print("No wallets data found in received context.")
-            return
+            throw DataProcessingError.invalidData("No wallets data found in received context.")
         }
-        
+
         var processedWallets: [Wallet] = []
-        
+
         for entry in walletsToProcess {
-            guard let label = entry["label"] as? String,
-                  let balance = entry["balance"] as? Double,
-                  let typeString = entry["type"] as? String,
-                  let preferredBalanceUnitString = entry["preferredBalanceUnit"] as? String,
-                  let chainString = entry["chain"] as? String,
-                  let transactions = entry["transactions"] as? [[String: Any]] else {
-                print("Incomplete wallet entry found. Skipping.")
-                continue
+            guard
+                let label = entry["label"] as? String,
+                let balance = entry["balance"] as? Double,
+                let typeString = entry["type"] as? String,
+                let preferredBalanceUnitString = entry["preferredBalanceUnit"] as? String,
+                let chainString = entry["chain"] as? String,
+                let transactions = entry["transactions"] as? [[String: Any]]
+            else {
+                throw DataProcessingError.invalidData("Incomplete wallet entry found.")
             }
-            
+
             var transactionsProcessed: [Transaction] = []
+
             for transactionEntry in transactions {
-                guard let timeString = transactionEntry["time"] as? String,
-                      let memo = transactionEntry["memo"] as? String,
-                      let amountDouble = transactionEntry["amount"] as? Double,
-                      let type = transactionEntry["type"] as? String else {
-                    print("Incomplete transaction entry found. Skipping.")
-                    continue
+                guard
+                    let timeInterval = transactionEntry["time"] as? TimeInterval,  // Ensure TimeInterval is used
+                    // Remove retrieval of `lastUpdate`
+                    let memo = transactionEntry["memo"] as? String,
+                    let amountValue = transactionEntry["amount"] as? Double,
+                    let type = transactionEntry["type"] as? String
+                else {
+                    throw DataProcessingError.invalidData("Incomplete transaction entry found.")
                 }
-                
-                guard let time = ISO8601DateFormatter().date(from: timeString) else {
-                    print("Invalid date format for transaction. Skipping.")
-                    continue
+
+                // Check if timeInterval is in milliseconds and convert to seconds
+                let adjustedTimeInterval: TimeInterval
+                if timeInterval > 1_000_000_000_000 {  // Arbitrary threshold for milliseconds
+                    adjustedTimeInterval = timeInterval / 1000
+                } else {
+                    adjustedTimeInterval = timeInterval
                 }
-                
-                let amount = Decimal(amountDouble)
-                
-                let transactionType = TransactionType.fromRawString(type)
-                
-                let transaction = Transaction(time: time, memo: memo, type: transactionType, amount: amount)
+
+                // Validate that adjustedTimeInterval is within Int bounds
+                guard adjustedTimeInterval <= Double(Int.max) && adjustedTimeInterval >= Double(Int.min) else {
+                    throw DataProcessingError.invalidData("Transaction time \(adjustedTimeInterval) is out of Int bounds.")
+                }
+
+                let transactionType = TransactionType(rawString: type)
+                let transaction = Transaction(
+                    time: Int(adjustedTimeInterval),  // Convert to Int (Unix timestamp in seconds)
+                    memo: memo,
+                    type: transactionType,
+                    amount: Decimal(amountValue)
+                )
                 transactionsProcessed.append(transaction)
             }
-            
+
             let receiveAddress = entry["receiveAddress"] as? String ?? ""
             let xpub = entry["xpub"] as? String ?? ""
             let hideBalance = entry["hideBalance"] as? Bool ?? false
             let paymentCode = entry["paymentCode"] as? String
             let chain = Chain(rawString: chainString)
-            
+
             let wallet = Wallet(
                 label: label,
-                balance: "\(balance) BTC",
+                balance: Decimal(balance),
                 type: WalletType(rawString: typeString),
                 chain: chain,
                 preferredBalanceUnit: BitcoinUnit(rawString: preferredBalanceUnitString),
@@ -240,12 +267,23 @@ class WatchDataSource: NSObject, ObservableObject, WCSessionDelegate {
             )
             processedWallets.append(wallet)
         }
-        
+
         // Update the published `wallets` property on the main thread.
         DispatchQueue.main.async { [weak self] in
             self?.wallets = processedWallets
-            print("Updated wallets from received context.")
-            WatchDataSource.postDataUpdatedNotification()
+            self?.isDataLoaded = true
+        }
+    }
+
+    // Define an error type for data processing
+    enum DataProcessingError: LocalizedError {
+        case invalidData(String)
+
+        var errorDescription: String? {
+            switch self {
+            case .invalidData(_):
+                return "The data received was invalid."
+            }
         }
     }
     

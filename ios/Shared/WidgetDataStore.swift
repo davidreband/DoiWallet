@@ -68,8 +68,11 @@ struct WidgetDataStore: Codable {
     if let date = isoDateFormatter.date(from: lastUpdate) {
       return dateFormatter.string(from: date)
     }
-    return nil
-  }
+    
+    // **Renamed Custom Initializer**
+    init(fromMarketData marketData: MarketData) {
+      self.rate = marketData.rate.formattedPriceString()
+              self.lastUpdate = marketData.formattedDate!
+        self.rateDouble = marketData.rate
+    }
 }
-
-

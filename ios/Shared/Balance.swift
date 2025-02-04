@@ -43,7 +43,7 @@ extension Decimal {
   func formatted(as unit: BalanceUnit, withFormatting: Bool = false) -> String {
         switch unit {
         case .sats:
-            return withFormatting ? NumberFormatter.localizedString(from: self as NSNumber, number: .decimal) + " SATS" : "\(self) SATS"
+            return withFormatting ? NumberFormatter.localizedString(from: self as NSNumber, number: .decimal) + "  \(unit.rawValue)" : "\(self)  \(unit.rawValue)"
         case .localCurrency:
             let userDefaults = UserDefaults(suiteName: UserDefaultsGroupKey.GroupName.rawValue)
             if let widgetData = userDefaults?.object(forKey: MarketData.string) as? Data,
@@ -56,7 +56,7 @@ extension Decimal {
             }
         default:
             let value = self / Decimal(100_000_000)
-            return "\(value) BTC"
+            return "\(value) \(unit.rawValue)"
         }
     }
 }

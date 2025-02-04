@@ -4,7 +4,7 @@ import Foundation
 /// Conforms to `Codable` and `Identifiable` for encoding/decoding and unique identification.
 struct Transaction: Codable, Identifiable, Equatable {
     let id: UUID
-    let time: Date
+    let time: Int  // Changed from Double to Int
     let memo: String
     let type: TransactionType
     let amount: Decimal
@@ -16,7 +16,7 @@ struct Transaction: Codable, Identifiable, Equatable {
     ///   - memo: A memo or note associated with the transaction.
     ///   - type: The type of the transaction, defined by `TransactionType`.
     ///   - amount: The amount involved in the transaction as a string.
-    init(id: UUID = UUID(), time: Date, memo: String, type: TransactionType, amount: Decimal) {
+    init(id: UUID = UUID(), time: Int, memo: String, type: TransactionType, amount: Decimal) {
         self.id = id
         self.time = time
         self.memo = memo
@@ -28,10 +28,10 @@ struct Transaction: Codable, Identifiable, Equatable {
 extension Transaction {
     static var mock: Transaction {
         Transaction(
-            time: Date(timeIntervalSince1970: 1714398896), // 2024-04-27T12:34:56Z
+            time: Int(Date().timeIntervalSince1970),  // Use seconds for time
             memo: "Mock Transaction",
             type: .sent,
-            amount: Decimal(string: "-0.001")!
+            amount: 1
         )
     }
     
@@ -39,16 +39,16 @@ extension Transaction {
         [
             .mock,
             Transaction(
-                time: Date(timeIntervalSince1970: 1714308153), // 2024-04-26T11:22:33Z
+                time: Int(Date().timeIntervalSince1970),
                 memo: "Another Mock Transaction",
                 type: .received,
-                amount: Decimal(string: "0.002")!
+                amount: 222
             ),
             Transaction(
-                time: Date(timeIntervalSince1970: 1714217482), // 2024-04-25T10:11:22Z
-                memo: "Third Mock Transaction",
+                time: Int(Date().timeIntervalSince1970),
+                memo: "Hi",
                 type: .pending,
-                amount: Decimal.zero
+                amount: 222
             )
         ]
     }
