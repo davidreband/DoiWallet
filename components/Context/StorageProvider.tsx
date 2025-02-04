@@ -36,10 +36,6 @@ interface StorageContextType {
   resetWallets: () => void;
   walletTransactionUpdateStatus: WalletTransactionsStatus | string;
   setWalletTransactionUpdateStatus: (status: WalletTransactionsStatus | string) => void;
-  isElectrumDisabled: boolean;
-  setIsElectrumDisabled: (value: boolean) => void;
-  reloadTransactionsMenuActionFunction: () => void;
-  setReloadTransactionsMenuActionFunction: (func: () => void) => void;
   getTransactions: typeof BlueApp.getTransactions;
   fetchWalletBalances: typeof BlueApp.fetchWalletBalances;
   fetchWalletTransactions: typeof BlueApp.fetchWalletTransactions;
@@ -281,10 +277,6 @@ export const StorageProvider = ({ children }: { children: React.ReactNode }) => 
       isPasswordInUse: BlueApp.isPasswordInUse,
       walletTransactionUpdateStatus,
       setWalletTransactionUpdateStatus,
-      isElectrumDisabled,
-      setIsElectrumDisabled,
-      reloadTransactionsMenuActionFunction,
-      setReloadTransactionsMenuActionFunction,
     }),
     [
       wallets,
@@ -303,10 +295,6 @@ export const StorageProvider = ({ children }: { children: React.ReactNode }) => 
       resetWallets,
       walletTransactionUpdateStatus,
       setWalletTransactionUpdateStatus,
-      isElectrumDisabled,
-      setIsElectrumDisabled,
-      reloadTransactionsMenuActionFunction,
-      setReloadTransactionsMenuActionFunction,
     ],
   );
 

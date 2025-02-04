@@ -100,14 +100,8 @@ const WalletsList: React.FC = () => {
   const { isLargeScreen } = useIsLargeScreen();
   const walletsCarousel = useRef<any>();
   const currentWalletIndex = useRef<number>(0);
-  const {
-    wallets,
-    getTransactions,
-    getBalance,
-    refreshAllWalletTransactions,
-    setSelectedWalletID,
-    setReloadTransactionsMenuActionFunction,
-  } = useStorage();
+  const { setReloadTransactionsMenuActionFunction } = useMenuElements();
+  const { wallets, getTransactions, getBalance, refreshAllWalletTransactions, setSelectedWalletID } = useStorage();
   const { isTotalBalanceEnabled, isElectrumDisabled } = useSettings();
   const { width } = useWindowDimensions();
   const { colors, scanImage } = useTheme();
@@ -178,8 +172,6 @@ const WalletsList: React.FC = () => {
   );
 
   useEffect(() => {
-
-    addExternalTxId('3ead6a2ae4e92477b6be8775f28e2ff50b54679a0f95163625732476610d990d');
     // new wallet added
     if (wallets.length > walletsCount.current) {
       walletsCarousel.current?.scrollToItem({ item: wallets[walletsCount.current] });

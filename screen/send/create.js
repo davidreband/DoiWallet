@@ -22,21 +22,20 @@ import { DynamicQRCode } from "../../components/DynamicQRCode";
 import { useTheme } from '../../components/themes';
 import { disallowScreenshot } from 'react-native-screen-capture';
 import loc from '../../loc';
-
 import { useStorage } from '../../hooks/context/useStorage';
 import { useBiometrics, unlockWithBiometrics } from '../../hooks/useBiometrics';
 import { useExtendedNavigation } from "../../hooks/useExtendedNavigation";
 import { useSettings } from '../../hooks/context/useSettings';
 
-const SendCreate = () => {
-  const { fee, recipients, wallet,  memo = "", satoshiPerByte, psbt, showAnimatedQr, tx,} = useRoute().params;
+  const SendCreate = () => {
+    const { fee, recipients, wallet,  memo = "", satoshiPerByte, psbt, showAnimatedQr, tx,} = useRoute().params;
 
-  const { txMetadata, fetchAndSaveWalletTransactions, isElectrumDisabled } = useStorage();
-  const route = useRoute();
-  const transaction = tx?bitcoin.Transaction.fromHex(tx):0;
-  const size = tx?transaction.virtualSize():1;
-
-const SendCreate = () => {
+    const { txMetadata, fetchAndSaveWalletTransactions, isElectrumDisabled } = useStorage();
+    const route = useRoute();
+    const transaction = tx?bitcoin.Transaction.fromHex(tx):0;
+    const size = tx?transaction.virtualSize():1;
+    const { isPrivacyBlurEnabled } = useSettings();
+  }
 
   const { colors } = useTheme();
   const { setOptions } = useNavigation();
