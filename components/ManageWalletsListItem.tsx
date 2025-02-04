@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { View, StyleSheet, ViewStyle, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
+import { View, StyleSheet, ViewStyle, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Icon, ListItem } from '@rneui/base';
 import { ExtendedTransaction, LightningTransaction, TWallet } from '../class/wallets/types';
 import { WalletCarouselItem } from './WalletsCarousel';
@@ -48,7 +48,7 @@ interface SwipeContentProps {
   colors: any;
 }
 
-const LeftSwipeContent: React.FC<SwipeContentProps> = ({ onPress, hideBalance, colors }) => (
+const LeftSwipeContent: React.FC<SwipeContentProps> = React.memo(({ onPress, hideBalance, colors }) => (
   <TouchableOpacity
     onPress={onPress}
     style={[styles.leftButtonContainer, { backgroundColor: colors.buttonAlternativeTextColor } as ViewStyle]}
@@ -57,18 +57,18 @@ const LeftSwipeContent: React.FC<SwipeContentProps> = ({ onPress, hideBalance, c
   >
     <Icon name={hideBalance ? 'eye-slash' : 'eye'} color={colors.brandingColor} type="font-awesome-5" />
   </TouchableOpacity>
-);
+));
 
-const RightSwipeContent: React.FC<Partial<SwipeContentProps>> = ({ onPress }) => (
+const RightSwipeContent: React.FC<Partial<SwipeContentProps>> = React.memo(({ onPress }) => (
   <TouchableOpacity
     onPress={onPress}
     style={styles.rightButtonContainer as ViewStyle}
     accessibilityRole="button"
     accessibilityLabel="Delete Wallet"
   >
-    <Icon name={Platform.OS === 'android' ? 'delete' : 'delete-outline'} color="#FFFFFF" />
+    <Icon name="delete-outline" color="#FFFFFF" />
   </TouchableOpacity>
-);
+));
 
 const ManageWalletsListItem: React.FC<ManageWalletsListItemProps> = ({
   item,
@@ -111,6 +111,10 @@ const ManageWalletsListItem: React.FC<ManageWalletsListItemProps> = ({
   };
 
   const rightContent = (reset: () => void) => <RightSwipeContent onPress={() => handleRightPress(reset)} />;
+
+  if (isLoading) {
+    return <ActivityIndicator size="large" color={colors.brandingColor} />;
+  }
 
   if (isLoading) {
     return <ActivityIndicator size="large" color={colors.brandingColor} />;
