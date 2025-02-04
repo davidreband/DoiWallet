@@ -382,16 +382,6 @@ const DetailViewStackScreensStack = () => {
           title: loc.wallets.manage_title,
         })(theme)}
       />
-      <DetailViewStack.Screen
-        name="ScanQRCode"
-        component={ScanQRCodeComponent}
-        options={navigationStyle({
-          headerShown: false,
-          statusBarHidden: true,
-          presentation: 'fullScreenModal',
-          headerShadowVisible: false,
-        })(theme)}
-      />
     </DetailViewStack.Navigator>
   );
 };
