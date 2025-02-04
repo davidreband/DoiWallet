@@ -179,7 +179,27 @@ const startImport = (
     if (ms.getN() > 0 && ms.getM() > 0) {
       await fetch(ms, true, false);
       yield { wallet: ms };
-    }    
+    }
+
+    // is it lightning custodian?
+    yield { progress: 'lightning custodian' };
+    if (text.startsWith('blitzhub://') || text.startsWith('lndhub://')) {
+      const lnd = new LightningCustodianWallet();
+      if (text.includes('@')) {
+        const split = text.split('@');
+        lnd.setBaseURI(split[1]);
+        lnd.setSecret(split[0]);
+      }
+      await lnd.init();
+      if (!offline) {
+        await lnd.authorize();
+        await lnd.fetchTransactions();
+        await lnd.fetchUserInvoices();
+        await lnd.fetchPendingTransactions();
+        await lnd.fetchBalance();
+      }
+      yield { wallet: lnd };
+    }
 
     // check bip39 wallets
     yield { progress: 'bip39' };

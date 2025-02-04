@@ -119,6 +119,19 @@ describe('import procedure', () => {
     assert.strictEqual(store.state.wallets.length > 100, true);
   });
 
+  it('can import multiple wallets in offline mode', async () => {
+    const store = createStore();
+    const { promise } = startImport(
+      'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
+      false,
+      true,
+      true,
+      ...store.callbacks,
+    );
+    await promise;
+    assert.strictEqual(store.state.wallets.length > 100, true);
+  });
+
   it('can import BIP84', async () => {
     const store = createStore();
     const { promise } = startImport(
