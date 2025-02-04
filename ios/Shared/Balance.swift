@@ -40,7 +40,7 @@ class Balance {
 }
 
 extension Decimal {
-  func formatted(as unit: BitcoinUnit, withFormatting: Bool = false) -> String {
+  func formatted(as unit: BalanceUnit, withFormatting: Bool = false) -> String {
         switch unit {
         case .sats:
             return withFormatting ? NumberFormatter.localizedString(from: self as NSNumber, number: .decimal) + " SATS" : "\(self) SATS"
