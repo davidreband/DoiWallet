@@ -23,64 +23,34 @@ const TotalWalletsBalance: React.FC = React.memo(() => {
   } = useSettings();
   const { colors } = useTheme();
 
-  const styleHooks = useMemo(
-    () => ({
-      balance: { color: colors.foregroundColor },
-      currency: { color: colors.foregroundColor },
-    }),
-    [colors.foregroundColor],
-  );
-
-  const getVisibleWalletBalances = useCallback(() => {
-    return wallets.filter(wallet => !wallet.hideBalance).map(wallet => wallet.getBalance());
-  }, [wallets]);
-
-  const totalBalance = useMemo(() => {
-    const visibleBalances = getVisibleWalletBalances();
-    return visibleBalances.reduce((acc, balance) => acc + balance, 0);
-  }, [getVisibleWalletBalances]);
-
-  const formattedBalance = useMemo(() => {
+  const totalBalanceFormatted = useMemo(() => {
+    const totalBalance = wallets.reduce((prev, curr) => {
+      return curr.hideBalance ? prev : prev + (curr.getBalance() || 0);
+    }, 0);
     return formatBalanceWithoutSuffix(totalBalance, totalBalancePreferredUnit, true);
-  }, [totalBalance, totalBalancePreferredUnit]);
-  const toolTipActions = useMemo(() => {
-    const viewInFiat = {
-      ...CommonToolTipActions.ViewInFiat,
-      text: loc.formatString(loc.total_balance_view.view_in_fiat, { currency: preferredFiatCurrency.endPointKey }),
-      hidden: totalBalancePreferredUnit === DoichainUnit.LOCAL_CURRENCY,
-    };
+  }, [wallets, totalBalancePreferredUnit]);
 
-    if (totalBalancePreferredUnit === DoichainUnit.SWARTZ) {
-      viewIn = {
-        ...CommonToolTipActions.ViewInFiat,
-        text: loc.formatString(loc.total_balance_view.view_in_fiat, { currency: preferredFiatCurrency.endPointKey }),
-      };
-    } else if (totalBalancePreferredUnit === DoichainUnit.LOCAL_CURRENCY) {
-      viewIn = CommonToolTipActions.ViewInBitcoin;
-    } else if (totalBalancePreferredUnit === DoichainUnit.DOI) {
-      viewIn = CommonToolTipActions.ViewInSats;
-    } else {
-      viewIn = CommonToolTipActions.ViewInBitcoin;
-    }
-    const viewInSats = {
-      ...CommonToolTipActions.ViewInSats,
-      hidden: totalBalancePreferredUnit === DoichainUnit.SWARTZ,
-    };
-
-    const viewInBitcoin = {
-      ...CommonToolTipActions.ViewInBitcoin,
-      hidden: totalBalancePreferredUnit === DoichainUnit.DOI,
-    };
-
-    const viewInActions = {
-      id: 'viewInActions',
-      text: '',
-      subactions: [viewInFiat, viewInSats, viewInBitcoin],
-      displayInline: true,
-    };
-
-    return [viewInActions, CommonToolTipActions.CopyAmount, CommonToolTipActions.HideBalance];
-  }, [preferredFiatCurrency, totalBalancePreferredUnit]);
+  const toolTipActions = useMemo(
+    () => [
+      {
+        id: 'viewInActions',
+        text: '',
+        displayInline: true,
+        subactions: [
+          {
+            ...CommonToolTipActions.ViewInFiat,
+            text: loc.formatString(loc.total_balance_view.display_in_fiat, { currency: preferredFiatCurrency.endPointKey }),
+            hidden: totalBalancePreferredUnit === DoichainUnit.LOCAL_CURRENCY,
+          },
+          { ...CommonToolTipActions.ViewInSats, hidden: totalBalancePreferredUnit === DoichainUnit.SWARTZ},
+          { ...CommonToolTipActions.ViewInBitcoin, hidden: totalBalancePreferredUnit === DoichainUnit.DOI },
+        ],
+      },
+      CommonToolTipActions.CopyAmount,
+      CommonToolTipActions.Hide,
+    ],
+    [preferredFiatCurrency, totalBalancePreferredUnit],
+  );
 
   const onPressMenuItem = useMemo(
     () => async (id: string | number) => {
@@ -95,56 +65,46 @@ const TotalWalletsBalance: React.FC = React.memo(() => {
         case CommonToolTipActions.ViewInBitcoin.id:
           await setTotalBalancePreferredUnitStorage(DoichainUnit.DOI);
           break;
-        case CommonToolTipActions.HideBalance.id:
+        case CommonToolTipActions.Hide.id:
           await setIsTotalBalanceEnabledStorage(false);
           break;
         case CommonToolTipActions.CopyAmount.id:
-          Clipboard.setString(formattedBalance.toString());
+          Clipboard.setString(totalBalanceFormatted.toString());
           break;
         default:
           break;
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [formattedBalance],
+    [setIsTotalBalanceEnabledStorage, totalBalanceFormatted, setTotalBalancePreferredUnitStorage],
   );
 
   const handleBalanceOnPress = useCallback(async () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    let nextUnit: DoichainUnit;
-    switch (totalBalancePreferredUnit) {
-      case DoichainUnit.DOI:
-        nextUnit = DoichainUnit.SWARTZ;
-        break;
-      case DoichainUnit.SWARTZ:
-        nextUnit = DoichainUnit.LOCAL_CURRENCY;
-        break;
-      default:
-        nextUnit = DoichainUnit.DOI;
-    }
+    const nextUnit =
+      totalBalancePreferredUnit === DoichainUnit.DOI
+        ? DoichainUnit.SWARTZ
+        : totalBalancePreferredUnit === DoichainUnit.SWARTZ
+          ? DoichainUnit.LOCAL_CURRENCY
+          : DoichainUnit.DOI;
     await setTotalBalancePreferredUnitStorage(nextUnit);
   }, [totalBalancePreferredUnit, setTotalBalancePreferredUnitStorage]);
 
-  // If there's only one wallet or total balance view is disabled, don't render
   if (wallets.length <= 1 || !isTotalBalanceEnabled) return null;
 
   return (
-    (wallets.length > 1 && (
-      <ToolTipMenu actions={toolTipActions} onPressMenuItem={onPressMenuItem}>
-        <View style={styles.container}>
-          <Text style={styles.label}>{loc.wallets.total_balance}</Text>
-          <TouchableOpacity onPress={() => onPressMenuItem(CommonToolTipActions.ViewInBitcoin.id)}>
-            <Text style={[styles.balance, styleHooks.balance]}>
-              {formattedBalance}{' '}
-              {totalBalancePreferredUnit !== DoichainUnit.LOCAL_CURRENCY && (
-                <Text style={[styles.currency, styleHooks.currency]}>{totalBalancePreferredUnit}</Text>
-              )}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ToolTipMenu>
-    )) ||
-    null
+    <ToolTipMenu actions={toolTipActions} onPressMenuItem={onPressMenuItem}>
+      <View style={styles.container}>
+        <Text style={styles.label}>{loc.wallets.total_balance}</Text>
+        <TouchableOpacity onPress={handleBalanceOnPress}>
+          <Text style={[styles.balance, { color: colors.foregroundColor }]}>
+            {totalBalanceFormatted}{' '}
+            {totalBalancePreferredUnit !== DoichainUnit.LOCAL_CURRENCY && (
+              <Text style={[styles.currency, { color: colors.foregroundColor }]}>{totalBalancePreferredUnit}</Text>
+            )}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </ToolTipMenu>
   );
 });
 
@@ -162,12 +122,10 @@ const styles = StyleSheet.create({
   balance: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#1D2B53',
   },
   currency: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#1D2B53',
   },
 });
 
