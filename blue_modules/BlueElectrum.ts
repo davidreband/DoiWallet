@@ -1114,7 +1114,7 @@ export const testConnection = async function (host: string, tcpPort?: number, ss
 };
 
 export const forceDisconnect = (): void => {
-  mainClient.close();
+  mainClient?.close();
 };
 
 export const setBatchingDisabled = () => {
