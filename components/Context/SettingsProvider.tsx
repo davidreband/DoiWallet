@@ -215,7 +215,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
     };
 
     loadSettings();
-  }, [languageStorage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (walletsInitialized) {
