@@ -54,8 +54,8 @@ const buttonFontSize =
 type WalletTransactionsProps = NativeStackScreenProps<DetailViewStackParamList, 'WalletTransactions'>;
 
 const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
-  const { wallets, saveToDisk, setSelectedWalletID, isElectrumDisabled } = useStorage();
-  const { setReloadTransactionsMenuActionFunction } = useMenuElements();
+  const { wallets, saveToDisk, setSelectedWalletID, setReloadTransactionsMenuActionFunction } = useStorage();
+  const { isElectrumDisabled } = useSettings();
   const { isBiometricUseCapableAndEnabled } = useBiometrics();
   const [isLoading, setIsLoading] = useState(false);
   const { walletID } = route.params;
