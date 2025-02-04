@@ -172,7 +172,8 @@ const CompanionDelegates = () => {
 
   useEffect(() => {
     initializeNotifications(processPushNotifications);
-  }, [processPushNotifications]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleOpenURL = useCallback(
     async (event: { url: string }): Promise<void> => {
