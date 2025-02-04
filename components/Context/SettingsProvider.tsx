@@ -9,12 +9,12 @@ import { saveLanguage, STORAGE_KEY } from '../../loc';
 import { FiatUnit, TFiatUnit } from '../../models/fiatUnit';
 import { getEnabled as getIsDeviceQuickActionsEnabled, setEnabled as setIsDeviceQuickActionsEnabled } from '../DeviceQuickActions';
 import { getIsHandOffUseEnabled, setIsHandOffUseEnabled } from '../HandOffComponent';
-import { isBalanceDisplayAllowed, setBalanceDisplayAllowed } from '../WidgetCommunication';
 import { useStorage } from '../../hooks/context/useStorage';
 import { DoichainUnit} from '../../models/doichainUnits';
 import { TotalWalletsBalanceKey, TotalWalletsBalancePreferredUnit } from '../TotalWalletsBalance';
 import { BLOCK_EXPLORERS, getBlockExplorerUrl, saveBlockExplorer, BlockExplorer, normalizeUrl } from '../../models/blockExplorer';
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
+import { isBalanceDisplayAllowed, setBalanceDisplayAllowed } from '../../hooks/useWidgetCommunication';
 
 const getDoNotTrackStorage = async (): Promise<boolean> => {
   try {
