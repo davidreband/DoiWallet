@@ -507,6 +507,10 @@ const ViewEditMultisigCosigners: React.FC = () => {
 
   const hideShareModal = () => {};
 
+  const toolTipActions = useMemo(() => {
+    return [{ ...CommonToolTipActions.Passphrase, menuState: askPassphrase }];
+  }, [askPassphrase]);
+
   const renderProvideMnemonicsModal = () => {
     return (
       <BottomModal
