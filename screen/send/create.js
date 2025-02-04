@@ -22,10 +22,11 @@ import { DynamicQRCode } from "../../components/DynamicQRCode";
 import { useTheme } from '../../components/themes';
 import { disallowScreenshot } from 'react-native-screen-capture';
 import loc from '../../loc';
+
 import { useStorage } from '../../hooks/context/useStorage';
 import { useBiometrics, unlockWithBiometrics } from '../../hooks/useBiometrics';
 import { useExtendedNavigation } from "../../hooks/useExtendedNavigation";
-
+import { useSettings } from '../../hooks/context/useSettings';
 
 const SendCreate = () => {
   const { fee, recipients, wallet,  memo = "", satoshiPerByte, psbt, showAnimatedQr, tx,} = useRoute().params;
@@ -34,6 +35,9 @@ const SendCreate = () => {
   const route = useRoute();
   const transaction = tx?bitcoin.Transaction.fromHex(tx):0;
   const size = tx?transaction.virtualSize():1;
+
+const SendCreate = () => {
+
   const { colors } = useTheme();
   const { setOptions } = useNavigation();
   const { enableBlur, disableBlur } = usePrivacy();
@@ -133,11 +137,11 @@ const SendCreate = () => {
 
   useEffect(() => {
     console.log('send/create - useEffect');
-    disallowScreenshot(true);
+    disallowScreenshot(isPrivacyBlurEnabled);
     return () => {
       disallowScreenshot(false);
     };
-  }, []);
+  }, [isPrivacyBlurEnabled]);
 
   const exportTXN = useCallback(async () => {
     const fileName = `${Date.now()}.txn`;

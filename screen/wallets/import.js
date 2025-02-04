@@ -17,6 +17,7 @@ import { useKeyboard } from '../../hooks/useKeyboard';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import Clipboard from '@react-native-clipboard/clipboard';
 import HeaderMenuButton from '../../components/HeaderMenuButton';
+import { useSettings } from '../../hooks/context/useSettings';
 
 const WalletsImport = () => {
   const navigation = useNavigation();
@@ -32,7 +33,8 @@ const WalletsImport = () => {
   const [searchAccountsMenuState, setSearchAccountsMenuState] = useState(false);
   const [askPassphraseMenuState, setAskPassphraseMenuState] = useState(false);
   const [clearClipboardMenuState, setClearClipboardMenuState] = useState(true);
-
+  const { isPrivacyBlurEnabled } = useSettings();
+  // Styles
   const styles = StyleSheet.create({
     root: {
       paddingTop: 10,
@@ -59,11 +61,11 @@ const WalletsImport = () => {
   };
 
   useEffect(() => {
-    disallowScreenshot(true);
+    disallowScreenshot(isPrivacyBlurEnabled);
     return () => {
       disallowScreenshot(false);
     };
-  }, []);
+  }, [isPrivacyBlurEnabled]);
 
   useEffect(() => {
     if (triggerImport) importButtonPressed();

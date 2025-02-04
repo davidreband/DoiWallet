@@ -79,9 +79,7 @@ interface SettingsContextType {
   isHandOffUseEnabled: boolean;
   setIsHandOffUseEnabledAsyncStorage: (value: boolean) => Promise<void>;
   isPrivacyBlurEnabled: boolean;
-  setIsPrivacyBlurEnabledState: (value: boolean) => void;
-  isAdvancedModeEnabled: boolean;
-  setIsAdvancedModeEnabledStorage: (value: boolean) => Promise<void>;
+  setIsPrivacyBlurEnabled: (value: boolean) => void;
   isDoNotTrackEnabled: boolean;
   setDoNotTrackStorage: (value: boolean) => Promise<void>;
   isWidgetBalanceDisplayAllowed: boolean;
@@ -112,9 +110,7 @@ const defaultSettingsContext: SettingsContextType = {
   isHandOffUseEnabled: false,
   setIsHandOffUseEnabledAsyncStorage: async () => {},
   isPrivacyBlurEnabled: true,
-  setIsPrivacyBlurEnabledState: () => {},
-  isAdvancedModeEnabled: false,
-  setIsAdvancedModeEnabledStorage: async () => {},
+  setIsPrivacyBlurEnabled: () => {},
   isDoNotTrackEnabled: false,
   setDoNotTrackStorage: async () => {},
   isWidgetBalanceDisplayAllowed: true,
@@ -320,16 +316,6 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
       console.error('Error setting isQuickActionsEnabled:', e);
     }
   }, []);
-
-  const setIsPrivacyBlurEnabledState = useCallback((value: boolean): void => {
-    try {
-      setIsPrivacyBlurEnabled(value);
-      console.debug(`Privacy blur: ${value}`);
-    } catch (e) {
-      console.error('Error setting isPrivacyBlurEnabled:', e);
-    }
-  }, []);
-
   const setIsTotalBalanceEnabledStorage = useCallback(async (value: boolean): Promise<void> => {
     try {
       await setTotalBalanceViewEnabledStorage(value);
@@ -370,9 +356,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
       isHandOffUseEnabled,
       setIsHandOffUseEnabledAsyncStorage,
       isPrivacyBlurEnabled,
-      setIsPrivacyBlurEnabledState,
-      isAdvancedModeEnabled,
-      setIsAdvancedModeEnabledStorage,
+      setIsPrivacyBlurEnabled,
       isDoNotTrackEnabled,
       setDoNotTrackStorage,
       isWidgetBalanceDisplayAllowed,
@@ -402,9 +386,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
       isHandOffUseEnabled,
       setIsHandOffUseEnabledAsyncStorage,
       isPrivacyBlurEnabled,
-      setIsPrivacyBlurEnabledState,
-      isAdvancedModeEnabled,
-      setIsAdvancedModeEnabledStorage,
+      setIsPrivacyBlurEnabled,
       isDoNotTrackEnabled,
       setDoNotTrackStorage,
       isWidgetBalanceDisplayAllowed,

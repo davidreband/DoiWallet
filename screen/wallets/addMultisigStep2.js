@@ -36,6 +36,9 @@ import { useStorage } from '../../hooks/context/useStorage';
 import { useSettings } from '../../hooks/context/useSettings';
 import { scanQrHelper } from '../../helpers/scan-qr';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
+import ToolTipMenu from '../../components/TooltipMenu';
+import { CommonToolTipActions } from '../../typings/CommonToolTipActions';
+import { useSettings } from '../../hooks/context/useSettings';
 
 const staticCache = {};
 
@@ -60,15 +63,16 @@ const WalletsAddMultisigStep2 = () => {
   const [importText, setImportText] = useState('');
   const [askPassphrase, setAskPassphrase] = useState(false);
   const openScannerButton = useRef();
+  const { isPrivacyBlurEnabled } = useSettings();
   const data = useRef(new Array(n));
 
   useFocusEffect(
     useCallback(() => {
-      disallowScreenshot(true);
+      disallowScreenshot(isPrivacyBlurEnabled);
       return () => {
         disallowScreenshot(false);
       };
-    }, []),
+    }, [isPrivacyBlurEnabled]),
   );
 
   useEffect(() => {
