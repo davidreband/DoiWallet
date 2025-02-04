@@ -2,19 +2,13 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { I18nManager, Linking, ScrollView, StyleSheet, TextInput, View, Pressable, AppState } from 'react-native';
 import { Button as ButtonRNElements } from '@rneui/themed';
 // @ts-ignore: no declaration file
-import {
+import Notifications, {
   getDefaultUri,
   getPushToken,
   getSavedUri,
   getStoredNotifications,
   saveUri,
   isNotificationsEnabled,
-  setLevels,
-  tryToObtainPermissions,
-  cleanUserOptOutFlag,
-  isGroundControlUriValid,
-  checkPermissions,
-  checkNotificationPermissionStatus,
 } from '../../blue_modules/notifications';
 import { BlueCard, BlueSpacing20, BlueSpacing40, BlueText } from '../../BlueComponents';
 import presentAlert from '../../components/Alert';
@@ -88,7 +82,8 @@ const NotificationSettings: React.FC = () => {
       setNotificationsEnabledState(value);
       if (value) {
         // User is enabling notifications
-        await cleanUserOptOutFlag();
+        // @ts-ignore: refactor later
+        await Notifications.cleanUserOptOutFlag();
         if (await getPushToken()) {
           // we already have a token, so we just need to reenable ALL level on groundcontrol:
           await setLevels(true);
@@ -123,6 +118,7 @@ const NotificationSettings: React.FC = () => {
       try {
         setNotificationsEnabledState(await isNotificationsEnabled());
         setURI((await getSavedUri()) ?? getDefaultUri());
+        // @ts-ignore: refactor later
         setTokenInfo(
           'token: ' +
             JSON.stringify(await getPushToken()) +
@@ -156,7 +152,8 @@ const NotificationSettings: React.FC = () => {
     try {
       if (URI) {
         // validating only if its not empty. empty means use default
-        if (await isGroundControlUriValid(URI)) {
+        // @ts-ignore: refactor later
+        if (await Notifications.isGroundControlUriValid(URI)) {
           await saveUri(URI);
           presentAlert({ message: loc.settings.saved });
         } else {

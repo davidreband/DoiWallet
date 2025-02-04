@@ -7,11 +7,10 @@ import A from '../blue_modules/analytics';
 import { getClipboardContent } from '../blue_modules/clipboard';
 import { updateExchangeRate } from '../blue_modules/currency';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../blue_modules/hapticFeedback';
-import {
+import Notifications, {
   clearStoredNotifications,
   getDeliveredNotifications,
   getStoredNotifications,
-  initializeNotifications,
   removeAllDeliveredNotifications,
   setApplicationIconBadgeNumber,
 } from '../blue_modules/notifications';
@@ -50,10 +49,11 @@ const CompanionDelegates = () => {
 
   const processPushNotifications = useCallback(async () => {
     await new Promise(resolve => setTimeout(resolve, 200));
-    try {
-      const notifications2process = await getStoredNotifications();
-      await clearStoredNotifications();
-      setApplicationIconBadgeNumber(0);
+    const notifications2process = await getStoredNotifications();
+    await clearStoredNotifications();
+    setApplicationIconBadgeNumber(0);
+    const deliveredNotifications = await getDeliveredNotifications();
+    setTimeout(() => removeAllDeliveredNotifications(), 5000);
 
       const deliveredNotifications = await getDeliveredNotifications();
       setTimeout(async () => {
