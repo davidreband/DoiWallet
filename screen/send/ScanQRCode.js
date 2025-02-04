@@ -3,7 +3,7 @@ import LocalQRCode from '@remobile/react-native-qrcode-local-image';
 import * as bitcoin from '@doichain/doichainjs-lib';
 import createHash from 'create-hash';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import Base43 from '../../blue_modules/base43';
 import * as fs from '../../blue_modules/fs';
 import { BlueURDecoder, decodeUR, extractSingleWorkload } from '../../blue_modules/ur';
@@ -15,6 +15,8 @@ import { isCameraAuthorizationStatusGranted } from '../../helpers/scan-qr';
 import loc from '../../loc';
 import { useSettings } from '../../hooks/context/useSettings';
 import CameraScreen from '../../components/CameraScreen';
+import SafeArea from '../../components/SafeArea';
+import presentAlert from '../../components/Alert';
 
 let decoder = false;
 
@@ -122,20 +124,13 @@ const ScanQRCode = () => {
     } catch (error) {
       console.warn(error);
       setIsLoading(true);
-      Alert.alert(
-        loc.send.scan_error,
-        loc._.invalid_animated_qr_code_fragment,
-        [
-          {
-            text: loc._.ok,
-            onPress: () => {
-              setIsLoading(false);
-            },
-            style: 'default',
-          },
-        ],
-        { cancelabe: false },
-      );
+      presentAlert({
+        title: loc.send.scan_error,
+        message: loc._.invalid_animated_qr_code_fragment,
+        onPress: () => {
+          setIsLoading(false);
+        },
+      });
     }
   };
 
@@ -172,20 +167,14 @@ const ScanQRCode = () => {
     } catch (error) {
       console.warn(error);
       setIsLoading(true);
-      Alert.alert(
-        loc.send.scan_error,
-        loc._.invalid_animated_qr_code_fragment,
-        [
-          {
-            text: loc._.ok,
-            onPress: () => {
-              setIsLoading(false);
-            },
-            style: 'default',
-          },
-        ],
-        { cancelabe: false },
-      );
+
+      presentAlert({
+        title: loc.send.scan_error,
+        message: loc._.invalid_animated_qr_code_fragment,
+        onPress: () => {
+          setIsLoading(false);
+        },
+      });
     }
   };
 
@@ -276,22 +265,45 @@ const ScanQRCode = () => {
     navigation.goBack();
   };
 
+  const handleReadCode = event => {
+    onBarCodeRead({ data: event?.nativeEvent?.codeStringValue });
+  };
+
+  const handleBackdoorOkPress = () => {
+    setBackdoorVisible(false);
+    setBackdoorText('');
+    if (backdoorText) onBarCodeRead({ data: backdoorText });
+  };
+
+  // this is an invisible backdoor button on bottom left screen corner
+  // tapping it 10 times fires prompt dialog asking for a string thats gona be passed to onBarCodeRead.
+  // this allows to mock and test QR scanning in e2e tests
+  const handleInvisibleBackdoorPress = async () => {
+    setBackdoorPressed(backdoorPressed + 1);
+    if (backdoorPressed < 5) return;
+    setBackdoorPressed(0);
+    setBackdoorVisible(true);
+  };
+
   const render = isLoading ? (
     <BlueLoading />
   ) : (
-    <>
+    <SafeArea>
       {!cameraStatusGranted ? (
         <View style={[styles.openSettingsContainer, stylesHook.openSettingsContainer]}>
           <BlueText>{loc.send.permission_camera_message}</BlueText>
           <BlueSpacing40 />
           <Button title={loc.send.open_settings} onPress={openPrivacyDesktopSettings} />
           <BlueSpacing40 />
+          {showFileImportButton && <Button title={loc.wallets.import_file} onPress={showFilePicker} />}
+          <BlueSpacing40 />
+          <Button title={loc.wallets.list_long_choose} onPress={showFilePicker} />
+          <BlueSpacing40 />
           <Button title={loc._.cancel} onPress={dismiss} />
         </View>
       ) : isFocused ? (
         <CameraScreen
-          scanBarcode
-          onReadCode={event => onBarCodeRead({ data: event?.nativeEvent?.codeStringValue })}
+          onReadCode={handleReadCode}
           showFrame={false}
           showFilePickerButton={showFileImportButton}
           showImagePickerButton={true}
@@ -324,16 +336,7 @@ const ScanQRCode = () => {
             value={backdoorText}
             onChangeText={setBackdoorText}
           />
-          <Button
-            title="OK"
-            testID="scanQrBackdoorOkButton"
-            onPress={() => {
-              setBackdoorVisible(false);
-              setBackdoorText('');
-
-              if (backdoorText) onBarCodeRead({ data: backdoorText });
-            }}
-          />
+          <Button title="OK" testID="scanQrBackdoorOkButton" onPress={handleBackdoorOkPress} />
         </View>
       )}
       <TouchableOpacity
@@ -341,17 +344,9 @@ const ScanQRCode = () => {
         accessibilityLabel={loc._.qr_custom_input_button}
         testID="ScanQrBackdoorButton"
         style={styles.backdoorButton}
-        onPress={async () => {
-          // this is an invisible backdoor button on bottom left screen corner
-          // tapping it 10 times fires prompt dialog asking for a string thats gona be passed to onBarCodeRead.
-          // this allows to mock and test QR scanning in e2e tests
-          setBackdoorPressed(backdoorPressed + 1);
-          if (backdoorPressed < 5) return;
-          setBackdoorPressed(0);
-          setBackdoorVisible(true);
-        }}
+        onPress={handleInvisibleBackdoorPress}
       />
-    </>
+    </SafeArea>
   );
 
   return <View style={styles.root}>{render}</View>;
