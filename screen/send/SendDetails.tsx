@@ -1818,7 +1818,7 @@ const SendDetails = () => {
       return (
         <View style={styles.select}>
           <CoinsSelected
-            number={utxos.length}
+            number={utxos.length || 0}
             onContainerPress={handleCoinControl}
             onClose={() => {
               setUtxo(null);
