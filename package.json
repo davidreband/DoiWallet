@@ -77,7 +77,7 @@
   },
   "dependencies": {
     "@babel/preset-env": "7.25.8",
-    "@bugsnag/react-native": "8.1.3",
+    "@bugsnag/react-native": "8.2.0",
     "@bugsnag/source-maps": "2.3.3",
     "@doichain/doichainjs-lib": "^6.1.7",
     "@react-native-community/cli": "15.0.1",
