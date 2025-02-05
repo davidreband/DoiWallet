@@ -78,13 +78,13 @@
   "plausibledeniability": {
     "create_fake_storage": "Verschlüsselten Speicher erstellen",
     "create_password_explanation": "Das Passwort für den täuschenden Speicher darf nicht mit dem deines Hauptspeichers übereinstimmen",
-    "help": "DoiWallet erlaubt die Erstellung eines zweiten verschlüsselten Speichers mit eigenem Passwort. Solltest du gezwungen werden dein Passwort preiszugeben, kannst du dieses anstelle des richtigen Passwortes nennen. DoiWallet öffnet dann die Wallet, welche du im zweiten Speicher zur Täuschung angelegt hast und dein Hauptspeicher bleibt geheim und sicher.",
+    "help": "DoiWallet erlaubt die Erstellung eines zweiten verschlüsselten Speichers mit eigenem Passwort. Sodass unter Zwang das Passwort preiszugeben, dann dies, anstelle des richtigen Passwortes genannt werden kann. DoiWallet öffnet dann die Wallet, welche im zweiten Speicher zur Täuschung angelegt ist und der Hauptspeicher bleibt geheim und sicher.",
     "help2": "Der zweite Speicher ist funktional identisch. Zahle auf die darin angelegten Wallet ein Minimalbetrag ein, um die Täuschung glaubhafter zu machen.",
     "password_should_not_match": "Das Passwort für den täuschenden Speicher darf nicht mit dem deines Hauptspeichers übereinstimmen",
     "title": "Glaubhafte Täuschung"
   },
   "pleasebackup": {
-    "ask": "Ist die Wiederherstellungs-Phrase des Wallets gesichert? Ohne Sie lässt sich nie mehr auf die Doi zugreifen und sie wären für immer verloren, sollte das Gerät verloren oder kaputt gehen.",
+    "ask": "Ist die Wiederherstellungs-Phrase des Wallets gesichert? Ohne Sie lässt sich nie mehr auf die DOI zugreifen und sie wären für immer verloren, sollte das Gerät verloren oder kaputt gehen.",
     "ask_no": "Nein, habe ich nicht.",
     "ask_yes": "Ja, habe ich.",
     "ok": "Ok, sie sind notiert.",
