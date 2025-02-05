@@ -64,7 +64,7 @@ const ViewEditMultisigCosigners: React.FC = () => {
   const { wallets, setWalletsWithNewOrder } = useStorage();
   const { isBiometricUseCapableAndEnabled } = useBiometrics();
   const { isElectrumDisabled, isPrivacyBlurEnabled } = useSettings();
-  const { navigate, dispatch, addListener, setParams } = useExtendedNavigation<NavigationProp>();
+  const { navigate, dispatch, addListener, setParams, setOptions } = useExtendedNavigation<NavigationProp>();
   const openScannerButtonRef = useRef();
   const route = useRoute<RouteParams>();
   const { walletID } = route.params;
@@ -164,7 +164,6 @@ const ViewEditMultisigCosigners: React.FC = () => {
   );
 
   const onSave = async () => {
-    await dismissAllModals();
     if (!wallet) {
       throw new Error('Wallet is undefined');
     }
@@ -179,27 +178,32 @@ const ViewEditMultisigCosigners: React.FC = () => {
       }
     }
 
-    // eslint-disable-next-line prefer-const
-    let newWallets = wallets.filter(newWallet => {
-      return newWallet.getID() !== walletID;
-    }) as MultisigHDWallet[];
-    if (!isElectrumDisabled) {
-      await wallet?.fetchBalance();
-    }
-    newWallets.push(wallet);
-    setIsSaveButtonDisabled(true);
-    setTimeout(() => {
+    setOptions({ headerRight: () => null });
+
+    setTimeout(async () => {
+      // eslint-disable-next-line prefer-const
+      let newWallets = wallets.filter(newWallet => {
+        return newWallet.getID() !== walletID;
+      }) as MultisigHDWallet[];
+      if (!isElectrumDisabled) {
+        await wallet?.fetchBalance();
+      }
+      newWallets.push(wallet);
+      setIsSaveButtonDisabled(true);
       setWalletsWithNewOrder(newWallets);
-      // dismiss this modal
-      navigationRef.dispatch(CommonActions.navigate({ name: 'WalletsList' }));
-    }, 500);
+      setTimeout(() => {
+        navigationRef.dispatch(
+          CommonActions.navigate({ name: 'WalletTransactions', params: { walletID: wallet.getID(), walletType: MultisigHDWallet.type } }),
+        );
+      }, 500);
+    }, 100);
   };
+
   useFocusEffect(
     useCallback(() => {
       // useFocusEffect is called on willAppear (example: when camera dismisses). we want to avoid this.
       if (hasLoaded.current) return;
       setIsLoading(true);
-
       if (!isDesktop) disallowScreenshot(isPrivacyBlurEnabled);
 
       const task = InteractionManager.runAfterInteractions(async () => {
@@ -468,12 +472,6 @@ const ViewEditMultisigCosigners: React.FC = () => {
     );
   };
 
-  const dismissAllModals = async () => {
-    await provideMnemonicsModalRef.current?.dismiss();
-    await shareModalRef.current?.dismiss();
-    await mnemonicsModalRef.current?.dismiss();
-    resetModalData();
-  };
   const handleUseMnemonicPhrase = async () => {
     let passphrase;
     if (askPassphrase) {
