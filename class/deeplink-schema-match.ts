@@ -1,7 +1,6 @@
 import bip21, { TOptions } from 'bip21';
 import * as bitcoin from '@doichain/doichainjs-lib';
 import URL from 'url';
-
 import { readFileOutsideSandbox } from '../blue_modules/fs';
 import { Chain } from '../models/doichainUnits';
 import { WatchOnlyWallet } from './';
