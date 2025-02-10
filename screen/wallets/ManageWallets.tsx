@@ -505,7 +505,7 @@ const ManageWallets: React.FC = () => {
 
   const renderHeader = useMemo(() => {
     if (!state.searchQuery) return null;
-    const hasWallets = state.walletData.length > 0;
+    const hasWallets = state.wallets.length > 0;
     const filteredTxMetadata = Object.entries(state.txMetadata).filter(([_, tx]) =>
       tx.memo?.toLowerCase().includes(state.searchQuery.toLowerCase()),
     );
