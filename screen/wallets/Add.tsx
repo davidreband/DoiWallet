@@ -106,8 +106,7 @@ const WalletsAdd: React.FC = () => {
   const label = state.label;
   const selectedWalletType = state.selectedWalletType;
   const colorScheme = useColorScheme();
-  //
-  const colorScheme = useColorScheme();
+  
   const { addWallet, saveToDisk } = useStorage();
   const { entropy: entropyHex, words } = useRoute<RouteProps>().params || {};
   const entropy = entropyHex ? Buffer.from(entropyHex, 'hex') : undefined;
@@ -193,12 +192,7 @@ const WalletsAdd: React.FC = () => {
         subtitle: 'p2sh/non-HD',
         menuState: selectedIndex === 2 && selectedWalletType === ButtonSelected.ONCHAIN,
       },
-      {
-        id: LightningCustodianWallet.type,
-        text: LightningCustodianWallet.typeReadable,
-        subtitle: LightningCustodianWallet.subtitleReadable,
-        menuState: selectedWalletType === ButtonSelected.OFFCHAIN,
-      },
+      
     ];
 
     const walletAction: Action = {
@@ -248,8 +242,6 @@ const WalletsAdd: React.FC = () => {
             setSelectedIndex(1);
           } else if (id === HDSegwitP2SHWallet.type) {
             setSelectedIndex(2);
-          } else if (id === LightningCustodianWallet.type) {
-            handleOnLightningButtonPressed();
           } else if (id === '12_words') {
             navigate('ProvideEntropy', { words: 12, entropy: entropy?.toString('hex') });
           } else if (id === '24_words') {

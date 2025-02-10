@@ -307,7 +307,7 @@ const ElectrumSettings: React.FC = () => {
       text: loc._.suggested,
       displayInline: true,
       subtitle: loc.settings.electrum_suggested_description,
-      subactions: suggestedServers
+      subactions: (suggestedServers || [])
         .map(value =>
           createServerAction({
             value,

@@ -33,15 +33,7 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
   const { preferredFiatCurrency } = useSettings();
 
   const verifyIfWalletAllowsOnchainAddress = useCallback(() => {
-    if (wallet.type === LightningCustodianWallet.type) {
-      wallet
-        .allowOnchainAddress()
-        .then((value: boolean) => setAllowOnchainAddress(value))
-        .catch(() => {
-          console.error('This LNDhub wallet does not have an onchain address API.');
-          setAllowOnchainAddress(false);
-        });
-    }
+    
   }, [wallet]);
 
   useEffect(() => {

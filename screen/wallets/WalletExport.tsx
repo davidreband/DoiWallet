@@ -197,9 +197,7 @@ const WalletExport: React.FC = () => {
         </>
       ) : (
         <>
-          <BlueText style={styles.writeText}>
-            {wallet.type === LightningCustodianWallet.type ? loc.wallets.copy_ln_url : loc.wallets.copy_ln_public}
-          </BlueText>
+          
           <CopyBox text={secret} onPress={handleCopy} />
         </>
       )}

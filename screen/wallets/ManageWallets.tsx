@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { useTheme } from '../../components/themes';
 import { WalletCarouselItem } from '../../components/WalletsCarousel';
@@ -73,22 +74,21 @@ interface SetIsSearchFocusedAction {
   payload: boolean;
 }
 
-interface SetWalletDataAction {
-  type: typeof SET_WALLET_DATA;
-  payload: TWallet[];
+interface SetInitialOrderAction {
+  type: typeof SET_INITIAL_ORDER;
+  payload: { wallets: TWallet[]; txMetadata: TTXMetadata };
 }
 
-interface SetTxMetadataAction {
-  type: typeof SET_TX_METADATA;
-  payload: TTXMetadata;
+interface SetFilteredOrderAction {
+  type: typeof SET_FILTERED_ORDER;
+  payload: string;
 }
 
-interface SetOrderAction {
-  type: typeof SET_ORDER;
+interface SetTempOrderAction {
+  type: typeof SET_TEMP_ORDER;
   payload: Item[];
 }
 
-type Action = SetSearchQueryAction | SetIsSearchFocusedAction | SetWalletDataAction | SetTxMetadataAction | SetOrderAction;
 interface RemoveWalletAction {
   type: typeof REMOVE_WALLET;
   payload: string; // Wallet ID
@@ -106,19 +106,19 @@ type Action =
 interface State {
   searchQuery: string;
   isSearchFocused: boolean;
-  walletData: TWallet[];
-  txMetadata: TTXMetadata;
   order: Item[];
-  currentSort: SortOption;
+  tempOrder: Item[];
+  wallets: TWallet[];
+  txMetadata: TTXMetadata;
 }
 
 const initialState: State = {
   searchQuery: '',
   isSearchFocused: false,
-  walletData: [],
-  txMetadata: {},
   order: [],
-  currentSort: SortOption.Balance,
+  tempOrder: [],
+  wallets: [],
+  txMetadata: {},
 };
 
 const deepCopyWallets = (wallets: TWallet[]): TWallet[] => {
@@ -202,14 +202,16 @@ const ManageWallets: React.FC = () => {
   const walletsRef = useRef<TWallet[]>(deepCopyWallets(storedWallets)); // Create a deep copy of wallets for the DraggableFlatList
   const { navigate, setOptions, goBack } = useExtendedNavigation();
   const [state, dispatch] = useReducer(reducer, initialState);
+  const { isBiometricUseCapableAndEnabled } = useBiometrics();
+  const navigation = useNavigation();
+  const debouncedSearchQuery = useDebounce(state.searchQuery, 300);
+  const bounceAnim = useBounceAnimation(state.searchQuery);
+  const beforeRemoveListenerRef = useRef<(() => void) | null>(null);
 
   const stylesHook = {
     root: {
       backgroundColor: colors.elevated,
-    },
-    tip: {
-      backgroundColor: colors.ballOutgoingExpired,
-    },
+    },    
     noResultsText: {
       color: colors.foregroundColor,
     },
@@ -234,12 +236,12 @@ const ManageWallets: React.FC = () => {
   }, [debouncedSearchQuery, state.order]);
 
   const handleClose = useCallback(() => {
-    // Filter out only wallet items from the order array
-    const walletOrder = state.order.filter((item): item is WalletItem => item.type === ItemType.WalletSection).map(item => item.data);
+    if (state.searchQuery.length === 0 && !state.isSearchFocused) {
+      const newWalletOrder = state.tempOrder
+        .filter((item): item is WalletItem => item.type === ItemType.WalletSection)
+        .map(item => item.data);
 
-    setWalletsWithNewOrder(walletOrder);
-    goBack();
-  }, [goBack, setWalletsWithNewOrder, state.order]);
+      setWalletsWithNewOrder(newWalletOrder);
 
       dispatch({ type: SAVE_CHANGES, payload: newWalletOrder });
 
@@ -255,6 +257,7 @@ const ManageWallets: React.FC = () => {
       dispatch({ type: SET_IS_SEARCH_FOCUSED, payload: false });
     }
   }, [goBack, setWalletsWithNewOrder, state.searchQuery, state.isSearchFocused, state.tempOrder, navigation]);
+
 
   const hasUnsavedChanges = useMemo(() => {
     return JSON.stringify(walletsRef.current) !== JSON.stringify(state.tempOrder.map(item => item.data));
@@ -281,6 +284,15 @@ const ManageWallets: React.FC = () => {
   );
 
   useLayoutEffect(() => {
+    const searchBarOptions = {
+      hideWhenScrolling: false,
+      onChangeText: (event: { nativeEvent: { text: any } }) => dispatch({ type: SET_SEARCH_QUERY, payload: event.nativeEvent.text }),
+      onClear: () => dispatch({ type: SET_SEARCH_QUERY, payload: '' }),
+      onFocus: () => dispatch({ type: SET_IS_SEARCH_FOCUSED, payload: true }),
+      onBlur: () => dispatch({ type: SET_IS_SEARCH_FOCUSED, payload: false }),
+      placeholder: loc.wallets.manage_wallets_search_placeholder,
+    };
+
     setOptions({
       headerLeft: () => HeaderLeftButton,
       headerRight: () => SaveButton,
@@ -478,7 +490,7 @@ const ManageWallets: React.FC = () => {
     [state.order, state.txMetadata],
   );
 
-  const _keyExtractor = useCallback((_item: any, index: number) => index.toString(), []);
+  const keyExtractor = useCallback((_item: any, index: number) => index.toString(), []);
 
   const renderHeader = useMemo(() => {
     if (!state.searchQuery) return null;
@@ -492,7 +504,7 @@ const ManageWallets: React.FC = () => {
       !hasWallets &&
       !hasTransactions && <Text style={[styles.noResultsText, stylesHook.noResultsText]}>{loc.wallets.no_results_found}</Text>
     );
-  }, [state.searchQuery, state.walletData.length, state.txMetadata, stylesHook.noResultsText]);
+  }, [state.searchQuery, state.wallets.length, state.txMetadata, stylesHook.noResultsText]);
 
   return (
     <Suspense fallback={<ActivityIndicator size="large" color={colors.brandingColor} />}>
@@ -537,9 +549,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 34,
   },
-});
-
-const iStyles = StyleSheet.create({
   highlightedContainer: {
     backgroundColor: 'white',
     borderColor: 'black',

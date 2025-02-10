@@ -32,7 +32,7 @@ import AztecoRedeemStackRoot from './AztecoRedeemStack';
 import PaymentCodesListComponent from './LazyLoadPaymentCodeStack';
 // import LNDCreateInvoiceRoot from './LNDCreateInvoiceStack';
 import ReceiveDetailsStackRoot from './ReceiveDetailsStack';
-import ScanLndInvoiceRoot from './ScanLndInvoiceStack';
+
 import SendDetailsStack from './SendDetailsStack';
 import SignVerifyStackRoot from './SignVerifyStack';
 import ViewEditMultisigCosignersStackRoot from './ViewEditMultisigCosignersStack';
@@ -58,7 +58,6 @@ import DefaultView from '../screen/settings/DefaultView';
 import ElectrumSettings from '../screen/settings/ElectrumSettings';
 import EncryptStorage from '../screen/settings/EncryptStorage';
 import Language from '../screen/settings/Language';
-import LightningSettings from '../screen/settings/LightningSettings';
 import NotificationSettings from '../screen/settings/NotificationSettings';
 import SelfTest from '../screen/settings/SelfTest';
 import ReleaseNotes from '../screen/settings/ReleaseNotes';
@@ -300,9 +299,9 @@ const DetailViewStackScreensStack = () => {
         options={navigationStyle({ title: loc.settings.encrypt_title })(theme)}
       />
       <DetailViewStack.Screen name="Language" component={Language} options={navigationStyle({ title: loc.settings.language })(theme)} />
-      <DetailViewStack.Screen
+      {/* <DetailViewStack.Screen
         name="LightningSettings"
-        component={LightningSettings}
+        component={LightningSettingsComponent}
         options={navigationStyle({ title: loc.settings.lightning_settings })(theme)}
       /> */}
       <DetailViewStack.Screen
@@ -345,8 +344,7 @@ const DetailViewStackScreensStack = () => {
         options={navigationStyle({ closeButtonPosition: CloseButtonPosition.Left, ...NavigationFormModalOptions })(theme)}
       />
       <DetailViewStack.Screen name="SendDetailsRoot" component={SendDetailsStack} options={NavigationFormModalOptions} />
-      <DetailViewStack.Screen name="LNDCreateInvoiceRoot" component={LNDCreateInvoiceRoot} options={NavigationDefaultOptions} />
-      <DetailViewStack.Screen name="ScanLndInvoiceRoot" component={ScanLndInvoiceRoot} options={NavigationDefaultOptions} />
+      
       <DetailViewStack.Screen name="AztecoRedeemRoot" component={AztecoRedeemStackRoot} options={NavigationDefaultOptions} />
       {/* screens */}
       <DetailViewStack.Screen

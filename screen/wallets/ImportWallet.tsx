@@ -195,20 +195,7 @@ const ImportWallet = () => {
   }, [colors, navigation, toolTipActions, HeaderRight, styles.button, closeImage]);
 
   const renderOptionsAndImportButton = (
-    <>
-      {isAdvancedModeEnabled && (
-        <>
-          <View style={styles.row}>
-            <BlueText>{loc.wallets.import_passphrase}</BlueText>
-            <Switch testID="AskPassphrase" value={askPassphrase} onValueChange={setAskPassphrase} />
-          </View>
-          <View style={styles.row}>
-            <BlueText>{loc.wallets.import_search_accounts}</BlueText>
-            <Switch testID="SearchAccounts" value={searchAccounts} onValueChange={setSearchAccounts} />
-          </View>
-        </>
-      )}
-
+    <>  
       <BlueSpacing20 />
       <View style={styles.center}>
         <>
@@ -268,7 +255,7 @@ const ImportWallet = () => {
           />
         ),
       })}
-    </SafeArea>
+    </ScrollView>
   );
 };
 

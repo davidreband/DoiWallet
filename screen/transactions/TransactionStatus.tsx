@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
+import React, { useCallback, useState, useEffect, useMemo, useReducer, useRef } from 'react';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ActivityIndicator, BackHandler, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ActivityIndicator, BackHandler, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from '@rneui/themed';
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
@@ -118,6 +118,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
   const { colors } = useTheme();
   const { selectedBlockExplorer } = useSettings();
   const fetchTxInterval = useRef<NodeJS.Timeout>();
+  
   const stylesHook = StyleSheet.create({
     value: {
       color: colors.alternativeTextColor2,
@@ -181,10 +182,12 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
     ),
     [navigateToTransactionDetails, loadingError, isLoading, tx, wallet],
   );
+
   const [isUrlAccessible, setIsUrlAccessible] = useState(false);
   const [name, setName] = useState<string>('');
   const [image, setImage] = useState<string>('');
   const [description, setDescription] = useState<string>(''); 
+ 
 
   useEffect(() => {
     setOptions({
@@ -462,6 +465,8 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
   };
 
   const renderNameOps = () => { 
+
+    console.log("______aaa")
     
       if (tx.outputs) {
         for (const output of tx.outputs) {
@@ -762,7 +767,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
                 <Text style={[styles.value, stylesHook.value]} selectable>
                   {wallet && formatBalanceWithoutSuffix(tx.value, wallet.preferredBalanceUnit, true)}
                   {` `}
-                  {wallet?.preferredBalanceUnit !== BitcoinUnit.LOCAL_CURRENCY && wallet && (
+                  {wallet?.preferredBalanceUnit !== DoichainUnit.LOCAL_CURRENCY && wallet && (
                     <Text style={[styles.valueUnit, stylesHook.valueUnit]}>{wallet.preferredBalanceUnit}</Text>
                   )}
                 </Text>
