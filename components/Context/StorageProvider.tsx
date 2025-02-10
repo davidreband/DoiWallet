@@ -122,7 +122,7 @@ export const StorageProvider = ({ children }: { children: React.ReactNode }) => 
 
   const refreshAllWalletTransactions = useCallback(
     async (lastSnappedTo?: number, showUpdateStatusIndicator: boolean = true) => {
-      const TIMEOUT_DURATION = 30000;
+      const TIMEOUT_DURATION = 60000;
 
       const timeoutPromise = new Promise<never>((_resolve, reject) =>
         setTimeout(() => {
@@ -208,12 +208,6 @@ export const StorageProvider = ({ children }: { children: React.ReactNode }) => 
     },
     [saveToDisk, wallets],
   );
-
-  useEffect(() => {
-    if (walletsInitialized) {
-      checkAndUpdateReceiveBitcoinIntent(wallets);
-    }
-  }, [walletsInitialized, wallets]);
 
   const addAndSaveWallet = useCallback(
     async (w: TWallet) => {

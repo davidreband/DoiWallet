@@ -15,7 +15,7 @@ import {
   removeAllDeliveredNotifications,
   setApplicationIconBadgeNumber,
 } from '../blue_modules/notifications';
-import { LightningCustodianWallet } from '../class';
+
 import DeeplinkSchemaMatch from '../class/deeplink-schema-match';
 import loc from '../loc';
 import { Chain } from '../models/doichainUnits';

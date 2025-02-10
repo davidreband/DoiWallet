@@ -83,14 +83,16 @@ export const ELECTRUM_SERVER_HISTORY = 'electrum_server_history';
 const ELECTRUM_CONNECTION_DISABLED = 'electrum_disabled';
 const storageKey = 'ELECTRUM_PEERS';
 
-const defaultPeer = { host: 'itchy-jellyfish-89.doi.works', ssl: '50002' };
+const defaultPeer = { host: 'itchy-jellyfish-89.doi.works', ssl: 50002 };
 export const hardcodedPeers: Peer[] = [
-  { host: "itchy-jellyfish-89.doi.works", ssl: "50002" },
-  { host: "big-parrot-60.doi.works", ssl: "50002" },
-  { host: "ugly-bird-70.doi.works", ssl: "50002" },
+  { host: 'itchy-jellyfish-89.doi.works', ssl: 50002 },
+  { host: 'big-parrot-60.doi.works', ssl: 50002 },
+  { host: 'ugly-bird-70.doi.works', ssl: 50002 },
 ];
 
-
+export const suggestedServers: Peer[] = hardcodedPeers.map(peer => ({
+  ...peer,
+}));
 
 let mainClient: typeof ElectrumClient | undefined;
 let mainConnected: boolean = false;
@@ -410,36 +412,12 @@ const presentNetworkErrorAlert = async (usingPeer?: Peer) => {
       {
         text: loc.settings.electrum_reset,
         onPress: () => {
-          presentAlert({
-            title: loc.settings.electrum_reset,
-            message: loc.settings.electrum_reset_to_default,
-            buttons: [
-              {
-                text: loc._.cancel,
-                style: 'cancel',
-                onPress: () => {},
-              },
-              {
-                text: loc._.ok,
-                style: 'destructive',
-                onPress: async () => {
-                  await AsyncStorage.setItem(ELECTRUM_HOST, '');
-                  await AsyncStorage.setItem(ELECTRUM_TCP_PORT, '');
-                  await AsyncStorage.setItem(ELECTRUM_SSL_PORT, '');
-                  try {
-                    await DefaultPreference.setName('group.org.doichain.doiwallet');
-                    await DefaultPreference.clear(ELECTRUM_HOST);
-                    await DefaultPreference.clear(ELECTRUM_SSL_PORT);
-                    await DefaultPreference.clear(ELECTRUM_TCP_PORT);
-                  } catch (e) {
-                    console.log(e); // Must be running on Android
-                  }
-                  presentAlert({ message: loc.settings.electrum_saved });
-                  setTimeout(connectMain, 500);
-                },
-              },
-            ],
-            options: { cancelable: true },
+          presentResetToDefaultsAlert().then(result => {
+            if (result) {
+              connectionAttempt = 0;
+              mainClient.close() && mainClient.close();
+              setTimeout(connectMain, 500);
+            }
           });
         },
         style: 'destructive',

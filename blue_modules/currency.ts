@@ -61,7 +61,7 @@ async function setPreferredCurrency(item: FiatUnitType): Promise<void> {
   }
   currencyFormatter = null;
 }
-
+/*
 async function getPreferredCurrency(): Promise<FiatUnitType> {
   const preferredCurrency = await AsyncStorage.getItem(PREFERRED_CURRENCY_STORAGE_KEY);
 
@@ -75,7 +75,8 @@ async function getPreferredCurrency(): Promise<FiatUnitType> {
   }
   return FiatUnit.USD;
 }
-
+*/
+/*
 async function _restoreSavedExchangeRatesFromStorage(): Promise<void> {
   try {
     const rates = await AsyncStorage.getItem(EXCHANGE_RATES_STORAGE_KEY);
@@ -98,6 +99,7 @@ async function _restoreSavedPreferredFiatCurrencyFromStorage(): Promise<void> {
     preferredFiatCurrency = deviceCurrencies[0] && FiatUnit[deviceCurrencies[0]] ? FiatUnit[deviceCurrencies[0]] : FiatUnit.USD;
   }
 }
+  */
 let suppressExchangeRateAlert = false;
 
 async function updateExchangeRate(): Promise<void> {
