@@ -1022,16 +1022,15 @@ const SendDetails = () => {
             importQrTransactionOnBarScanned(data);
             break;
           case CommonToolTipActions.SignPSBT:
-          case CommonToolTipActions.CoSignTransaction:
             handlePsbtSign(data);
-            break;         
+            break;
+          case CommonToolTipActions.CoSignTransaction:
           case CommonToolTipActions.ImportTransactionMultsig:
             _importTransactionMultisig(data);
             break;
           case CommonToolTipActions.ImportTransaction:
             processAddressData(data);
             break;
-
           default:
             console.log('Unknown selectedDataProcessor:', selectedDataProcessor.current);
         }
