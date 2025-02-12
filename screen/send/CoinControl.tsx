@@ -36,6 +36,7 @@ import loc, { formatBalance } from '../../loc';
 
 import { SendDetailsStackParamList } from '../../navigation/SendDetailsStackParamList';
 import { CommonToolTipActions } from '../../typings/CommonToolTipActions';
+import TipBox from '../../components/TipBox';
 
 type NavigationProps = NativeStackNavigationProp<SendDetailsStackParamList, 'CoinControl'>;
 type RouteProps = RouteProp<SendDetailsStackParamList, 'CoinControl'>;
@@ -350,6 +351,10 @@ const CoinControl: React.FC = () => {
   const stylesHook = StyleSheet.create({
     tip: {
       backgroundColor: colors.ballOutgoingExpired,
+      borderRadius: 12,
+      padding: 16,
+      marginVertical: 24,
+      marginHorizontal: 16,
     },
   });
 
@@ -367,11 +372,7 @@ const CoinControl: React.FC = () => {
       text = loc.formatString(loc.cc.selected_summ, { value });
     }
 
-    return (
-      <View style={[styles.tip, stylesHook.tip]}>
-        <Text style={{ color: colors.foregroundColor }}>{text}</Text>
-      </View>
-    );
+    return <TipBox description={text} containerStyle={stylesHook.tip} />;
   };
 
   const handleChoose = (item: Utxo) => setOutput(item);
@@ -588,12 +589,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
-  },
-  tip: {
-    marginHorizontal: 16,
-    borderRadius: 12,
-    padding: 16,
-    marginVertical: 24,
   },
   sendIcon: {
     transform: [{ rotate: '225deg' }],
