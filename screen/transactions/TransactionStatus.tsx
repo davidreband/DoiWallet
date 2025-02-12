@@ -464,10 +464,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
     Clipboard.setString(key);        
   };
 
-  const renderNameOps = () => { 
-
-    console.log("______aaa")
-    
+  const renderNameOps = () => {
       if (tx.outputs) {
         for (const output of tx.outputs) {
           if (output?.scriptPubKey?.nameOp) {
@@ -681,73 +678,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
     <SafeArea>
       {loadingError ? (
         <BlueCard>
-          {renderNameOps()}
-          <View style={styles.center}>
-            <Text style={isUrlAccessible ? [styles.valueSmall, stylesHook.value] : [styles.value, stylesHook.value]} selectable>
-              {formatBalanceWithoutSuffix(tx.value, wallet.current.preferredBalanceUnit, true)}{' '}
-
-              {wallet.current.preferredBalanceUnit !== DoichainUnit.LOCAL_CURRENCY && (
-
-                <Text style={[styles.valueUnit, stylesHook.valueUnit]}>{loc.units[wallet.current.preferredBalanceUnit]}</Text>
-              )}
-            </Text>
-          </View>
-
-          {renderTXMetadata()}
-          {renderTXCounterparty()}
-
-          <View style={isUrlAccessible ? [styles.iconRootSmall, stylesHook.iconRoot] :[styles.iconRoot, stylesHook.iconRoot]}>
-            <View>
-              <Icon name="check" size={isUrlAccessible ? 25 : 50} type="font-awesome" color={colors.successCheck} />
-            </View>
-            <View style={[styles.iconWrap, styles.margin]}>
-              {(() => {
-                if (!tx.confirmations) {
-                  return (
-                    <View style={styles.icon}>
-                      <TransactionPendingIcon />
-                    </View>
-                  );
-                } else if (tx.value < 0) {
-                  return (
-                    <View style={styles.icon}>
-                      <TransactionOutgoingIcon />
-                    </View>
-                  );
-                } else {
-                  return (
-                    <View style={styles.icon}>
-                      <TransactionIncomingIcon />
-                    </View>
-                  );
-                }
-              })()}
-            </View>
-          </View>
-
-          {tx.fee && (
-            <View style={styles.fee}>
-              <BlueText style={styles.feeText}>
-                {loc.send.create_fee.toLowerCase()} {formatBalanceWithoutSuffix(tx.fee, wallet.current.preferredBalanceUnit, true)}{' '}
-
-                {wallet.current.preferredBalanceUnit !== DoichainUnit.LOCAL_CURRENCY && wallet.current.preferredBalanceUnit}
-
-              </BlueText>
-            </View>
-          )}
-          <View style={styles.confirmations}>
-            <Text style={styles.confirmationsText}>
-              {loc.formatString(loc.transactions.confirmations_lowercase, {
-                confirmations: tx.confirmations > 6 ? '6+' : tx.confirmations,
-              })}
-            </Text>
-          </View>
-          {eta ? (
-            <View style={styles.eta}>
-              <BlueSpacing10 />
-              <Text style={styles.confirmationsText}>{eta}</Text>
-            </View>
-          ) : null}
+          <BlueText>{loc.transactions.transaction_loading_error}</BlueText>
         </BlueCard>
       ) : isLoading || !tx || wallet === undefined ? (
         <BlueLoading />
@@ -763,6 +694,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
 
           <View style={styles.container}>
             <BlueCard>
+            {renderNameOps()}
               <View style={styles.center}>
                 <Text style={[styles.value, stylesHook.value]} selectable>
                   {wallet && formatBalanceWithoutSuffix(tx.value, wallet.preferredBalanceUnit, true)}
@@ -809,8 +741,8 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
                 <View style={styles.fee}>
                   <BlueText style={styles.feeText}>
                     {`${loc.send.create_fee.toLowerCase()} `}
-                    {formatBalanceWithoutSuffix(tx.fee, wallet?.preferredBalanceUnit ?? BitcoinUnit.BTC, true)}
-                    {wallet?.preferredBalanceUnit !== BitcoinUnit.LOCAL_CURRENCY && wallet?.preferredBalanceUnit}
+                    {formatBalanceWithoutSuffix(tx.fee, wallet?.preferredBalanceUnit ?? DoichainUnit.DOI, true)}
+                    {wallet?.preferredBalanceUnit !== DoichainUnit.LOCAL_CURRENCY && wallet?.preferredBalanceUnit}
                   </BlueText>
                 </View>
               )}

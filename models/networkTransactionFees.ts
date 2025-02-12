@@ -29,7 +29,7 @@ export default class NetworkTransactionFees {
         throw new Error('Electrum is disabled. Dont attempt to fetch fees');
       }
       const response = await BlueElectrum.estimateFees();
-      return new NetworkTransactionFee(response.fast + 5, response.medium + 2, response.slow);
+      return new NetworkTransactionFee(response.fast + 15, response.medium + 12, response.slow);
     } catch (err) {
       console.warn(err);
       return new NetworkTransactionFee(2, 1, 1);

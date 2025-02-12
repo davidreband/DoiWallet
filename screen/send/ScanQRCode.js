@@ -111,6 +111,8 @@ const ScanQRCode = () => {
       if (decoder.isComplete()) {
         const data = decoder.toString();
         decoder = false; // nullify for future use (?)
+
+        console.log("____launchedBy", launchedBy)
         if (launchedBy) {
           const merge = true;
           navigation.navigate({ name: launchedBy, params: { onBarScanned: data }, merge });

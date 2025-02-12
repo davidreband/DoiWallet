@@ -92,7 +92,7 @@ const SendDetails = () => {
   const feeUnit = route.params?.feeUnit ?? DoichainUnit.DOI;
   const amountUnit = route.params?.amountUnit ?? DoichainUnit.DOI;
   const frozenBalance = route.params?.frozenBalance ?? 0;
-  const transactionMemo = route.params?.transactionMemo;
+  const transactionMemo = route.params?.transactionMemo;  
   const utxos = route.params?.utxos;
   const payjoinUrl = route.params?.payjoinUrl;
   const isTransactionReplaceable = route.params?.isTransactionReplaceable;
@@ -154,11 +154,17 @@ const SendDetails = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [colors, wallet, isTransactionReplaceable, balance, addresses, isEditable, isLoading]);
 
+  useEffect(() => {
+    const data = route.params?.onBarScanned;    
+    if (data) {     
+      navigation.setParams({ onBarScanned: undefined });      
+      handlePsbtSign();
+    }
+  }, [route.params?.onBarScanned]);
   
   useEffect(() => {
     // decode route params
     const currentAddress = addresses[scrollIndex.current];
-
     if (routeParams.uri && DeeplinkSchemaMatch.isPsbtNameOpTransactions(routeParams.uri)) {
       try {
         const psbt = bitcoin.Psbt.fromBase64(routeParams.uri, { network: DOICHAIN });
@@ -217,9 +223,7 @@ const SendDetails = () => {
 
         if (memo?.trim().length > 0) {
           setTransactionMemo(memo);
-        }
-        setAmountUnit(DoichainUnit.DOI);
-        setPayjoinUrl(pjUrl);
+        }        
       } catch (error) {
         console.log(error);
         presentAlert({ title: loc.errors.error, message: loc.send.details_error_decode });
@@ -486,14 +490,12 @@ const SendDetails = () => {
     let address = '';
     let options: TOptions;
     try {
-      console.log("______data", data)
       if (!data.toLowerCase().startsWith('doichain:')) data = `doichain:${data}`;
       const decoded = DeeplinkSchemaMatch.bip21decode(data);
       address = decoded.address;
       options = decoded.options;
     } catch (error) {
       data = data.replace(/(amount)=([^&]+)/g, '').replace(/(amount)=([^&]+)&/g, '');
-      console.log("______data2", data)
       const decoded = DeeplinkSchemaMatch.bip21decode(data);
       decoded.options.amount = 0;
       address = decoded.address;
@@ -778,7 +780,7 @@ const SendDetails = () => {
         // we assume that transaction is already signed, so all we have to do is get txhex and pass it to next screen
         // so user can broadcast:
         const file = await RNFS.readFile(res.uri, 'ascii');
-        const psbt = bitcoin.Psbt.fromBase64(file);
+        const psbt = bitcoin.Psbt.fromBase64(file, { network: DOICHAIN });
         const txhex = psbt.extractTransaction().toHex();
         navigation.navigate('PsbtWithHardwareWallet', { memo: transactionMemo, walletID: wallet.getID(), txhex });
         setIsLoading(false);
@@ -790,7 +792,7 @@ const SendDetails = () => {
         // looks like transaction is UNsigned, so we construct PSBT object and pass to next screen
         // so user can do smth with it:
         const file = await RNFS.readFile(res.uri, 'ascii');
-        const psbt = bitcoin.Psbt.fromBase64(file);
+        const psbt = bitcoin.Psbt.fromBase64(file, { network: DOICHAIN });
         navigation.navigate('PsbtWithHardwareWallet', { memo: transactionMemo, walletID: wallet.getID(), psbt });
         setIsLoading(false);
 
@@ -889,12 +891,10 @@ const SendDetails = () => {
     const actWallet = wallet?.type !== undefined ? wallet : weOwnWallet;
     if (!actWallet || typeof actWallet === 'string') return; // Early return if no wallet is available
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 100)); // sleep for animations
+    await new Promise(resolve => setTimeout(resolve, 100)); // sleep for animations     
 
-    const scannedData = routeParams.uri || await scanQrHelper(name, true, undefined);
-
+    const scannedData = routeParams.uri || routeParams.onBarScanned;  
     if (!scannedData) return setIsLoading(false);
-
 
     let tx;
     let psbt = new bitcoin.Psbt({ network: DOICHAIN });
@@ -906,7 +906,6 @@ const SendDetails = () => {
       // @ts-ignore hacky 
       changeAddresses.push(actWallet._getInternalAddressByIndex(c));
     }
-
 
     // Liste für die externen Adressen (falls relevant)
     const externalAddresses: string[] = [];
@@ -958,7 +957,7 @@ const SendDetails = () => {
     let recipients = updatedTxOutputs.filter(({ address }) => true);
 
 
-    setProgress(false);
+    //setProgress(false);
     try {
       //console.log("____psbt__", psbt.getFee())
       navigation.navigate('CreateTransaction', {
@@ -1003,10 +1002,10 @@ const SendDetails = () => {
     }
   }, [handlePsbtSign, importQrTransactionOnBarScanned, onBarScanned, routeParams.onBarScanned, setParams]);
 
-  const navigateToQRCodeScanner = () => {
+  const navigateToQRCodeScanner = () => {  
     navigation.navigate('ScanQRCode', {
       showFileImportButton: true,
-    });
+    });   
   };
 
   const handleAddRecipient = () => {
@@ -1278,7 +1277,7 @@ const SendDetails = () => {
           <ActivityIndicator />
         ) : (
             <View style={styles.buttonPsbt} >
-            <Button onPress={handlePsbtSign} disabled={isDisabled} title={loc.send.psbt_sign} testID="PSBT" />
+              <Button onPress={navigateToQRCodeScanner} disabled={isDisabled} title={loc.send.psbt_sign} testID="PSBT" />
             </View>
         )}
       </View>

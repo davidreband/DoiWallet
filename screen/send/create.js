@@ -35,83 +35,81 @@ import { useSettings } from '../../hooks/context/useSettings';
     const transaction = tx?bitcoin.Transaction.fromHex(tx):0;
     const size = tx?transaction.virtualSize():1;
     const { isPrivacyBlurEnabled } = useSettings();
-  }
+    const { colors } = useTheme();
+    const { setOptions } = useNavigation();
+   
+    const navigation = useExtendedNavigation();
 
-  const { colors } = useTheme();
-  const { setOptions } = useNavigation();
-  const { enableBlur, disableBlur } = usePrivacy();
-  const navigation = useExtendedNavigation();
-
-  const inputs = psbt.data.inputs.map((input, index) => {
-    if (input.witnessUtxo) {
-      return {
-        address: bitcoin.address.fromOutputScript(input.witnessUtxo.script, DOICHAIN),
-        value: input.witnessUtxo.value,
-        index: index,
-        sig: input.finalScriptSig || input.finalScriptWitness || input.partialSig,
-      };
-    } else if (input.nonWitnessUtxo) {
-      const txin = psbt.txInputs[index];
-      const txout = bitcoin.Transaction.fromBuffer(input.nonWitnessUtxo).outs[txin.index];
-      return {
-        address: bitcoin.address.fromOutputScript(txout.script, DOICHAIN),
-        value: txout.value,
-        index: index,
-        sig: input.finalScriptSig || input.finalScriptWitness || input.partialSig,
-      };
-    } else {
-      throw new Error("Could not get input of #" + index);
-    }
-  });
-
-  const inputAndOutput = inputs.concat(recipients);
-
-  //console.log("____inputAndOutput___", inputAndOutput);
-  
- // const [isLoading, setIsLoading] = useState(true);
-  const { isBiometricUseCapableAndEnabled } = useBiometrics();
-  const broadcast = async () => {
-   // setIsLoading(true);
-    const isBiometricsEnabled = await isBiometricUseCapableAndEnabled();
-    if (isBiometricsEnabled) {
-      if (!(await unlockWithBiometrics())) {
-       // setIsLoading(false);
-        return;
-      }
-    }
-    try {
-      await BlueElectrum.ping();
-      await BlueElectrum.waitTillConnected();
-      const result = await wallet.broadcastTx(tx);
-      if (result) {
-      //  setIsLoading(false);      
-        const txDecoded = bitcoin.Transaction.fromHex(tx);
-        const txid = txDecoded.getId();
-        Notifications.majorTomToGroundControl([], [], [txid]);
-        if (memo) {
-          txMetadata[txid] = { memo };
-        }
-        navigation.navigate("Success", {
-          amount: undefined,
-          txid: txid,
-        });
-        await new Promise((resolve) => setTimeout(resolve, 3000)); // sleep to make sure network propagates
-        fetchAndSaveWalletTransactions(wallet.getID());
+    const inputs = psbt.data.inputs.map((input, index) => {
+      if (input.witnessUtxo) {
+        return {
+          address: bitcoin.address.fromOutputScript(input.witnessUtxo.script, DOICHAIN),
+          value: input.witnessUtxo.value,
+          index: index,
+          sig: input.finalScriptSig || input.finalScriptWitness || input.partialSig,
+        };
+      } else if (input.nonWitnessUtxo) {
+        const txin = psbt.txInputs[index];
+        const txout = bitcoin.Transaction.fromBuffer(input.nonWitnessUtxo).outs[txin.index];
+        return {
+          address: bitcoin.address.fromOutputScript(txout.script, DOICHAIN),
+          value: txout.value,
+          index: index,
+          sig: input.finalScriptSig || input.finalScriptWitness || input.partialSig,
+        };
       } else {
+        throw new Error("Could not get input of #" + index);
+      }
+    });
+
+    const inputAndOutput = inputs.concat(recipients);
+
+    //console.log("____inputAndOutput___", inputAndOutput);
+    
+  // const [isLoading, setIsLoading] = useState(true);
+    const { isBiometricUseCapableAndEnabled } = useBiometrics();
+    const broadcast = async () => {
+    // setIsLoading(true);
+      const isBiometricsEnabled = await isBiometricUseCapableAndEnabled();
+      if (isBiometricsEnabled) {
+        if (!(await unlockWithBiometrics())) {
+        // setIsLoading(false);
+          return;
+        }
+      }
+      try {
+        await BlueElectrum.ping();
+        await BlueElectrum.waitTillConnected();
+        const result = await wallet.broadcastTx(tx);
+        if (result) {
+        //  setIsLoading(false);      
+          const txDecoded = bitcoin.Transaction.fromHex(tx);
+          const txid = txDecoded.getId();
+          Notifications.majorTomToGroundControl([], [], [txid]);
+          if (memo) {
+            txMetadata[txid] = { memo };
+          }
+          navigation.navigate("Success", {
+            amount: undefined,
+            txid: txid,
+          });
+          await new Promise((resolve) => setTimeout(resolve, 3000)); // sleep to make sure network propagates
+          fetchAndSaveWalletTransactions(wallet.getID());
+        } else {
+          /*
+          triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
+          setIsLoading(false);
+          */
+          presentAlert({ message: loc.errors.broadcast });
+        }
+      } catch (error) {
         /*
         triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
         setIsLoading(false);
         */
-        presentAlert({ message: loc.errors.broadcast });
+        presentAlert({ message: error.message });
       }
-    } catch (error) {
-      /*
-      triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
-      setIsLoading(false);
-      */
-      presentAlert({ message: error.message });
-    }
-  };
+    };
 
   const styleHooks = StyleSheet.create({
     transactionDetailsTitle: {
