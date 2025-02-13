@@ -90,8 +90,12 @@ const WalletDetails: React.FC = () => {
 
   const navigateToOverviewAndDeleteWallet = useCallback(async () => {
     setIsLoading(true);
-    await handleWalletDeletion(wallet.getID());
-    popToTop();
+    const deletionSucceeded = await handleWalletDeletion(wallet.getID());
+    if (deletionSucceeded) {
+      popToTop();
+    } else {
+      setIsLoading(false);
+    }
   }, [handleWalletDeletion, wallet]);
 
   const presentWalletHasBalanceAlert = useCallback(async () => {
@@ -130,10 +134,10 @@ const WalletDetails: React.FC = () => {
           text: loc.wallets.details_yes_delete,
           onPress: async () => {
             const isBiometricsEnabled = await isBiometricUseCapableAndEnabled();
-
             if (isBiometricsEnabled) {
               if (!(await unlockWithBiometrics())) {
-                return;
+                setIsLoading(false);
+                return false;
               }
             }
             if (wallet.getBalance && wallet.getBalance() > 0 && wallet.allowSend && wallet.allowSend()) {
@@ -144,7 +148,14 @@ const WalletDetails: React.FC = () => {
           },
           style: 'destructive',
         },
-        { text: loc._.cancel, onPress: () => {}, style: 'cancel' },
+        {
+          text: loc._.cancel,
+          onPress: () => {
+            setIsLoading(false);
+            return false;
+          },
+          style: 'cancel',
+        },
       ],
       options: { cancelable: false },
     });
