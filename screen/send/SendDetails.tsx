@@ -156,7 +156,7 @@ const SendDetails = () => {
 
   useEffect(() => {
     const data = route.params?.onBarScanned;    
-    if (data) {     
+    if (data && !data.toLowerCase().startsWith('doichain:')) {     
       navigation.setParams({ onBarScanned: undefined });      
       handlePsbtSign();
     }
@@ -476,7 +476,7 @@ const SendDetails = () => {
 
     const cl = new ContactList();
 
-    const dataWithoutSchema = data.replace('bitcoin:', '').replace('BITCOIN:', '');
+    const dataWithoutSchema = data.replace('doichain:', '').replace('DOICHAIN:', '');
     if (wallet.isAddressValid(dataWithoutSchema) || cl.isPaymentCodeValid(dataWithoutSchema)) {
       setAddresses(addrs => {
         addrs[scrollIndex.current].address = dataWithoutSchema;
@@ -989,7 +989,7 @@ const SendDetails = () => {
           } else if (
             selectedDataProcessor.current === CommonToolTipActions.CoSignTransaction ||
             selectedDataProcessor.current === CommonToolTipActions.SignPSBT
-          ) {
+          ) {            
             handlePsbtSign(data);
           } else {
             onBarScanned(data);

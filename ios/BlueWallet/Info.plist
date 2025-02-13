@@ -111,11 +111,8 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>bitcoin</string>
-				<string>lightning</string>
-				<string>bluewallet</string>
-				<string>lapp</string>
-				<string>blue</string>
+				<string>doichain</string>				
+				<string>doiwallet</string>			
 			</array>
 		</dict>
 	</array>
