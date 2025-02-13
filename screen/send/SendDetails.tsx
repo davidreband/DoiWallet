@@ -1462,11 +1462,9 @@ const SendDetails = () => {
             setIsLoading(false);
             setParams({ payjoinUrl: pjUrl });
           }}
-          onBarScanned={processAddressData}
           address={item.address}
           isLoading={isLoading}
           inputAccessoryViewID={DismissKeyboardInputAccessoryViewID}
-          launchedBy={name}
           editable={isEditable}
           style={styles.addressInput}
         />
