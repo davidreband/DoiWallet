@@ -236,18 +236,7 @@ export async function connectMain(): Promise<void> {
     usingPeer = savedPeer;
   }
 
-  await DefaultPreference.setName('group.org.doichain.doiwallet');
-  try {
-    if (usingPeer.host.endsWith('onion')) {
-      const randomPeer = getCurrentPeer();
-      await DefaultPreference.set(ELECTRUM_HOST, randomPeer.host);
-      await DefaultPreference.set(ELECTRUM_TCP_PORT, randomPeer.tcp ?? '');
-      await DefaultPreference.set(ELECTRUM_SSL_PORT, randomPeer.ssl ?? '');
-    }
-  } catch (e) {
-    // Must be running on Android
-    console.log(e);
-  }
+  console.log('Using peer:', JSON.stringify(usingPeer));
 
   try {
     console.log('begin connection:', JSON.stringify(usingPeer));
