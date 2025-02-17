@@ -5,6 +5,7 @@ import { createHmac } from 'crypto';
 import CryptoJS from 'crypto-js';
 import secp256k1 from 'secp256k1';
 import { parse } from 'url'; // eslint-disable-line n/no-deprecated-api
+import { timeoutFetch } from '../util/fetch';
 
 const ONION_REGEX = /^(http:\/\/[^/:@]+\.onion(?::\d{1,5})?)(\/.*)?$/; // regex for onion URL
 
@@ -64,8 +65,8 @@ export default class Lnurl {
     return [baseURI, path];
   }
 
-  async fetchGet(url) {
-    const resp = await fetch(url, { method: 'GET' });
+  async fetchGet(url: string): Promise<any> {
+    const resp = await timeoutFetch(url, { method: 'GET' });
     if (resp.status >= 300) {
       throw new Error('Bad response from server');
     }
