@@ -62,18 +62,7 @@ const DrawerRoot = () => {
 
   return (
     <Drawer.Navigator screenOptions={drawerStyle} drawerContent={DrawerListContent}>
-      {!walletsInitialized && (
-        <Drawer.Screen
-          name="UnlockWithScreen"
-          component={UnlockWith}
-          options={{ gestureHandlerProps: { enabled: false }, headerShown: false }}
-        />
-      )}
-      <Drawer.Screen
-        name="DetailViewStackScreensStack"
-        component={DetailViewStackScreensStack}
-        options={{ headerShown: false, gestureHandlerProps: { enableTrackpadTwoFingerGesture: false } }}
-      />
+      <Drawer.Screen name="DetailViewStackScreensStack" component={DetailViewStackScreensStack} options={{ headerShown: false }} />
     </Drawer.Navigator>
   );
 };

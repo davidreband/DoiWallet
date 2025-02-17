@@ -174,6 +174,7 @@
     "input_total": "Total:",
     "permission_camera_message": "We need your permission to use your camera.",
     "psbt_sign": "Sign a transaction",
+    "invalid_psbt": "Invalid PSBT provided.",
     "open_settings": "Open Settings",
     "permission_storage_later": "Ask me later.",
     "permission_storage_message": "DoiWallet needs your permission to access your storage to save this file.",

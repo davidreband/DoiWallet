@@ -38,7 +38,7 @@ import loc, { formatBalanceWithoutSuffix } from '../../loc';
 import { DoichainUnit, Chain } from "../../models/doichainUnits";
 import { useSettings } from '../../hooks/context/useSettings';
 import { useStorage } from '../../hooks/context/useStorage';
-import { useFocusEffect, useRoute, RouteProp } from '@react-navigation/native';
+import { useFocusEffect, useRoute, RouteProp, usePreventRemove } from '@react-navigation/native';
 import { LightningTransaction, Transaction, TWallet } from '../../class/wallets/types';
 import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamList';
 import HeaderMenuButton from '../../components/HeaderMenuButton';
@@ -67,7 +67,7 @@ const WalletDetails: React.FC = () => {
   const [hideTransactionsInWalletsList, setHideTransactionsInWalletsList] = useState<boolean>(
     wallet.getHideTransactionsInWalletsList ? !wallet.getHideTransactionsInWalletsList() : true,
   );
-  const { setOptions, navigate, addListener } = useExtendedNavigation();
+  const { setOptions, navigate } = useExtendedNavigation();
   const { colors } = useTheme();
   const [walletName, setWalletName] = useState<string>(wallet.getLabel());
 
@@ -283,12 +283,6 @@ const WalletDetails: React.FC = () => {
   });
 
   useEffect(() => {
-    setOptions({
-      headerBackTitleVisible: true,
-    });
-  }, [setOptions]);
-
-  useEffect(() => {
     if (wallets.some(w => w.getID() === walletID)) {
       setSelectedWalletID(walletID);
     }
@@ -409,13 +403,9 @@ const WalletDetails: React.FC = () => {
     }
   }, [wallet, walletName, saveToDisk]);
 
-  useEffect(() => {
-    const subscribe = addListener('beforeRemove', () => {
-      walletNameTextInputOnBlur();
-    });
-
-    return subscribe;
-  }, [addListener, walletName, walletNameTextInputOnBlur]);
+  usePreventRemove(false, () => {
+    walletNameTextInputOnBlur();
+  });
 
   const onViewMasterFingerPrintPress = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -646,7 +636,7 @@ const WalletDetails: React.FC = () => {
               {wallet.allowXpub && wallet.allowXpub() && (
                 <>
                   <BlueSpacing20 />
-                  <SecondButton onPress={navigateToXPub} testID="XPub" title={loc.wallets.details_show_xpub} />
+                  <SecondButton onPress={navigateToXPub} testID="XpubButton" title={loc.wallets.details_show_xpub} />
                 </>
               )}
               {wallet.allowSignVerifyMessage && wallet.allowSignVerifyMessage() && (

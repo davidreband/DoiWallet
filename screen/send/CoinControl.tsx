@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, StackActions, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Avatar, Badge, Icon, ListItem as RNElementsListItem } from '@rneui/themed';
 import {
@@ -36,6 +36,7 @@ import loc, { formatBalance } from '../../loc';
 
 import { SendDetailsStackParamList } from '../../navigation/SendDetailsStackParamList';
 import { CommonToolTipActions } from '../../typings/CommonToolTipActions';
+import { useKeyboard } from '../../hooks/useKeyboard';
 import TipBox from '../../components/TipBox';
 
 type NavigationProps = NativeStackNavigationProp<SendDetailsStackParamList, 'CoinControl'>;
@@ -321,6 +322,7 @@ const CoinControl: React.FC = () => {
   const [output, setOutput] = useState<Utxo | undefined>();
   const [loading, setLoading] = useState<boolean>(true);
   const [selected, setSelected] = useState<string[]>([]);
+  const { isVisible } = useKeyboard();
 
   // save frozen status. Because effect called on each event, debounce it.
   const debouncedSaveFronen = useRef(
@@ -379,14 +381,8 @@ const CoinControl: React.FC = () => {
 
   const handleUseCoin = async (u: Utxo[]) => {
     setOutput(undefined);
-    // @ts-ignore navigation WTF
-    navigation.navigate('SendDetailsRoot', {
-      screen: 'SendDetails',
-      params: {
-        utxos: u,
-      },
-      merge: true,
-    });
+    const popToAction = StackActions.popTo('SendDetails', { walletID, utxos: u }, true);
+    navigation.dispatch(popToAction);
   };
 
   const handleMassFreeze = () => {
@@ -531,15 +527,17 @@ const CoinControl: React.FC = () => {
         contentContainerStyle={styles.modalMinHeight}
         footer={
           <View style={mStyles.buttonContainer}>
-            <Button
-              testID="UseCoin"
-              title={loc.cc.use_coin}
-              onPress={async () => {
-                if (!output) throw new Error('output is not set');
-                await bottomModalRef.current?.dismiss();
-                handleUseCoin([output]);
-              }}
-            />
+            {!isVisible && (
+              <Button
+                testID="UseCoin"
+                title={loc.cc.use_coin}
+                onPress={async () => {
+                  if (!output) throw new Error('output is not set');
+                  await bottomModalRef.current?.dismiss();
+                  handleUseCoin([output]);
+                }}
+              />
+            )}
           </View>
         }
       >

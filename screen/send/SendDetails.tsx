@@ -440,9 +440,7 @@ const SendDetails = () => {
     useCallback(() => {
       setIsLoading(false);
       setDumb(v => !v);
-      return () => {
-        feeModalRef.current?.dismiss();
-      };
+      return () => {};
     }, []),
   );
 
@@ -1336,11 +1334,11 @@ const SendDetails = () => {
 
   const renderWalletSelectionOrCoinsSelected = () => {
     if (isVisible) return null;
-    if (utxos !== null) {
+    if (utxos && utxos?.length > 0) {
       return (
         <View style={styles.select}>
           <CoinsSelected
-            number={utxos?.length || 0}
+            number={utxos?.length}
             onContainerPress={handleCoinControl}
             onClose={() => {
               LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);

@@ -55,7 +55,6 @@ const WalletsAddMultisig: React.FC = () => {
   });
 
   const onLetsStartPress = () => {
-    bottomModalRef.current?.dismiss();
     navigate('WalletsAddMultisigStep2', { m, n, format, walletLabel });
   };
 
@@ -236,7 +235,7 @@ const styles = StyleSheet.create({
     flex: 0.8,
   },
   modalContentShort: {
-    padding: 24,
+    padding: 20,
   },
   borderRadius6: {
     borderRadius: 6,
@@ -297,7 +296,7 @@ const styles = StyleSheet.create({
   rowCenter: {
     flexDirection: 'row',
     justifyContent: 'center',
-    paddingVertical: 40,
+    paddingVertical: 30,
   },
 });
 

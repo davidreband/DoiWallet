@@ -292,7 +292,7 @@ export default class SelfTest extends Component {
         <BlueSpacing20 />
 
         {this.state.isLoading ? (
-          <BlueLoading />
+          <BlueLoading testID="SelfTestLoading" />
         ) : (
           (() => {
             if (this.state.isOk) {

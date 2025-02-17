@@ -18,6 +18,7 @@ import loc from '../../loc';
 
 import { useStorage } from '../../hooks/context/useStorage';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
+import { combinePSBTs } from '../../utils/combinePSBTs';
 
 const PsbtMultisig = () => {
   const { wallets } = useStorage();
@@ -28,7 +29,26 @@ const PsbtMultisig = () => {
   /** @type MultisigHDWallet */
   const wallet = wallets.find(w => w.getID() === walletID);
 
-  const [psbt, setPsbt] = useState(bitcoin.Psbt.fromBase64(psbtBase64, { network: DOICHAIN }));
+
+  const [psbt, setPsbt] = useState(() => {
+    try {
+      const initial = bitcoin.Psbt.fromBase64(psbtBase64, { network: DOICHAIN });
+      return initial;
+    } catch (error) {
+      console.error('Error loading initial PSBT:', error);
+      presentAlert({ message: loc.send.invalid_psbt });
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    if (receivedPSBTBase64) {
+      _combinePSBT();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [receivedPSBTBase64]);
+
+
   const data = new Array(wallet.getM());
 
   const stylesHook = StyleSheet.create({
@@ -70,6 +90,10 @@ const PsbtMultisig = () => {
     },
   });
 
+  const [isFiltered, setIsFiltered] = useState(true);
+
+  if (!psbt) return null;
+
   // if useFilter is true, include only non-owned addresses.
   const getDestinationData = (useFilter = true) => {
     const addresses = [];
@@ -90,8 +114,6 @@ const PsbtMultisig = () => {
   const unfilteredData = getDestinationData(false);
 
   const targets = filteredData.targets;
-
-  const [isFiltered, setIsFiltered] = useState(true);
 
   const displayData = isFiltered ? filteredData : unfilteredData;
   const displayTotalBtc = new BigNumber(displayData.totalSat).dividedBy(100000000).toNumber();
@@ -158,28 +180,25 @@ const PsbtMultisig = () => {
     );
   };
 
-  useEffect(() => {
-    if (receivedPSBTBase64) {
-      _combinePSBT();
-      setParams({ receivedPSBTBase64: undefined });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [receivedPSBTBase64]);
-
   const _combinePSBT = () => {
-    try {
-      const receivedPSBT = bitcoin.Psbt.fromBase64(receivedPSBTBase64);
-      const newPsbt = psbt.combine(receivedPSBT);
-      setPsbt(newPsbt);
-    } catch (error) {
-      presentAlert({ message: error });
+    if (receivedPSBTBase64 && receivedPSBTBase64 !== psbt.toBase64()) {
+      try {
+        const combined = combinePSBTs({ psbtBase64: psbt.toBase64(), newPSBTBase64: receivedPSBTBase64 });
+        setPsbt(combined);
+        setParams({ receivedPSBTBase64: undefined });
+      } catch (error) {
+        console.error('Error during PSBT combination:', error);
+        presentAlert({ message: error.message });
+      }
     }
   };
 
   const onConfirm = () => {
     try {
       psbt.finalizeAllInputs();
-    } catch (_) {} // ignore if it is already finalized
+    } catch (err) {
+      console.warn('Finalize error (ignored if already finalized):', err);
+    }
 
     if (launchedBy) {
       // we must navigate back to the screen who requested psbt (instead of broadcasting it ourselves)
@@ -282,7 +301,8 @@ const PsbtMultisig = () => {
   const footer = null;
 
   const onLayout = event => {
-    setFlatListHeight(event.nativeEvent.layout.height);
+    const newHeight = event.nativeEvent.layout.height;
+    setFlatListHeight(newHeight);
   };
 
   return (
@@ -300,6 +320,7 @@ const PsbtMultisig = () => {
                     data={data}
                     renderItem={_renderItem}
                     keyExtractor={(_item, index) => `${index}`}
+                    extraData={psbt} // Ensure FlatList updates when psbt changes
                     ListHeaderComponent={header}
                     ListFooterComponent={footer}
                     onLayout={onLayout}
@@ -310,7 +331,9 @@ const PsbtMultisig = () => {
                         accessibilityRole="button"
                         testID="ExportSignedPsbt"
                         style={[styles.provideSignatureButton, stylesHook.provideSignatureButton]}
-                        onPress={navigateToPSBTMultisigQRCode}
+                        onPress={() => {
+                          navigateToPSBTMultisigQRCode();
+                        }}
                       >
                         <Text style={[styles.provideSignatureButtonText, stylesHook.provideSignatureButtonText]}>
                           {loc.multisig.export_signed_psbt}
