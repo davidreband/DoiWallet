@@ -603,7 +603,8 @@ const SendDetails = () => {
       }
 
       if (error) {
-        scrollView.current?.scrollToIndex({ index });
+        // Scroll to the recipient that caused the error with animation
+        scrollView.current?.scrollToIndex({ index, animated: true });
         setIsLoading(false);
         presentAlert({ title: loc.errors.error, message: error });
         triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
