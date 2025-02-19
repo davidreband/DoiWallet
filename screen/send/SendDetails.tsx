@@ -154,7 +154,6 @@ const SendDetails = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [colors, wallet, isTransactionReplaceable, balance, addresses, isEditable, isLoading]);
-
   useEffect(() => {
     const data = route.params?.onBarScanned;    
     if (data && !data.toLowerCase().startsWith('doichain:')) {     
@@ -328,7 +327,6 @@ const SendDetails = () => {
       })
       .catch(e => console.log('loading recommendedFees error', e))
       .finally(() => {
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         setNetworkTransactionFeesIsLoading(false);
       });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -611,7 +609,9 @@ const SendDetails = () => {
         setIsLoading(false);
         presentAlert({
           title:
-            addresses.length > 1 ? loc.formatString(loc.send.details_recipient_title, { number: index + 1, total: addresses.length }) : '',
+            addresses.length > 1
+              ? loc.formatString(loc.send.details_recipient_title, { number: index + 1, total: addresses.length })
+              : undefined,
           message: error,
         });
         triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
@@ -627,6 +627,11 @@ const SendDetails = () => {
       triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
     }
   };
+  const navigateToQRCodeScanner = useCallback(() => {
+    navigation.navigate('ScanQRCode', {
+      showFileImportButton: true,
+    });
+  }, [navigation]);
 
   const createPsbtTransaction = async () => {
     if (!wallet) return;
@@ -748,8 +753,7 @@ const SendDetails = () => {
     if (newWallet) {
       setWallet(newWallet);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [routeParams.walletID]);
+  }, [routeParams.walletID, wallets]);
 
   const setTransactionMemo = (memo: string) => {
     setParams({ transactionMemo: memo });
@@ -760,13 +764,13 @@ const SendDetails = () => {
    *
    * @returns {Promise<void>}
    */
-  const importQrTransaction = async () => {
+  const importQrTransaction = useCallback(async () => {
     if (wallet?.type !== WatchOnlyWallet.type) {
       return presentAlert({ title: loc.errors.error, message: 'Importing transaction in non-watchonly wallet (this should never happen)' });
     }
 
     navigateToQRCodeScanner();
-  };
+  }, [navigateToQRCodeScanner, wallet?.type]);
 
   const importQrTransactionOnBarScanned = useCallback(
     (ret: any) => {
@@ -804,7 +808,7 @@ const SendDetails = () => {
    *
    * @returns {Promise<void>}
    */
-  const importTransaction = async () => {
+  const importTransaction = useCallback(async () => {
     if (wallet?.type !== WatchOnlyWallet.type) {
       return presentAlert({ title: loc.errors.error, message: 'Importing transaction in non-watchonly wallet (this should never happen)' });
     }
@@ -857,7 +861,7 @@ const SendDetails = () => {
         presentAlert({ title: loc.errors.error, message: loc.send.details_no_signed_tx });
       }
     }
-  };
+  }, [navigation, setIsLoading, transactionMemo, wallet]);
 
   const askCosignThisTransaction = async () => {
     return new Promise(resolve => {
@@ -911,9 +915,9 @@ const SendDetails = () => {
     [navigation, sleep, transactionMemo, wallet],
   );
 
-  const importTransactionMultisig = () => {
+  const importTransactionMultisig = useCallback(() => {
     return _importTransactionMultisig(false);
-  };
+  }, [_importTransactionMultisig]);
 
   const onBarScanned = useCallback(
     (ret: any) => {
@@ -1059,13 +1063,7 @@ const SendDetails = () => {
     _importTransactionMultisig,
   ]);
 
-  const navigateToQRCodeScanner = () => {  
-    navigation.navigate('ScanQRCode', {
-      showFileImportButton: true,
-    });   
-  };
-
-  const handleAddRecipient = () => {
+  const handleAddRecipient = useCallback(() => {
     // Check if any recipient is incomplete (missing address or amount)
     const incompleteIndex = addresses.findIndex(item => !item.address || !item.amount);
     if (incompleteIndex !== -1) {
@@ -1087,7 +1085,7 @@ const SendDetails = () => {
         animated: true,
       });
     }, 0);
-  };
+  }, [addresses]);
 
   const onRemoveAllRecipientsConfirmed = useCallback(() => {
     setAddresses([{ address: '', key: String(Math.random()) } as IPaymentDestinations]);
@@ -1107,7 +1105,7 @@ const SendDetails = () => {
     ]);
   }, [onRemoveAllRecipientsConfirmed]);
 
-  const handleRemoveRecipient = () => {
+  const handleRemoveRecipient = useCallback(() => {
     if (addresses.length > 1) {
       const newAddresses = [...addresses];
       newAddresses.splice(scrollIndex.current, 1);
@@ -1128,55 +1126,107 @@ const SendDetails = () => {
       // Update the scroll index reference
       scrollIndex.current = newIndex;
     }
-  };
+  }, [addresses]);
 
-  const handleCoinControl = async () => {
+  const handleCoinControl = useCallback(() => {
     if (!wallet) return;
     navigation.navigate('CoinControl', {
       walletID: wallet?.getID(),
     });
-  };
+  }, [navigation, wallet]);
 
-  const handleInsertContact = async () => {
+  const handleInsertContact = useCallback(() => {
     if (!wallet) return;
     navigation.navigate('PaymentCodeList', { walletID: wallet.getID() });
-  };
+  }, [navigation, wallet]);
 
-  const headerRightOnPress = (id: string) => {
-    if (id === CommonToolTipActions.AddRecipient.id) {
-      handleAddRecipient();
-    } else if (id === CommonToolTipActions.RemoveRecipient.id) {
-      handleRemoveRecipient();
-    } else if (id === CommonToolTipActions.SignPSBT.id) {
-      selectedDataProcessor.current = CommonToolTipActions.SignPSBT;
-      navigateToQRCodeScanner();
-    } else if (id === CommonToolTipActions.SendMax.id) {
-      onUseAllPressed();
-    } else if (id === CommonToolTipActions.AllowRBF.id) {
-      onReplaceableFeeSwitchValueChanged(!isTransactionReplaceable);
-    } else if (id === CommonToolTipActions.ImportTransaction.id) {
-      selectedDataProcessor.current = CommonToolTipActions.ImportTransaction;
-      importTransaction();
-    } else if (id === CommonToolTipActions.ImportTransactionQR.id) {
-      selectedDataProcessor.current = CommonToolTipActions.ImportTransactionQR;
-      importQrTransaction();
-    } else if (id === CommonToolTipActions.ImportTransactionMultsig.id) {
-      selectedDataProcessor.current = CommonToolTipActions.ImportTransactionMultsig;
-      importTransactionMultisig();
-    } else if (id === CommonToolTipActions.CoSignTransaction.id) {
-      selectedDataProcessor.current = CommonToolTipActions.CoSignTransaction;
-      navigateToQRCodeScanner();
-    } else if (id === CommonToolTipActions.CoinControl.id) {
-      handleCoinControl();
-    } else if (id === CommonToolTipActions.InsertContact.id) {
-      handleInsertContact();
-    } else if (id === CommonToolTipActions.RemoveAllRecipients.id) {
-      handleRemoveAllRecipients();
-    }
-  };
+  const onReplaceableFeeSwitchValueChanged = useCallback(
+    (value: boolean) => {
+      setParams({ isTransactionReplaceable: value });
+    },
+    [setParams],
+  );
 
+  const onUseAllPressed = useCallback(() => {
+    triggerHapticFeedback(HapticFeedbackTypes.NotificationWarning);
+    const message = frozenBalance > 0 ? loc.send.details_adv_full_sure_frozen : loc.send.details_adv_full_sure;
 
-  const headerRightActions = () => {
+    const anchor = findNodeHandle(scrollView.current);
+    const options = {
+      title: loc.send.details_adv_full,
+      message,
+      options: [loc._.cancel, loc._.ok],
+      cancelButtonIndex: 0,
+      anchor: anchor ?? undefined,
+    };
+
+    ActionSheet.showActionSheetWithOptions(options, buttonIndex => {
+      if (buttonIndex === 1) {
+        Keyboard.dismiss();
+        setAddresses(addrs => {
+          addrs[scrollIndex.current].amount = BitcoinUnit.MAX;
+          addrs[scrollIndex.current].amountSats = BitcoinUnit.MAX;
+          return [...addrs];
+        });
+        setAddresses(addrs => {
+          addrs[scrollIndex.current].unit = BitcoinUnit.BTC;
+          return [...addrs];
+        });
+      }
+    });
+  }, [frozenBalance]);
+  // Header Right Button
+
+  const headerRightOnPress = useCallback(
+    (id: string) => {
+      if (id === CommonToolTipActions.AddRecipient.id) {
+        handleAddRecipient();
+      } else if (id === CommonToolTipActions.RemoveRecipient.id) {
+        handleRemoveRecipient();
+      } else if (id === CommonToolTipActions.SignPSBT.id) {
+        selectedDataProcessor.current = CommonToolTipActions.SignPSBT;
+        navigateToQRCodeScanner();
+      } else if (id === CommonToolTipActions.SendMax.id) {
+        onUseAllPressed();
+      } else if (id === CommonToolTipActions.AllowRBF.id) {
+        onReplaceableFeeSwitchValueChanged(!isTransactionReplaceable);
+      } else if (id === CommonToolTipActions.ImportTransaction.id) {
+        selectedDataProcessor.current = CommonToolTipActions.ImportTransaction;
+        importTransaction();
+      } else if (id === CommonToolTipActions.ImportTransactionQR.id) {
+        selectedDataProcessor.current = CommonToolTipActions.ImportTransactionQR;
+        importQrTransaction();
+      } else if (id === CommonToolTipActions.ImportTransactionMultsig.id) {
+        selectedDataProcessor.current = CommonToolTipActions.ImportTransactionMultsig;
+        importTransactionMultisig();
+      } else if (id === CommonToolTipActions.CoSignTransaction.id) {
+        selectedDataProcessor.current = CommonToolTipActions.CoSignTransaction;
+        navigateToQRCodeScanner();
+      } else if (id === CommonToolTipActions.CoinControl.id) {
+        handleCoinControl();
+      } else if (id === CommonToolTipActions.InsertContact.id) {
+        handleInsertContact();
+      } else if (id === CommonToolTipActions.RemoveAllRecipients.id) {
+        handleRemoveAllRecipients();
+      }
+    },
+    [
+      handleAddRecipient,
+      handleRemoveRecipient,
+      navigateToQRCodeScanner,
+      onUseAllPressed,
+      onReplaceableFeeSwitchValueChanged,
+      isTransactionReplaceable,
+      importTransaction,
+      importQrTransaction,
+      importTransactionMultisig,
+      handleCoinControl,
+      handleInsertContact,
+      handleRemoveAllRecipients,
+    ],
+  );
+
+  const headerRightActions = useCallback(() => {
     if (!wallet) return [];
 
     const walletActions: Action[][] = [];
@@ -1247,17 +1297,17 @@ const SendDetails = () => {
     walletActions.push(specificWalletActions);
 
     return walletActions;
-  };
+  }, [addresses, isEditable, wallet, isTransactionReplaceable]);
+
+  const HeaderRight = useCallback(
+    () => <HeaderMenuButton disabled={isLoading} onPressMenuItem={headerRightOnPress} actions={headerRightActions()} />,
+    [headerRightOnPress, isLoading, headerRightActions],
+  );
 
   const setHeaderRightOptions = () => {
     navigation.setOptions({
-      // eslint-disable-next-line react/no-unstable-nested-components
-      headerRight: () => <HeaderMenuButton disabled={isLoading} onPressMenuItem={headerRightOnPress} actions={headerRightActions()} />,
+      headerRight: HeaderRight,
     });
-  };
-
-  const onReplaceableFeeSwitchValueChanged = (value: boolean) => {
-    setParams({ isTransactionReplaceable: value });
   };
 
   const handleRecipientsScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -1265,35 +1315,6 @@ const SendDetails = () => {
     const viewSize = e.nativeEvent.layoutMeasurement;
     const index = Math.floor(contentOffset.x / viewSize.width);
     scrollIndex.current = index;
-  };
-
-  const onUseAllPressed = () => {
-    triggerHapticFeedback(HapticFeedbackTypes.NotificationWarning);
-    const message = frozenBalance > 0 ? loc.send.details_adv_full_sure_frozen : loc.send.details_adv_full_sure;
-
-    const anchor = findNodeHandle(scrollView.current);
-    const options = {
-      title: loc.send.details_adv_full,
-      message,
-      options: [loc._.cancel, loc._.ok],
-      cancelButtonIndex: 0,
-      anchor: anchor ?? undefined,
-    };
-
-    ActionSheet.showActionSheetWithOptions(options, buttonIndex => {
-      if (buttonIndex === 1) {
-        Keyboard.dismiss();
-        setAddresses(addrs => {
-          addrs[scrollIndex.current].amount = DoichainUnit.MAX;
-          addrs[scrollIndex.current].amountSats = DoichainUnit.MAX;
-          return [...addrs];
-        });
-        setAddresses(addrs => {
-          addrs[scrollIndex.current].unit = DoichainUnit.DOI;
-          return [...addrs];
-        });
-      }
-    });
   };
 
   const formatFee = (fee: number) => formatBalance(fee, feeUnit!, true);
