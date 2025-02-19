@@ -325,12 +325,8 @@ const DetailViewStackScreensStack = () => {
         component={SettingsPrivacy}
         options={navigationStyle({ title: loc.settings.privacy })(theme)}
       />
-      <DetailViewStack.Screen
-        name="AddWalletRoot"
-        component={AddWalletStack}
-        options={navigationStyle({ closeButtonPosition: CloseButtonPosition.Left, ...NavigationDefaultOptions })(theme)}
-      />
-      <DetailViewStack.Screen name="SendDetailsRoot" component={SendDetailsStack} options={NavigationFormModalOptions} />
+      <DetailViewStack.Screen name="AddWalletRoot" component={AddWalletStack} options={NavigationDefaultOptions} />
+      <DetailViewStack.Screen name="SendDetailsRoot" component={SendDetailsStack} options={NavigationDefaultOptions} />
       
       <DetailViewStack.Screen name="AztecoRedeemRoot" component={AztecoRedeemStackRoot} options={NavigationDefaultOptions} />
       {/* screens */}
