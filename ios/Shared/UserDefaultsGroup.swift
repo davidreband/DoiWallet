@@ -14,15 +14,20 @@ struct UserDefaultsElectrumSettings {
     var sslPort: UInt16?
 }
 
-let hardcodedPeers = [
-    UserDefaultsElectrumSettings(host: "itchy-jellyfish-89.doi.works", port: 5001, sslPort: 50002),
-    UserDefaultsElectrumSettings(host: "big-parrot-60.doi.works", port: 5001, sslPort: 50002),
-    UserDefaultsElectrumSettings(host: "ugly-bird-70.doi.works", port: 5001, sslPort: 50002),
-]
+let hardcodedPeers = DefaultElectrumPeers.map { settings in
+    (
+        host: settings.host ?? "", 
+        port: settings.sslPort ?? settings.port ?? 50001, 
+        useSSL: settings.sslPort != nil
+    )
+}
+
 
 let DefaultElectrumPeers = [
-    UserDefaultsElectrumSettings(host: "itchy-jellyfish-89.doi.works", port: 5001, sslPort: 50002), //
-] + hardcodedPeers
+    UserDefaultsElectrumSettings(host: "itchy-jellyfish-89.doi.works", port: 5001, sslPort: 50002), 
+    UserDefaultsElectrumSettings(host: "big-parrot-60.doi.works", port: 5001, sslPort: 50002),
+    UserDefaultsElectrumSettings(host: "ugly-bird-70.doi.works", port: 5001, sslPort: 50002),
+] 
 
 class UserDefaultsGroup {
     static private let suite = UserDefaults(suiteName: UserDefaultsGroupKey.GroupName.rawValue)

@@ -13,12 +13,12 @@ class Balance {
             } else {
                 completion("\(balance) SWARTZ")
             }
-        case .LOCAL_CURRENCY:
+        case .localCurrency:
             fetchLocalCurrencyEquivalent(satoshi: balance, completion: completion)
 
       default:
         let value = balance / Decimal(100_000_000)
-        completion("\(value) BTC") // Localize unit names as needed.
+        completion("\(value) DOI") // Localize unit names as needed.
       }
     }
 
@@ -40,9 +40,9 @@ class Balance {
 }
 
 extension Decimal {
-  func formatted(as unit: BalanceUnit, withFormatting: Bool = false) -> String {
+  func formatted(as unit: DoichainUnit, withFormatting: Bool = false) -> String {
         switch unit {
-        case .sats:
+        case .SWARTZ:
             return withFormatting ? NumberFormatter.localizedString(from: self as NSNumber, number: .decimal) + "  \(unit.rawValue)" : "\(self)  \(unit.rawValue)"
         case .localCurrency:
             let userDefaults = UserDefaults(suiteName: UserDefaultsGroupKey.GroupName.rawValue)

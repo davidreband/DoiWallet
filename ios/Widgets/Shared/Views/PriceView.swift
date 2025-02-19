@@ -195,4 +195,5 @@ struct PriceView_Previews: PreviewProvider {
           .previewContext(WidgetPreviewContext(family: .accessoryRectangular))
       }
     }
+  }
 }

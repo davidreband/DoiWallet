@@ -1,3 +1,4 @@
+
 //
 //  MarketAPI+Electrum.swift
 //  BlueWallet
@@ -18,54 +19,54 @@ extension MarketAPI {
         let client = SwiftTCPClient(hosts: hardcodedPeers)
         defer {
             client.close()
-            print("Closed SwiftTCPClient connection.") 
+            print("Closed SwiftTCPClient connection.")
         }
 
         guard await client.connectToNextAvailable(validateCertificates: false) else {
-            print("Failed to connect to any Electrum peer.") 
+            print("Failed to connect to any Electrum peer.")
             throw APIError()
         }
 
         let message = "{\"id\": 1, \"method\": \"mempool.get_fee_histogram\", \"params\": []}\n"
         guard let data = message.data(using: .utf8) else {
-            print("Failed to encode message to data.") 
+            print("Failed to encode message to data.")
             throw APIError()
         }
 
-        print("Sending fee histogram request: \(message)") 
+        print("Sending fee histogram request: \(message)")
 
         guard await client.send(data: data) else {
-            print("Failed to send fee histogram request.") 
+            print("Failed to send fee histogram request.")
             throw APIError()
         }
 
         do {
             let receivedData = try await client.receive()
-            print("Received data: \(receivedData)") 
+            print("Received data: \(receivedData)")
 
             guard let json = try JSONSerialization.jsonObject(with: receivedData, options: .allowFragments) as? [String: AnyObject],
                   let feeHistogram = json["result"] as? [[Double]] else {
-                print("Invalid JSON structure in response.") 
+                print("Invalid JSON structure in response.")
                 throw APIError()
             }
 
             let fastestFee = calcEstimateFeeFromFeeHistogram(numberOfBlocks: 1, feeHistogram: feeHistogram)
-            print("Calculated fastest fee: \(fastestFee)") 
-            return MarketData(nextBlock: String(format: "%.0f", fastestFee), sats: "0", price: "0", rate: 0, dateString: "")
+            print("Calculated fastest fee: \(fastestFee)")
+            return MarketData(nextBlock: String(format: "%.0f", fastestFee), sats: "0", price: "0", rate: 0, volume:"...", percent: 0.00, dateString: "")
         } catch {
-            print("Error during fetchNextBlockFee: \(error.localizedDescription)") 
+            print("Error during fetchNextBlockFee: \(error.localizedDescription)")
             throw APIError()
         }
     }
 
     static func fetchMarketData(currency: String) async throws -> MarketData {
-        var marketDataEntry = MarketData(nextBlock: "...", sats: "...", price: "...", rate: 0)
+        var marketDataEntry = MarketData(nextBlock: "...", sats: "...", price: "...", rate: 0, volume:"...", percent: 0.00)
         
         do {
             if let priceResult = try await fetchPrice(currency: currency) {
                 marketDataEntry.rate = priceResult.rateDouble
                 marketDataEntry.price = priceResult.formattedRate ?? "!"
-                print("Fetched price data: rateDouble=\(priceResult.rateDouble), formattedRate=\(priceResult.formattedRate ?? "nil")") 
+                print("Fetched price data: rateDouble=\(priceResult.rateDouble), formattedRate=\(priceResult.formattedRate ?? "nil")")
             }
         } catch {
             print("Error fetching price: \(error.localizedDescription)")
@@ -76,12 +77,12 @@ extension MarketAPI {
             marketDataEntry.nextBlock = nextBlockData.nextBlock
             print("Fetched next block fee data: nextBlock=\(nextBlockData.nextBlock)")
         } catch {
-            print("Error fetching next block fee: \(error.localizedDescription)") 
+            print("Error fetching next block fee: \(error.localizedDescription)")
             marketDataEntry.nextBlock = "!"
         }
 
         marketDataEntry.sats = numberFormatter.string(from: NSNumber(value: Double(10 / marketDataEntry.rate) * 10000000)) ?? "!"
-        print("Calculated sats: \(marketDataEntry.sats)") 
+        print("Calculated sats: \(marketDataEntry.sats)")
         
         return marketDataEntry
     }
@@ -97,4 +98,3 @@ extension MarketAPI {
         }
     }
 }
-

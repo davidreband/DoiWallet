@@ -4,6 +4,9 @@
     "%@" : {
 
     },
+    "%@%%" : {
+
+    },
     "Argentina (Argentine Peso)" : {
 
     },
@@ -38,6 +41,9 @@
 
     },
     "Central African Republic (Central African Franc)" : {
+
+    },
+    "Change 24h: " : {
 
     },
     "Checked at %@" : {
@@ -109,6 +115,9 @@
           }
         }
       }
+    },
+    "DOI: %@" : {
+
     },
     "Electrum Host" : {
 
@@ -375,6 +384,9 @@
           }
         }
       }
+    },
+    "Volume 24h: %@" : {
+
     },
     "Wallet and Market" : {
 

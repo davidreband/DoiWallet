@@ -56,12 +56,8 @@
   [[RCTI18nUtil sharedInstance] allowRTL:YES];
 
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-  center.delegate = self;
-  
-  TransactionsMonitor *transactionsMonitor = [[TransactionsMonitor alloc] init];
-  [transactionsMonitor startMonitoringTransactions];
+  center.delegate = self; 
 
-//
 
   [self setupUserDefaultsListener];
   [self registerNotificationCategories];

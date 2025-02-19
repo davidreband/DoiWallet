@@ -5,10 +5,10 @@ import Foundation
 struct Wallet: Codable, Identifiable, Equatable {
     let id: UUID
     let label: String
-    let balance: Decimal
+    let balance: String
     let type: WalletType
     let chain: Chain
-  let preferredBalanceUnit:  BitcoinUnit
+    let preferredBalanceUnit:  DoichainUnit
     let receiveAddress: String
     let transactions: [Transaction]
     let xpub: String
@@ -27,7 +27,7 @@ struct Wallet: Codable, Identifiable, Equatable {
     ///   - xpub: Extended public key for HD wallets.
     ///   - hideBalance: Indicates whether the balance should be hidden.
     ///   - paymentCode: Optional payment code associated with the wallet.
-  init(id: UUID = UUID(), label: String, balance: Decimal, type: WalletType, chain: Chain = .onchain, preferredBalanceUnit: BalanceUnit = .sats, receiveAddress: String, transactions: [Transaction], xpub: String, hideBalance: Bool, paymentCode: String? = nil) {
+  init(id: UUID = UUID(), label: String, balance: String, type: WalletType, chain: Chain = .onchain, preferredBalanceUnit: DoichainUnit = .SWARTZ, receiveAddress: String, transactions: [Transaction], xpub: String, hideBalance: Bool, paymentCode: String? = nil) {
         self.id = id
         self.label = label
         self.balance = balance
@@ -46,9 +46,9 @@ extension Wallet {
     static var mock: Wallet {
         Wallet(
             label: "Mock Wallet",
-            balance: 1.2345,
+            balance: "1.2345 DOI",
             type: .hdSegwitBech32Wallet,
-            preferredBalanceUnit: .sats,
+            preferredBalanceUnit: .SWARTZ,
             receiveAddress: "bc1qmockaddressxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
             transactions: Transaction.mockTransactions, // Includes multiple transactions
             xpub: "xpub6CUGRUonZSQ4TWtTMmzXdrXDtypWKiKp...",

@@ -9,13 +9,8 @@ import Foundation
 
 /// Represents the various balance units used in the application.
 /// Conforms to `String`, `Codable`, `Equatable`, and `CustomStringConvertible` for easy encoding/decoding, comparisons, and descriptions.
-enum BitcoinUnit: String, Codable, Equatable, CustomStringConvertible {
-    case btc = "BTC"
-    case sats = "sats"
-    case localCurrency = "local_currency"
-    case max = "MAX"
 
-enum DoichainUnit: String {
+enum DoichainUnit: String, Codable, Equatable, CustomStringConvertible{
     case DOI = "DOI"
     case SWARTZ = "SWARTZ"
     case localCurrency = "Local Currency"
