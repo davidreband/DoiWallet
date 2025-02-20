@@ -91,7 +91,7 @@ const PsbtMultisig = () => {
 
   const targets = filteredData.targets;
 
-  // Compute totals for display from unfiltered data.
+  // totals for display from unfiltered data.
   const displayTotalBtc = new BigNumber(unfilteredData.totalSat).dividedBy(100000000).toNumber();
   const displayTotalFiat = satoshiToLocalCurrency(unfilteredData.totalSat);
 
