@@ -44,7 +44,7 @@ const PsbtMultisigQRCode = () => {
       marginBottom: 10,
     },
     tipHeaderText: {
-      marginLeft: 10,
+      marginLeft: 4,
       flex: 1,
     },
   });
