@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useRoute } from '@react-navigation/native';
 import BigNumber from 'bignumber.js';
 import * as bitcoin from '@doichain/doichainjs-lib';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View, LayoutAnimation} from 'react-native';
 import { Icon } from '@rneui/themed';
 
 import { satoshiToBTC, satoshiToLocalCurrency } from '../../blue_modules/currency';
@@ -91,9 +91,11 @@ const PsbtMultisig = () => {
 
   const targets = filteredData.targets;
 
-  // totals for display from unfiltered data.
-  const displayTotalBtc = new BigNumber(unfilteredData.totalSat).dividedBy(100000000).toNumber();
-  const displayTotalFiat = satoshiToLocalCurrency(unfilteredData.totalSat);
+  const [isFiltered, setIsFiltered] = useState(true);
+
+  const displayData = isFiltered ? filteredData : unfilteredData;
+  const displayTotalBtc = new BigNumber(displayData.totalSat).dividedBy(100000000).toNumber();
+  const displayTotalFiat = satoshiToLocalCurrency(displayData.totalSat);
 
   const getFee = () => {
     return wallet.calculateFeeFromPsbt(psbt);
@@ -209,7 +211,6 @@ const PsbtMultisig = () => {
 
   const destinationAddress = (useFilter = true) => {
     const addrs = useFilter ? filteredData.addresses : unfilteredData.addresses;
-    // Only remove duplicates for unfiltered addresses.
     const displayAddrs = useFilter ? addrs : [...new Set(addrs)];
     const destinationAddressView = [];
     const whitespace = '_';
@@ -247,22 +248,34 @@ const PsbtMultisig = () => {
     return destinationAddressView;
   };
 
+  const handleToggleFilter = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setIsFiltered(prev => !prev);
+  };
+
   const header = (
     <View style={stylesHook.root}>
       <View style={styles.containerText}>
-        <BlueText selectable style={[styles.textBtc, stylesHook.textBtc]}>
-          {displayTotalBtc}
-        </BlueText>
+        <TouchableOpacity onPress={handleToggleFilter}>
+          <BlueText selectable style={[styles.textBtc, stylesHook.textBtc]}>
+            {displayTotalBtc}
+          </BlueText>
+        </TouchableOpacity>
         <View style={styles.textBtcUnit}>
-          <BlueText style={[styles.textBtcUnitValue, stylesHook.textBtcUnitValue]}> {BitcoinUnit.BTC}</BlueText>
+          <BlueText selectable style={[styles.textBtcUnitValue, stylesHook.textBtcUnitValue]}>
+            {' '}
+            {BitcoinUnit.BTC}
+          </BlueText>
         </View>
       </View>
       <View style={styles.containerText}>
-        <BlueText selectable style={[styles.textFiat, stylesHook.textFiat]}>
-          {displayTotalFiat}
-        </BlueText>
+        <TouchableOpacity onPress={handleToggleFilter}>
+          <BlueText selectable style={[styles.textFiat, stylesHook.textFiat]}>
+            {displayTotalFiat}
+          </BlueText>
+        </TouchableOpacity>
       </View>
-      <View>{destinationAddress(false)}</View>
+      <View>{destinationAddress(isFiltered)}</View>
     </View>
   );
 
