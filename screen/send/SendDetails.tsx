@@ -1048,10 +1048,10 @@ const SendDetails = () => {
           case CommonToolTipActions.ImportTransactionQR:
             importQrTransactionOnBarScanned(data);
             break;
+          case CommonToolTipActions.SignPSBT:
           case CommonToolTipActions.CoSignTransaction:
             handlePsbtSign(data);
-            break;
-          case CommonToolTipActions.SignPSBT:
+            break;         
           case CommonToolTipActions.ImportTransactionMultsig:
             _importTransactionMultisig(data);
             break;
