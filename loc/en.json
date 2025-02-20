@@ -55,6 +55,7 @@
     "network": "Network Error"
   },
   "lnd": {
+    "errorInvoiceExpired": "Invoice expired.",
     "expired": "Expired",
     "payment": "Payment",
     "placeholder": "Invoice or address",
