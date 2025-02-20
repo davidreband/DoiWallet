@@ -811,6 +811,7 @@ const SendDetails = () => {
           walletID: wallet.getID(),
           psbt,
         });
+
         setIsLoading(false);
       }
     },
@@ -1055,15 +1056,19 @@ const SendDetails = () => {
           case CommonToolTipActions.ImportTransactionMultsig:
             _importTransactionMultisig(data);
             break;
+          case CommonToolTipActions.ImportTransaction:
+            processAddressData(data);
+            break;
+
           default:
             console.log('Unknown selectedDataProcessor:', selectedDataProcessor.current);
         }
       } else {
-        onBarScanned(data);
+        processAddressData(data);
       }
     }
-    setParams({ onBarScanned: undefined });
     selectedDataProcessor.current = undefined;
+    setParams({ onBarScanned: undefined });
   }, [
     handlePsbtSign,
     importQrTransactionOnBarScanned,
