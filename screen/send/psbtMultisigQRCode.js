@@ -101,7 +101,9 @@ const PsbtMultisigQRCode = () => {
           <BlueSpacing20 />
           <BlueText>{loc.multisig.provide_signature_details}</BlueText>
           <BlueSpacing20 />
-          <BlueText>{loc.multisig.provide_signature_details_bluewallet}</BlueText>
+          <BlueText>
+            {loc.multisig.provide_signature_details_bluewallet} <BlueText bold>{loc.multisig.co_sign_transaction}</BlueText>
+          </BlueText>
         </View>
         <DynamicQRCode value={psbt.toHex()} ref={dynamicQRCode} />
         {!isShowOpenScanner && (
