@@ -96,7 +96,7 @@
     "@react-native-async-storage/async-storage": "2.1.0",
     "@react-native-clipboard/clipboard": "1.16.1",    
     "@react-native-community/push-notification-ios": "1.11.0",
-    "@react-native-menu/menu": "https://github.com/BlueWallet/menu.git#14bab79",
+    "@react-native-menu/menu": "https://github.com/BlueWallet/menu.git#038a9c9",
     "@react-native/gradle-plugin": "0.76.7",
     "@react-native/metro-config": "0.76.7",
     "@remobile/react-native-qrcode-local-image": "github:davidreband/react-native-qrcode-local-image.git",
