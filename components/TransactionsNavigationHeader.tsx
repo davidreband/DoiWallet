@@ -107,9 +107,7 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
       : formatBalanceWithoutSuffix(currentBalance, unit, true);
   }, [unit, currentBalance]);
 
-
   const balance = !wallet.hideBalance && formattedBalance;
-
 
   const toolTipWalletBalanceActions = useMemo(() => {
     return hideBalance
