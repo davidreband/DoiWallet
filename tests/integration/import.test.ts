@@ -320,8 +320,44 @@ describe('import procedure', () => {
     const store = createStore();
     const { promise } = startImport('ypub6XVkermxAiBz6QRqXjqpPxm6iL8tmtsFvA2ZASWY4ixrSMoLbJDePiKAqm2WtQzEpmsJAU3xVpFoPg8qgMXYwRAjDWd7gX1Yw1pV8czej5c', false, false, ...store.callbacks);
     await promise;
-    assert.strictEqual(store.state.wallets[0].getSecret(), 'ypub6XVkermxAiBz6QRqXjqpPxm6iL8tmtsFvA2ZASWY4ixrSMoLbJDePiKAqm2WtQzEpmsJAU3xVpFoPg8qgMXYwRAjDWd7gX1Yw1pV8czej5c');
-    assert.strictEqual(store.state.wallets[0].type, WatchOnlyWallet.type);
+    assert.strictEqual(store.state.wallets[0].getSecret(), '5KE6tf9vhYkzYSbgEL6M7xvkY69GMFHF3WxzYaCFMvwMxn3QgRS');
+    assert.strictEqual(store.state.wallets[0].type, LegacyWallet.type);
+    assert.strictEqual(store.state.wallets[0].getAddress(), '1GsJDeD6fqS912egpjhdjrUTiCh1hhwBgQ');
+  });
+
+  it('can import minikey Legacy with uncompressed pubkey', async () => {
+    // Example from https://en.bitcoin.it/wiki/Mini_private_key_format#Example_with_SHA256
+    // "Search on page" won't work unless this stuff they added to prevent copy pasting is included in the search.
+    const minikey = 'S6c56bnXQiBjk9_SAMPLE_PRIVATE_KEY_DO_NOT_IMPORT_mqSYE7ykVQ7NzrRy'.replace(/_.+_/, '');
+    const wif = '5JPy8Zg7z4P7RSLsiqcqyeAF1_SAMPLE_PRIVATE_KEY_DO_NOT_IMPORT_935zjNUdMxcDeVrtU1oarrgnB7'.replace(/_.+_/, '');
+    const addr = '1CciesT23BNionJe_SAMPLE_ADDRESS_DO_NOT_SEND_Xrbxmjc7ywfiyM4oLW'.replace(/_.+_/, '');
+    // Verifying the replace regex removes it.
+    assert.strictEqual(minikey, 'S6c56bnXQiBjk9mqSYE7ykVQ7NzrRy');
+    assert.strictEqual(wif, '5JPy8Zg7z4P7RSLsiqcqyeAF1935zjNUdMxcDeVrtU1oarrgnB7');
+    assert.strictEqual(addr, '1CciesT23BNionJeXrbxmjc7ywfiyM4oLW');
+
+    // Now actually generate the wallet for the test.
+    const store = createStore();
+    const { promise } = startImport(minikey, false, false, false, ...store.callbacks);
+    await promise;
+    assert.strictEqual(store.state.wallets[0].getSecret(), wif);
+    assert.strictEqual(store.state.wallets[0].type, LegacyWallet.type);
+    assert.strictEqual(store.state.wallets[0].getAddress(), addr);
+  });
+
+  it('can import BIP38 encrypted backup', async () => {
+    const store = createStore('qwerty');
+    const { promise } = startImport('6PnU5voARjBBykwSddwCdcn6Eu9EcsK24Gs5zWxbJbPZYW7eiYQP8XgKbN', false, false, false, ...store.callbacks);
+    await promise;
+    assert.strictEqual(store.state.wallets[0].getSecret(), 'KxqRtpd9vFju297ACPKHrGkgXuberTveZPXbRDiQ3MXZycSQYtjc');
+    assert.strictEqual(store.state.wallets[0].type, SegwitBech32Wallet.type);
+    assert.strictEqual(store.state.wallets[0].getAddress(), 'bc1qxaqgapg7sugyvq3zh0re8plqkgrvrxzr6snmqr');
+    assert.strictEqual(store.state.wallets[1].getSecret(), 'KxqRtpd9vFju297ACPKHrGkgXuberTveZPXbRDiQ3MXZycSQYtjc');
+    assert.strictEqual(store.state.wallets[1].type, SegwitP2SHWallet.type);
+    assert.strictEqual(store.state.wallets[1].getAddress(), '3ANCYnBvFPJyc4sxNFWnLkVBfDrKBZCVSp');
+    assert.strictEqual(store.state.wallets[2].getSecret(), 'KxqRtpd9vFju297ACPKHrGkgXuberTveZPXbRDiQ3MXZycSQYtjc');
+    assert.strictEqual(store.state.wallets[2].type, LegacyWallet.type);
+    assert.strictEqual(store.state.wallets[2].getAddress(), '1639W2kM6UY9PdavMQeLqG4SuUEae9NZfq');
   });
 
   it('can import watch-only address', async () => {
