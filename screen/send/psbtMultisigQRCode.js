@@ -3,7 +3,7 @@ import * as bitcoin from '@doichain/doichainjs-lib';
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 
-import { BlueSpacing20 } from '../../BlueComponents';
+import { BlueSpacing20, BlueText } from '../../BlueComponents';
 import presentAlert from '../../components/Alert';
 import { DynamicQRCode } from '../../components/DynamicQRCode';
 import SafeArea from '../../components/SafeArea';
@@ -33,6 +33,9 @@ const PsbtMultisigQRCode = () => {
     },
     exportButton: {
       backgroundColor: colors.buttonDisabledBackgroundColor,
+    },
+    tipBox: {
+      backgroundColor: colors.ballOutgoingExpired,
     },
   });
   const fileName = `${Date.now()}.psbt`;
@@ -90,6 +93,13 @@ const PsbtMultisigQRCode = () => {
     <SafeArea style={stylesHook.root}>
       <ScrollView centerContent contentContainerStyle={styles.scrollViewContent}>
         <View style={[styles.modalContentShort, stylesHook.modalContentShort]}>
+          <View style={[styles.tipBox, stylesHook.tipBox]}>
+            <BlueText bold>{loc.multisig.provide_signature}</BlueText>
+            <BlueSpacing20 />
+            <BlueText>{loc.multisig.provide_signature_details}</BlueText>
+            <BlueSpacing20 />
+            <BlueText>{loc.multisig.provide_signature_details_bluewallet}</BlueText>
+          </View>
           <DynamicQRCode value={psbt.toHex()} ref={dynamicQRCode} />
           {!isShowOpenScanner && (
             <>
@@ -138,6 +148,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 16,
+  },
+  tipBox: {
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
   },
 });
 

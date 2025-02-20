@@ -50,7 +50,6 @@ export type SendDetailsStackParamList = {
     txhex?: string;
   };
   CreateTransaction: {
-    wallet: TWallet;
     memo?: string;
     psbt?: Psbt;
     txhex?: string;
