@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignContent: 'center',
     alignItems: 'center',
+    height: '100%',
   },
   backdoorButton: {
     width: 60,
@@ -72,7 +73,7 @@ const ScanQRCode = () => {
   const [backdoorText, setBackdoorText] = useState('');
   const [backdoorVisible, setBackdoorVisible] = useState(false);
   const [animatedQRCodeData, setAnimatedQRCodeData] = useState({});
-  const [cameraStatusGranted, setCameraStatusGranted] = useState(false);
+  const [cameraStatusGranted, setCameraStatusGranted] = useState(undefined);
   const stylesHook = StyleSheet.create({
     openSettingsContainer: {
       backgroundColor: colors.brandingColor,
@@ -287,7 +288,7 @@ const ScanQRCode = () => {
     <BlueLoading />
   ) : (
     <View>
-      {!cameraStatusGranted ? (
+      {cameraStatusGranted === false ? (
         <View style={[styles.openSettingsContainer, stylesHook.openSettingsContainer]}>
           <BlueText>{loc.send.permission_camera_message}</BlueText>
           <BlueSpacing40 />
@@ -299,7 +300,7 @@ const ScanQRCode = () => {
           <BlueSpacing40 />
           <Button title={loc._.cancel} onPress={dismiss} />
         </View>
-      ) : isFocused ? (
+      ) : isFocused && cameraStatusGranted ? (
         <CameraScreen
           onReadCode={handleReadCode}
           showFrame={false}
