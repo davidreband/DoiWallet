@@ -106,9 +106,19 @@ const PsbtMultisigQRCode = () => {
           </BlueText>
         </View>
         <DynamicQRCode value={psbt.toHex()} ref={dynamicQRCode} />
-        {!isShowOpenScanner && (
+        {!isLoading && (
           <>
             <BlueSpacing20 />
+            <View style={styles.divider} />
+            <View style={[styles.tipBox, stylesHook.tipBox]}>
+              <BlueText bold>{loc.multisig.provide_signature_next_steps}</BlueText>
+              <BlueSpacing20 />
+              <BlueText>{loc.multisig.provide_signature_next_steps_details}</BlueText>
+            </View>
+          </>
+        )}
+        {!isShowOpenScanner && (
+          <>
             <SquareButton
               testID="CosignedScanOrImportFile"
               style={[styles.exportButton, stylesHook.exportButton]}
@@ -119,6 +129,7 @@ const PsbtMultisigQRCode = () => {
           </>
         )}
         <BlueSpacing20 />
+
         {isLoading ? (
           <ActivityIndicator />
         ) : (
@@ -144,6 +155,11 @@ const styles = StyleSheet.create({
   modalContentShort: {
     marginLeft: 20,
     marginRight: 20,
+  },
+  divider: {
+    height: 0.5,
+    backgroundColor: '#d2d2d2',
+    marginVertical: 20,
   },
   exportButton: {
     height: 48,
