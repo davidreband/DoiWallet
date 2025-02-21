@@ -1322,8 +1322,6 @@ PODS:
     - React-Core
   - react-native-menu (1.2.1):
     - React
-  - react-native-qrcode-local-image (1.0.4):
-    - React
   - react-native-randombytes (3.6.1):
     - React-Core
   - react-native-safe-area-context (5.2.0):
