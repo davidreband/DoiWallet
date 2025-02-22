@@ -6,12 +6,9 @@
 #import "RNQuickActionManager.h"
 #import <UserNotifications/UserNotifications.h>
 #import <RNCPushNotificationIOS.h>
-#import "EventEmitter.h"
-#import "MenuElementsEmitter.h"
 #import <React/RCTRootView.h>
 #import <Bugsnag/Bugsnag.h>
 #import "BlueWallet-Swift.h"
-#import "CustomSegmentedControlManager.h"
 
 
 @interface AppDelegate() <UNUserNotificationCenterDelegate>
@@ -25,7 +22,6 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   [MenuElementsEmitter sharedInstance];
-  [CustomSegmentedControlManager registerIfNecessary];
   [self clearFilesIfNeeded];
   self.userDefaultsGroup = [[NSUserDefaults alloc] initWithSuiteName:@"group.org.doichain.doiwallet"];
   
@@ -173,8 +169,8 @@
       [userActivity.activityType isEqualToString:@"io.bluewallet.bluewallet.xpub"] ||
       [userActivity.activityType isEqualToString:@"io.bluewallet.bluewallet.blockexplorer"]) {
     
-    if ([EventEmitter.sharedInstance respondsToSelector:@selector(sendUserActivity:)]) {
-      [EventEmitter.sharedInstance sendUserActivity:userActivityData];
+    if ([EventEmitter.shared respondsToSelector:@selector(sendUserActivity:)]) {
+      [EventEmitter.shared sendUserActivity:userActivityData];
     } else {
       NSLog(@"[Handoff] EventEmitter does not implement sendUserActivity:");
     }
@@ -212,7 +208,7 @@
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
   NSDictionary *userInfo = notification.request.content.userInfo;
-  completionHandler(UNNotificationPresentationOptionSound | UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge);
+  completionHandler(UNNotificationPresentationOptionSound | UNNotificationPresentationOptionList | UNNotificationPresentationOptionBanner | UNNotificationPresentationOptionBadge);
 }
 
 - (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
@@ -261,24 +257,21 @@
 }
 
 - (void)openSettings:(UIKeyCommand *)keyCommand {
-  [MenuElementsEmitter.sharedInstance openSettings];
+  [MenuElementsEmitter.shared openSettings];
 }
 
 - (void)addWalletAction:(UIKeyCommand *)keyCommand {
-    // Implement the functionality for adding a wallet
-    [MenuElementsEmitter.sharedInstance addWalletMenuAction];
+    [MenuElementsEmitter.shared addWalletMenuAction];
     NSLog(@"Add Wallet action performed");
 }
 
 - (void)importWalletAction:(UIKeyCommand *)keyCommand {
-    // Implement the functionality for adding a wallet
-    [MenuElementsEmitter.sharedInstance importWalletMenuAction];
+    [MenuElementsEmitter.shared importWalletMenuAction];
     NSLog(@"Import Wallet action performed");
 }
 
 - (void)reloadTransactionsAction:(UIKeyCommand *)keyCommand {
-    // Implement the functionality for adding a wallet
-  [MenuElementsEmitter.sharedInstance reloadTransactionsMenuAction];
+  [MenuElementsEmitter.shared reloadTransactionsMenuAction];
     NSLog(@"Reload Transactions action performed");
 }
 
