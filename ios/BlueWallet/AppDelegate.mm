@@ -10,7 +10,6 @@
 #import <Bugsnag/Bugsnag.h>
 #import "BlueWallet-Swift.h"
 
-
 @interface AppDelegate() <UNUserNotificationCenterDelegate>
 
 @property (nonatomic, strong) NSUserDefaults *userDefaultsGroup;
