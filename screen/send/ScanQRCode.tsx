@@ -66,7 +66,7 @@ const ScanQRCode = () => {
   const previousRoute = navigationState.routes[navigationState.routes.length - 2];
   const defaultLaunchedBy = previousRoute ? previousRoute.name : undefined;
 
-  const { launchedBy = defaultLaunchedBy, showFileImportButton } = route.params || {};
+  const { launchedBy = defaultLaunchedBy, showFileImportButton, onBarScanned } = route.params || {};
   const scannedCache: Record<string, number> = {};
   const { colors } = useTheme();
   const isFocused = useIsFocused();
@@ -119,6 +119,9 @@ const ScanQRCode = () => {
         if (launchedBy) {
           const merge = true;
           const popToAction = StackActions.popTo(launchedBy, { onBarScanned: data }, merge);
+          if (onBarScanned) {
+            onBarScanned(data);
+          }
 
           navigation.dispatch(popToAction);
         }
@@ -159,6 +162,9 @@ const ScanQRCode = () => {
         if (launchedBy) {
           const merge = true;
           const popToAction = StackActions.popTo(launchedBy, { onBarScanned: data }, merge);
+          if (onBarScanned) {
+            onBarScanned(data);
+          }
 
           navigation.dispatch(popToAction);
         }
@@ -216,6 +222,9 @@ const ScanQRCode = () => {
       if (launchedBy) {
         const merge = true;
         const popToAction = StackActions.popTo(launchedBy, { onBarScanned: data }, merge);
+        if (onBarScanned) {
+          onBarScanned(data);
+        }
         navigation.dispatch(popToAction);
       }
       return;
@@ -226,6 +235,9 @@ const ScanQRCode = () => {
           const merge = true;
 
           const popToAction = StackActions.popTo(launchedBy, { onBarScanned: ret.data }, merge);
+          if (onBarScanned) {
+            onBarScanned(ret.data);
+          }
 
           navigation.dispatch(popToAction);
         } catch (e) {
