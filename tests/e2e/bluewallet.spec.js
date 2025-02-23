@@ -8,11 +8,11 @@ import {
   helperCreateWallet,
   helperDeleteWallet,
   sleep,
-  sup,
+  waitForText,
   tapAndTapAgainIfElementIsNotVisible,
   tapIfPresent,
   tapIfTextPresent,
-  yo,
+  waitForId,
 } from './helperz';
 import { element } from 'detox';
 
@@ -58,7 +58,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
       if (require('fs').existsSync(lockFile)) return console.warn('skipping', JSON.stringify('t2'), 'as it previously passed on Travis');
     }
     await device.launchApp({ delete: true }); // reinstalling the app just for any case to clean up app's storage
-    await yo('WalletsList');
+    await waitForId('WalletsList');
 
     // go to settings, press SelfTest and wait for OK
     await element(by.id('SettingsButton')).tap();
@@ -116,12 +116,12 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await element(by.id('PortInput')).replaceText('50001\n');
     await element(by.id('ElectrumSettingsScrollView')).swipe('up', 'fast', 1); // in case emu screen is small and it doesnt fit
     await element(by.id('Save')).tap();
-    await sup('OK');
+    await waitForText('OK');
     await element(by.text('OK')).tap();
     await element(by.id('HeaderMenuButton')).tap();
     await element(by.text('Reset to default')).tap();
     await element(by.text('RESET TO DEFAULT')).tap();
-    await sup('OK');
+    await waitForText('OK');
     await element(by.text('OK')).tap();
     await element(by.id('ElectrumSettingsScrollView')).swipe('up', 'fast', 1); // in case emu screen is small and it doesnt fit
     await expect(element(by.id('HostInput'))).toHaveText('');
@@ -135,17 +135,17 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await element(by.id('LightningSettings')).tap();
     await element(by.id('URIInput')).replaceText('invalid\n');
     await element(by.id('Save')).tap();
-    await sup('OK');
+    await waitForText('OK');
     await expect(element(by.text('Invalid LNDHub URI'))).toBeVisible();
     await element(by.text('OK')).tap();
     await element(by.id('URIInput')).replaceText('https://lndhub.herokuapp.com\n');
     await element(by.id('Save')).tap();
-    await sup('OK');
+    await waitForText('OK');
     await expect(element(by.text('Your changes have been saved successfully.'))).toBeVisible();
     await element(by.text('OK')).tap();
     await element(by.id('URIInput')).replaceText('\n');
     await element(by.id('Save')).tap();
-    await sup('OK');
+    await waitForText('OK');
     await expect(element(by.text('Your changes have been saved successfully.'))).toBeVisible();
     await element(by.text('OK')).tap();
     await device.pressBack();
@@ -153,7 +153,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
 
     // notifications
     // turn on notifications if available
-    // console.warn('yo');
+    // console.warn('waitForId');
     // await sleep(300000);
     if(await expectToBeVisible('NotificationSettings')) {
       await element(by.id('NotificationSettings')).tap();
@@ -174,7 +174,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await element(by.id('Broadcast')).tap();
     await element(by.id('TxHex')).replaceText('invalid\n');
     await element(by.id('BroadcastButton')).tap();
-    await sup('OK');
+    await waitForText('OK');
     // await expect(element(by.text('the transaction was rejected by network rules....'))).toBeVisible();
     await element(by.text('OK')).tap();
     await device.pressBack();
@@ -201,12 +201,12 @@ describe('BlueWallet UI Tests - no wallets', () => {
       if (require('fs').existsSync(lockFile)) return console.warn('skipping', JSON.stringify('t3'), 'as it previously passed on Travis');
     }
     await device.launchApp({ delete: true }); // reinstalling the app just for any case to clean up app's storage
-    await yo('WalletsList');
+    await waitForId('WalletsList');
 
     await helperCreateWallet();
 
     await device.launchApp({ newInstance: true });
-    await yo('WalletsList');
+    await waitForId('WalletsList');
     await expect(element(by.id('cr34t3d'))).toBeVisible();
     await tapAndTapAgainIfElementIsNotVisible('cr34t3d', 'ReceiveButton');
     await element(by.id('ReceiveButton')).tap();
@@ -217,8 +217,8 @@ describe('BlueWallet UI Tests - no wallets', () => {
       await element(by.text(`No, and do not ask me again.`)).tap();
       await element(by.text(`No, and do not ask me again.`)).tap(); // sometimes the first click doesnt work (detox issue, not app's)
     } catch (_) {}
-    await yo('BitcoinAddressQRCodeContainer');
-    await yo('CopyTextToClipboard');
+    await waitForId('BitcoinAddressQRCodeContainer');
+    await waitForId('CopyTextToClipboard');
     await element(by.id('SetCustomAmountButton')).tap();
     await element(by.id('BitcoinAmountInput')).replaceText('1');
     await element(by.id('CustomAmountDescription')).replaceText('test');
@@ -227,8 +227,8 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await expect(element(by.id('CustomAmountDescriptionText'))).toHaveText('test');
     await expect(element(by.id('BitcoinAmountText'))).toHaveText('1 BTC');
 
-    await yo('BitcoinAddressQRCodeContainer');
-    await yo('CopyTextToClipboard');
+    await waitForId('BitcoinAddressQRCodeContainer');
+    await waitForId('CopyTextToClipboard');
     await device.pressBack();
     await device.pressBack();
     await helperDeleteWallet('cr34t3d');
@@ -241,7 +241,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
       if (require('fs').existsSync(lockFile)) return console.warn('skipping', JSON.stringify('t4'), 'as it previously passed on Travis');
     }
     await device.launchApp({ delete: true }); // reinstalling the app just for any case to clean up app's storage
-    await yo('WalletsList');
+    await waitForId('WalletsList');
 
     // lets create a wallet
     await helperCreateWallet();
@@ -289,7 +289,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await device.launchApp({ newInstance: true });
 
     // trying to decrypt with incorrect password
-    await sup('Your storage is encrypted. Password is required to decrypt it.');
+    await waitForText('Your storage is encrypted. Password is required to decrypt it.');
     await element(by.type('android.widget.EditText')).typeText('wrong');
     await element(by.text('OK')).tap();
     await expect(element(by.text('Incorrect password. Please try again.'))).toBeVisible();
@@ -297,7 +297,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     // correct password
     await element(by.type('android.widget.EditText')).typeText('qqq');
     await element(by.text('OK')).tap();
-    await yo('WalletsList');
+    await waitForId('WalletsList');
 
     // previously created wallet should be visible
     await expect(element(by.id('cr34t3d'))).toBeVisible();
@@ -360,10 +360,10 @@ describe('BlueWallet UI Tests - no wallets', () => {
     // relaunch app
     await device.launchApp({ newInstance: true });
     //
-    await sup('Your storage is encrypted. Password is required to decrypt it.');
+    await waitForText('Your storage is encrypted. Password is required to decrypt it.');
     await element(by.type('android.widget.EditText')).typeText('qqq');
     await element(by.text('OK')).tap();
-    await yo('WalletsList');
+    await waitForId('WalletsList');
 
     // previously created wallet IN MAIN STORAGE should be visible
     await expect(element(by.id('cr34t3d'))).toBeVisible();
@@ -371,10 +371,10 @@ describe('BlueWallet UI Tests - no wallets', () => {
     // relaunch app
     await device.launchApp({ newInstance: true });
     //
-    await sup('Your storage is encrypted. Password is required to decrypt it.');
+    await waitForText('Your storage is encrypted. Password is required to decrypt it.');
     await element(by.type('android.widget.EditText')).typeText('passwordForFakeStorage');
     await element(by.text('OK')).tap();
-    await yo('WalletsList');
+    await waitForId('WalletsList');
 
     // previously created wallet in FAKE storage should be visible
     await expect(element(by.id('fake_wallet'))).toBeVisible();
@@ -403,7 +403,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
       if (require('fs').existsSync(lockFile)) return console.warn('skipping', JSON.stringify('t5'), 'as it previously passed on Travis');
     }
     await device.launchApp({ delete: true }); // reinstalling the app just for any case to clean up app's storage
-    await yo('WalletsList');
+    await waitForId('WalletsList');
     await helperCreateWallet();
     await element(by.id('SettingsButton')).tap();
     await element(by.id('SecurityButton')).tap();
@@ -444,10 +444,10 @@ describe('BlueWallet UI Tests - no wallets', () => {
     // relaunch app
     await device.launchApp({ newInstance: true });
     //
-    await sup('Your storage is encrypted. Password is required to decrypt it.');
+    await waitForText('Your storage is encrypted. Password is required to decrypt it.');
     await element(by.type('android.widget.EditText')).typeText('pass');
     await element(by.text('OK')).tap();
-    await yo('WalletsList');
+    await waitForId('WalletsList');
 
     // previously created wallet IN MAIN STORAGE should be visible
     await expect(element(by.id('cr34t3d'))).toBeVisible();
@@ -474,7 +474,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
 
     // relaunch app
     await device.launchApp({ newInstance: true });
-    await yo('cr34t3d'); // success
+    await waitForId('cr34t3d'); // success
     await helperDeleteWallet('cr34t3d');
     process.env.TRAVIS && require('fs').writeFileSync(lockFile, '1');
   });
@@ -485,8 +485,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
       if (require('fs').existsSync(lockFile)) return console.warn('skipping as it previously passed on Travis');
     }
     await device.launchApp({ delete: true }); // reinstalling the app just for any case to clean up app's storage
-    await helperSwitchAdvancedMode();
-    await yo('WalletsList');
+    await waitForId('WalletsList');
     await element(by.id('WalletsList')).swipe('left', 'fast', 1); // in case emu screen is small and it doesnt fit
     await sleep(200); // Wait until bounce animation finishes.
     // going to Import Wallet screen and importing Vault
@@ -508,7 +507,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await element(by.id('ScanOrOpenFile')).tap();
 
     await sleep(5000); // wait for camera screen to initialize
-    await yo('ScanQrBackdoorButton');
+    await waitForId('ScanQrBackdoorButton');
     for (let c = 0; c <= 5; c++) {
       await element(by.id('ScanQrBackdoorButton')).tap();
     }
@@ -534,11 +533,11 @@ describe('BlueWallet UI Tests - no wallets', () => {
     // when xpub - it automatically closes the modal, so no need to tap the button
 
     await element(by.id('CreateButton')).tap();
-    await sup('OK');
+    await waitForText('OK');
     await tapIfTextPresent('OK');
-    await yo('Multisig Vault');
+    await waitForId('Multisig Vault');
     await element(by.id('Multisig Vault')).tap(); // go inside the wallet
-    await yo('ReceiveButton');
+    await waitForId('ReceiveButton');
     await element(by.id('ReceiveButton')).tap();
     try {
       // in case emulator has no google services and doesnt support pushes
@@ -547,12 +546,12 @@ describe('BlueWallet UI Tests - no wallets', () => {
       await element(by.text(`No, and do not ask me again.`)).tap(); // sometimes the first click doesnt work (detox issue, not app's)
     } catch (_) {}
 
-    await sup('bc1qmf06nt4jhvzz4387ak8fecs42k6jqygr2unumetfc7xkdup7ah9s8phlup');
+    await waitForText('bc1qmf06nt4jhvzz4387ak8fecs42k6jqygr2unumetfc7xkdup7ah9s8phlup');
 
     await device.pressBack();
 
     await element(by.id('WalletDetails')).tap();
-    await sup('2 / 2 (native segwit)');
+    await waitForText('2 / 2 (native segwit)');
 
     await device.pressBack();
     await helperDeleteWallet('Multisig Vault');
@@ -566,7 +565,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
       if (require('fs').existsSync(lockFile)) return console.warn('skipping', JSON.stringify('t6'), 'as it previously passed on Travis');
     }
     await device.launchApp({ delete: true }); // reinstalling the app just for any case to clean up app's storage
-    await yo('WalletsList');
+    await waitForId('WalletsList');
     await element(by.id('WalletsList')).swipe('left', 'fast', 1); // in case emu screen is small and it doesnt fit
     await sleep(200); // Wait until bounce animation finishes.
     // going to Import Wallet screen and importing mnemonic
@@ -593,7 +592,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     }
 
     if (process.env.TRAVIS) await sleep(60000);
-    await sup('OK', 3 * 61000); // waiting for wallet import
+    await waitForText('OK', 3 * 61000); // waiting for wallet import
     await element(by.text('OK')).tap();
     // ok, wallet imported
 
@@ -603,7 +602,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
 
     // sending...
 
-    await yo('SendButton');
+    await waitForId('SendButton');
     await element(by.id('SendButton')).tap();
 
     await element(by.id('AddressInput')).replaceText('bc1q063ctu6jhe5k4v8ka99qac8rcm2tzjjnuktyrl');
@@ -674,7 +673,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await element(by.id('PsbtMultisigConfirmButton')).tap();
 
     // created. verifying:
-    await yo('TransactionValue');
+    await waitForId('TransactionValue');
     await expect(element(by.id('TransactionValue'))).toHaveText('0.0005');
     await element(by.id('TransactionDetailsButton')).tap();
 
@@ -701,7 +700,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
       if (require('fs').existsSync(lockFile)) return console.warn('skipping', JSON.stringify('t6'), 'as it previously passed on Travis');
     }
     await device.launchApp({ delete: true }); // reinstalling the app just for any case to clean up app's storage
-    await yo('WalletsList');
+    await waitForId('WalletsList');
 
     // enable AdvancedMode to see derivation path in wallet details
     await helperSwitchAdvancedMode();
