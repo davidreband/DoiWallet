@@ -97,9 +97,7 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = React.mem
       return formatBalanceWithoutSuffix(item.value && item.value, itemPriceUnit, true).toString();
     }, [item.value, itemPriceUnit]);
 
-    const formattedAmount = useMemo(() => {
-      return formatBalanceWithoutSuffix(item.value && item.value, itemPriceUnit, true).toString();
-    }, [item.value, itemPriceUnit]);
+   
 
     const rowTitle = useMemo(() => {
       if (item.type === 'user_invoice' || item.type === 'payment_request') {

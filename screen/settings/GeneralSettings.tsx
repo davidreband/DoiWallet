@@ -44,7 +44,7 @@ const GeneralSettings: React.FC = () => {
       {wallets.length > 0 && (
         <>
           {/* @ts-ignore: Fix later */}
-          <ListItem onPress={() => navigate('ShortcutsSettings')} title={loc.settings.shortcuts_title} chevron />
+          <ListItem onPress={() => navigate('DefaultView')} title={loc.settings.default_title} chevron />
         </>
       )}
       <ListItem title={loc.settings.privacy} onPress={navigateToPrivacy} testID="SettingsPrivacy" chevron />
