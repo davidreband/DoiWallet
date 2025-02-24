@@ -68,7 +68,6 @@ const WalletsAddMultisigStep2 = () => {
   const [vaultKeyData, setVaultKeyData] = useState({ keyIndex: 1, xpub: '', seed: '', isLoading: false }); // string rendered in modal
   const [importText, setImportText] = useState('');
   const [askPassphrase, setAskPassphrase] = useState(false);
-  const openScannerButton = useRef();
   const { isPrivacyBlurEnabled } = useSettings();
   const data = useRef(new Array(n));
   const { isVisible } = useKeyboard();
@@ -656,7 +655,6 @@ const WalletsAddMultisigStep2 = () => {
                   onBarScanned={onBarScanned}
                   testID="ScanOrOpenFile"
                   type="link"
-                  ref={openScannerButton}
                   disabled={isLoading}
                 />
               </>
