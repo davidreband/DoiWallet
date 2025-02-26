@@ -2,10 +2,11 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { DoichainUnit } from '../../models/doichainUnits';
 import { DOICHAIN } from "../../blue_modules/network.js";
 import { useNavigation, useRoute } from '@react-navigation/native';
+
 import BigNumber from "bignumber.js";
 import * as bitcoin from "@doichain/doichainjs-lib";
 import PropTypes from "prop-types";
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {  Alert,  FlatList,  Linking,  Platform,  StyleSheet,  Text,  TextInput,  TouchableOpacity,  View,} from "react-native";
 import { Icon } from "@rneui/themed";
 import RNFS from "react-native-fs";
@@ -20,12 +21,12 @@ import { BlueSpacing20, BlueText } from '../../BlueComponents';
 import presentAlert from '../../components/Alert';
 import { DynamicQRCode } from '../../components/DynamicQRCode';
 import { useTheme } from '../../components/themes';
-import { disallowScreenshot } from 'react-native-screen-capture';
 import loc from '../../loc';
 import { useStorage } from '../../hooks/context/useStorage';
 import { useBiometrics, unlockWithBiometrics } from '../../hooks/useBiometrics';
 import { useExtendedNavigation } from "../../hooks/useExtendedNavigation";
 import { useSettings } from '../../hooks/context/useSettings';
+import { enableScreenProtect, disableScreenProtect } from '../../helpers/screenProtect';
 
   const SendCreate = () => {
     const { fee, recipients, wallet,  memo = "", satoshiPerByte, psbt, showAnimatedQr, tx,} = useRoute().params;
@@ -134,9 +135,11 @@ import { useSettings } from '../../hooks/context/useSettings';
 
   useEffect(() => {
     console.log('send/create - useEffect');
-    if (!isDesktop) disallowScreenshot(isPrivacyBlurEnabled);
+    if (isPrivacyBlurEnabled) {
+      enableScreenProtect();
+    }
     return () => {
-      if (!isDesktop) disallowScreenshot(false);
+      disableScreenProtect();
     };
   }, [isPrivacyBlurEnabled]);
 

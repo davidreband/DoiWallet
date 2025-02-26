@@ -306,10 +306,10 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
 
   const renderItem = useCallback(
     // eslint-disable-next-line react/no-unused-prop-types
-    ({ item }: { item: Transaction }) => {
-      return <TransactionListItem item={item} itemPriceUnit={wallet?.preferredBalanceUnit} walletID={walletID} />;
-    },
-    [wallet, walletID],
+    ({ item }: { item: Transaction }) => (
+      <TransactionListItem key={item.hash} item={item} itemPriceUnit={wallet?.preferredBalanceUnit} walletID={walletID} />
+    ),
+    [wallet?.preferredBalanceUnit, walletID],
   );
 
   const choosePhoto = () => {
@@ -326,7 +326,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
       });
   };
 
-  const _keyExtractor = (_item: any, index: number) => index.toString();
+  const _keyExtractor = useCallback((_item: any, index: number) => index.toString(), []);
 
   const pasteFromClipboard = async () => {
     onBarCodeRead({ data: await getClipboardContent() });
@@ -407,6 +407,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
       });
       return () => {
         task.cancel();
+        console.debug('Next screen is focused, clearing reloadTransactionsMenuActionFunction');
         setReloadTransactionsMenuActionFunction(() => {});
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -500,7 +501,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
       </Animated.View>
       <Animated.FlatList<Transaction>
         getItemLayout={getItemLayout}
-        updateCellsBatchingPeriod={30}
+        updateCellsBatchingPeriod={50}
         onEndReachedThreshold={0.3}
         onEndReached={loadMoreTransactions}
         ListFooterComponent={renderListFooterComponent}
@@ -512,8 +513,9 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
         contentInset={{ top: HEADER_HEIGHT }}
         removeClippedSubviews
         contentContainerStyle={{ backgroundColor: colors.background }}
-        maxToRenderPerBatch={15}
-        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true, listener: handleScroll })}
+        contentInset={{ top: 0, left: 0, bottom: 90, right: 0 }}
+        maxToRenderPerBatch={10}
+        onScroll={handleScroll}
         scrollEventThrottle={16}
         ListEmptyComponent={
           <ScrollView
@@ -532,6 +534,10 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
             <RefreshControl refreshing={isLoading} onRefresh={() => refreshTransactions(true)} progressViewOffset={HEADER_HEIGHT} />
           ) : undefined
         }
+        windowSize={15}
+        maintainVisibleContentPosition={{
+          minIndexForVisible: 0,
+        }}
       />
       <FContainer ref={walletActionButtonsRef}>
         {wallet?.allowReceive() && (

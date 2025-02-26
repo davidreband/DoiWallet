@@ -27,7 +27,6 @@ import QRCodeComponent from '../../components/QRCodeComponent';
 import { useTheme } from '../../components/themes';
 import confirm from '../../helpers/confirm';
 import prompt from '../../helpers/prompt';
-import { disallowScreenshot } from 'react-native-screen-capture';
 import loc from '../../loc';
 import { useStorage } from '../../hooks/context/useStorage';
 import { useSettings } from '../../hooks/context/useSettings';
@@ -35,7 +34,7 @@ import { scanQrHelper } from '../../helpers/scan-qr';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import ToolTipMenu from '../../components/TooltipMenu';
 import { CommonToolTipActions } from '../../typings/CommonToolTipActions';
-import { isDesktop } from '../../blue_modules/environment';
+import { useSettings } from '../../hooks/context/useSettings';
 import { useKeyboard } from '../../hooks/useKeyboard';
 import {
   DoneAndDismissKeyboardInputAccessory,
@@ -47,6 +46,7 @@ import MultipleStepsListItem, {
   MultipleStepsListItemDashType,
 } from '../../components/MultipleStepsListItem';
 import { AddressInputScanButton } from '../../components/AddressInputScanButton';
+import { enableScreenProtect, disableScreenProtect } from '../../helpers/screenProtect';
 
 const staticCache = {};
 
@@ -74,9 +74,11 @@ const WalletsAddMultisigStep2 = () => {
 
   useFocusEffect(
     useCallback(() => {
-      if (!isDesktop) disallowScreenshot(isPrivacyBlurEnabled);
+      if (isPrivacyBlurEnabled) {
+        enableScreenProtect();
+      }
       return () => {
-        if (!isDesktop) disallowScreenshot(false);
+        disableScreenProtect();
       };
     }, [isPrivacyBlurEnabled]),
   );
