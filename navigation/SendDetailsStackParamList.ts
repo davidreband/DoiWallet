@@ -4,6 +4,12 @@ import { DoichainUnit, Chain } from '../models/doichainUnits';
 
 import { ScanQRCodeParamList } from './DetailViewStackParamList';
 
+export interface NameOpParams {
+  nameId: string;
+  nameValue: string;
+  sendTo: string;
+}
+
 export type SendDetailsParams = {
   transactionMemo?: string;
   isTransactionReplaceable?: boolean;
@@ -27,6 +33,7 @@ export type SendDetailsParams = {
     amount?: number;
     memo?: string;
   };
+  nameOp?: NameOpParams;
 };
 
 export type SendDetailsStackParamList = {

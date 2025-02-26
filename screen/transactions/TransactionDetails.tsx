@@ -115,7 +115,7 @@ const TransactionDetails = () => {
         let foundTx: Transaction | false = false;
         let newFrom: string[] = [];
         let newTo: string[] = [];
-        let newNameOps: string[] = [];        
+        let newNameOps: { name: string; value: string }[] = [];       
         for (const transaction of getTransactions(undefined, Infinity, true)) {
           if (transaction.hash === hash) {
             foundTx = transaction;
@@ -126,10 +126,10 @@ const TransactionDetails = () => {
               if (output?.scriptPubKey?.addresses) newTo = newTo.concat(output.scriptPubKey.addresses);
               
               if (output?.scriptPubKey?.nameOp){
-                const nameOpArray = output.scriptPubKey.nameOp;
-                //const nameOpArray = Object.keys(output.scriptPubKey.nameOp.entries());
-                //const nameOpArray = Array.from(output.scriptPubKey.nameOp.keys());
-                newNameOps = newNameOps.concat(nameOpArray);
+                const nameOp = output.scriptPubKey.nameOp;
+                if (nameOp) {
+                  newNameOps.push({ name: nameOp.name, value: nameOp.value });
+                }
               }
             }
           }

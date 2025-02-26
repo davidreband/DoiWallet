@@ -47,6 +47,7 @@ import InputAccessoryAllFunds, { InputAccessoryAllFundsAccessoryViewID } from '.
 import { useTheme } from '../../components/themes';
 import loc, { formatBalance, formatBalanceWithoutSuffix } from '../../loc';
 import { DoichainUnit, Chain } from "../../models/doichainUnits";
+import { TTXMetadata } from '../../class/blue-app';
 import { DOICHAIN } from "../../blue_modules/network.js";
 import NetworkTransactionFees, { NetworkTransactionFee } from '../../models/networkTransactionFees';
 import { CreateTransactionTarget, CreateTransactionUtxo, TWallet } from '../../class/wallets/types';
@@ -247,6 +248,22 @@ const SendDetails = () => {
         u[scrollIndex.current] = unit;
         return [...u];
       });
+    } else if (routeParams.nameOp) {
+      const { nameId, nameValue, sendTo } = routeParams.nameOp;
+      setAddresses([{ address: sendTo, key: String(Math.random()) } as IPaymentDestinations]);
+      // Store nameOp data in txMetadata for use in transaction creation
+      // Store nameOp data for transaction creation
+      const tempTxId = `nameOp-${Date.now()}`;
+      if (txMetadata) {
+        const metadata: TTXMetadata[string] = {
+          memo: transactionMemo,
+          nameOp: {
+            nameId,
+            nameValue
+          }
+        };
+        txMetadata[tempTxId] = metadata;
+      }  
     } else if (routeParams.addRecipientParams) {
       const index = addresses.length === 0 ? 0 : scrollIndex.current;
       const { address, amount } = routeParams.addRecipientParams;
@@ -270,7 +287,8 @@ const SendDetails = () => {
       setAddresses([{ address: '', key: String(Math.random()) } as IPaymentDestinations]); // key is for the FlatList
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [routeParams.uri, routeParams.address, routeParams.addRecipientParams]);
+  }, [routeParams.uri, routeParams.address, routeParams.addRecipientParams, routeParams.nameOp]);
+  
 
   useEffect(() => {
     // check if we have a suitable wallet
@@ -633,13 +651,15 @@ const SendDetails = () => {
     // preserving original since it will be mutated
 
     // without forcing `HDSegwitBech32Wallet` i had a weird ts error, complaining about last argument (fp)
+    // Include nameOp as input if it exists
+    const useNameOpAsInput = routeParams.nameOp !== undefined;
     const { tx, outputs, psbt, fee } = (wallet as HDSegwitBech32Wallet)?.createTransaction(
       lutxo,
       targets,
       requestedSatPerByte,
       change,
       isTransactionReplaceable ? HDSegwitBech32Wallet.defaultRBFSequence : HDSegwitBech32Wallet.finalRBFSequence,
-      false,
+      useNameOpAsInput,
       0,
     );
 
@@ -677,10 +697,21 @@ const SendDetails = () => {
     }
 
     assert(tx, 'createTRansaction failed');
+    
+      // Store transaction metadata including nameOp if it exists
+      const metadata: TTXMetadata[string] = {
+        memo: transactionMemo,
+      };
+      // If this is a nameOp transaction, include the nameOp data
+      if(routeParams.nameOp) {
+      const { nameId, nameValue } = routeParams.nameOp;
+      metadata.nameOp = {
+        nameId,
+        nameValue
+      };
+    }
 
-    txMetadata[tx.getId()] = {
-      memo: transactionMemo,
-    };
+    txMetadata[tx.getId()] = metadata;
     await saveToDisk();
 
     let recipients = outputs.filter(({ address }) => address !== change);

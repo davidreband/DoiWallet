@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect, useMemo, useReducer, useRef } from 'react';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Image, ActivityIndicator, BackHandler, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ActivityIndicator, Alert, BackHandler, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Icon } from '@rneui/themed';
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
@@ -186,7 +186,26 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
   const [isUrlAccessible, setIsUrlAccessible] = useState(false);
   const [name, setName] = useState<string>('');
   const [image, setImage] = useState<string>('');
-  const [description, setDescription] = useState<string>(''); 
+  const [description, setDescription] = useState<string>('');
+  const [sendToDoiAddress, setSendToDoiAddress] = useState<string>('');
+
+  const handleNameOpSendPress = useCallback((recipientAddress: string, nameOpData: { name: string; value: string }) => {
+    if (!recipientAddress) {
+      Alert.alert(loc.errors.error, 'Please enter a DoiAddress');
+      return;
+    }
+
+    navigate('SendDetails', {
+      screen: 'SendDetails',
+      params: {
+        nameOp: {
+          nameId: nameOpData.name,
+          nameValue: nameOpData.value,
+          sendTo: recipientAddress,
+        },
+      },
+    });
+  }, [navigate]);
  
 
   useEffect(() => {
@@ -514,23 +533,40 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
                     <Text selectable style={styles.memoText}>
                       {loc.transactions.nameOps_value}: {output.scriptPubKey.nameOp.value}
                     </Text>
+                    <BlueSpacing20 />
                   </>
                 ) : (
                   <>
                       <Text selectable style={styles.memoText}>
                         {loc.transactions.nameOps_name}: {output.scriptPubKey.nameOp.name}
-                      </Text>                    
+                      </Text>
                       <Text selectable style={styles.memoText}>
                         {loc.transactions.nameOps_value}: {output.scriptPubKey.nameOp.value}
                       </Text>
+                      <BlueSpacing20 />
                   </>
                 )}
-                <BlueSpacing20 />
+                <View style={styles.sendContainer}>
+                  <TextInput
+                    placeholder={loc.transactions.send_to_doi_address}
+                    value={sendToDoiAddress}
+                    onChangeText={setSendToDoiAddress}
+                    style={styles.addressInput}
+                    placeholderTextColor={colors.alternativeTextColor}
+                  />
+                  <BlueSpacing10 />
+                  <Button
+                    title={loc.transactions.send}
+                    onPress={() => handleNameOpSendPress(sendToDoiAddress, output.scriptPubKey.nameOp)}
+                    disabled={!sendToDoiAddress}
+                  />
+                </View>
               </View>
             );
           }
         }
       }
+    return null;
   };
 
   const renderCPFP = () => {
@@ -902,5 +938,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     alignSelf: 'center',
     marginBottom: 10,
+  },
+  addressInput: {
+    borderWidth: 1,
+    borderColor: '#9aa0aa',
+    borderRadius: 8,
+    padding: 12,
+    marginVertical: 8,
+    color: '#000000',
+    backgroundColor: '#FFFFFF',
+    fontSize: 15,
+  },
+  sendContainer: {
+    paddingHorizontal: 20,
+    width: '100%',
   }
 });

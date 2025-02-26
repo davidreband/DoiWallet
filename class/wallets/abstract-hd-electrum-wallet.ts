@@ -16,7 +16,8 @@ import { ElectrumHistory } from '../../blue_modules/BlueElectrum';
 import ecc from '../../blue_modules/noble_ecc';
 import { randomBytes } from '../rng';
 import { AbstractHDWallet } from './abstract-hd-wallet';
-import { CreateTransactionResult, CreateTransactionTarget, CreateTransactionUtxo, Transaction, Utxo } from './types';
+import { CreateTransactionResult, CreateTransactionTarget, CreateTransactionUtxo, ExtendedCoinSelectOutput, Transaction, Utxo } from './types';
+import { getNameOPStackScript } from '../../tests/unit/getNameOPStackScript'; 
 import { SilentPayment, UTXOType as SPUTXOType, UTXO as SPUTXO } from 'silent-payments';
 import { DOICHAIN } from '../../blue_modules/network.js';
 const ECPair = ECPairFactory(ecc);
@@ -1264,10 +1265,21 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
         // ^^^ trusting that notification transaction is in place
       }
 
+      // Handle NameOp script if present in the target
+      let outputScript;
+      const extendedOutput = output as ExtendedCoinSelectOutput;
+      if (!change && extendedOutput.nameOp) {
+        // Create NameOp script using the utility function
+        const { nameId, nameValue, sendTo } = extendedOutput.nameOp;
+        outputScript = getNameOPStackScript(nameId, nameValue, sendTo, DOICHAIN.name);
+      } else {
+        outputScript = extendedOutput.script?.hex ? Buffer.from(extendedOutput.script.hex, 'hex') : undefined;
+      }
+
       psbt.addOutput({
         address: output.address,
         // @ts-ignore types from bitcoinjs are not exported so we cant define outputData separately and add fields conditionally (either address or script should be present)
-        script: output.script?.hex ? Buffer.from(output.script.hex, 'hex') : undefined,
+        script: outputScript,
         value: output.value,
         bip32Derivation:
           change && path && pubkey

@@ -16,6 +16,18 @@ import { SegwitP2SHWallet } from './segwit-p2sh-wallet';
 import { SLIP39LegacyP2PKHWallet, SLIP39SegwitBech32Wallet, SLIP39SegwitP2SHWallet } from './slip39-wallets';
 import { WatchOnlyWallet } from './watch-only-wallet';
 
+export interface ExtendedCoinSelectOutput extends CoinSelectOutput {
+  script?: {
+    hex?: string;
+    length?: number;
+  };
+  nameOp?: {
+    nameId: string;
+    nameValue: string;
+    sendTo: string;
+  };
+}
+
 export type Utxo = {
   // Returned by BlueElectrum
   height: number;
@@ -44,6 +56,11 @@ export type CreateTransactionTarget = {
   script?: {
     length?: number; // either length or hex should be present
     hex?: string;
+  };
+  nameOp?: {
+    nameId: string;
+    nameValue: string;
+    sendTo: string;
   };
 };
 
@@ -75,7 +92,10 @@ export type TransactionOutput = {
     reqSigs: number;
     type: string;
     addresses: string[];
-    
+    nameOp?: {
+      name: string;
+      value: string;
+    };
   };
 };
 
