@@ -126,7 +126,9 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
     const txs = wallet.getTransactions();
     txs.sort((a: { received: string }, b: { received: string }) => +new Date(b.received) - +new Date(a.received));
     return txs;
-  }, [wallet]);
+    // we use `wallet.getLastTxFetch()` to tell if txs list changed
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wallet, wallet?.getLastTxFetch()]);
 
   const getTransactions = useCallback((lmt = Infinity): Transaction[] => sortedTransactions.slice(0, lmt), [sortedTransactions]);
 
@@ -178,7 +180,6 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
         setFetchFailures(0);
         const newTimestamp = Date.now();
         setLastFetchTimestamp(newTimestamp);
-        wallet._lastTxFetch = newTimestamp;
       } catch (err) {
         setFetchFailures(prev => {
           const newFailures = prev + 1;
@@ -298,11 +299,6 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
     offset: 64 * index,
     index,
   });
-
-  const listData: Transaction[] = useMemo(() => {
-    const transactions = getTransactions(limit);
-    return transactions;
-  }, [getTransactions, limit]);
 
   const renderItem = useCallback(
     // eslint-disable-next-line react/no-unused-prop-types
@@ -471,41 +467,23 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
   );
 
   return (
-    <View style={styles.container}>
-      <Animated.View style={[styles.stickyHeader, { transform: [{ translateY: headerTranslate }] }]}>
-        {wallet ? (
-          <TransactionsNavigationHeader
-            wallet={wallet}
-            onWalletUnitChange={handleWalletUnitChange}
-            unit={wallet.preferredBalanceUnit}
-            onWalletBalanceVisibilityChange={handleWalletBalanceVisibilityChange}
-            onManageFundsPressed={onManageFundsPressed}
-          />
-        ) : null}
-        <View style={[styles.flex, { backgroundColor: colors.background }]}>
-          <View style={styles.listHeaderTextRow}>
-            <Text style={[styles.listHeaderText, stylesHook.listHeaderText]}>{loc.transactions.list_title}</Text>
-          </View>
-          <View style={{ backgroundColor: colors.background }}>
-            {wallet?.type === WatchOnlyWallet.type && wallet.isWatchOnlyWarningVisible && (
-              <WatchOnlyWarning
-                handleDismiss={() => {
-                  wallet.isWatchOnlyWarningVisible = false;
-                  LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
-                  saveToDisk();
-                }}
-              />
-            )}
-          </View>
-        </View>
-      </Animated.View>
-      <Animated.FlatList<Transaction>
+    <View style={[styles.flex, { backgroundColor: colors.background }]}>
+      {/* The color of the refresh indicator. Temporary hack */}
+      <View
+        style={[
+          styles.refreshIndicatorBackground,
+          { backgroundColor: wallet ? WalletGradient.headerColorFor(wallet.type) : colors.background },
+        ]}
+        testID="TransactionsListView"
+      />
+
+      <FlatList<Transaction>
         getItemLayout={getItemLayout}
         updateCellsBatchingPeriod={50}
         onEndReachedThreshold={0.3}
         onEndReached={loadMoreTransactions}
         ListFooterComponent={renderListFooterComponent}
-        data={listData}
+        data={getTransactions(limit)}
         extraData={wallet}
         keyExtractor={_keyExtractor}
         renderItem={renderItem}
@@ -518,12 +496,8 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
         onScroll={handleScroll}
         scrollEventThrottle={16}
         ListEmptyComponent={
-          <ScrollView
-            style={[styles.flex, { backgroundColor: colors.background }]}
-            contentContainerStyle={styles.scrollViewContent}
-            centerContent
-          >
-            <Text numberOfLines={0} style={styles.emptyTxs}>
+          <ScrollView style={[styles.flex, { backgroundColor: colors.background }]} contentContainerStyle={styles.scrollViewContent}>
+            <Text numberOfLines={0} style={styles.emptyTxs} testID="TransactionsListEmpty">
               {(isLightning() && loc.wallets.list_empty_txs1_lightning) || loc.wallets.list_empty_txs1}
             </Text>
             {isLightning() && <Text style={styles.emptyTxsLightning}>{loc.wallets.list_empty_txs2_lightning}</Text>}
