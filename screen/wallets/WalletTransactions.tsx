@@ -55,7 +55,7 @@ const buttonFontSize =
 type WalletTransactionsProps = NativeStackScreenProps<DetailViewStackParamList, 'WalletTransactions'>;
 type RouteProps = RouteProp<DetailViewStackParamList, 'WalletTransactions'>;
 type TransactionListItem = Transaction & { type: 'transaction' | 'header' };
-const HEADER_HEIGHT = 210;
+const HEADER_HEIGHT = 240;
 
 const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
   const { wallets, saveToDisk, setSelectedWalletID } = useStorage();
@@ -263,11 +263,8 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
   );
 
   const navigateToViewEditCosigners = useCallback(() => {
-    navigate('ViewEditMultisigCosignersRoot', {
-      screen: 'ViewEditMultisigCosigners',
-      params: {
-        walletID,
-      },
+    navigate('ViewEditMultisigCosigners', {
+      walletID,
     });
   }, [navigate, walletID]);
 
@@ -496,8 +493,13 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
         onScroll={handleScroll}
         scrollEventThrottle={16}
         ListEmptyComponent={
-          <ScrollView style={[styles.flex, { backgroundColor: colors.background }]} contentContainerStyle={styles.scrollViewContent}>
-            <Text numberOfLines={0} style={styles.emptyTxs} testID="TransactionsListEmpty">
+          <ScrollView
+            style={[styles.flex, { backgroundColor: colors.background }]}
+            contentContainerStyle={styles.scrollViewContent}
+            centerContent
+            testID="TransactionsListEmpty"
+          >
+            <Text numberOfLines={0} style={styles.emptyTxs}>
               {(isLightning() && loc.wallets.list_empty_txs1_lightning) || loc.wallets.list_empty_txs1}
             </Text>
             {isLightning() && <Text style={styles.emptyTxsLightning}>{loc.wallets.list_empty_txs2_lightning}</Text>}
