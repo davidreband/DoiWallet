@@ -1340,11 +1340,18 @@ const SendDetails = () => {
     [headerRightOnPress, isLoading, headerRightActions],
   );
 
-  const setHeaderRightOptions = () => {
+  const setHeaderRightOptions = useCallback(() => {
     navigation.setOptions({
       headerRight: HeaderRight,
     });
-  };
+  }, [HeaderRight, navigation]);
+
+  useEffect(() => {
+    console.log('send/details - useEffect');
+    if (wallet) {
+      setHeaderRightOptions();
+    }
+  }, [colors, wallet, isTransactionReplaceable, balance, addresses, isEditable, isLoading, setHeaderRightOptions]);
 
   const handleRecipientsScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const contentOffset = e.nativeEvent.contentOffset;
