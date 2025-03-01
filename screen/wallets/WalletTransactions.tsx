@@ -55,7 +55,7 @@ const buttonFontSize =
 type WalletTransactionsProps = NativeStackScreenProps<DetailViewStackParamList, 'WalletTransactions'>;
 type RouteProps = RouteProp<DetailViewStackParamList, 'WalletTransactions'>;
 type TransactionListItem = Transaction & { type: 'transaction' | 'header' };
-const HEADER_HEIGHT = 240;
+const HEADER_HEIGHT = 190;
 
 const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
   const { wallets, saveToDisk, setSelectedWalletID } = useStorage();
@@ -486,6 +486,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
         renderItem={renderItem}
         initialNumToRender={10}
         contentInset={{ top: HEADER_HEIGHT }}
+        contentOffset={{ y: -HEADER_HEIGHT, x: 0 }}
         removeClippedSubviews
         contentContainerStyle={{ backgroundColor: colors.background }}
         contentInset={{ top: 0, left: 0, bottom: 90, right: 0 }}
@@ -564,10 +565,10 @@ export default WalletTransactions;
 const styles = StyleSheet.create({
   container: { flex: 1 },
   flex: { flex: 1 },
-  scrollViewContent: { paddingHorizontal: 16, paddingTop: HEADER_HEIGHT },
+  scrollViewContent: { paddingHorizontal: 16 },
   activityIndicator: { marginVertical: 20 },
-  listHeaderTextRow: { flex: 1, margin: 16, flexDirection: 'row', justifyContent: 'space-between' },
-  listHeaderText: { marginTop: 8, marginBottom: 8, fontWeight: 'bold', fontSize: 24 },
+  listHeaderTextRow: { padding: 16, flexDirection: 'row' },
+  listHeaderText: { fontWeight: 'bold', fontSize: 24 },
   emptyTxs: { fontSize: 18, color: '#9aa0aa', textAlign: 'center', marginVertical: 16 },
   emptyTxsLightning: { fontSize: 18, color: '#9aa0aa', textAlign: 'center', fontWeight: '600' },
   sendIcon: { transform: [{ rotate: I18nManager.isRTL ? '-225deg' : '225deg' }] },
