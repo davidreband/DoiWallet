@@ -1,4 +1,4 @@
-import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
+import { RouteProp, useFocusEffect, useRoute, useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -81,6 +81,8 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
     outputRange: [0, -HEADER_HEIGHT],
     extrapolate: 'clamp',
   });
+  const flatListRef = useRef<Animated.FlatList>(null);
+  const isFocused = useIsFocused();
 
   const stylesHook = StyleSheet.create({
     listHeaderText: {
@@ -92,6 +94,21 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
     useCallback(() => {
       setOptions(getWalletTransactionsOptions({ route }));
     }, [route, setOptions]),
+  );
+
+  // Reset header position when navigating away from screen
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        // This will run when screen loses focus
+        scrollY.setValue(0);
+        // Reset FlatList scroll position to top
+        if (flatListRef.current) {
+          flatListRef.current.scrollToOffset({ offset: 0, animated: false });
+        }
+        setOptions(getWalletTransactionsOptions({ route }));
+      };
+    }, [scrollY, setOptions, route]),
   );
 
   const onBarCodeRead = useCallback(
@@ -423,7 +440,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
   }, [wallet, wallet?.hideBalance, wallet?.preferredBalanceUnit, balance]);
 
   const handleScroll = useCallback(
-    (event: any) => {
+    (event: any) => {      
       const offsetY = event.nativeEvent.contentOffset.y;
       const combinedHeight = 180;
       if (offsetY < combinedHeight) {
@@ -464,17 +481,36 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
   );
 
   return (
-    <View style={[styles.flex, { backgroundColor: colors.background }]}>
-      {/* The color of the refresh indicator. Temporary hack */}
-      <View
-        style={[
-          styles.refreshIndicatorBackground,
-          { backgroundColor: wallet ? WalletGradient.headerColorFor(wallet.type) : colors.background },
-        ]}
-        testID="TransactionsListView"
-      />
-
-      <FlatList<Transaction>
+    <View style={styles.container}>
+      <Animated.View style={[styles.stickyHeader, { transform: [{ translateY: headerTranslate }] }]}>
+        {wallet ? (
+          <TransactionsNavigationHeader
+            wallet={wallet}
+            onWalletUnitChange={handleWalletUnitChange}
+            unit={wallet.preferredBalanceUnit}
+            onWalletBalanceVisibilityChange={handleWalletBalanceVisibilityChange}
+            onManageFundsPressed={onManageFundsPressed}
+          />
+        ) : null}
+        <View style={[styles.flex, { backgroundColor: colors.background }]}>
+          <View style={styles.listHeaderTextRow}>
+            <Text style={[styles.listHeaderText, stylesHook.listHeaderText]}>{loc.transactions.list_title}</Text>
+          </View>
+          <View style={{ backgroundColor: colors.background }}>
+            {wallet?.type === WatchOnlyWallet.type && wallet.isWatchOnlyWarningVisible && (
+              <WatchOnlyWarning
+                handleDismiss={() => {
+                  wallet.isWatchOnlyWarningVisible = false;
+                  LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
+                  saveToDisk();
+                }}
+              />
+            )}
+          </View>
+        </View>
+      </Animated.View>
+      <Animated.FlatList<Transaction>
+        ref={flatListRef}
         getItemLayout={getItemLayout}
         updateCellsBatchingPeriod={50}
         onEndReachedThreshold={0.3}
