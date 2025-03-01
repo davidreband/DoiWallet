@@ -229,16 +229,6 @@ jest.mock('realm', () => {
   };
 });
 
-jest.mock('react-native-idle-timer', () => {
-  return {
-    setIdleTimerDisabled: jest.fn(),
-  };
-});
-
-jest.mock('react-native-ios-context-menu', () => {
-  return {};
-});
-
 jest.mock('rn-qr-generator', () => ({
   detect: jest.fn(uri => {
     if (uri === 'invalid-image') {

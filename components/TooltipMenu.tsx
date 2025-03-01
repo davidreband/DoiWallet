@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
-import { Platform, Pressable, TouchableOpacity } from 'react-native';
+import { Platform, TouchableOpacity } from 'react-native';
 import { MenuView, MenuAction, NativeActionEvent } from '@react-native-menu/menu';
-import { ContextMenuView, RenderItem, OnPressMenuItemEventObject, IconConfig, MenuElementConfig } from 'react-native-ios-context-menu';
 import { ToolTipMenuProps, Action } from './types';
 import { useSettings } from '../hooks/context/useSettings';
 
@@ -9,11 +8,8 @@ const ToolTipMenu = (props: ToolTipMenuProps) => {
   const {
     title = '',
     isMenuPrimaryAction = false,
-    renderPreview,
     disabled = false,
     onPress,
-    onMenuWillShow,
-    onMenuWillHide,
     buttonStyle,
     onPressMenuItem,
     children,
@@ -23,17 +19,7 @@ const ToolTipMenu = (props: ToolTipMenuProps) => {
 
   const { language } = useSettings();
 
-  const mapMenuItemForContextMenuView = useCallback((action: Action) => {
-    if (!action.id) return null;
-    return {
-      actionKey: action.id.toString(),
-      actionTitle: action.text,
-      icon: action.icon?.iconValue ? ({ iconType: 'SYSTEM', iconValue: action.icon.iconValue } as IconConfig) : undefined,
-      state: action.menuState ?? undefined,
-      attributes: action.disabled ? ['disabled'] : [],
-    };
-  }, []);
-
+  // Map Menu Items for RN Menu (supports subactions and displayInline)
   const mapMenuItemForMenuView = useCallback((action: Action): MenuAction | null => {
     if (!action.id) return null;
 
@@ -85,11 +71,6 @@ const ToolTipMenu = (props: ToolTipMenuProps) => {
     return menuItem;
   }, []);
 
-  const contextMenuItems = useMemo(() => {
-    const flattenedActions = props.actions.flat().filter(action => action.id);
-    return flattenedActions.map(mapMenuItemForContextMenuView).filter(item => item !== null) as MenuElementConfig[];
-  }, [props.actions, mapMenuItemForContextMenuView]);
-
   const menuViewItemsIOS = useMemo(() => {
     return props.actions
       .map(actionGroup => {
@@ -116,60 +97,12 @@ const ToolTipMenu = (props: ToolTipMenuProps) => {
     return mergedActions.map(mapMenuItemForMenuView).filter(item => item !== null) as MenuAction[];
   }, [props.actions, mapMenuItemForMenuView]);
 
-  const handlePressMenuItemForContextMenuView = useCallback(
-    (event: OnPressMenuItemEventObject) => {
-      onPressMenuItem(event.nativeEvent.actionKey);
-    },
-    [onPressMenuItem],
-  );
-
   const handlePressMenuItemForMenuView = useCallback(
     ({ nativeEvent }: NativeActionEvent) => {
       onPressMenuItem(nativeEvent.event);
     },
     [onPressMenuItem],
   );
-
-  const renderContextMenuView = () => {
-    console.debug('ToolTipMenu.tsx rendering: renderContextMenuView');
-    return (
-      <ContextMenuView
-        lazyPreview
-        accessibilityLabel={props.accessibilityLabel}
-        accessibilityHint={props.accessibilityHint}
-        accessibilityRole={props.accessibilityRole}
-        accessibilityState={props.accessibilityState}
-        accessibilityLanguage={language}
-        shouldEnableAggressiveCleanup
-        internalCleanupMode="automatic"
-        onPressMenuItem={handlePressMenuItemForContextMenuView}
-        onMenuWillShow={onMenuWillShow}
-        onMenuWillHide={onMenuWillHide}
-        useActionSheetFallback={false}
-        menuConfig={{
-          menuTitle: title,
-          menuItems: contextMenuItems,
-        }}
-        {...(renderPreview
-          ? {
-              previewConfig: {
-                previewType: 'CUSTOM',
-                backgroundColor: 'white',
-              },
-              renderPreview: renderPreview as RenderItem,
-            }
-          : {})}
-      >
-        {onPress ? (
-          <Pressable accessibilityRole="button" onPress={onPress} {...restProps}>
-            {children}
-          </Pressable>
-        ) : (
-          children
-        )}
-      </ContextMenuView>
-    );
-  };
 
   const renderMenuView = () => {
     console.debug('ToolTipMenu.tsx rendering: renderMenuView');
@@ -197,7 +130,7 @@ const ToolTipMenu = (props: ToolTipMenuProps) => {
     );
   };
 
-  return props.actions.length > 0 ? (Platform.OS === 'ios' && renderPreview ? renderContextMenuView() : renderMenuView()) : null;
+  return props.actions.length > 0 ? renderMenuView() : null;
 };
 
 export default ToolTipMenu;
