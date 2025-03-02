@@ -21,7 +21,6 @@ jobs:
       latest_commit_message: ${{ steps.get_latest_commit_message.outputs.commit_message }}
     env:
       APPLE_ID: ${{ secrets.APPLE_ID }}
-      # Set Match to read-only for builds, only write new profiles manually
       MATCH_READONLY: "true"
 
     steps:
@@ -30,7 +29,6 @@ jobs:
         with:
           fetch-depth: 0 # Ensures the full Git history is available
       
-      # Setup caching to speed up builds
       - name: Setup Caching
         uses: actions/cache@v3
         with:
@@ -121,7 +119,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.1.6
-          bundler-cache: true # This caches gems installed via bundler
+          bundler-cache: true
 
       - name: Install Dependencies with Bundler
         run: |
