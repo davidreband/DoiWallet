@@ -1,4 +1,4 @@
-import { RouteProp, useFocusEffect, useRoute, useIsFocused } from '@react-navigation/native';
+import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -81,8 +81,6 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
     outputRange: [0, -HEADER_HEIGHT],
     extrapolate: 'clamp',
   });
-  const flatListRef = useRef<Animated.FlatList>(null);
-  const isFocused = useIsFocused();
 
   const stylesHook = StyleSheet.create({
     listHeaderText: {
@@ -94,21 +92,6 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
     useCallback(() => {
       setOptions(getWalletTransactionsOptions({ route }));
     }, [route, setOptions]),
-  );
-
-  // Reset header position when navigating away from screen
-  useFocusEffect(
-    useCallback(() => {
-      return () => {
-        // This will run when screen loses focus
-        scrollY.setValue(0);
-        // Reset FlatList scroll position to top
-        if (flatListRef.current) {
-          flatListRef.current.scrollToOffset({ offset: 0, animated: false });
-        }
-        setOptions(getWalletTransactionsOptions({ route }));
-      };
-    }, [scrollY, setOptions, route]),
   );
 
   const onBarCodeRead = useCallback(
@@ -440,7 +423,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
   }, [wallet, wallet?.hideBalance, wallet?.preferredBalanceUnit, balance]);
 
   const handleScroll = useCallback(
-    (event: any) => {      
+    (event: any) => {
       const offsetY = event.nativeEvent.contentOffset.y;
       const combinedHeight = 180;
       if (offsetY < combinedHeight) {
@@ -510,7 +493,6 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
         </View>
       </Animated.View>
       <Animated.FlatList<Transaction>
-        ref={flatListRef}
         getItemLayout={getItemLayout}
         updateCellsBatchingPeriod={50}
         onEndReachedThreshold={0.3}
