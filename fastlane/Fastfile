@@ -289,25 +289,43 @@ platform :ios do
     
     UI.message("Setting up provisioning profiles...")
     
+    max_retries = 3
+    
     # Iterate over app identifiers to fetch provisioning profiles
     app_identifiers.each do |app_identifier|
-      begin
-        match(
-          git_basic_authorization: ENV["GIT_ACCESS_TOKEN"],
-          git_url: ENV["GIT_URL"],
-          type: "appstore",
-          clone_branch_directly: true,
-          platform: "ios",
-          app_identifier: app_identifier,
-          team_id: ENV["ITC_TEAM_ID"],
-          team_name: ENV["ITC_TEAM_NAME"],
-          readonly: true,
-          keychain_name: "temp_keychain",
-          keychain_password: ENV["KEYCHAIN_PASSWORD"]
-        )
-      rescue => e
-        log_error("Failed to fetch provisioning profile for #{app_identifier}: #{e.message}")
-        raise e
+      retries = 0
+      success = false
+      
+      while !success && retries < max_retries
+        begin
+          UI.message("Fetching provisioning profile for #{app_identifier} (attempt #{retries + 1}/#{max_retries})...")
+          match(
+            git_basic_authorization: ENV["GIT_ACCESS_TOKEN"],
+            git_url: ENV["GIT_URL"],
+            type: "appstore",
+            clone_branch_directly: true,
+            platform: "ios",
+            app_identifier: app_identifier,
+            team_id: ENV["ITC_TEAM_ID"],
+            team_name: ENV["ITC_TEAM_NAME"],
+            readonly: true,
+            keychain_name: "temp_keychain",
+            keychain_password: ENV["KEYCHAIN_PASSWORD"]
+          )
+          success = true
+          log_success("Successfully fetched provisioning profile for #{app_identifier}")
+        rescue => e
+          retries += 1
+          if retries < max_retries
+            wait_time = 10 * retries # Exponential backoff
+            log_error("Failed to fetch provisioning profile for #{app_identifier}: #{e.message}")
+            UI.message("Retrying in #{wait_time} seconds...")
+            sleep(wait_time)
+          else
+            log_error("Failed to fetch provisioning profile for #{app_identifier} after #{max_retries} attempts: #{e.message}")
+            raise e
+          end
+        end
       end
     end
     
