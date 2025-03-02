@@ -38,7 +38,7 @@ import loc, { formatBalanceWithoutSuffix } from '../../loc';
 import { DoichainUnit, Chain } from "../../models/doichainUnits";
 import { useSettings } from '../../hooks/context/useSettings';
 import { useStorage } from '../../hooks/context/useStorage';
-import { useFocusEffect, useRoute, RouteProp, usePreventRemove } from '@react-navigation/native';
+import { useFocusEffect, useRoute, RouteProp, usePreventRemove, CommonActions } from '@react-navigation/native';
 import { LightningTransaction, Transaction, TWallet } from '../../class/wallets/types';
 import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamList';
 import HeaderMenuButton from '../../components/HeaderMenuButton';
@@ -67,7 +67,7 @@ const WalletDetails: React.FC = () => {
   const [hideTransactionsInWalletsList, setHideTransactionsInWalletsList] = useState<boolean>(
     wallet.getHideTransactionsInWalletsList ? !wallet.getHideTransactionsInWalletsList() : true,
   );
-  const { setOptions, navigate } = useExtendedNavigation();
+  const { setOptions, navigate, dispatch } = useExtendedNavigation();
   const { colors } = useTheme();
   const [walletName, setWalletName] = useState<string>(wallet.getLabel());
 
@@ -366,16 +366,16 @@ const WalletDetails: React.FC = () => {
     if (backdoorPressed < 10) return setBackdoorPressed(backdoorPressed + 1);
     setBackdoorPressed(0);
     const msg = 'Transactions & balances purged. Pls go to main screen and back to rerender screen';
+    let wasPurged = false;
 
     if (wallet.type === HDSegwitBech32Wallet.type) {
       wallet._txs_by_external_index = {};
       wallet._txs_by_internal_index = {};
-      presentAlert({ message: msg });
-
       wallet._balances_by_external_index = {};
       wallet._balances_by_internal_index = {};
       wallet._lastTxFetch = 0;
       wallet._lastBalanceFetch = 0;
+      wasPurged = true;
     }
 
     // @ts-expect-error: Need to fix later
@@ -384,7 +384,6 @@ const WalletDetails: React.FC = () => {
       wallet._hdWalletInstance._txs_by_external_index = {};
       // @ts-expect-error: Need to fix later
       wallet._hdWalletInstance._txs_by_internal_index = {};
-
       // @ts-expect-error: Need to fix later
       wallet._hdWalletInstance._balances_by_external_index = {};
       // @ts-expect-error: Need to fix later
@@ -393,6 +392,34 @@ const WalletDetails: React.FC = () => {
       wallet._hdWalletInstance._lastTxFetch = 0;
       // @ts-expect-error: Need to fix later
       wallet._hdWalletInstance._lastBalanceFetch = 0;
+      wasPurged = true;
+    }
+
+    if (wasPurged) {
+      await saveToDisk();
+
+      // Find the WalletTransactions screen in the navigation state and reset just that screen.
+      // It can be multiple WalletTransactions screen.
+      dispatch(state => {
+        // Find the route that contains 'WalletTransactions' in the navigation stack
+        const routes = state.routes.map(route => {
+          if (route.name === 'WalletTransactions' && (route.params as { walletID: string })?.walletID === walletID) {
+            // Reset this specific route with the same params to force a refresh
+            return {
+              ...route,
+              key: `WalletTransactions-${walletID}-${Date.now()}`, // Force new key to ensure fresh mount
+            };
+          }
+          return route;
+        });
+
+        return CommonActions.reset({
+          ...state,
+          routes,
+          index: state.index,
+        });
+      });
+
       presentAlert({ message: msg });
     }
   };
