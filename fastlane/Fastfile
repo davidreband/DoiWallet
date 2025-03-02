@@ -192,40 +192,6 @@ end
 # ===========================
 
 platform :ios do
-  # Add helper methods for error handling and retries
-  def ensure_env_vars(vars)
-    vars.each do |var|
-      UI.user_error!("#{var} environment variable is missing") if ENV[var].nil? || ENV[var].empty?
-    end
-  end
-  
-  def log_success(message)
-    UI.success("✅ #{message}")
-  end
-  
-  def log_error(message)
-    UI.error("❌ #{message}")
-  end
-  
-  # Method to safely call actions with retry logic
-  def with_retry(max_attempts = 3, action_name = "")
-    attempts = 0
-    begin
-      attempts += 1
-      yield
-    rescue => e
-      if attempts < max_attempts
-        wait_time = 10 * attempts
-        log_error("Attempt #{attempts}/#{max_attempts} for #{action_name} failed: #{e.message}")
-        UI.message("Retrying in #{wait_time} seconds...")
-        sleep(wait_time)
-        retry
-      else
-        log_error("#{action_name} failed after #{max_attempts} attempts: #{e.message}")
-        raise e
-      end
-    end
-  end
 
   desc "Register new devices from a file"
   lane :register_devices_from_txt do
