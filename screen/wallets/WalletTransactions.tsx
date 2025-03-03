@@ -516,7 +516,6 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
         keyExtractor={_keyExtractor}
         renderItem={renderItem}
         initialNumToRender={10}
-        removeClippedSubviews
         testID="TransactionsListView"
         contentInsetAdjustmentBehavior="automatic"
         automaticallyAdjustContentInsets
