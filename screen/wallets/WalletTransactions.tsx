@@ -493,7 +493,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
   }, [colors.background, stylesHook.listHeaderText, wallet, saveToDisk]);
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={styles.container}>
       <Animated.View style={[styles.stickyHeader, { transform: [{ translateY: headerTranslate }] }]} onLayout={handleHeaderLayout}>
         {wallet ? (
           <TransactionsNavigationHeader
@@ -517,6 +517,11 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
         keyExtractor={_keyExtractor}
         renderItem={renderItem}
         initialNumToRender={10}
+        style={{ marginTop: headerHeight }}
+        removeClippedSubviews
+        contentContainerStyle={{ backgroundColor: colors.background }}
+        contentInset={{ top: 0, left: 0, bottom: 90, right: 0 }}
+        maxToRenderPerBatch={10}
         testID="TransactionsListView"
         contentInsetAdjustmentBehavior="automatic"
         automaticallyAdjustContentInsets
@@ -525,6 +530,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
         maxToRenderPerBatch={15}
         onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true, listener: handleScroll })}
         scrollEventThrottle={16}
+        {...refreshProps}
         ListEmptyComponent={
           <View style={[styles.flex, { backgroundColor: colors.background }]} testID="TransactionsListEmpty">
             <Text numberOfLines={0} style={styles.emptyTxs}>
@@ -575,7 +581,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
           url={`https://www.blockonomics.co/#/search?q=${wallet.getXpub()}`}
         />
       ) : null}
-    </View>
+    </Animated.View>
   );
 };
 
