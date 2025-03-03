@@ -13,7 +13,6 @@ import {
   Text,
   View,
   Animated,
-  RefreshControl,
   LayoutChangeEvent,
 } from 'react-native';
 import { Icon } from '@rneui/themed';
@@ -299,11 +298,10 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
   });
 
   const renderItem = useCallback(
-    // eslint-disable-next-line react/no-unused-prop-types
-    ({ item }: { item: Transaction }) => (
-      <TransactionListItem key={item.hash} item={item} itemPriceUnit={wallet?.preferredBalanceUnit} walletID={walletID} />
-    ),
-    [wallet?.preferredBalanceUnit, walletID],
+    ({ item }: { item: Transaction }) => {
+      return <TransactionListItem item={item} itemPriceUnit={wallet?.preferredBalanceUnit} walletID={walletID} />;
+    },
+    [wallet, walletID],
   );
 
   const choosePhoto = () => {
@@ -470,6 +468,9 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
     setHeaderHeight(height);
   }, []);
 
+  const refreshProps =
+    !isDesktop && !isElectrumDisabled ? { onRefresh: refreshTransactions, progressViewOffset: headerHeight, refreshing: isLoading } : {};
+
   const renderHeader = useCallback(() => {
     return (
       <View style={{ backgroundColor: colors.background }}>
@@ -519,7 +520,8 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
         testID="TransactionsListView"
         contentInsetAdjustmentBehavior="automatic"
         automaticallyAdjustContentInsets
-        contentContainerStyle={{ backgroundColor: colors.background, marginTop: headerHeight }}
+        automaticallyAdjustsScrollIndicatorInsets
+        contentContainerStyle={{ backgroundColor: colors.background, paddingTop: headerHeight }}
         maxToRenderPerBatch={15}
         onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true, listener: handleScroll })}
         scrollEventThrottle={16}
@@ -531,15 +533,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
             {isLightning() && <Text style={styles.emptyTxsLightning}>{loc.wallets.list_empty_txs2_lightning}</Text>}
           </View>
         }
-        refreshControl={
-          !isElectrumDisabled && !isDesktop ? (
-            <RefreshControl refreshing={isLoading} onRefresh={() => refreshTransactions(true)} progressViewOffset={headerHeight} />
-          ) : undefined
-        }
-        windowSize={15}
-        maintainVisibleContentPosition={{
-          minIndexForVisible: 0,
-        }}
+        {...refreshProps}
       />
       <FContainer ref={walletActionButtonsRef}>
         {wallet?.allowReceive() && (
