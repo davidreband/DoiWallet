@@ -310,6 +310,7 @@ const WalletDetails: React.FC = () => {
       walletID,
     });
   };
+
   const navigateToXPub = () =>
     navigate('WalletXpubRoot', {
       screen: 'WalletXpub',
@@ -366,16 +367,16 @@ const WalletDetails: React.FC = () => {
     if (backdoorPressed < 10) return setBackdoorPressed(backdoorPressed + 1);
     setBackdoorPressed(0);
     const msg = 'Transactions & balances purged. Pls go to main screen and back to rerender screen';
-    let wasPurged = false;
 
     if (wallet.type === HDSegwitBech32Wallet.type) {
       wallet._txs_by_external_index = {};
       wallet._txs_by_internal_index = {};
+      presentAlert({ message: msg });
+
       wallet._balances_by_external_index = {};
       wallet._balances_by_internal_index = {};
       wallet._lastTxFetch = 0;
       wallet._lastBalanceFetch = 0;
-      wasPurged = true;
     }
 
     // @ts-expect-error: Need to fix later
@@ -384,6 +385,7 @@ const WalletDetails: React.FC = () => {
       wallet._hdWalletInstance._txs_by_external_index = {};
       // @ts-expect-error: Need to fix later
       wallet._hdWalletInstance._txs_by_internal_index = {};
+
       // @ts-expect-error: Need to fix later
       wallet._hdWalletInstance._balances_by_external_index = {};
       // @ts-expect-error: Need to fix later
@@ -392,12 +394,6 @@ const WalletDetails: React.FC = () => {
       wallet._hdWalletInstance._lastTxFetch = 0;
       // @ts-expect-error: Need to fix later
       wallet._hdWalletInstance._lastBalanceFetch = 0;
-      wasPurged = true;
-    }
-
-    if (wasPurged) {
-      await saveToDisk();
-
       // Find the WalletTransactions screen in the navigation state and reset just that screen.
       // It can be multiple WalletTransactions screen.
       dispatch(state => {
