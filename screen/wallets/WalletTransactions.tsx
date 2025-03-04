@@ -553,6 +553,11 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
             <RefreshControl refreshing={isLoading} onRefresh={() => refreshTransactions(true)} tintColor={colors.msSuccessCheck} />
           ) : undefined
         }
+        refreshControl={
+          !isDesktop && !isElectrumDisabled ? (
+            <RefreshControl refreshing={isLoading} onRefresh={() => refreshTransactions(true)} tintColor={colors.msSuccessCheck} />
+          ) : undefined
+        }
         {...refreshProps}
       />
       <FContainer ref={walletActionButtonsRef}>
