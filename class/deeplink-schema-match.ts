@@ -87,9 +87,9 @@ class DeeplinkSchemaMatch {
         } else if (wallet.chain === Chain.OFFCHAIN) {
           if (action === 'openSend') {
             completionHandler([
-              'ScanLndInvoiceRoot',
+              'ScanLNDInvoiceRoot',
               {
-                screen: 'ScanLndInvoice',
+                screen: 'ScanLNDInvoice',
                 params: {
                   walletID: wallet.getID(),
                 },
@@ -157,9 +157,9 @@ class DeeplinkSchemaMatch {
       ]);
     } else if (DeeplinkSchemaMatch.isLightningInvoice(event.url)) {
       completionHandler([
-        'ScanLndInvoiceRoot',
+        'ScanLNDInvoiceRoot',
         {
-          screen: 'ScanLndInvoice',
+          screen: 'ScanLNDInvoice',
           params: {
             uri: event.url.replace('://', ':'),
           },
@@ -182,9 +182,9 @@ class DeeplinkSchemaMatch {
       // this might be not just an email but a lightning address
       // @see https://lightningaddress.com
       completionHandler([
-        'ScanLndInvoiceRoot',
+        'ScanLNDInvoiceRoot',
         {
-          screen: 'ScanLndInvoice',
+          screen: 'ScanLNDInvoice',
           params: {
             uri: event.url,
           },
@@ -316,9 +316,9 @@ class DeeplinkSchemaMatch {
       ];
     } else {
       return [
-        'ScanLndInvoiceRoot',
+        'ScanLNDInvoiceRoot',
         {
-          screen: 'ScanLndInvoice',
+          screen: 'ScanLNDInvoice',
           params: {
             uri: uri.lndInvoice,
             walletID: wallet.getID(),

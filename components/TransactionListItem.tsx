@@ -302,7 +302,7 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
             }
             const loaded = await LN.loadSuccessfulPayment(paymentHash);
             if (loaded) {
-              navigate('ScanLndInvoiceRoot', {
+              navigate('ScanLNDInvoiceRoot', {
                 screen: 'LnurlPaySuccess',
                 params: {
                   paymentHash,

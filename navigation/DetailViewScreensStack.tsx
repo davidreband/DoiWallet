@@ -32,7 +32,6 @@ import AztecoRedeemStackRoot from './AztecoRedeemStack';
 import PaymentCodesListComponent from './LazyLoadPaymentCodeStack';
 // import LNDCreateInvoiceRoot from './LNDCreateInvoiceStack';
 import ReceiveDetailsStackRoot from './ReceiveDetailsStack';
-
 import SendDetailsStack from './SendDetailsStack';
 import SignVerifyStackRoot from './SignVerifyStack';
 import ViewEditMultisigCosignersStackRoot from './ViewEditMultisigCosignersStack';
@@ -327,7 +326,7 @@ const DetailViewStackScreensStack = () => {
       />
       <DetailViewStack.Screen name="AddWalletRoot" component={AddWalletStack} options={NavigationDefaultOptions} />
       <DetailViewStack.Screen name="SendDetailsRoot" component={SendDetailsStack} options={NavigationDefaultOptions} />
-      
+     
       <DetailViewStack.Screen name="AztecoRedeemRoot" component={AztecoRedeemStackRoot} options={NavigationDefaultOptions} />
       {/* screens */}
       <DetailViewStack.Screen
