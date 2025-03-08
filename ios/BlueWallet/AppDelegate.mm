@@ -258,11 +258,13 @@
     // Safely access the MenuElementsEmitter
     MenuElementsEmitter *emitter = [MenuElementsEmitter shared];
     if (emitter) {
+        NSLog(@"[MenuElements] AppDelegate: openSettings called, calling emitter");
+        // Force on main thread for consistency
         dispatch_async(dispatch_get_main_queue(), ^{
             [emitter openSettings];
         });
     } else {
-        NSLog(@"MenuElementsEmitter not available");
+        NSLog(@"[MenuElements] AppDelegate: MenuElementsEmitter not available for openSettings");
     }
 }
 
@@ -270,11 +272,13 @@
     // Safely access the MenuElementsEmitter
     MenuElementsEmitter *emitter = [MenuElementsEmitter shared];
     if (emitter) {
+        NSLog(@"[MenuElements] AppDelegate: addWalletAction called, calling emitter");
+        // Force on main thread for consistency
         dispatch_async(dispatch_get_main_queue(), ^{
             [emitter addWalletMenuAction];
         });
     } else {
-        NSLog(@"MenuElementsEmitter not available");
+        NSLog(@"[MenuElements] AppDelegate: MenuElementsEmitter not available for addWalletAction");
     }
 }
 
@@ -282,11 +286,13 @@
     // Safely access the MenuElementsEmitter
     MenuElementsEmitter *emitter = [MenuElementsEmitter shared];
     if (emitter) {
+        NSLog(@"[MenuElements] AppDelegate: importWalletAction called, calling emitter");
+        // Force on main thread for consistency
         dispatch_async(dispatch_get_main_queue(), ^{
             [emitter importWalletMenuAction];
         });
     } else {
-        NSLog(@"MenuElementsEmitter not available");
+        NSLog(@"[MenuElements] AppDelegate: MenuElementsEmitter not available for importWalletAction");
     }
 }
 
@@ -294,11 +300,13 @@
     // Safely access the MenuElementsEmitter
     MenuElementsEmitter *emitter = [MenuElementsEmitter shared];
     if (emitter) {
+        NSLog(@"[MenuElements] AppDelegate: reloadTransactionsAction called, calling emitter");
+        // Force on main thread for consistency
         dispatch_async(dispatch_get_main_queue(), ^{
             [emitter reloadTransactionsMenuAction];
         });
     } else {
-        NSLog(@"MenuElementsEmitter not available");
+        NSLog(@"[MenuElements] AppDelegate: MenuElementsEmitter not available for reloadTransactionsAction");
     }
 }
 
