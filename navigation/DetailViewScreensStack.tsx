@@ -65,6 +65,7 @@ import SettingsPrivacy from '../screen/settings/SettingsPrivacy';
 import { ScanQRCodeComponent } from './LazyLoadScanQRCodeStack';
 import { useIsLargeScreen } from '../hooks/useIsLargeScreen';
 
+import { ViewEditMultisigCosignersComponent } from './LazyLoadViewEditMultisigCosignersStack';
 
 const DetailViewStackScreensStack = () => {
   const theme = useTheme();
