@@ -366,7 +366,7 @@ const DetailViewStackScreensStack = () => {
           headerBackVisible: false,
           headerLargeTitle: true,
           gestureEnabled: false,
-          presentation: 'modal',
+          presentation: 'fullScreenModal',
           title: loc.wallets.manage_title,
         })(theme)}
       />
