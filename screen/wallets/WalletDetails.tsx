@@ -96,7 +96,8 @@ const WalletDetails: React.FC = () => {
     } else {
       setIsLoading(false);
     }
-  }, [handleWalletDeletion, wallet]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const presentWalletHasBalanceAlert = useCallback(async () => {
     triggerHapticFeedback(HapticFeedbackTypes.NotificationWarning);
