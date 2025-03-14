@@ -4,9 +4,8 @@ import UnlockWith from '../screen/UnlockWith';
 import { LazyLoadingIndicator } from './LazyLoadingIndicator';
 import { DetailViewStackParamList } from './DetailViewStackParamList';
 import { useStorage } from '../hooks/context/useStorage';
-import { useIsLargeScreen } from '../hooks/useIsLargeScreen';
+import AddWalletStack from './AddWalletStack';
 
-const DetailViewScreensStack = lazy(() => import('./DetailViewScreensStack'));
 const DrawerRoot = lazy(() => import('./DrawerRoot'));
 
 export const NavigationDefaultOptions: NativeStackNavigationOptions = {
@@ -22,26 +21,29 @@ export const StatusBarLightOptions: NativeStackNavigationOptions = { statusBarSt
 
 const DetailViewStack = createNativeStackNavigator<DetailViewStackParamList>();
 
+const LazyDrawerRoot = () => (
+  <Suspense fallback={<LazyLoadingIndicator />}>
+    <DrawerRoot />
+  </Suspense>
+);
+
 const MainRoot = () => {
   const { walletsInitialized } = useStorage();
-  const { isLargeScreen } = useIsLargeScreen();
 
-  const renderRoot = () => {
-    if (!walletsInitialized) {
-      return <UnlockRoot />;
-    } else {
-      // Conditional rendering based on the environment
-      const Component = isLargeScreen ? DrawerRoot : DetailViewScreensStack;
-      return (
-        <Suspense fallback={<LazyLoadingIndicator />}>
-          <Component />
-        </Suspense>
-      );
-    }
-  };
+  return (
+    <DetailViewStack.Navigator screenOptions={{ headerShown: false, animationTypeForReplace: 'push' }}>
+      {!walletsInitialized ? (
+        <DetailViewStack.Screen name="UnlockWithScreen" component={UnlockWith} />
+      ) : (
+        <>
+          <DetailViewStack.Screen name="DrawerRoot" component={LazyDrawerRoot} />
 
-  return renderRoot();
+          <DetailViewStack.Screen name="AddWalletRoot" component={AddWalletStack} options={NavigationDefaultOptions} />
+        </>
+      )}
+    </DetailViewStack.Navigator>
+  );
 };
 
 export default MainRoot;
-export { DetailViewStack }; // Exporting the navigator to use it in DetailViewScreensStack
+export { DetailViewStack };

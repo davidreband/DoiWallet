@@ -45,6 +45,7 @@ import HeaderMenuButton from '../../components/HeaderMenuButton';
 import { Action } from '../../components/types';
 import { CommonToolTipActions } from '../../typings/CommonToolTipActions';
 import { popToTop } from '../../NavigationService';
+import SafeArea from '../../components/SafeArea';
 
 type RouteProps = RouteProp<DetailViewStackParamList, 'WalletDetails'>;
 const WalletDetails: React.FC = () => {
@@ -430,6 +431,7 @@ const WalletDetails: React.FC = () => {
   return (
     <ScrollView
       automaticallyAdjustKeyboardInsets
+      automaticallyAdjustsScrollIndicatorInsets
       contentInsetAdjustmentBehavior="automatic"
       automaticallyAdjustContentInsets
       centerContent={isLoading}
@@ -438,7 +440,7 @@ const WalletDetails: React.FC = () => {
       {isLoading ? (
         <BlueLoading />
       ) : (
-        <View>
+        <SafeArea>
           <BlueCard style={styles.address}>
             {(() => {
               if (
@@ -664,7 +666,7 @@ const WalletDetails: React.FC = () => {
               <BlueSpacing20 />
             </View>
           </BlueCard>
-        </View>
+        </SafeArea>
       )}
     </ScrollView>
   );
