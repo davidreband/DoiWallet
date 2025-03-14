@@ -1,6 +1,13 @@
 import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import React, { lazy, Suspense } from 'react';
+import UnlockWith from '../screen/UnlockWith';
+import { LazyLoadingIndicator } from './LazyLoadingIndicator';
 import { DetailViewStackParamList } from './DetailViewStackParamList';
-import DrawerRoot from './DrawerRoot';
+import { useStorage } from '../hooks/context/useStorage';
+import { useIsLargeScreen } from '../hooks/useIsLargeScreen';
+
+const DetailViewScreensStack = lazy(() => import('./DetailViewScreensStack'));
+const DrawerRoot = lazy(() => import('./DrawerRoot'));
 
 export const NavigationDefaultOptions: NativeStackNavigationOptions = {
   headerShown: false,
@@ -16,7 +23,24 @@ export const StatusBarLightOptions: NativeStackNavigationOptions = { statusBarSt
 const DetailViewStack = createNativeStackNavigator<DetailViewStackParamList>();
 
 const MainRoot = () => {
-  return DrawerRoot();
+  const { walletsInitialized } = useStorage();
+  const { isLargeScreen } = useIsLargeScreen();
+
+  const renderRoot = () => {
+    if (!walletsInitialized) {
+      return <UnlockRoot />;
+    } else {
+      // Conditional rendering based on the environment
+      const Component = isLargeScreen ? DrawerRoot : DetailViewScreensStack;
+      return (
+        <Suspense fallback={<LazyLoadingIndicator />}>
+          <Component />
+        </Suspense>
+      );
+    }
+  };
+
+  return renderRoot();
 };
 
 export default MainRoot;
