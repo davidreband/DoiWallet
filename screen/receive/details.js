@@ -593,12 +593,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   tabsContainer: {
-    marginTop: 16,
+    marginTop: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
   scrollBody: {
-    marginTop: 32,
+    marginTop: 16,
     flexGrow: 1,
     alignItems: 'center',
     paddingHorizontal: 16,
@@ -606,10 +606,10 @@ const styles = StyleSheet.create({
   share: {
     justifyContent: 'flex-end',
     paddingHorizontal: 32,
-    marginVertical: 16,
+    marginVertical: 8,
   },
   link: {
-    marginVertical: 32,
+    marginVertical: 16,
     paddingHorizontal: 32,
   },
   amount: {
@@ -620,7 +620,7 @@ const styles = StyleSheet.create({
   label: {
     fontWeight: '600',
     textAlign: 'center',
-    paddingBottom: 24,
+    paddingBottom: 12, // reduced from 24
   },
   modalButton: {
     paddingVertical: 14,
