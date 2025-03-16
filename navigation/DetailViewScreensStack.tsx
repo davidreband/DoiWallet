@@ -100,7 +100,7 @@ const DetailViewStackScreensStack = () => {
       title: displayTitle ? loc.wallets.wallets : '',
       navigationBarColor: theme.colors.navigationBarColor,
       headerShown: !isLargeScreen,
-      headerLargeTitle: displayTitle,
+      headerLargeTitle: true,
       headerShadowVisible: false,
       headerLargeTitleShadowVisible: false,
       headerStyle: {

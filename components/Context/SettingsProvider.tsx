@@ -95,10 +95,8 @@ interface SettingsContextType {
   setIsQuickActionsEnabledStorage: (value: boolean) => Promise<void>;
   isTotalBalanceEnabled: boolean;
   setIsTotalBalanceEnabledStorage: (value: boolean) => Promise<void>;
-  totalBalancePreferredUnit: DoichainUnit;
-  setTotalBalancePreferredUnitStorage: (unit: DoichainUnit) => Promise<void>;
-  isDrawerShouldHide: boolean;
-  setIsDrawerShouldHide: (value: boolean) => void;
+  totalBalancePreferredUnit: BitcoinUnit;
+  setTotalBalancePreferredUnitStorage: (unit: BitcoinUnit) => Promise<void>;
   selectedBlockExplorer: BlockExplorer;
   setBlockExplorerStorage: (explorer: BlockExplorer) => Promise<boolean>;
   isElectrumDisabled: boolean;
@@ -126,10 +124,8 @@ const defaultSettingsContext: SettingsContextType = {
   setIsQuickActionsEnabledStorage: async () => {},
   isTotalBalanceEnabled: true,
   setIsTotalBalanceEnabledStorage: async () => {},
-  totalBalancePreferredUnit: DoichainUnit.DOI,
-  setTotalBalancePreferredUnitStorage: async (unit: DoichainUnit) => {},
-  isDrawerShouldHide: false,
-  setIsDrawerShouldHide: () => {},
+  totalBalancePreferredUnit: BitcoinUnit.BTC,
+  setTotalBalancePreferredUnitStorage: async () => {},
   selectedBlockExplorer: BLOCK_EXPLORERS.default,
   setBlockExplorerStorage: async () => false,
   isElectrumDisabled: false,
@@ -149,8 +145,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
   const [isClipboardGetContentEnabled, setIsClipboardGetContentEnabled] = useState<boolean>(true);
   const [isQuickActionsEnabled, setIsQuickActionsEnabled] = useState<boolean>(true);
   const [isTotalBalanceEnabled, setIsTotalBalanceEnabled] = useState<boolean>(true);
-  const [totalBalancePreferredUnit, setTotalBalancePreferredUnit] = useState<DoichainUnit>(DoichainUnit.DOI);
-  const [isDrawerShouldHide, setIsDrawerShouldHide] = useState<boolean>(false);
+  const [totalBalancePreferredUnit, setTotalBalancePreferredUnit] = useState<BitcoinUnit>(BitcoinUnit.BTC);
   const [selectedBlockExplorer, setSelectedBlockExplorer] = useState<BlockExplorer>(BLOCK_EXPLORERS.default);
   const [isElectrumDisabled, setIsElectrumDisabled] = useState<boolean>(true);
 
@@ -367,8 +362,6 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
       setIsTotalBalanceEnabledStorage,
       totalBalancePreferredUnit,
       setTotalBalancePreferredUnitStorage,
-      isDrawerShouldHide,
-      setIsDrawerShouldHide,
       selectedBlockExplorer,
       setBlockExplorerStorage,
       isElectrumDisabled,
@@ -397,8 +390,6 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
       setIsTotalBalanceEnabledStorage,
       totalBalancePreferredUnit,
       setTotalBalancePreferredUnitStorage,
-      isDrawerShouldHide,
-      setIsDrawerShouldHide,
       selectedBlockExplorer,
       setBlockExplorerStorage,
       isElectrumDisabled,
