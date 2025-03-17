@@ -213,12 +213,9 @@ const WalletsList: React.FC = () => {
   );
 
   useEffect(() => {
-    // new wallet added
+    // new wallet added - no longer auto-scrolls
     if (!isLargeScreen) {
-      if (wallets.length > walletsCount.current) {
-        walletsCarousel.current?.scrollToItem({ item: wallets[walletsCount.current], viewPosition: 0.3 });
-      }
-
+      // Just update the count, no scrolling
       walletsCount.current = wallets.length;
     }
   }, [isLargeScreen, wallets]);
@@ -319,6 +316,7 @@ const WalletsList: React.FC = () => {
           testID="WalletsList"
           horizontal
           scrollEnabled={isFocused}
+          animateChanges={true}
         />
       </>
     );
