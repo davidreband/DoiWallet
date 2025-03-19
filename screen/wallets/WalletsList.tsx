@@ -295,9 +295,7 @@ const WalletsList: React.FC = () => {
 
   const renderTransactionListsRow = useCallback(
     (item: ExtendedTransaction) => (
-      <View style={styles.transaction}>
-        <TransactionListItem key={item.hash} item={item} itemPriceUnit={item.walletPreferredBalanceUnit} walletID={item.walletID} />
-      </View>
+      <TransactionListItem key={item.hash} item={item} itemPriceUnit={item.walletPreferredBalanceUnit} walletID={item.walletID} />
     ),
     [],
   );
@@ -559,8 +557,5 @@ const styles = StyleSheet.create({
     color: '#9aa0aa',
     textAlign: 'center',
     fontWeight: '600',
-  },
-  transaction: {
-    marginHorizontal: 0,
   },
 });
