@@ -5,7 +5,9 @@ import BigNumber from 'bignumber.js';
 import BIP32Factory, { BIP32Interface } from 'bip32';
 import * as bip39 from 'bip39';
 import * as bitcoin from '@doichain/doichainjs-lib';
-import { Psbt, Transaction as BTransaction } from '@doichain/doichainjs-lib';
+import { Psbt,  Transaction as BTransaction } from '@doichain/doichainjs-lib';
+//import { getNameOPStackScript } from '@doichain/doichainjs-lib';
+import { getNameOPStackScript } from '../../tests/unit/getNameOPStackScript';
 import b58 from 'bs58check';
 import { CoinSelectOutput, CoinSelectReturnInput } from 'coinselect';
 import { ECPairFactory } from 'ecpair';
@@ -17,9 +19,8 @@ import ecc from '../../blue_modules/noble_ecc';
 import { randomBytes } from '../rng';
 import { AbstractHDWallet } from './abstract-hd-wallet';
 import { CreateTransactionResult, CreateTransactionTarget, CreateTransactionUtxo, ExtendedCoinSelectOutput, Transaction, Utxo } from './types';
-import { getNameOPStackScript } from '../../tests/unit/getNameOPStackScript'; 
 import { SilentPayment, UTXOType as SPUTXOType, UTXO as SPUTXO } from 'silent-payments';
-import { DOICHAIN } from '../../blue_modules/network.js';
+import { DOICHAIN, VERSION } from '../../blue_modules/network.js';
 const ECPair = ECPairFactory(ecc);
 const bip32 = BIP32Factory(ecc);
 const bip47 = BIP47Factory(ecc);
@@ -28,6 +29,13 @@ type BalanceByIndex = {
   c: number;
   u: number;
 };
+
+interface NameOpInput {  
+    nameId: string;
+    nameValue: string;
+    sendTo: string;
+    nameOpAddress: string;
+}
 
 /**
  * Electrum - means that it utilizes Electrum protocol for blockchain data
@@ -1147,13 +1155,14 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
     sequence: number = AbstractHDElectrumWallet.defaultRBFSequence,
     skipSigning = false,
     masterFingerprint: number = 0,
+    nameOpAsInput?: NameOpInput | undefined,    
   ): CreateTransactionResult {
     if (targets.length === 0) throw new Error('No destination provided');
     // compensating for coinselect inability to deal with segwit inputs, and overriding script length for proper vbytes calculation
     for (const u of utxos) {
       // this is a hacky way to distinguish native/wrapped segwit, but its good enough for our case since we have only
       // those 2 wallet types
-      if (this._getExternalAddressByIndex(0).startsWith('bc1')) {
+      if (this._getExternalAddressByIndex(0).startsWith('dc1')) {
         u.script = { length: 27 };
       } else if (this._getExternalAddressByIndex(0).startsWith('3')) {
         u.script = { length: 50 };
@@ -1173,7 +1182,13 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
     }
 
     let { inputs, outputs, fee } = this.coinselect(utxos, targets, feeRate);
+    const result = utxos.find(item => item.address === nameOpAsInput?.nameOpAddress);
 
+    if (result) {
+      inputs.push.apply(inputs, [result]);  
+      
+    }
+    
     const hasSilentPaymentOutput: boolean = !!outputs.find(o => o.address?.startsWith('sp1'));
     if (hasSilentPaymentOutput) {
       if (!this.allowSilentPaymentSend()) {
@@ -1233,7 +1248,6 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
 
       psbt = this._addPsbtInput(psbt, input, sequence, masterFingerprintBuffer);
     });
-
     outputs.forEach(output => {
       // if output has no address - this is change output or a custom script output
       let change = false;
@@ -1258,7 +1272,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
 
       // this is not correct fingerprint, as we dont know realfingerprint - we got zpub with 84/0, but fingerpting
       // should be from root. basically, fingerprint should be provided from outside  by user when importing zpub
-
+      
       if (output.address?.startsWith('PM')) {
         // ok its BIP47 payment code, so we need to unwrap a joint address for the receiver and use it instead:
         output.address = this._getNextFreePaymentCodeAddressSend(output.address);
@@ -1268,31 +1282,53 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
       // Handle NameOp script if present in the target
       let outputScript;
       const extendedOutput = output as ExtendedCoinSelectOutput;
-      if (!change && extendedOutput.nameOp) {
-        // Create NameOp script using the utility function
-        const { nameId, nameValue, sendTo } = extendedOutput.nameOp;
-        outputScript = getNameOPStackScript(nameId, nameValue, sendTo, DOICHAIN.name);
-      } else {
-        outputScript = extendedOutput.script?.hex ? Buffer.from(extendedOutput.script.hex, 'hex') : undefined;
-      }
 
-      psbt.addOutput({
-        address: output.address,
-        // @ts-ignore types from bitcoinjs are not exported so we cant define outputData separately and add fields conditionally (either address or script should be present)
-        script: outputScript,
-        value: output.value,
-        bip32Derivation:
-          change && path && pubkey
-            ? [
+      if (!change && nameOpAsInput && nameOpAsInput.nameId ) {        
+        // Create NameOp script using the utility function
+        const { nameId, nameValue, sendTo } = nameOpAsInput;
+        
+        outputScript = getNameOPStackScript(nameId, nameValue, sendTo, DOICHAIN.name);        
+        
+        psbt.setVersion(VERSION);
+        
+        psbt.addOutput({
+          script: outputScript,
+          value: output.value,
+          bip32Derivation:
+            change && path && pubkey
+              ? [
                 {
                   masterFingerprint: masterFingerprintBuffer,
                   path,
                   pubkey,
                 },
               ]
-            : [],
-      });
+              : [],
+        });
+
+      } else {
+        outputScript = extendedOutput.script?.hex ? Buffer.from(extendedOutput.script.hex, 'hex') : undefined;
+        psbt.addOutput({
+          address: output.address,
+          // @ts-ignore types from bitcoinjs are not exported so we cant define outputData separately and add fields conditionally (either address or script should be present)
+          script: outputScript,
+          value: output.value,
+          bip32Derivation:
+            change && path && pubkey
+              ? [
+                {
+                  masterFingerprint: masterFingerprintBuffer,
+                  path,
+                  pubkey,
+                },
+              ]
+              : [],
+        });
+      }      
     });
+    //console.log("__count", count)
+    //console.log("__outputs", outputs)
+    //console.log("__inputs", inputs)
 
     if (!skipSigning) {
       // skiping signing related stuff
@@ -1303,8 +1339,9 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
 
     let tx;
     if (!skipSigning) {
+    
       tx = psbt.finalizeAllInputs().extractTransaction();
-    }
+    }   
     return { tx, inputs, outputs, fee, psbt };
   }
 

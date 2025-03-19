@@ -8,6 +8,7 @@ export interface NameOpParams {
   nameId: string;
   nameValue: string;
   sendTo: string;
+  nameOpAddress: string;
 }
 
 export type SendDetailsParams = {

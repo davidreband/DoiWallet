@@ -188,21 +188,24 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
   const [image, setImage] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [sendToDoiAddress, setSendToDoiAddress] = useState<string>('');
+ // const [nameOpAddress, setNameOpAddress] = useState<string>('');
 
-  const handleNameOpSendPress = useCallback((recipientAddress: string, nameOpData: { name: string; value: string }) => {
+  const handleNameOpSendPress = useCallback((recipientAddress: string, nameOpData: { name: string; value: string; }, nameOpAddress: string) => {
     if (!recipientAddress) {
       Alert.alert(loc.errors.error, 'Please enter a DoiAddress');
       return;
     }
 
-    navigate('SendDetails', {
+    navigate('SendDetailsRoot', {
       screen: 'SendDetails',
       params: {
         nameOp: {
           nameId: nameOpData.name,
           nameValue: nameOpData.value,
           sendTo: recipientAddress,
+          nameOpAddress: nameOpAddress
         },
+        walletID: walletID,
       },
     });
   }, [navigate]);
@@ -485,9 +488,10 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
 
   const renderNameOps = () => {
       if (tx.outputs) {
-        for (const output of tx.outputs) {
+        for (const output of tx.outputs) {          
           if (output?.scriptPubKey?.nameOp) {
             const nameOpValue = output.scriptPubKey.nameOp.value;
+           // setNameOpAddress(output.scriptPubKey.addresses)
             //const nameOpValue = 'ipfs://bafkreiewupt5xwng6jjn3xpewq2q6tta32zohkvad3rqnhiatlklhv3gha';
             //const nameOpValue = 'ipfs://bafkreidjj5xgyvlxcmuuaqphnsyiu4gnlyddfwmufazlea4xf6uckyr6qy';
             const urlPattern = /(ipfs?:\/\/[^\s]+)/g;
@@ -557,7 +561,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
                   <BlueSpacing10 />
                   <Button
                     title={loc.transactions.send}
-                    onPress={() => handleNameOpSendPress(sendToDoiAddress, output.scriptPubKey.nameOp)}
+                    onPress={() => handleNameOpSendPress(sendToDoiAddress, output.scriptPubKey.nameOp, output.scriptPubKey.addresses[0])}
                     disabled={!sendToDoiAddress}
                   />
                 </View>

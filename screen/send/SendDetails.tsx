@@ -652,15 +652,16 @@ const SendDetails = () => {
 
     // without forcing `HDSegwitBech32Wallet` i had a weird ts error, complaining about last argument (fp)
     // Include nameOp as input if it exists
-    const useNameOpAsInput = routeParams.nameOp !== undefined;
+    const useNameOpAsInput = routeParams?.nameOp ? routeParams?.nameOp : undefined;
     const { tx, outputs, psbt, fee } = (wallet as HDSegwitBech32Wallet)?.createTransaction(
       lutxo,
       targets,
       requestedSatPerByte,
       change,
       isTransactionReplaceable ? HDSegwitBech32Wallet.defaultRBFSequence : HDSegwitBech32Wallet.finalRBFSequence,
-      useNameOpAsInput,
+      false,
       0,
+      useNameOpAsInput,
     );
 
     if (tx && routeParams.launchedBy && psbt) {
@@ -721,8 +722,8 @@ const SendDetails = () => {
       // (ez can be the case for single-address wallet when doing self-payment for consolidation)
       recipients = outputs;
     }
-
-    navigation.navigate('Confirm', {
+    
+     navigation.navigate('Confirm', {
       fee: new BigNumber(fee).dividedBy(100000000).toNumber(),
       memo: transactionMemo,
       walletID: wallet.getID(),
@@ -732,7 +733,7 @@ const SendDetails = () => {
       satoshiPerByte: requestedSatPerByte,
       payjoinUrl,
       psbt,
-    });
+    }); 
     setIsLoading(false);
   };
 
@@ -1039,7 +1040,7 @@ const SendDetails = () => {
       }
     }
     selectedDataProcessor.current = undefined;
-    setParams({ onBarScanned: undefined });
+   // setParams({ onBarScanned: undefined });
   }, [
     handlePsbtSign,
     importQrTransactionOnBarScanned,

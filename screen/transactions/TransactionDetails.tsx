@@ -155,7 +155,8 @@ const TransactionDetails = () => {
         setMemo(txMetadata[foundTx.hash]?.memo ?? '');
         setTX(foundTx);
         setFrom(newFrom);
-        setTo(newTo);
+        
+        setTo(newTo.filter(onlyUnique));
         //setNameOps(newNameOps.map(name => ({ name, value: '' }))); 
         setNameOps(newNameOps); 
         setIsLoading(false);
