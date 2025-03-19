@@ -239,7 +239,6 @@ const DetailViewStackScreensStack = () => {
         name="Settings"
         component={Settings}
         options={navigationStyle({
-          headerTransparent: true,
           title: loc.settings.header,
           headerBackButtonDisplayMode: 'default',
           headerShadowVisible: false,
