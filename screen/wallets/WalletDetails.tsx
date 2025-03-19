@@ -4,7 +4,6 @@ import {
   I18nManager,
   InteractionManager,
   LayoutAnimation,
-  ScrollView,
   StyleSheet,
   Switch,
   Text,
@@ -45,7 +44,7 @@ import HeaderMenuButton from '../../components/HeaderMenuButton';
 import { Action } from '../../components/types';
 import { CommonToolTipActions } from '../../typings/CommonToolTipActions';
 import { popToTop } from '../../NavigationService';
-import SafeArea from '../../components/SafeArea';
+import SafeAreaScrollView from '../../components/SafeAreaScrollView';
 
 type RouteProps = RouteProp<DetailViewStackParamList, 'WalletDetails'>;
 const WalletDetails: React.FC = () => {
@@ -421,17 +420,12 @@ const WalletDetails: React.FC = () => {
   };
 
   return (
-    <ScrollView
-      automaticallyAdjustKeyboardInsets
-      automaticallyAdjustsScrollIndicatorInsets
-      centerContent={isLoading}
-      testID="WalletDetailsScroll"
-    >
-      <SafeArea>
+    <SafeAreaScrollView centerContent={isLoading} testID="WalletDetailsScroll">
+      <>
         {isLoading ? (
           <BlueLoading />
         ) : (
-          <SafeArea>
+          <>
             <BlueCard style={styles.address}>
               {(() => {
                 if (
@@ -666,10 +660,10 @@ const WalletDetails: React.FC = () => {
                 <BlueSpacing20 />
               </View>
             </BlueCard>
-          </SafeArea>
+          </>
         )}
-      </SafeArea>
-    </ScrollView>
+      </>
+    </SafeAreaScrollView>
   );
 };
 
