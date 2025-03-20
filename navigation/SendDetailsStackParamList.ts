@@ -103,6 +103,7 @@ export type SendDetailsStackParamList = {
     availableWallets?: TWallet[];
     noWalletExplanationText?: string;
     onChainRequireSend?: boolean;
+    selectedWalletID?: string; // Add this parameter to scroll to a specific wallet
   };
   CoinControl: {
     walletID: string;
