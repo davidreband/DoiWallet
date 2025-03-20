@@ -11,6 +11,7 @@ import { VERSION } from '../../blue_modules/network.js';
 import {
   ActivityIndicator,
   Alert,
+  Dimensions,
   findNodeHandle,
   FlatList,
   I18nManager,
@@ -24,7 +25,6 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  useWindowDimensions,
 } from 'react-native';
 
 import DocumentPicker from 'react-native-document-picker';
@@ -65,8 +65,7 @@ import ActionSheet from '../ActionSheet';
 import HeaderMenuButton from '../../components/HeaderMenuButton';
 import { CommonToolTipActions, ToolTipAction } from '../../typings/CommonToolTipActions';
 import { Action } from '../../components/types';
-import SafeAreaScrollView from '../../components/SafeAreaScrollView';
-import { useIsLargeScreen } from '../../hooks/useIsLargeScreen';
+import SafeArea from '../../components/SafeArea';
 
 interface IPaymentDestinations {
   address: string; // btc address or payment code
@@ -104,17 +103,9 @@ const SendDetails = () => {
   const scrollIndex = useRef(0);
   const beforeRemoveListenerRef = useRef<((e: { preventDefault: () => void; data: { action: any } }) => () => () => void) | null>(null);
   const { colors } = useTheme();
-  const { width } = useWindowDimensions();
-  const { isLargeScreen } = useIsLargeScreen();
-
-  // Calculate the effective width considering drawer width in large screen mode
-  const effectiveWidth = useMemo(() => {
-    // When large screen is active, a drawer takes 320px width
-    const DRAWER_WIDTH = 320;
-    return isLargeScreen ? width - DRAWER_WIDTH : width;
-  }, [isLargeScreen, width]);
 
   // state
+  const [width, setWidth] = useState(Dimensions.get('window').width);
   const [isLoading, setIsLoading] = useState(false);
   const [wallet, setWallet] = useState<TWallet | null>(null);
   const feeModalRef = useRef<BottomModalHandle>(null);
@@ -1372,6 +1363,10 @@ const SendDetails = () => {
   const formatFee = (fee: number) => formatBalance(fee, feeUnit!, true);
 
   const stylesHook = StyleSheet.create({
+    root: {
+      backgroundColor: colors.elevated,
+    },
+
     selectLabel: {
       color: colors.buttonTextColor,
     },
@@ -1447,11 +1442,7 @@ const SendDetails = () => {
             accessibilityRole="button"
             style={styles.selectTouch}
             onPress={() => {
-              navigation.navigate('SelectWallet', {
-                chainType: Chain.ONCHAIN,
-                onChainRequireSend: true,
-                selectedWalletID: wallet?.getID(), // Pass current wallet ID
-              });
+              navigation.navigate('SelectWallet', { chainType: Chain.ONCHAIN, selectedWalletID: wallet?.getID() });
             }}
           >
             <Text style={styles.selectText}>{loc.wallets.select_wallet.toLowerCase()}</Text>
@@ -1463,10 +1454,7 @@ const SendDetails = () => {
             accessibilityRole="button"
             style={styles.selectTouch}
             onPress={() => {
-              navigation.navigate('SelectWallet', {
-                chainType: Chain.ONCHAIN,
-                selectedWalletID: wallet?.getID(), // Pass current wallet ID
-              });
+              navigation.navigate('SelectWallet', { chainType: Chain.ONCHAIN, selectedWalletID: wallet?.getID() });
             }}
             disabled={!isEditable || isLoading}
           >
@@ -1477,19 +1465,10 @@ const SendDetails = () => {
     );
   };
 
-  const getItemLayout = useCallback(
-    (data: ArrayLike<IPaymentDestinations> | null | undefined, index: number) => ({
-      length: effectiveWidth, // Use effective width instead of full width
-      offset: effectiveWidth * index,
-      index,
-    }),
-    [effectiveWidth],
-  );
-
   const renderBitcoinTransactionInfoFields = (params: { item: IPaymentDestinations; index: number }) => {
     const { item, index } = params;
     return (
-      <View style={[styles.transactionItemContainer, { width: effectiveWidth }]} testID={'Transaction' + index}>
+      <View style={{ width }} testID={'Transaction' + index}>
         <AmountInput
           isLoading={isLoading}
           amount={item.amount ? item.amount.toString() : null}
@@ -1580,10 +1559,16 @@ const SendDetails = () => {
     );
   };
 
+  const getItemLayout = (_: any, index: number) => ({
+    length: width,
+    offset: width * index,
+    index,
+  });
+
   return (
-    <SafeAreaScrollView contentContainerStyle={styles.root}>
+    <SafeArea style={[styles.root, stylesHook.root]} onLayout={e => setWidth(e.nativeEvent.layout.width)}>
       <View>
-        <FlatList<IPaymentDestinations>
+        <FlatList
           keyboardShouldPersistTaps="always"
           scrollEnabled={addresses.length > 1}
           data={addresses}
@@ -1652,7 +1637,7 @@ const SendDetails = () => {
       })}
 
       {renderWalletSelectionOrCoinsSelected()}
-    </SafeAreaScrollView>
+    </SafeArea>
   );
 };
 
@@ -1751,12 +1736,8 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   addressInput: {
+    marginHorizontal: 16,
     marginVertical: 8,
-    width: '100%',
-  },
-  transactionItemContainer: {
-    flex: 1,
-    paddingHorizontal: 16,
   },
   transactionItemContainer: {
     flex: 1,
