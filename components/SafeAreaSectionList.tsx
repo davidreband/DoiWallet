@@ -4,8 +4,12 @@ import { StyleSheet, SectionList, SectionListProps } from 'react-native';
 import { useTheme } from './themes';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const SafeAreaSectionList = <ItemT, SectionT>(props: SectionListProps<ItemT, SectionT>) => {
-  const { style, contentContainerStyle, ...otherProps } = props;
+interface SafeAreaSectionListProps<ItemT, SectionT> extends SectionListProps<ItemT, SectionT> {
+  floatingButtonHeight?: number;
+}
+
+const SafeAreaSectionList = <ItemT, SectionT>(props: SafeAreaSectionListProps<ItemT, SectionT>) => {
+  const { style, contentContainerStyle, floatingButtonHeight = 0, ...otherProps } = props;
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
 
