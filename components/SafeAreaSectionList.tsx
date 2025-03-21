@@ -22,7 +22,7 @@ const SafeAreaSectionList = <ItemT, SectionT>(props: SafeAreaSectionListProps<It
       {
         paddingBottom: insets.bottom,
         paddingLeft: insets.left,
-        paddingRight: insets.right,
+        paddingTop: insets.top, // Use the actual top inset value from safe area
       },
       contentContainerStyle,
     );
