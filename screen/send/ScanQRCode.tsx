@@ -106,7 +106,7 @@ const ScanQRCode = () => {
         decoder = undefined; // nullify for future use (?)
         if (launchedBy) {
           const merge = true;
-          const popToAction = StackActions.popTo(launchedBy, { onBarScanned: data }, merge);
+          const popToAction = StackActions.popTo(launchedBy, { onBarScanned: data }, { merge });
           if (onBarScanned) {
             onBarScanned(data);
           }
@@ -149,7 +149,7 @@ const ScanQRCode = () => {
         }
         if (launchedBy) {
           const merge = true;
-          const popToAction = StackActions.popTo(launchedBy, { onBarScanned: data }, merge);
+          const popToAction = StackActions.popTo(launchedBy, { onBarScanned: data }, { merge });
           if (onBarScanned) {
             onBarScanned(data);
           }
@@ -209,7 +209,7 @@ const ScanQRCode = () => {
 
       if (launchedBy) {
         const merge = true;
-        const popToAction = StackActions.popTo(launchedBy, { onBarScanned: data }, merge);
+        const popToAction = StackActions.popTo(launchedBy, { onBarScanned: data }, { merge });
         if (onBarScanned) {
           onBarScanned(data);
         }
@@ -222,7 +222,7 @@ const ScanQRCode = () => {
         try {
           const merge = true;
 
-          const popToAction = StackActions.popTo(launchedBy, { onBarScanned: ret.data }, merge);
+          const popToAction = StackActions.popTo(launchedBy, { onBarScanned: ret.data }, { merge });
           if (onBarScanned) {
             onBarScanned(ret.data);
           }
