@@ -107,6 +107,7 @@ class BitcoinPriceWidget : AppWidgetProvider() {
         Log.d(TAG, "Cache cleared from $SHARED_PREF_NAME")
     }
 
+
     /**
      * Called when widget is receiving configuration changes
      */
@@ -117,3 +118,4 @@ class BitcoinPriceWidget : AppWidgetProvider() {
         refreshWidget(context, appWidgetId)
     }
 }
+

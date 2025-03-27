@@ -1,3 +1,4 @@
+
 package org.doichain.doiwallet
 
 import android.appwidget.AppWidgetManager
