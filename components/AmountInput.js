@@ -328,8 +328,10 @@ class AmountInput extends Component {
                 )}
               </View>
               <View style={styles.secondaryRoot}>
-                <Text style={styles.secondaryText}>
+
+                <Text style={styles.secondaryText} selectable>
                   {unit === DoichainUnit.LOCAL_CURRENCY && amount !== DoichainUnit.MAX
+
                     ? removeTrailingZeros(secondaryDisplayCurrency)
                     : secondaryDisplayCurrency}
                   {unit === DoichainUnit.LOCAL_CURRENCY && amount !== DoichainUnit.MAX ? ` ${loc.units[DoichainUnit.DOI]}` : null}
