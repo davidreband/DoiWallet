@@ -127,7 +127,7 @@
     "bolt11": "1.4.1",
     "bs58check": "^2.1.2",
     "buffer": "6.0.3",
-    "coinselect": "3.1.13",
+    "coinselect": "github:BlueWallet/coinselect#50aa452",
     "crypto-js": "4.2.0",
     "dayjs": "1.11.13",
     "detox": "20.28.0",
