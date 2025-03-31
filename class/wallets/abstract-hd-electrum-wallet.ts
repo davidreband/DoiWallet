@@ -1161,28 +1161,6 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
     nameOpAsInput?: NameOpInput | undefined,    
   ): CreateTransactionResult {
     if (targets.length === 0) throw new Error('No destination provided');
-    // compensating for coinselect inability to deal with segwit inputs, and overriding script length for proper vbytes calculation
-    for (const u of utxos) {
-      // this is a hacky way to distinguish native/wrapped segwit, but its good enough for our case since we have only
-      // those 2 wallet types
-      if (this._getExternalAddressByIndex(0).startsWith('dc1')) {
-        u.script = { length: 27 };
-      } else if (this._getExternalAddressByIndex(0).startsWith('3')) {
-        u.script = { length: 50 };
-      }
-    }
-
-    for (const t of targets) {
-      if (t.address && t.address.startsWith('dc1')) {
-        // in case address is non-typical and takes more bytes than coinselect library anticipates by default
-        t.script = { length: bitcoin.address.toOutputScript(t.address,  DOICHAIN).length + 3 };
-      }
-
-      if (t.script?.hex) {
-        // setting length for coinselect lib manually as it is not aware of our field `hex`
-        t.script.length = t.script.hex.length / 2 - 4;
-      }
-    }
 
     let { inputs, outputs, fee } = this.coinselect(utxos, targets, feeRate);
     const result = utxos.find(item => item.address === nameOpAsInput?.nameOpAddress);
