@@ -1,6 +1,7 @@
 
 import { StackActions, useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import * as bitcoin from '@doichain/doichainjs-lib';
+
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 import { BlueSpacing20 } from '../../BlueComponents';
@@ -12,9 +13,10 @@ import { useTheme } from '../../components/themes';
 import loc from '../../loc';
 import { DOICHAIN } from '../../blue_modules/network.js';
 import TipBox from '../../components/TipBox';
+import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 
 const PsbtMultisigQRCode = () => {
-  const navigation = useNavigation();
+  const navigation = useExtendedNavigation();
   const { colors } = useTheme();
   const openScannerButton = useRef();
   const { params } = useRoute();
