@@ -242,18 +242,7 @@ const ImportWallet = () => {
             }}
           />
         ),
-        android: isToolbarVisibleForAndroid && (
-          <DoneAndDismissKeyboardInputAccessory
-            onClearTapped={() => {
-              setImportText('');
-              Keyboard.dismiss();
-            }}
-            onPasteTapped={text => {
-              setImportText(text);
-              Keyboard.dismiss();
-            }}
-          />
-        ),
+        default: null,
       })}
     </ScrollView>
   );
