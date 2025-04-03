@@ -34,6 +34,7 @@ const SafeAreaSectionList = <ItemT, SectionT>(props: SafeAreaSectionListProps<It
       style={componentStyle}
       contentInsetAdjustmentBehavior="automatic"
       automaticallyAdjustKeyboardInsets
+      automaticallyAdjustContentInsets
       automaticallyAdjustsScrollIndicatorInsets
       progressViewOffset={60}
       contentContainerStyle={contentStyle}
