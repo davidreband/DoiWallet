@@ -86,9 +86,7 @@
     "@bugsnag/source-maps": "2.3.3",
 
     "@doichain/doichainjs-lib": "^6.1.7",   
-    "@react-native-community/cli": "15.1.3",
-    "@react-native-community/cli-platform-android": "15.1.3",
-    "@react-native-community/cli-platform-ios": "15.1.3",
+    
 
     "@keystonehq/bc-ur-registry": "0.7.0",
     "@lodev09/react-native-true-sheet": "github:BlueWallet/react-native-true-sheet#5945184a2fea9fe5ba8f5cfcdb20e3fc5eed6e37",
@@ -105,10 +103,12 @@
     "@react-native/metro-config": "0.76.7",
 
     "@remobile/react-native-qrcode-local-image": "github:davidreband/react-native-qrcode-local-image.git",    
-    "@react-navigation/drawer": "7.1.2",
-    "@react-navigation/devtools": "7.0.16",    
-    "@react-navigation/native": "7.0.15",
-    "@react-navigation/native-stack": "7.3.1",
+  
+    "@react-navigation/devtools": "7.0.24",
+    "@react-navigation/drawer": "7.3.7",
+    "@react-navigation/native": "7.1.4",
+    "@react-navigation/native-stack": "7.3.8",
+
     "@rneui/base": "4.0.0-rc.8",
     "@rneui/themed": "4.0.0-rc.8",
     "@spsina/bip47": "github:BlueWallet/bip47#df82345",
