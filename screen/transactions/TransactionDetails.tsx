@@ -4,7 +4,7 @@ import { RouteProp, useFocusEffect, usePreventRemove, useRoute } from '@react-na
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import assert from 'assert';
 import dayjs from 'dayjs';
-import { InteractionManager, Linking, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { InteractionManager, Linking, StyleSheet, Text, TextInput, View } from 'react-native';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { BlueCard, BlueLoading, BlueSpacing20, BlueText } from '../../BlueComponents';
 import { Transaction, TWallet } from '../../class/wallets/types';
@@ -22,6 +22,7 @@ import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamL
 import { useStorage } from '../../hooks/context/useStorage';
 import { HandOffActivityType } from '../../components/types';
 import { useSettings } from '../../hooks/context/useSettings';
+import SafeAreaScrollView from '../../components/SafeAreaScrollView';
 
 const actionKeys = {
   CopyToClipboard: 'copyToClipboard',
@@ -264,7 +265,7 @@ const TransactionDetails = () => {
   };
 
   return (
-    <ScrollView style={styles.scroll} automaticallyAdjustContentInsets contentInsetAdjustmentBehavior="automatic">
+    <SafeAreaScrollView>
       <HandOffComponent
         title={loc.transactions.details_title}
         type={HandOffActivityType.ViewInBlockExplorer}
@@ -380,14 +381,11 @@ const TransactionDetails = () => {
           <Text style={[styles.Link, stylesHooks.Link]}>{loc.transactions.details_view_in_browser}</Text>
         </ToolTipMenu>
       </BlueCard>
-    </ScrollView>
+    </SafeAreaScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  scroll: {
-    flex: 1,
-  },
   rowHeader: {
     flex: 1,
     flexDirection: 'row',
