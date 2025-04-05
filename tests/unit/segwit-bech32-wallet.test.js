@@ -135,4 +135,18 @@ describe('Segwit P2SH wallet', () => {
     assert.strictEqual(signature, 'J4X/eco2cjmFb4L2+gts0RpUlMxaOQ9WJc40TSL6wQ5/UG9qbxhdnWqIoPqtcqmqx0j34ehWnoL6vUg3MvpqPuU=');
     assert.strictEqual(l.verifyMessage('This is an example of a signed message.', l.getAddress(), signature), true);
   });
+
+  it('can coinselect with different decimal feeRate', async () => {
+    const wallet = new SegwitBech32Wallet();
+    const utxos = [
+      {
+        txid: '57d18bc076b919583ff074cfba6201edd577f7fe35f69147ea512e970f95ffeb',
+        vout: 0,
+        value: 100000,
+      },
+    ];
+    for (let feeRate = 1; feeRate < 20; feeRate += 0.1) {
+      wallet.coinselect(utxos, [{ value: 90000, address: '1GX36PGBUrF8XahZEGQqHqnJGW2vCZteoB' }], feeRate);
+    }
+  });
 });
