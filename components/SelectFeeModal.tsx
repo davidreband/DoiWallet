@@ -23,7 +23,7 @@ interface SelectFeeModalProps {
   networkTransactionFees: NetworkTransactionFees;
   feePrecalc: FeePrecalc;
   feeRate: number | string;
-  setCustomFee: (fee: number) => void;
+  setCustomFee: (fee: string) => void;
   setFeePrecalc: (fn: (fp: FeePrecalc) => FeePrecalc) => void;
   feeUnit: DoichainUnit;
 }
@@ -161,7 +161,7 @@ const SelectFeeModal = forwardRef<BottomModalHandle, SelectFeeModalProps>(
     const handleSelectOption = useCallback(
       async (fee: number | null, rate: number) => {
         setFeePrecalc(fp => ({ ...fp, current: fee }));
-        setCustomFee(rate);
+        setCustomFee(rate.toString());
         await feeModalRef.current?.dismiss();
       },
       [setFeePrecalc, setCustomFee],
@@ -169,7 +169,6 @@ const SelectFeeModal = forwardRef<BottomModalHandle, SelectFeeModalProps>(
 
     const handleCustomFeeChange = useCallback(
       (value: string) => {
-        // Allow both . and , as decimal separators without replacing
         const sanitizedValue = value.replace(/[^\d.,]/g, '').replace(/([.,].*?)[.,]/g, '$1');
 
         if (sanitizedValue !== value) {
@@ -179,14 +178,14 @@ const SelectFeeModal = forwardRef<BottomModalHandle, SelectFeeModalProps>(
         }
 
         if (sanitizedValue === '') {
-          setCustomFee(Number(networkTransactionFees.fastestFee));
+          setCustomFee(networkTransactionFees.fastestFee.toString());
           setFeePrecalc(fp => ({ ...fp, current: feePrecalc.fastestFee }));
           return;
         }
 
         if (/^\d*[.,]?\d*$/.test(sanitizedValue)) {
-          const numericValue = Number(sanitizedValue.replace(',', '.'));
-          if (numericValue > 0) {
+          const numericValue = sanitizedValue.replace(',', '.');
+          if (Number(numericValue) > 0) {
             setCustomFee(numericValue);
             setFeePrecalc(fp => ({ ...fp, current: null }));
           }
@@ -196,9 +195,9 @@ const SelectFeeModal = forwardRef<BottomModalHandle, SelectFeeModalProps>(
     );
 
     const handleCustomFeeSubmit = useCallback(async () => {
-      const number = Number(customFeeValue.replace(',', '.'));
-      if (number && number > 0) {
-        setCustomFee(number);
+      const numericValue = customFeeValue.replace(',', '.');
+      if (numericValue && Number(numericValue) > 0) {
+        setCustomFee(numericValue);
         setFeePrecalc(fp => ({ ...fp, current: null }));
         await feeModalRef.current?.dismiss();
       }
@@ -235,10 +234,10 @@ const SelectFeeModal = forwardRef<BottomModalHandle, SelectFeeModalProps>(
 
     const handleCustomFeeBlur = () => {
       setIsCustomFeeFocused(false);
-      const valueNumber = Number(customFeeValue);
-      if (!customFeeValue || valueNumber < 1) {
+      const numericValue = Number(customFeeValue.replace(',', '.'));
+      if (!customFeeValue || numericValue < 1) {
         setCustomFeeValue('');
-        setCustomFee(networkTransactionFees.fastestFee);
+        setCustomFee(networkTransactionFees.fastestFee.toString());
         setFeePrecalc(fp => ({ ...fp, current: feePrecalc.fastestFee }));
       }
     };
