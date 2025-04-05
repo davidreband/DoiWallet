@@ -120,6 +120,9 @@ const SendDetails = () => {
   const [networkTransactionFees, setNetworkTransactionFees] = useState(new NetworkTransactionFee(3, 2, 1));
   const [networkTransactionFeesIsLoading, setNetworkTransactionFeesIsLoading] = useState(false);
   const [customFee, setCustomFee] = useState<string | null>(null);
+  const handleCustomFeeChange = useCallback((fee: number) => {
+    setCustomFee(fee.toString());
+  }, []);
   const [feePrecalc, setFeePrecalc] = useState<IFee>({ current: null, slowFee: null, mediumFee: null, fastestFee: null });
   
   const [utxo, setUtxo] = useState<CreateTransactionUtxo[] | null>(null);
@@ -1623,7 +1626,7 @@ const SendDetails = () => {
           networkTransactionFees={networkTransactionFees}
           feePrecalc={feePrecalc}
           feeRate={feeRate}
-          setCustomFee={setCustomFee}
+          setCustomFee={handleCustomFeeChange}
           setFeePrecalc={setFeePrecalc}
           feeUnit={addresses[scrollIndex.current]?.unit ?? DoichainUnit.DOI}
         />
