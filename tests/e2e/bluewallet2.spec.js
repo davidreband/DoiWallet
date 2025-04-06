@@ -70,7 +70,7 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     const feeRate = 2;
     await element(by.id('chooseFee')).tap();
     await element(by.id('feeCustomContainerButton')).tap();
-    await element(by.id('feeCustom')).typeText(feeRate);
+    await element(by.id('feeCustom')).typeText(feeRate.toString());
     await element(by.id('feeCustom')).tapReturnKey();
 
     if (process.env.TRAVIS) await sleep(5000);
@@ -237,7 +237,7 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     const feeRate = 2;
     await element(by.id('chooseFee')).tap();
     await element(by.id('feeCustomContainerButton')).tap();
-    await element(by.id('feeCustom')).typeText(feeRate);
+    await element(by.id('feeCustom')).typeText(feeRate.toString());
     await element(by.id('feeCustom')).tapReturnKey();
 
     // Let's add another two outputs
@@ -310,7 +310,7 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     const feeRate = 2;
     await element(by.id('chooseFee')).tap();
     await element(by.id('feeCustomContainerButton')).tap();
-    await element(by.id('feeCustom')).typeText(feeRate);
+    await element(by.id('feeCustom')).typeText(feeRate.toString());
     await element(by.id('feeCustom')).tapReturnKey();
 
     // first send MAX output
@@ -598,7 +598,7 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     const feeRate = 2;
     await element(by.id('chooseFee')).tap();
     await element(by.id('feeCustomContainerButton')).tap();
-    await element(by.id('feeCustom')).typeText(feeRate);
+    await element(by.id('feeCustom')).typeText(feeRate.toString());
     await element(by.id('feeCustom')).tapReturnKey();
 
     if (process.env.TRAVIS) await sleep(5000);
