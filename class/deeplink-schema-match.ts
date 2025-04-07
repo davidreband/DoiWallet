@@ -430,7 +430,7 @@ class DeeplinkSchemaMatch {
     return bip21.decode(replacedUri, 'doichain');
   }
 
-  static bip21encode(address: string, options: TOptions): string {
+  static bip21encode(address: string, options?: TOptions): string {
     // uppercase address if bech32 to satisfy BIP_0173
     const isBech32 = address.startsWith('dc1');
     if (isBech32) {
