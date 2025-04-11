@@ -1,4 +1,8 @@
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamList';
+
 import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { BlueSpacing20 } from '../../BlueComponents';
@@ -8,6 +12,8 @@ import loc from '../../loc';
 import { useStorage } from '../../hooks/context/useStorage';
 import { useSettings } from '../../hooks/context/useSettings';
 import SafeAreaScrollView from '../../components/SafeAreaScrollView';
+
+type NavigationProp = NativeStackNavigationProp<DetailViewStackParamList, 'GeneralSettings'>;
 
 const styles = StyleSheet.create({
   root: {
@@ -20,11 +26,10 @@ type NavigationProps = NavigationProp<DetailViewStackParamList, 'GeneralSettings
 const GeneralSettings: React.FC = () => {
   const { wallets } = useStorage();
   const { isHandOffUseEnabled, setIsHandOffUseEnabledAsyncStorage, isLegacyURv1Enabled, setIsLegacyURv1EnabledStorage } = useSettings();
-  const { navigate } = useExtendedNavigation<NavigationProps>();
+  const { navigate } = useNavigation<NavigationProp>();
   const { colors } = useTheme();
 
   const navigateToPrivacy = () => {
-    // @ts-ignore: Fix later
     navigate('SettingsPrivacy');
   };
 
@@ -46,7 +51,6 @@ const GeneralSettings: React.FC = () => {
     >
       {wallets.length > 0 && (
         <>
-          {/* @ts-ignore: Fix later */}
           <ListItem onPress={() => navigate('DefaultView')} title={loc.settings.default_title} chevron />
         </>
       )}
