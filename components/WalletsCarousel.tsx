@@ -411,7 +411,14 @@ type FlatListRefType = FlatList<any> & {
   getNativeScrollRef(): View;
 };
 
-const ListHeaderSeparator = () => <View style={{ width: 16, height: 20 }} />;
+const styles = StyleSheet.create({
+  listHeaderSeparator: {
+    width: 16,
+    height: 20,
+  },
+});
+
+const ListHeaderSeparator = () => <View style={styles.listHeaderSeparator} />;
 
 const WalletsCarousel = forwardRef<FlatListRefType, WalletsCarouselProps>((props, ref) => {
   const {
@@ -696,10 +703,6 @@ const WalletsCarousel = forwardRef<FlatListRefType, WalletsCarouselProps>((props
     },
     contentLargeScreen: {
       paddingHorizontal: sizeClass === SizeClass.Large ? 16 : 12,
-    },
-    separatorStyle: {
-      width: 16,
-      height: 20,
     },
   });
 
