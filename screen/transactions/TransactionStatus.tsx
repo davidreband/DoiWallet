@@ -488,12 +488,12 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
     Clipboard.setString(key);        
   };
 
-  const isTransactionInputHasNameOp = async (txid: string, name: string) => {
+  const isTransactionInputHasNameOp = async (txid: string, name: string, wallet) => {
     try {
-      const transactions = await BlueElectrum.multiGetTransactionByTxid([txid], true, 10);
-      const fetchedTx = transactions[txid];
-      for (const vout of fetchedTx.vout) {
-        if (vout.scriptPubKey?.nameOp?.name === name) {          
+      const transactions = wallet.getTransactions();
+      const fetchedTx = transactions.find((tx: Transaction) => tx.txid === txid);
+      for (const output of fetchedTx.outputs) {
+        if (output.scriptPubKey?.nameOp?.name === name) {
           return true;
         }else{
           return false;
@@ -517,7 +517,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
             if (output?.scriptPubKey?.nameOp) {
               for (const input of tx.inputs) {
                 if (input.txid) {
-                  const hasName = await isTransactionInputHasNameOp(input.txid, output.scriptPubKey.nameOp.name);
+                  const hasName = await isTransactionInputHasNameOp(input.txid, output.scriptPubKey.nameOp.name, wallet);
                   if (hasName) {
                     setHasNameOpInputs(true);
                     break;
@@ -535,7 +535,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
     };
 
     checkInputs();
-  }, [tx]);
+  }, [tx, wallet]);
 
   const renderNameOps = () => {
     if (tx.outputs && tx.confirmations > 0) {
