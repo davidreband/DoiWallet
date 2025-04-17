@@ -188,6 +188,8 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
   const [image, setImage] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [sendToDoiAddress, setSendToDoiAddress] = useState<string>('');
+  const [hasNameOpInputs, setHasNameOpInputs] = useState(false);
+
  // const [nameOpAddress, setNameOpAddress] = useState<string>('');
 
   const handleNameOpSendPress = useCallback((recipientAddress: string, nameOpData: { name: string; value: string; }, nameOpAddress: string) => {
@@ -486,12 +488,65 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
     Clipboard.setString(key);        
   };
 
+  const isTransactionInputHasNameOp = async (txid: string, name: string) => {
+    try {
+      const transactions = await BlueElectrum.multiGetTransactionByTxid([txid], true, 10);
+      const fetchedTx = transactions[txid];
+      for (const vout of fetchedTx.vout) {
+        if (vout.scriptPubKey?.nameOp?.name === name) {          
+          return true;
+        }else{
+          return false;
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching transaction:', error);
+    }
+  };
+
+  useEffect(() => {
+    const checkInputs = async () => {      
+      try {
+
+        if (!tx || typeof tx.value !== 'number' || !Array.isArray(tx.inputs) || !Array.isArray(tx.outputs)) {
+          return;
+        }
+
+        if (tx.value < 0 && tx.inputs) {
+          for (const output of tx.outputs) {            
+            if (output?.scriptPubKey?.nameOp) {
+              for (const input of tx.inputs) {
+                if (input.txid) {
+                  const hasName = await isTransactionInputHasNameOp(input.txid, output.scriptPubKey.nameOp.name);
+                  if (hasName) {
+                    setHasNameOpInputs(true);
+                    break;
+                  }
+                }
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error in checkInputs:', error);
+      } finally {
+        
+      }
+    };
+
+    checkInputs();
+  }, [tx]);
+
   const renderNameOps = () => {
-      if (tx.outputs) {
-        for (const output of tx.outputs) {          
+    if (tx.outputs && tx.confirmations > 0) {
+        for (const output of tx.outputs) {
           if (output?.scriptPubKey?.nameOp) {
+            if (tx.value < 0 && hasNameOpInputs) {
+              return null;             
+            }
+
             const nameOpValue = output.scriptPubKey.nameOp.value;
-           // setNameOpAddress(output.scriptPubKey.addresses)
+            // setNameOpAddress(output.scriptPubKey.addresses)
             //const nameOpValue = 'ipfs://bafkreiewupt5xwng6jjn3xpewq2q6tta32zohkvad3rqnhiatlklhv3gha';
             //const nameOpValue = 'ipfs://bafkreidjj5xgyvlxcmuuaqphnsyiu4gnlyddfwmufazlea4xf6uckyr6qy';
             const urlPattern = /(ipfs?:\/\/[^\s]+)/g;
