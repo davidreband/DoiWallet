@@ -85,7 +85,7 @@ import { useSettings } from '../../hooks/context/useSettings';
         //  setIsLoading(false);      
           const txDecoded = bitcoin.Transaction.fromHex(tx);
           const txid = txDecoded.getId();
-          Notifications.majorTomToGroundControl([], [], [txid]);
+          //Notifications.majorTomToGroundControl([], [], [txid]);
           if (memo) {
             txMetadata[txid] = { memo };
           }
