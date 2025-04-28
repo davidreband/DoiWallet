@@ -415,9 +415,9 @@ const WalletGroupComponent: React.FC<WalletGroupProps> = ({
     fontSize: 14,
   };
 
-  const onWalletPress = () => {
+  const onWalletPress = useCallback(() => {
     navigateToWallet(wallet);
-  };
+  }, [navigateToWallet, wallet]);
 
   return (
     <Animated.View style={{ opacity: fadeAnim }}>
