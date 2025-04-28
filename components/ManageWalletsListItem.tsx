@@ -389,7 +389,7 @@ const WalletGroupComponent: React.FC<WalletGroupProps> = ({
     borderColor: primaryColor + '20',
   };
 
-  const childItemStyle = (index: number): ViewStyle => ({
+  const childItemStyle = (): ViewStyle => ({
     marginHorizontal: 10,
     marginVertical: 4,
     borderLeftWidth: 3,
@@ -448,7 +448,7 @@ const WalletGroupComponent: React.FC<WalletGroupProps> = ({
                   </Text>
                 </View>
                 {transactions.map((transaction, index) => (
-                  <View key={`tx-${index}`} style={childItemStyle(index)}>
+                  <View key={`tx-${index}`} style={childItemStyle()}>
                     <TransactionListItem
                       item={transaction.data}
                       itemPriceUnit={wallet.getPreferredBalanceUnit() || BitcoinUnit.BTC}
@@ -486,7 +486,7 @@ const WalletGroupComponent: React.FC<WalletGroupProps> = ({
                   };
 
                   return (
-                    <View key={`addr-${index}`} style={childItemStyle(index)}>
+                    <View key={`addr-${index}`} style={childItemStyle()}>
                       <AddressItem {...addressItemProps} />
                     </View>
                   );
