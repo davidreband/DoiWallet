@@ -27,6 +27,7 @@ import { useTheme } from './themes';
 import { useStorage } from '../hooks/context/useStorage';
 import { WalletTransactionsStatus } from './Context/StorageProvider';
 import { Transaction, TWallet } from '../class/wallets/types';
+import HighlightedText from './HighlightedText';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -352,23 +353,14 @@ export const WalletCarouselItem: React.FC<WalletCarouselItemProps> = React.memo(
             <LinearGradient colors={WalletGradient.gradientsFor(item.type)} style={iStyles.grad}>
               <Image source={image} style={iStyles.image} />
               <Text style={iStyles.br} />
-              <Text numberOfLines={1} style={[iStyles.label, { color: colors.inverseForegroundColor }]}>
-                {renderHighlightedText && searchQuery ? renderHighlightedText(item.getLabel(), searchQuery) : item.getLabel()}
-              </Text>
-              <View style={iStyles.balanceContainer}>
-                {item.hideBalance ? (
-                  <>
-                    <BlueSpacing10 />
-                    <BlurredBalanceView />
-                  </>
-                ) : (
-                  <Text
-                    numberOfLines={1}
-                    adjustsFontSizeToFit
-                    key={`${balance}`} // force component recreation on balance change. To fix right-to-left languages, like Farsi
-                    style={[iStyles.balance, { color: colors.inverseForegroundColor }]}
-                  >
-                    {`${balance} `}
+              {!isPlaceHolder && (
+                <>
+                  <Text numberOfLines={1} style={[iStyles.label, { color: colors.inverseForegroundColor }]}>
+                    {renderHighlightedText && searchQuery ? (
+                      <HighlightedText text={item.getLabel()} query={searchQuery} />
+                    ) : (
+                      item.getLabel()
+                    )}
                   </Text>
                 )}
               </View>
