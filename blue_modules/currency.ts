@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import BigNumber from 'bignumber.js';
 import DefaultPreference from 'react-native-default-preference';
 import * as RNLocalize from 'react-native-localize';
@@ -27,13 +26,42 @@ let exchangeRates: ExchangeRates = { LAST_UPDATED_ERROR: false };
 let lastTimeUpdateExchangeRateWasCalled: number = 0;
 let skipUpdateExchangeRate: boolean = false;
 
-async function setPreferredCurrency(item: FiatUnitType): Promise<void> {
-  await AsyncStorage.setItem(PREFERRED_CURRENCY_STORAGE_KEY, JSON.stringify(item));
-  await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
-  await DefaultPreference.set(PREFERRED_CURRENCY_STORAGE_KEY, item.endPointKey);
-  await DefaultPreference.set(PREFERRED_CURRENCY_LOCALE_STORAGE_KEY, item.locale.replace('-', '_'));
+let currencyFormatter: Intl.NumberFormat | null = null;
+
+function getCurrencyFormatter(): Intl.NumberFormat {
+  if (
+    !currencyFormatter ||
+    currencyFormatter.resolvedOptions().locale !== preferredFiatCurrency.locale ||
+    currencyFormatter.resolvedOptions().currency !== preferredFiatCurrency.endPointKey
+  ) {
+    currencyFormatter = new Intl.NumberFormat(preferredFiatCurrency.locale, {
+      style: 'currency',
+      currency: preferredFiatCurrency.endPointKey,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 8,
+    });
+    console.debug('Created new currency formatter for: ', preferredFiatCurrency);
+  }
+  return currencyFormatter;
 }
 
+async function setPreferredCurrency(item: FiatUnitType): Promise<void> {
+  await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
+  try {
+    await DefaultPreference.set(PREFERRED_CURRENCY_STORAGE_KEY, item.endPointKey);
+    await DefaultPreference.set(PREFERRED_CURRENCY_LOCALE_STORAGE_KEY, item.locale.replace('-', '_'));
+    preferredFiatCurrency = FiatUnit[item.endPointKey];
+    currencyFormatter = null; // Remove cached formatter
+    console.debug('Preferred currency set to:', item);
+    console.debug('Preferred currency locale set to:', item.locale.replace('-', '_'));
+    console.debug('Cleared all cached currency formatters');
+  } catch (error) {
+    console.error('Failed to set preferred currency:', error);
+    throw error;
+  }
+  currencyFormatter = null;
+}
+/*
 async function getPreferredCurrency(): Promise<FiatUnitType> {
   const preferredCurrency = await AsyncStorage.getItem(PREFERRED_CURRENCY_STORAGE_KEY);
 
@@ -47,7 +75,8 @@ async function getPreferredCurrency(): Promise<FiatUnitType> {
   }
   return FiatUnit.USD;
 }
-
+*/
+/*
 async function _restoreSavedExchangeRatesFromStorage(): Promise<void> {
   try {
     const rates = await AsyncStorage.getItem(EXCHANGE_RATES_STORAGE_KEY);
@@ -70,6 +99,8 @@ async function _restoreSavedPreferredFiatCurrencyFromStorage(): Promise<void> {
     preferredFiatCurrency = deviceCurrencies[0] && FiatUnit[deviceCurrencies[0]] ? FiatUnit[deviceCurrencies[0]] : FiatUnit.USD;
   }
 }
+  */
+let suppressExchangeRateAlert = false;
 
 async function updateExchangeRate(): Promise<void> {
   if (skipUpdateExchangeRate) return;
@@ -91,19 +122,169 @@ async function updateExchangeRate(): Promise<void> {
     exchangeRates[LAST_UPDATED] = Date.now();
     exchangeRates[BTC_PREFIX + preferredFiatCurrency.endPointKey] = rate;
     exchangeRates.LAST_UPDATED_ERROR = false;
-    await AsyncStorage.setItem(EXCHANGE_RATES_STORAGE_KEY, JSON.stringify(exchangeRates));
+
+    try {
+      const exchangeRatesString = JSON.stringify(exchangeRates);
+      await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
+      await DefaultPreference.set(EXCHANGE_RATES_STORAGE_KEY, exchangeRatesString);
+    } catch (error) {
+      await DefaultPreference.clear(EXCHANGE_RATES_STORAGE_KEY);
+      exchangeRates = { LAST_UPDATED_ERROR: false };
+    }
   } catch (error) {
-    console.error('Error encountered when attempting to update exchange rate...', error);
-    const rate = JSON.parse((await AsyncStorage.getItem(EXCHANGE_RATES_STORAGE_KEY)) || '{}');
-    rate.LAST_UPDATED_ERROR = true;
-    exchangeRates.LAST_UPDATED_ERROR = true;
-    await AsyncStorage.setItem(EXCHANGE_RATES_STORAGE_KEY, JSON.stringify(rate));
+    try {
+      await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
+      const ratesValue = await DefaultPreference.get(EXCHANGE_RATES_STORAGE_KEY);
+      let ratesString: string | null = null;
+
+      if (typeof ratesValue === 'string') {
+        ratesString = ratesValue;
+      }
+
+      let rate;
+      if (ratesString) {
+        try {
+          rate = JSON.parse(ratesString);
+        } catch (parseError) {
+          await DefaultPreference.clear(EXCHANGE_RATES_STORAGE_KEY);
+          rate = {};
+        }
+      } else {
+        rate = {};
+      }
+      rate.LAST_UPDATED_ERROR = true;
+      exchangeRates.LAST_UPDATED_ERROR = true;
+      await DefaultPreference.set(EXCHANGE_RATES_STORAGE_KEY, JSON.stringify(rate));
+    } catch (storageError) {
+      exchangeRates = { LAST_UPDATED_ERROR: true };
+      throw storageError;
+    }
+  }
+}
+
+async function getPreferredCurrency(): Promise<FiatUnitType> {
+  await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
+  const preferredCurrencyValue = await DefaultPreference.get(PREFERRED_CURRENCY_STORAGE_KEY);
+  let preferredCurrency: string | null = null;
+
+  if (typeof preferredCurrencyValue === 'string') {
+    preferredCurrency = preferredCurrencyValue;
+  }
+
+  if (preferredCurrency) {
+    try {
+      if (!FiatUnit[preferredCurrency]) {
+        throw new Error('Invalid Fiat Unit');
+      }
+      preferredFiatCurrency = FiatUnit[preferredCurrency];
+    } catch (error) {
+      await DefaultPreference.clear(PREFERRED_CURRENCY_STORAGE_KEY);
+    }
+  }
+
+  if (!preferredFiatCurrency) {
+    const deviceCurrencies = RNLocalize.getCurrencies();
+    if (deviceCurrencies[0] && FiatUnit[deviceCurrencies[0]]) {
+      preferredFiatCurrency = FiatUnit[deviceCurrencies[0]];
+    } else {
+      preferredFiatCurrency = FiatUnit.USD;
+    }
+  }
+
+  await DefaultPreference.set(PREFERRED_CURRENCY_LOCALE_STORAGE_KEY, preferredFiatCurrency.locale.replace('-', '_'));
+  return preferredFiatCurrency;
+}
+
+async function _restoreSavedExchangeRatesFromStorage(): Promise<void> {
+  try {
+    await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
+    const ratesValue = await DefaultPreference.get(EXCHANGE_RATES_STORAGE_KEY);
+    let ratesString: string | null = null;
+
+    if (typeof ratesValue === 'string') {
+      ratesString = ratesValue;
+    }
+
+    if (ratesString) {
+      try {
+        const parsedRates = JSON.parse(ratesString);
+        // Atomic update to prevent race conditions
+        exchangeRates = parsedRates;
+      } catch (error) {
+        await DefaultPreference.clear(EXCHANGE_RATES_STORAGE_KEY);
+        exchangeRates = { LAST_UPDATED_ERROR: false };
+        // Add delay before update to prevent rapid consecutive calls
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        await updateExchangeRate();
+      }
+    } else {
+      exchangeRates = { LAST_UPDATED_ERROR: false };
+    }
+  } catch (error) {
+    exchangeRates = { LAST_UPDATED_ERROR: false };
+    await updateExchangeRate();
+  }
+}
+
+async function _restoreSavedPreferredFiatCurrencyFromStorage(): Promise<void> {
+  try {
+    await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
+    const storedCurrencyValue = await DefaultPreference.get(PREFERRED_CURRENCY_STORAGE_KEY);
+    let storedCurrency: string | null = null;
+
+    if (typeof storedCurrencyValue === 'string') {
+      storedCurrency = storedCurrencyValue;
+    }
+
+    if (!storedCurrency) throw new Error('No Preferred Fiat selected');
+
+    try {
+      if (!FiatUnit[storedCurrency]) {
+        throw new Error('Invalid Fiat Unit');
+      }
+      preferredFiatCurrency = FiatUnit[storedCurrency];
+    } catch (error) {
+      await DefaultPreference.clear(PREFERRED_CURRENCY_STORAGE_KEY);
+
+      const deviceCurrencies = RNLocalize.getCurrencies();
+      if (deviceCurrencies[0] && FiatUnit[deviceCurrencies[0]]) {
+        preferredFiatCurrency = FiatUnit[deviceCurrencies[0]];
+      } else {
+        preferredFiatCurrency = FiatUnit.USD;
+      }
+    }
+  } catch (error) {
+    const deviceCurrencies = RNLocalize.getCurrencies();
+    if (deviceCurrencies[0] && FiatUnit[deviceCurrencies[0]]) {
+      preferredFiatCurrency = FiatUnit[deviceCurrencies[0]];
+    } else {
+      preferredFiatCurrency = FiatUnit.USD;
+    }
   }
 }
 
 async function isRateOutdated(): Promise<boolean> {
   try {
-    const rate = JSON.parse((await AsyncStorage.getItem(EXCHANGE_RATES_STORAGE_KEY)) || '{}');
+    await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
+    const rateValue = await DefaultPreference.get(EXCHANGE_RATES_STORAGE_KEY);
+    let rateString: string | null = null;
+
+    if (typeof rateValue === 'string') {
+      rateString = rateValue;
+    }
+
+    let rate;
+    if (rateString) {
+      try {
+        rate = JSON.parse(rateString);
+      } catch (parseError) {
+        await DefaultPreference.clear(EXCHANGE_RATES_STORAGE_KEY);
+        rate = {};
+        await updateExchangeRate();
+      }
+    } else {
+      rate = {};
+    }
     return rate.LAST_UPDATED_ERROR || Date.now() - (rate[LAST_UPDATED] || 0) >= 31 * 60 * 1000;
   } catch {
     return true;
@@ -150,15 +331,9 @@ function satoshiToLocalCurrency(satoshi: number, format: boolean = true): string
   if (format === false) return formattedAmount;
 
   try {
-    const formatter = new Intl.NumberFormat(preferredFiatCurrency.locale, {
-      style: 'currency',
-      currency: preferredFiatCurrency.endPointKey,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 8,
-    });
-    return formatter.format(Number(formattedAmount));
+    return getCurrencyFormatter().format(Number(formattedAmount));
   } catch (error) {
-    console.warn(error);
+    console.error(error);
     return formattedAmount;
   }
 }
@@ -169,17 +344,39 @@ function BTCToLocalCurrency(bitcoin: BigNumber.Value): string {
 }
 
 async function mostRecentFetchedRate(): Promise<CurrencyRate> {
-  const currencyInformation = JSON.parse((await AsyncStorage.getItem(EXCHANGE_RATES_STORAGE_KEY)) || '{}');
-  const formatter = new Intl.NumberFormat(preferredFiatCurrency.locale, {
-    style: 'currency',
-    currency: preferredFiatCurrency.endPointKey,
-  });
+  try {
+    await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
+    const currencyInfoValue = await DefaultPreference.get(EXCHANGE_RATES_STORAGE_KEY);
+    let currencyInformationString: string | null = null;
 
-  const rate = currencyInformation[BTC_PREFIX + preferredFiatCurrency.endPointKey];
-  return {
-    LastUpdated: currencyInformation[LAST_UPDATED],
-    Rate: rate ? formatter.format(rate) : '...',
-  };
+    if (typeof currencyInfoValue === 'string') {
+      currencyInformationString = currencyInfoValue;
+    }
+
+    let currencyInformation;
+    if (currencyInformationString) {
+      try {
+        currencyInformation = JSON.parse(currencyInformationString);
+      } catch (parseError) {
+        await DefaultPreference.clear(EXCHANGE_RATES_STORAGE_KEY);
+        currencyInformation = {};
+        await updateExchangeRate();
+      }
+    } else {
+      currencyInformation = {};
+    }
+
+    const rate = currencyInformation[BTC_PREFIX + preferredFiatCurrency.endPointKey];
+    return {
+      LastUpdated: currencyInformation[LAST_UPDATED] ? new Date(currencyInformation[LAST_UPDATED]) : null,
+      Rate: rate ? getCurrencyFormatter().format(rate) : '...',
+    };
+  } catch {
+    return {
+      LastUpdated: null,
+      Rate: null,
+    };
+  }
 }
 
 function satoshiToBTC(satoshi: number): string {
@@ -204,6 +401,10 @@ function fiatToBTC(fiatFloat: number): string {
 
 function getCurrencySymbol(): string {
   return preferredFiatCurrency.symbol;
+}
+
+function formatBTC(btc: BigNumber.Value): string {
+  return new BigNumber(btc).toFormat(8);
 }
 
 function _setPreferredFiatCurrency(currency: FiatUnitType): void {
@@ -239,4 +440,5 @@ export {
   satoshiToLocalCurrency,
   setPreferredCurrency,
   updateExchangeRate,
+  formatBTC,
 };

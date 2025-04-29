@@ -17,16 +17,39 @@ import {
   WalletsAddMultisigHelpComponent,
   WalletsAddMultisigStep2Component,
 } from './LazyLoadAddWalletStack';
+import { ScanQRCodeComponent } from './LazyLoadScanQRCodeStack';
+import { ScanQRCodeParamList } from './DetailViewStackParamList';
 
 export type AddWalletStackParamList = {
-  AddWallet: undefined;
-  ImportWallet: undefined;
-  ImportWalletDiscovery: undefined;
+  AddWallet: {
+    entropy?: string;
+    words?: number;
+  };
+  ImportWallet?: {
+    label?: string;
+    triggerImport?: boolean;
+    onBarScanned?: string;
+  };
+  ImportWalletDiscovery: {
+    importText: string;
+    askPassphrase: boolean;
+    searchAccounts: boolean;
+  };
   ImportSpeed: undefined;
-  ImportCustomDerivationPath: undefined;
-  PleaseBackup: undefined;
-  PleaseBackupLNDHub: undefined;
-  ProvideEntropy: undefined;
+  ImportCustomDerivationPath: {
+    importText: string;
+    password: string | undefined;
+  };
+  PleaseBackup: {
+    walletID: string;
+  };
+  PleaseBackupLNDHub: {
+    walletID: string;
+  };
+  ProvideEntropy: {
+    words: number;
+    entropy?: string;
+  };
   WalletsAddMultisig: {
     walletLabel: string;
   };
@@ -37,6 +60,7 @@ export type AddWalletStackParamList = {
     format: string;
   };
   WalletsAddMultisigHelp: undefined;
+  ScanQRCode: ScanQRCodeParamList;
 };
 
 const Stack = createNativeStackNavigator<AddWalletStackParamList>();
@@ -53,7 +77,11 @@ const AddWalletStack = () => {
           title: loc.wallets.add_title,
         })(theme)}
       />
-      <Stack.Screen name="ImportCustomDerivationPath" component={ImportCustomDerivationPathComponent} />
+      <Stack.Screen
+        name="ImportCustomDerivationPath"
+        component={ImportCustomDerivationPathComponent}
+        options={navigationStyle({ statusBarStyle: 'light', title: loc.wallets.import_derivation_title })(theme)}
+      />
       <Stack.Screen
         name="ImportWallet"
         component={ImportWalletComponent}
@@ -113,6 +141,16 @@ const AddWalletStack = () => {
           headerTintColor: '#FFFFFF',
           headerBackTitleVisible: false,
           statusBarStyle: 'light',
+          headerShadowVisible: false,
+        })(theme)}
+      />
+      <Stack.Screen
+        name="ScanQRCode"
+        component={ScanQRCodeComponent}
+        options={navigationStyle({
+          headerShown: false,
+          statusBarHidden: true,
+          presentation: 'fullScreenModal',
           headerShadowVisible: false,
         })(theme)}
       />

@@ -13,6 +13,7 @@ import {
 import { decodeUR as origDecodeUr, encodeUR as origEncodeUR, extractSingleWorkload as origExtractSingleWorkload } from '../bc-ur/dist';
 import { MultisigCosigner, MultisigHDWallet } from '../../class';
 import { Psbt } from '@doichain/doichainjs-lib';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const USE_UR_V1 = 'USE_UR_V1';
 

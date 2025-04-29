@@ -77,7 +77,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     // change currency to ARS ($) and switch it back to USD ($)
     await element(by.id('Currency')).tap();
     await element(by.text('ARS ($)')).tap();
-    await expect(element(by.text('Price is obtained from Yadio'))).toBeVisible();
+    await expect(element(by.text('Rate is obtained from Yadio'))).toBeVisible();
     await element(by.text('USD ($)')).tap();
     await device.pressBack();
 
@@ -101,14 +101,19 @@ describe('BlueWallet UI Tests - no wallets', () => {
     // network -> electrum server
     // change electrum server to electrum.blockstream.info and revert it back
     await element(by.id('ElectrumSettings')).tap();
+    await element(by.id('ElectrumSettingsScrollView')).swipe('up', 'fast', 1); // in case emu screen is small and it doesnt fit
     await element(by.id('HostInput')).replaceText('electrum.blockstream.info\n');
     await element(by.id('PortInput')).replaceText('50001\n');
+    await element(by.id('ElectrumSettingsScrollView')).swipe('up', 'fast', 1); // in case emu screen is small and it doesnt fit
     await element(by.id('Save')).tap();
     await sup('OK');
     await element(by.text('OK')).tap();
-    await element(by.id('ResetToDefault')).tap();
+    await element(by.id('HeaderMenuButton')).tap();
+    await element(by.text('Reset to default')).tap();
+    await element(by.text('RESET TO DEFAULT')).tap();
     await sup('OK');
     await element(by.text('OK')).tap();
+    await element(by.id('ElectrumSettingsScrollView')).swipe('up', 'fast', 1); // in case emu screen is small and it doesnt fit
     await expect(element(by.id('HostInput'))).toHaveText('');
     await expect(element(by.id('PortInput'))).toHaveText('');
     await expect(element(by.id('SSLPortInput'))).toHaveToggleValue(false);
@@ -169,7 +174,8 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await element(by.id('IsItMyAddress')).tap();
     await element(by.id('AddressInput')).replaceText('bc1q063ctu6jhe5k4v8ka99qac8rcm2tzjjnuktyrl');
     await element(by.id('CheckAddress')).tap();
-    await expect(element(by.id('Result'))).toHaveText('None of the available wallets own the provided address.');
+    await expect(element(by.text('None of the available wallets own the provided address.'))).toBeVisible();
+    await element(by.text('OK')).tap();
     await device.pressBack();
     await device.pressBack();
 
@@ -194,6 +200,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await yo('WalletsList');
     await expect(element(by.id('cr34t3d'))).toBeVisible();
     await element(by.id('cr34t3d')).tap();
+    await yo('ReceiveButton');
     await element(by.id('ReceiveButton')).tap();
     await element(by.text('Yes, I have.')).tap();
     try {
@@ -523,7 +530,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await element(by.id('CreateButton')).tap();
     await yo('Multisig Vault');
     await element(by.id('Multisig Vault')).tap(); // go inside the wallet
-
+    await yo('ReceiveButton');
     await element(by.id('ReceiveButton')).tap();
     await element(by.text('Yes, I have.')).tap();
     try {
@@ -589,6 +596,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
 
     // sending...
 
+    await yo('SendButton');
     await element(by.id('SendButton')).tap();
 
     await element(by.id('AddressInput')).replaceText('bc1q063ctu6jhe5k4v8ka99qac8rcm2tzjjnuktyrl');
@@ -611,6 +619,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await waitFor(element(by.id('ItemSigned'))).toBeNotVisible(); // not a single green checkmark
 
     await element(by.id('ProvideSignature')).tap();
+    await element(by.id('PsbtMultisigQRCodeScrollView')).swipe('up', 'fast', 1); // in case emu screen is small and it doesnt fit
     await element(by.id('CosignedScanOrImportFile')).tap();
 
     const ursSignedByPassport = [
@@ -634,6 +643,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await waitFor(element(by.id('ItemSigned'))).toBeVisible(); // one green checkmark visible
 
     await element(by.id('ProvideSignature')).tap();
+    await element(by.id('PsbtMultisigQRCodeScrollView')).swipe('up', 'fast', 1); // in case emu screen is small and it doesnt fit
     await element(by.id('CosignedScanOrImportFile')).tap();
 
     const urSignedByPassportAndKeystone = [
@@ -698,8 +708,10 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await element(by.id('MnemonicInput')).replaceText(
       'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
     );
-    await element(by.id('AskPassphrase')).tap();
-    await element(by.id('SearchAccounts')).tap();
+    await element(by.id('HeaderMenuButton')).tap();
+    await element(by.text('Passphrase')).tap();
+    await element(by.id('HeaderMenuButton')).tap();
+    await element(by.text('Search accounts')).tap();
     await element(by.id('DoImport')).tap();
     await sleep(1000);
 
@@ -708,13 +720,14 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await element(by.id('DoImport')).tap();
     await sleep(1000);
     await element(by.text('OK')).tap();
-    await waitFor(element(by.id('Loading'))) // wait for discovery to be completed
-      .not.toExist()
-      .withTimeout(300 * 1000);
 
+    // wait for discovery to be completed
+    await waitFor(element(by.text("m/84'/0'/0'")))
+      .toBeVisible()
+      .withTimeout(300 * 1000);
     await expect(element(by.text("m/44'/0'/1'"))).toBeVisible();
     await expect(element(by.text("m/49'/0'/0'"))).toBeVisible();
-    await expect(element(by.text("m/84'/0'/0'"))).toBeVisible();
+    await expect(element(by.id('Loading'))).not.toBeVisible();
 
     // open custom derivation path screen and import the wallet
     await element(by.id('CustomDerivationPathButton')).tap();

@@ -2,15 +2,31 @@ import { Psbt } from '@doichain/doichainjs-lib';
 import { CreateTransactionTarget, CreateTransactionUtxo, TWallet } from '../class/wallets/types';
 import { DoichainUnit, Chain } from '../models/doichainUnits';
 
+import { ScanQRCodeParamList } from './DetailViewStackParamList';
+
+export interface NameOpParams {
+  nameId: string;
+  nameValue: string;
+  sendTo: string;
+  nameOpAddress: string;
+}
+
 export type SendDetailsParams = {
-  memo?: string;
+  transactionMemo?: string;
+  isTransactionReplaceable?: boolean;
+  payjoinUrl?: string;
+  feeUnit?: DoichainUnit;
+  frozenBalance?: number;
+  amountUnit?: DoichainUnit;
   address?: string;
   amount?: number;
   amountSats?: number;
   unit?: DoichainUnit;
+  onBarScanned?: string;
   noRbf?: boolean;
   walletID: string;
   launchedBy?: string;
+  utxos?: CreateTransactionUtxo[] | null;
   isEditable?: boolean;
   uri?: string;
   addRecipientParams?: {
@@ -18,6 +34,7 @@ export type SendDetailsParams = {
     amount?: number;
     memo?: string;
   };
+  nameOp?: NameOpParams;
 };
 
 export type SendDetailsStackParamList = {
@@ -35,13 +52,12 @@ export type SendDetailsStackParamList = {
   };
   PsbtWithHardwareWallet: {
     memo?: string;
-    fromWallet: TWallet;
+    walletID: string;
     launchedBy?: string;
     psbt?: Psbt;
     txhex?: string;
   };
   CreateTransaction: {
-    wallet: TWallet;
     memo?: string;
     psbt?: Psbt;
     txhex?: string;
@@ -74,23 +90,9 @@ export type SendDetailsStackParamList = {
   };
   CoinControl: {
     walletID: string;
-    onUTXOChoose: (u: CreateTransactionUtxo[]) => void;
   };
   PaymentCodeList: {
     walletID: string;
   };
-  ScanQRCodeRoot: {
-    screen: string;
-    params: {
-      isLoading?: boolean;
-      cameraStatusGranted?: boolean;
-      backdoorPressed?: boolean;
-      launchedBy?: string;
-      urTotal?: number;
-      urHave?: number;
-      backdoorText?: string;
-      showFileImportButton?: boolean;
-      onBarScanned: (data: string) => void;
-    };
-  };
+  ScanQRCode: ScanQRCodeParamList;
 };

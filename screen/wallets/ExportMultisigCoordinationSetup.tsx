@@ -1,16 +1,18 @@
 import { RouteProp, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useMemo, useReducer, useRef } from 'react';
-import { ActivityIndicator, InteractionManager, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, InteractionManager, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BlueSpacing20, BlueText } from '../../BlueComponents';
 import { TWallet } from '../../class/wallets/types';
 import { DynamicQRCode } from '../../components/DynamicQRCode';
 import SaveFileButton from '../../components/SaveFileButton';
 import { SquareButton } from '../../components/SquareButton';
 import { useTheme } from '../../components/themes';
-import usePrivacy from '../../hooks/usePrivacy';
+import { disallowScreenshot } from 'react-native-screen-capture';
 import loc from '../../loc';
 import { useStorage } from '../../hooks/context/useStorage';
 import { ExportMultisigCoordinationSetupStackRootParamList } from '../../navigation/ExportMultisigCoordinationSetupStack';
+import { useSettings } from '../../hooks/context/useSettings';
+import { isDesktop } from '../../blue_modules/environment';
 
 const enum ActionType {
   SET_LOADING = 'SET_LOADING',
@@ -72,10 +74,11 @@ const ExportMultisigCoordinationSetup: React.FC = () => {
   const { params } = useRoute<RouteProp<ExportMultisigCoordinationSetupStackRootParamList, 'ExportMultisigCoordinationSetup'>>();
   const walletID = params.walletID;
   const { wallets } = useStorage();
+  const { isPrivacyBlurEnabled } = useSettings();
   const wallet: TWallet | undefined = wallets.find(w => w.getID() === walletID);
   const dynamicQRCode = useRef<any>();
   const { colors } = useTheme();
-  const { enableBlur, disableBlur } = usePrivacy();
+
   const navigation = useNavigation();
   const stylesHook = StyleSheet.create({
     scrollViewContent: {
@@ -99,7 +102,7 @@ const ExportMultisigCoordinationSetup: React.FC = () => {
       dispatch({ type: ActionType.SET_LOADING, isLoading: true });
 
       const task = InteractionManager.runAfterInteractions(() => {
-        enableBlur();
+        if (!isDesktop) disallowScreenshot(isPrivacyBlurEnabled);
         if (wallet) {
           setTimeout(async () => {
             try {
@@ -125,7 +128,7 @@ const ExportMultisigCoordinationSetup: React.FC = () => {
 
       return () => {
         task.cancel();
-        disableBlur();
+        if (!isDesktop) disallowScreenshot(false);
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [walletID]),
@@ -175,9 +178,9 @@ const ExportMultisigCoordinationSetup: React.FC = () => {
       )}
 
       <BlueSpacing20 />
-      <TextInput multiline editable={false} style={[styles.secret, stylesHook.secret]}>
+      <Text selectable style={[styles.secret, stylesHook.secret]}>
         {xpub}
-      </TextInput>
+      </Text>
     </>
   ) : null;
 

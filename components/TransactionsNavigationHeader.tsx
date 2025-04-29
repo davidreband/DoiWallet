@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { I18nManager, Image, LayoutAnimation, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { I18nManager, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {MultisigHDWallet } from '../class';
 import WalletGradient from '../class/wallet-gradient';
@@ -10,66 +10,48 @@ import { DoichainUnit } from '../models/doichainUnits';
 import { FiatUnit } from '../models/fiatUnit';
 import { BlurredBalanceView } from './BlurredBalanceView';
 import { useSettings } from '../hooks/context/useSettings';
-import { ToolTipMenuProps } from './types';
 import ToolTipMenu from './TooltipMenu';
+import useAnimateOnChange from '../hooks/useAnimateOnChange';
 
 interface TransactionsNavigationHeaderProps {
   wallet: TWallet;
-  onWalletUnitChange?: (wallet: any) => void;
-  navigation: {
-    navigate: (route: string, params?: any) => void;
-    goBack: () => void;
-  };
+  unit: DoichainUnit;
+  onWalletUnitChange: (unit: DoichainUnit) => void;
   onManageFundsPressed?: (id?: string) => void;
   onWalletBalanceVisibilityChange?: (isShouldBeVisible: boolean) => void;
-  actionKeys: {
-    CopyToClipboard: 'copyToClipboard';
-    WalletBalanceVisibility: 'walletBalanceVisibility';
-    Refill: 'refill';
-    RefillWithExternalWallet: 'qrcode';
-  };
 }
 
 const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> = ({
-  wallet: initialWallet,
+  wallet,
   onWalletUnitChange,
-  navigation,
   onManageFundsPressed,
   onWalletBalanceVisibilityChange,
+  unit = DoichainUnit.DOI,
 }) => {
-  const [wallet, setWallet] = useState(initialWallet);
+  const { hideBalance } = wallet;
   const [allowOnchainAddress, setAllowOnchainAddress] = useState(false);
   const { preferredFiatCurrency } = useSettings();
 
-  const menuRef = useRef<ToolTipMenuProps>(null);
-
-  
+  const verifyIfWalletAllowsOnchainAddress = useCallback(() => {
+    
+  }, [wallet]);
 
   useEffect(() => {
-    setWallet(initialWallet);
-  }, [initialWallet]);
+    verifyIfWalletAllowsOnchainAddress();
+  }, [wallet, verifyIfWalletAllowsOnchainAddress]);
 
-  
   const handleCopyPress = useCallback(() => {
-    const value = formatBalance(wallet.getBalance(), wallet.getPreferredBalanceUnit());
+    const value = formatBalance(wallet.getBalance(), unit);
     if (value) {
       Clipboard.setString(value);
     }
-  }, [wallet]);
+  }, [unit, wallet]);
 
   const handleBalanceVisibility = useCallback(() => {
-    onWalletBalanceVisibilityChange?.(!wallet.hideBalance);
-  }, [onWalletBalanceVisibilityChange, wallet.hideBalance]);
-
-  const updateWalletWithNewUnit = (w: TWallet, newPreferredUnit: DoichainUnit) => {
-    w.preferredBalanceUnit = newPreferredUnit;
-    return w;
-  };
+    onWalletBalanceVisibilityChange?.(!hideBalance);
+  }, [onWalletBalanceVisibilityChange, hideBalance]);
 
   const changeWalletBalanceUnit = () => {
-    if (menuRef.current?.dismissMenu) {
-      menuRef.current.dismissMenu();
-    }
     let newWalletPreferredUnit = wallet.getPreferredBalanceUnit();
 
     if (newWalletPreferredUnit === DoichainUnit.DOI) {
@@ -80,11 +62,7 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
       newWalletPreferredUnit = DoichainUnit.DOI;
     }
 
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-
-    const updatedWallet = updateWalletWithNewUnit(wallet, newWalletPreferredUnit);
-    setWallet(updatedWallet);
-    onWalletUnitChange?.(updatedWallet);
+    onWalletUnitChange(newWalletPreferredUnit);
   };
 
   const handleManageFundsPressed = useCallback(
@@ -122,19 +100,17 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
     ];
   }, []);
 
-  const balance = useMemo(() => {
-    const hideBalance = wallet.hideBalance;
-    const balanceUnit = wallet.getPreferredBalanceUnit();
-    const balanceFormatted =
-      balanceUnit === DoichainUnit.LOCAL_CURRENCY
-        ? formatBalance(wallet.getBalance(), balanceUnit, true)
-        : formatBalanceWithoutSuffix(wallet.getBalance(), balanceUnit, true);
-    return !hideBalance && balanceFormatted;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallet.hideBalance, wallet.getPreferredBalanceUnit()]);
+  const currentBalance = wallet ? wallet.getBalance() : 0;
+  const formattedBalance = useMemo(() => {
+    return unit === DoichainUnit.LOCAL_CURRENCY
+      ? formatBalance(currentBalance, unit, true)
+      : formatBalanceWithoutSuffix(currentBalance, unit, true);
+  }, [unit, currentBalance]);
+
+  const balance = !wallet.hideBalance && formattedBalance;
 
   const toolTipWalletBalanceActions = useMemo(() => {
-    return wallet.hideBalance
+    return hideBalance
       ? [
           {
             id: 'walletBalanceVisibility',
@@ -160,7 +136,7 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
             },
           },
         ];
-  }, [wallet.hideBalance]);
+  }, [hideBalance]);
 
   const imageSource = useMemo(() => {
     switch (wallet.type) {     
@@ -171,13 +147,18 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
     }
   }, [wallet.type]);
 
+  useAnimateOnChange(balance);
+  useAnimateOnChange(hideBalance);
+  useAnimateOnChange(unit);
+  useAnimateOnChange(wallet.getID?.());
+
   return (
     <LinearGradient
       colors={WalletGradient.gradientsFor(wallet.type)}
       style={styles.lineaderGradient}
       {...WalletGradient.linearGradientProps(wallet.type)}
     >
-      <Image source={imageSource} defaultSource={imageSource} style={styles.chainIcon} />
+      <Image source={imageSource} style={styles.chainIcon} />
 
       <Text testID="WalletLabel" numberOfLines={1} style={styles.walletLabel} selectable>
         {wallet.getLabel()}
@@ -192,14 +173,14 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
           actions={toolTipWalletBalanceActions}
         >
           <View style={styles.walletBalance}>
-            {wallet.hideBalance ? (
+            {hideBalance ? (
               <BlurredBalanceView />
             ) : (
               <View>
                 <Text
+                  // @ts-ignore: // force component recreation on balance change. To fix right-to-left languages, like Farsis
+                  key={balance}
                   testID="WalletBalance"
-                  // @ts-ignore: Ugh
-                  key={balance} // force component recreation on balance change. To fix right-to-left languages, like Farsi
                   numberOfLines={1}
                   minimumFontScale={0.5}
                   adjustsFontSizeToFit
@@ -213,9 +194,7 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
         </ToolTipMenu>
         <TouchableOpacity style={styles.walletPreferredUnitView} onPress={changeWalletBalanceUnit}>
           <Text style={styles.walletPreferredUnitText}>
-            {wallet.getPreferredBalanceUnit() === DoichainUnit.LOCAL_CURRENCY
-              ? preferredFiatCurrency?.endPointKey ?? FiatUnit.USD
-              : wallet.getPreferredBalanceUnit()}
+            {unit === DoichainUnit.LOCAL_CURRENCY ? (preferredFiatCurrency?.endPointKey ?? FiatUnit.USD) : unit}
           </Text>
         </TouchableOpacity>
       </View>

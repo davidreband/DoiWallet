@@ -29,7 +29,6 @@ describe('BlueWallet UI Tests - import Watch-only wallet (zpub)', () => {
       '0.0001',
     );
     await sleep(15000);
-
     await element(by.id('ReceiveButton')).tap();
     try {
       // in case emulator has no google services and doesnt support pushes
@@ -49,13 +48,12 @@ describe('BlueWallet UI Tests - import Watch-only wallet (zpub)', () => {
 
     await expect(element(by.id('BitcoinAddressQRCodeContainer'))).toBeVisible();
 
-    await expect(element(by.text('bitcoin:bc1qc8wun6lf9vcajpddtgdpd2pdrp0kwp29j6upgv?amount=1&label=Test'))).toBeVisible();
+    await expect(element(by.text('bitcoin:BC1QC8WUN6LF9VCAJPDDTGDPD2PDRP0KWP29J6UPGV?amount=1&label=Test'))).toBeVisible();
     await device.pressBack();
-
     await element(by.id('SendButton')).tap();
     await element(by.text('OK')).tap();
 
-    await element(by.id('advancedOptionsMenuButton')).tap();
+    await element(by.id('HeaderMenuButton')).tap();
     await element(by.text('Import Transaction (QR)')).tap(); // opens camera
 
     // produced by real Keystone device using MNEMONICS_KEYSTONE

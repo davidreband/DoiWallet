@@ -1,14 +1,7 @@
 import React, { Ref, useCallback, useMemo } from 'react';
 import { Platform, Pressable, TouchableOpacity } from 'react-native';
-import {
-  ContextMenuView,
-  RenderItem,
-  OnPressMenuItemEventObject,
-  MenuState,
-  IconConfig,
-  MenuElementConfig,
-} from 'react-native-ios-context-menu';
 import { MenuView, MenuAction, NativeActionEvent } from '@react-native-menu/menu';
+import { ContextMenuView, RenderItem, OnPressMenuItemEventObject, IconConfig, MenuElementConfig } from 'react-native-ios-context-menu';
 import { ToolTipMenuProps, Action } from './types';
 import { useSettings } from '../hooks/context/useSettings';
 
@@ -43,13 +36,53 @@ const ToolTipMenu = React.memo((props: ToolTipMenuProps, ref?: Ref<any>) => {
 
   const mapMenuItemForMenuView = useCallback((action: Action): MenuAction | null => {
     if (!action.id) return null;
-    return {
+
+    // Check for subactions
+    const subactions =
+      action.subactions?.map(subaction => {
+        const subMenuItem: MenuAction = {
+          id: subaction.id.toString(),
+          title: subaction.text,
+          subtitle: subaction.subtitle,
+          image: subaction.icon?.iconValue ? subaction.icon.iconValue : undefined,
+          attributes: { disabled: subaction.disabled, destructive: subaction.destructive, hidden: subaction.hidden },
+        };
+        if ('menuState' in subaction) {
+          subMenuItem.state = subaction.menuState ? 'on' : 'off';
+        }
+        if (subaction.subactions && subaction.subactions.length > 0) {
+          const deepSubactions = subaction.subactions.map(deepSub => {
+            const deepMenuItem: MenuAction = {
+              id: deepSub.id.toString(),
+              title: deepSub.text,
+              subtitle: deepSub.subtitle,
+              image: deepSub.icon?.iconValue ? deepSub.icon.iconValue : undefined,
+              attributes: { disabled: deepSub.disabled, destructive: deepSub.destructive, hidden: deepSub.hidden },
+            };
+            if ('menuState' in deepSub) {
+              deepMenuItem.state = deepSub.menuState ? 'on' : 'off';
+            }
+            return deepMenuItem;
+          });
+          subMenuItem.subactions = deepSubactions;
+        }
+        return subMenuItem;
+      }) || [];
+
+    const menuItem: MenuAction = {
       id: action.id.toString(),
       title: action.text,
       image: action.icon?.iconValue ? action.icon.iconValue : undefined,
-      state: action.menuState === undefined ? undefined : ((action.menuState ? 'on' : 'off') as MenuState),
-      attributes: { disabled: action.disabled },
+      attributes: { disabled: action.disabled, destructive: action.destructive, hidden: action.hidden },
+      displayInline: action.displayInline || false,
     };
+    if ('menuState' in action) {
+      menuItem.state = action.menuState ? 'on' : 'off';
+    }
+    if (subactions.length > 0) {
+      menuItem.subactions = subactions;
+    }
+    return menuItem;
   }, []);
 
   const contextMenuItems = useMemo(() => {

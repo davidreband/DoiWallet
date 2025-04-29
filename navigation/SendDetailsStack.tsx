@@ -17,6 +17,8 @@ import {
 } from './LazyLoadSendDetailsStack';
 import { SendDetailsStackParamList } from './SendDetailsStackParamList';
 import HeaderRightButton from '../components/HeaderRightButton';
+import { DoichainUnit } from '../models/doichainUnits';
+import { ScanQRCodeComponent } from './LazyLoadScanQRCodeStack';
 
 const Stack = createNativeStackNavigator<SendDetailsStackParamList>();
 
@@ -37,7 +39,7 @@ const SendDetailsStack = () => {
           statusBarStyle: 'light',
           closeButtonPosition: CloseButtonPosition.Left,
         })(theme)}
-        initialParams={{ isEditable: true }} // Correctly typed now
+        initialParams={{ isEditable: true, feeUnit: DoichainUnit.DOI, amountUnit: DoichainUnit.DOI }} // Correctly typed now
       />
       <Stack.Screen
         name="Confirm"
@@ -79,6 +81,16 @@ const SendDetailsStack = () => {
         name="PaymentCodeList"
         component={PaymentCodesListComponent}
         options={navigationStyle({ title: loc.bip47.contacts })(theme)}
+      />
+      <Stack.Screen
+        name="ScanQRCode"
+        component={ScanQRCodeComponent}
+        options={navigationStyle({
+          headerShown: false,
+          statusBarHidden: true,
+          presentation: 'fullScreenModal',
+          headerShadowVisible: false,
+        })(theme)}
       />
     </Stack.Navigator>
   );

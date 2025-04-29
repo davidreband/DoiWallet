@@ -1,11 +1,10 @@
 import React, { forwardRef } from 'react';
-import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { ActivityIndicator, StyleProp, StyleSheet, Text, TouchableOpacity, TouchableOpacityProps, View, ViewStyle } from 'react-native';
 import { Icon } from '@rneui/themed';
 
 import { useTheme } from './themes';
 
-// Define an interface for the props
-interface ButtonProps {
+interface ButtonProps extends TouchableOpacityProps {
   backgroundColor?: string;
   buttonTextColor?: string;
   disabled?: boolean;
@@ -18,9 +17,10 @@ interface ButtonProps {
   title?: string;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
+  showActivityIndicator?: boolean;
 }
 
-export const Button = forwardRef<TouchableOpacity, ButtonProps>((props, ref) => {
+export const Button = forwardRef<React.ElementRef<typeof TouchableOpacity>, ButtonProps>((props, ref) => {
   const { colors } = useTheme();
 
   let backgroundColor = props.backgroundColor ?? colors.mainColor;
@@ -41,7 +41,9 @@ export const Button = forwardRef<TouchableOpacity, ButtonProps>((props, ref) => 
     color: fontColor,
   };
 
-  const buttonView = (
+  const buttonView = props.showActivityIndicator ? (
+    <ActivityIndicator size="small" color={textStyle.color} />
+  ) : (
     <>
       {props.icon && <Icon name={props.icon.name} type={props.icon.type} color={props.icon.color} />}
       {props.title && <Text style={textStyle}>{props.title}</Text>}
@@ -56,6 +58,7 @@ export const Button = forwardRef<TouchableOpacity, ButtonProps>((props, ref) => 
       accessibilityRole="button"
       onPress={props.onPress}
       disabled={props.disabled}
+      {...props}
     >
       {buttonView}
     </TouchableOpacity>

@@ -26,10 +26,15 @@ import type { TWallet } from './wallets/types';
 // https://github.com/bitcoinjs/bip32/blob/master/ts-src/bip32.ts#L43
 export const validateBip32 = (path: string) => path.match(/^(m\/)?(\d+'?\/)*\d+'?$/) !== null;
 
-type TReturn = {
+type TStatus = {
   cancelled: boolean;
   stopped: boolean;
   wallets: TWallet[];
+};
+
+export type TImport = {
+  promise: Promise<TStatus>;
+  stop: () => void;
 };
 
 /**
@@ -47,19 +52,32 @@ const startImport = (
   importTextOrig: string,
   askPassphrase: boolean = false,
   searchAccounts: boolean = false,
+  offline: boolean = false,
   onProgress: (name: string) => void,
   onWallet: (wallet: TWallet) => void,
   onPassword: (title: string, text: string) => Promise<string>,
-): { promise: Promise<TReturn>; stop: () => void } => {
+): TImport => {
   // state
-  let promiseResolve: (arg: TReturn) => void;
+  let promiseResolve: (arg: TStatus) => void;
   let promiseReject: (reason?: any) => void;
   let running = true; // if you put it to false, internal generator stops
   const wallets: TWallet[] = [];
-  const promise = new Promise<TReturn>((resolve, reject) => {
+  const promise = new Promise<TStatus>((resolve, reject) => {
     promiseResolve = resolve;
     promiseReject = reject;
   });
+
+  // helpers
+  // in offline mode all wallets are considered used
+  const wasUsed = async (wallet: TWallet): Promise<boolean> => {
+    if (offline) return true;
+    return wallet.wasEverUsed();
+  };
+  const fetch = async (wallet: TWallet, balance: boolean = false, transactions: boolean = false) => {
+    if (offline) return;
+    if (balance) await wallet.fetchBalance();
+    if (transactions) await wallet.fetchTransactions();
+  };
 
   // actions
   const reportProgress = (name: string) => {
@@ -159,9 +177,29 @@ const startImport = (
     const ms = new MultisigHDWallet();
     ms.setSecret(text);
     if (ms.getN() > 0 && ms.getM() > 0) {
-      await ms.fetchBalance();
+      await fetch(ms, true, false);
       yield { wallet: ms };
-    }    
+    }
+
+    // is it lightning custodian?
+    yield { progress: 'lightning custodian' };
+    if (text.startsWith('blitzhub://') || text.startsWith('lndhub://')) {
+      const lnd = new LightningCustodianWallet();
+      if (text.includes('@')) {
+        const split = text.split('@');
+        lnd.setBaseURI(split[1]);
+        lnd.setSecret(split[0]);
+      }
+      await lnd.init();
+      if (!offline) {
+        await lnd.authorize();
+        await lnd.fetchTransactions();
+        await lnd.fetchUserInvoices();
+        await lnd.fetchPendingTransactions();
+        await lnd.fetchBalance();
+      }
+      yield { wallet: lnd };
+    }
 
     // check bip39 wallets
     yield { progress: 'bip39' };
@@ -204,7 +242,7 @@ const startImport = (
           }
           wallet.setDerivationPath(path);
           yield { progress: `bip39 ${i.script_type} ${path}` };
-          if (await wallet.wasEverUsed()) {
+          if (await wasUsed(wallet)) {
             yield { wallet };
             walletFound = true;
           } else {
@@ -223,11 +261,12 @@ const startImport = (
       m0Legacy.setDerivationPath("m/0'");
       yield { progress: "bip39 p2pkh m/0'" };
       // BRD doesn't support passphrase and only works with 12 words seeds
-      if (!password && text.split(' ').length === 12) {
+      // do not try to guess BRD wallet in offline mode
+      if (!password && text.split(' ').length === 12 && !offline) {
         const brd = new HDLegacyBreadwalletWallet();
         brd.setSecret(text);
 
-        if (await m0Legacy.wasEverUsed()) {
+        if (await wasUsed(m0Legacy)) {
           await m0Legacy.fetchBalance();
           await m0Legacy.fetchTransactions();
           yield { progress: 'BRD' };
@@ -241,7 +280,7 @@ const startImport = (
           walletFound = true;
         }
       } else {
-        if (await m0Legacy.wasEverUsed()) {
+        if (await wasUsed(m0Legacy)) {
           yield { wallet: m0Legacy };
           walletFound = true;
         }
@@ -251,7 +290,6 @@ const startImport = (
       if (!walletFound) {
         yield { wallet: hd2 };
       }
-      // return;
     }
 
     yield { progress: 'wif' };
@@ -264,17 +302,17 @@ const startImport = (
       yield { progress: 'wif p2wpkh' };
       const segwitBech32Wallet = new SegwitBech32Wallet();
       segwitBech32Wallet.setSecret(text);
-      if (await segwitBech32Wallet.wasEverUsed()) {
+      if (await wasUsed(segwitBech32Wallet)) {
         // yep, its single-address bech32 wallet
-        await segwitBech32Wallet.fetchBalance();
+        await fetch(segwitBech32Wallet, true);
         walletFound = true;
         yield { wallet: segwitBech32Wallet };
       }
 
       yield { progress: 'wif p2wpkh-p2sh' };
-      if (await segwitWallet.wasEverUsed()) {
+      if (await wasUsed(segwitWallet)) {
         // yep, its single-address p2wpkh wallet
-        await segwitWallet.fetchBalance();
+        await fetch(segwitWallet, true);
         walletFound = true;
         yield { wallet: segwitWallet };
       }
@@ -283,9 +321,9 @@ const startImport = (
       yield { progress: 'wif p2pkh' };
       const legacyWallet = new LegacyWallet();
       legacyWallet.setSecret(text);
-      if (await legacyWallet.wasEverUsed()) {
+      if (await wasUsed(legacyWallet)) {
         // yep, its single-address legacy wallet
-        await legacyWallet.fetchBalance();
+        await fetch(legacyWallet, true);
         walletFound = true;
         yield { wallet: legacyWallet };
       }
@@ -303,18 +341,37 @@ const startImport = (
     const legacyWallet = new LegacyWallet();
     legacyWallet.setSecret(text);
     if (legacyWallet.getAddress()) {
-      await legacyWallet.fetchBalance();
-      await legacyWallet.fetchTransactions();
+      await fetch(legacyWallet, true, true);
       yield { wallet: legacyWallet };
     }
 
     // maybe its a watch-only address?
     yield { progress: 'watch only' };
-    const watchOnly = new WatchOnlyWallet();
-    watchOnly.setSecret(text);
-    if (watchOnly.valid()) {
-      await watchOnly.fetchBalance();
-      yield { wallet: watchOnly };
+    const wo1 = new WatchOnlyWallet();
+    wo1.setSecret(text);
+    if (wo1.valid()) {
+      wo1.init();
+      if (text.startsWith('xpub')) {
+        // for xpub we also check ypub and zpub. If any of them was used, we import it.
+        let found = false;
+        const pubs = [text, wo1._xpubToYpub(text), wo1._xpubToZpub(text)];
+        for (const pub of pubs) {
+          const wo2 = new WatchOnlyWallet();
+          wo2.setSecret(pub);
+          wo2.init();
+          if (await wasUsed(wo2)) {
+            yield { wallet: wo2 };
+            found = true;
+          }
+        }
+        if (!found) {
+          await fetch(wo1, true);
+          yield { wallet: wo1 };
+        }
+      } else {
+        await fetch(wo1, true);
+        yield { wallet: wo1 };
+      }
     }
 
     // electrum p2wpkh-p2sh
@@ -360,7 +417,7 @@ const startImport = (
       if (password) {
         s1.setPassphrase(password);
       }
-      if (await s1.wasEverUsed()) {
+      if (await wasUsed(s1)) {
         yield { wallet: s1 };
       }
 
@@ -370,7 +427,7 @@ const startImport = (
         s2.setPassphrase(password);
       }
       s2.setSecret(text);
-      if (await s2.wasEverUsed()) {
+      if (await wasUsed(s2)) {
         yield { wallet: s2 };
       }
 
@@ -409,6 +466,7 @@ const startImport = (
       if (next.value?.progress) reportProgress(next.value.progress);
       if (next.value?.wallet) reportWallet(next.value.wallet);
       if (next.done) break; // break if generator has been finished
+      await new Promise(resolve => setTimeout(resolve, 1)); // try not to block the thread
     }
     reportFinish();
   })().catch(e => {

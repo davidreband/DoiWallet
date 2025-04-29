@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import assert from 'assert';
 import dayjs from 'dayjs';
-import { InteractionManager, Keyboard, Linking, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { InteractionManager, Linking, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { BlueCard, BlueLoading, BlueSpacing20, BlueText } from '../../BlueComponents';
 import { Transaction, TWallet } from '../../class/wallets/types';
@@ -14,7 +14,6 @@ import CopyToClipboardButton from '../../components/CopyToClipboardButton';
 import { DoichainUnit } from "../../models/doichainUnits";
 
 import HandOffComponent from '../../components/HandOffComponent';
-import HeaderRightButton from '../../components/HeaderRightButton';
 import { useTheme } from '../../components/themes';
 import ToolTipMenu from '../../components/TooltipMenu';
 import loc from '../../loc';
@@ -22,6 +21,7 @@ import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamList';
 import { useStorage } from '../../hooks/context/useStorage';
 import { HandOffActivityType } from '../../components/types';
+import { useSettings } from '../../hooks/context/useSettings';
 
 const actionKeys = {
   CopyToClipboard: 'copyToClipboard',
@@ -63,9 +63,10 @@ type NavigationProps = NativeStackNavigationProp<DetailViewStackParamList, 'Tran
 type RouteProps = RouteProp<DetailViewStackParamList, 'TransactionDetails'>;
 
 const TransactionDetails = () => {
-  const { setOptions, navigate } = useExtendedNavigation<NavigationProps>();
+  const { addListener, navigate } = useExtendedNavigation<NavigationProps>();
   const { hash, walletID } = useRoute<RouteProps>().params;
   const { saveToDisk, txMetadata, counterpartyMetadata, wallets, getTransactions } = useStorage();
+  const { selectedBlockExplorer } = useSettings();
   const [from, setFrom] = useState<string[]>([]);
   const [to, setTo] = useState<string[]>([]);
   const [nameOps, setNameOps] = useState<{ name: string; value: string }[]>([]);  
@@ -90,29 +91,23 @@ const TransactionDetails = () => {
     },
   });
 
-  const handleOnSaveButtonTapped = useCallback(() => {
-    Keyboard.dismiss();
-    if (!tx) return;
-    txMetadata[tx.hash] = { memo };
-    if (counterpartyLabel && paymentCode) {
-      counterpartyMetadata[paymentCode] = { label: counterpartyLabel };
+  const saveTransactionDetails = useCallback(() => {
+    if (tx) {
+      txMetadata[tx.hash] = { memo };
+      if (counterpartyLabel && paymentCode) {
+        counterpartyMetadata[paymentCode] = { label: counterpartyLabel };
+      }
+      saveToDisk();
     }
-    saveToDisk().then(_success => {
-      triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
-      presentAlert({ message: loc.transactions.transaction_saved });
-    });
   }, [tx, txMetadata, memo, counterpartyLabel, paymentCode, saveToDisk, counterpartyMetadata]);
 
-  const HeaderRight = useMemo(
-    () => <HeaderRightButton onPress={handleOnSaveButtonTapped} testID="SaveButton" disabled={false} title={loc.wallets.details_save} />,
-
-    [handleOnSaveButtonTapped],
-  );
-
   useEffect(() => {
-    // This effect only handles changes in `colors`
-    setOptions({ headerRight: () => HeaderRight });
-  }, [colors, HeaderRight, setOptions]);
+    const unsubscribe = addListener('beforeRemove', () => {
+      saveTransactionDetails();
+    });
+
+    return unsubscribe;
+  }, [addListener, saveTransactionDetails]);
 
   useFocusEffect(
     useCallback(() => {
@@ -120,7 +115,7 @@ const TransactionDetails = () => {
         let foundTx: Transaction | false = false;
         let newFrom: string[] = [];
         let newTo: string[] = [];
-        let newNameOps: string[] = [];        
+        let newNameOps: { name: string; value: string }[] = [];       
         for (const transaction of getTransactions(undefined, Infinity, true)) {
           if (transaction.hash === hash) {
             foundTx = transaction;
@@ -131,10 +126,10 @@ const TransactionDetails = () => {
               if (output?.scriptPubKey?.addresses) newTo = newTo.concat(output.scriptPubKey.addresses);
               
               if (output?.scriptPubKey?.nameOp){
-                const nameOpArray = output.scriptPubKey.nameOp;
-                //const nameOpArray = Object.keys(output.scriptPubKey.nameOp.entries());
-                //const nameOpArray = Array.from(output.scriptPubKey.nameOp.keys());
-                newNameOps = newNameOps.concat(nameOpArray);
+                const nameOp = output.scriptPubKey.nameOp;
+                if (nameOp) {
+                  newNameOps.push({ name: nameOp.name, value: nameOp.value });
+                }
               }
             }
           }
@@ -151,7 +146,7 @@ const TransactionDetails = () => {
             // okay, this txid _was_ with someone using payment codes, so we show the label edit dialog
             // and load user-defined alias for the pc if any
 
-            setCounterpartyLabel(counterpartyMetadata ? counterpartyMetadata[foundPaymentCode]?.label ?? '' : '');
+            setCounterpartyLabel(counterpartyMetadata ? (counterpartyMetadata[foundPaymentCode]?.label ?? '') : '');
             setIsCounterpartyLabelVisible(true);
             setPaymentCode(foundPaymentCode);
           }
@@ -160,7 +155,8 @@ const TransactionDetails = () => {
         setMemo(txMetadata[foundTx.hash]?.memo ?? '');
         setTX(foundTx);
         setFrom(newFrom);
-        setTo(newTo);
+        
+        setTo(newTo.filter(onlyUnique));
         //setNameOps(newNameOps.map(name => ({ name, value: '' }))); 
         setNameOps(newNameOps); 
         setIsLoading(false);
@@ -171,6 +167,10 @@ const TransactionDetails = () => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [hash, wallets]),
   );
+
+  const handleMemoBlur = useCallback(() => {
+    saveTransactionDetails();
+  }, [saveTransactionDetails]);
 
   const handleOnOpenTransactionOnBlockExplorerTapped = () => {
 
@@ -201,7 +201,7 @@ const TransactionDetails = () => {
   };
 
   const handleCopyPress = (stringToCopy: string) => {
-    Clipboard.setString(stringToCopy !== actionKeys.CopyToClipboard ? stringToCopy : `https://mempool.space/tx/${tx?.hash}`);
+    Clipboard.setString(stringToCopy !== actionKeys.CopyToClipboard ? stringToCopy : `${selectedBlockExplorer.url}/tx/${tx?.hash}`);
   };
 
   if (isLoading || !tx) {
@@ -272,7 +272,7 @@ const TransactionDetails = () => {
       <HandOffComponent
         title={loc.transactions.details_title}
         type={HandOffActivityType.ViewInBlockExplorer}
-        url={`https://mempool.space/tx/${tx.hash}`}
+        url={`${selectedBlockExplorer.url}/tx/${tx.hash}`}
       />
       <BlueCard>
         <View>
@@ -283,6 +283,7 @@ const TransactionDetails = () => {
             clearButtonMode="while-editing"
             style={[styles.memoTextInput, stylesHooks.memoTextInput]}
             onChangeText={setMemo}
+            onBlur={handleMemoBlur}
             testID="TransactionDetailsMemoInput"
           />
           {isCounterpartyLabelVisible ? (
@@ -291,6 +292,7 @@ const TransactionDetails = () => {
               <TextInput
                 placeholder={loc.send.counterparty_label_placeholder}
                 value={counterpartyLabel}
+                onBlur={handleMemoBlur}
                 placeholderTextColor="#81868e"
                 style={[styles.memoTextInput, stylesHooks.memoTextInput]}
                 onChangeText={setCounterpartyLabel}
@@ -379,7 +381,7 @@ const TransactionDetails = () => {
           onPress={handleOnOpenTransactionOnBlockExplorerTapped}
           buttonStyle={StyleSheet.flatten([styles.greyButton, stylesHooks.greyButton])}
         >
-          <Text style={[styles.Link, stylesHooks.Link]}>{loc.transactions.details_show_in_block_explorer}</Text>
+          <Text style={[styles.Link, stylesHooks.Link]}>{loc.transactions.details_view_in_browser}</Text>
         </ToolTipMenu>
       </BlueCard>
     </ScrollView>

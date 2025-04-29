@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 struct WidgetDataStore: Codable {
   let rate: String
   let lastUpdate: String
@@ -69,6 +68,7 @@ struct WidgetDataStore: Codable {
     if let date = isoDateFormatter.date(from: lastUpdate) {
       return dateFormatter.string(from: date)
     }
+    
     return nil
   }
 }

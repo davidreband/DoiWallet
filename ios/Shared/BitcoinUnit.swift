@@ -5,11 +5,54 @@
 //  Created by Marcos Rodriguez on 4/14/24.
 //  Copyright © 2024 BlueWallet. All rights reserved.
 //
-
 import Foundation
 
-enum DoichainUnit: String {
+/// Represents the various balance units used in the application.
+/// Conforms to `String`, `Codable`, `Equatable`, and `CustomStringConvertible` for easy encoding/decoding, comparisons, and descriptions.
+
+enum DoichainUnit: String, Codable, Equatable, CustomStringConvertible{
     case DOI = "DOI"
     case SWARTZ = "SWARTZ"
-    case LOCAL_CURRENCY = "LOCAL_CURRENCY"
+    case localCurrency = "Local Currency"
+    case max = "MAX"
+
+    /// Provides a user-friendly description of the `BitcoinUnit`.
+    var description: String {
+        switch self {
+        case .DOI:
+            return "DOI"
+        case .SWARTZ:
+            return "SWARTZ"
+        case .localCurrency:
+            return "Local Currency"
+        case .max:
+            return "MAX"
+        }
+    }
+
+    /// Initializes a `BitcoinUnit` from a raw string.
+    /// - Parameter rawString: The raw string representing the balance unit.
+    init(rawString: String) {
+        switch rawString.lowercased() {
+        case "DOI":
+            self = .DOI
+        case "SWARTZ":
+            self = .SWARTZ
+        case "local_currency":
+            self = .localCurrency
+        case "max":
+            self = .max
+        default:
+            // Handle unknown balance units if necessary
+            // For now, defaulting to .max
+            self = .max
+        }
+    }
+}
+
+extension DoichainUnit {
+    static var mockUnit: DoichainUnit {
+        return .SWARTZ
+    }
+
 }

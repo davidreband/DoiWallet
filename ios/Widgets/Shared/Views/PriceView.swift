@@ -9,6 +9,7 @@
 import SwiftUI
 import WidgetKit
 
+@available(iOS 16.0, *)
 struct PriceView: View {
   var entry: PriceWidgetEntry
   
@@ -179,6 +180,7 @@ struct PriceView: View {
   }
 }
 
+@available(iOS 16.0, *)
 struct PriceView_Previews: PreviewProvider {
   static var previews: some View {
     Group {

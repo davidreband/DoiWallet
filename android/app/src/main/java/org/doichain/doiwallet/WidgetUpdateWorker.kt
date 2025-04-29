@@ -44,9 +44,7 @@ class WidgetUpdateWorker(context: Context, workerParams: WorkerParameters) : Wor
         val sharedPref = applicationContext.getSharedPreferences("widget_prefs", Context.MODE_PRIVATE)
         val sharedPrefDoiwallet = applicationContext.getSharedPreferences("group.org.doichain.doiwallet", Context.MODE_PRIVATE)
 
-        val allEntries: Map<String, *> = sharedPrefDoiwallet.all
-        val allEntriesDoiwallet: Map<String, *> = sharedPref.all 
-
+        
         val preferredCurrency = sharedPrefDoiwallet.getString("preferredCurrency", "USD")
 
         val fiatUnitsJson = applicationContext.assets.open("fiatUnits.json").bufferedReader().use { it.readText() }

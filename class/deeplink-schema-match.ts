@@ -1,7 +1,6 @@
 import bip21, { TOptions } from 'bip21';
 import * as bitcoin from '@doichain/doichainjs-lib';
 import URL from 'url';
-
 import { readFileOutsideSandbox } from '../blue_modules/fs';
 import { Chain } from '../models/doichainUnits';
 import { WatchOnlyWallet } from './';
@@ -432,6 +431,12 @@ class DeeplinkSchemaMatch {
   }
 
   static bip21encode(address: string, options: TOptions): string {
+    // uppercase address if bech32 to satisfy BIP_0173
+    const isBech32 = address.startsWith('dc1');
+    if (isBech32) {
+      address = address.toUpperCase();
+    }
+
     for (const key in options) {
       if (key === 'label' && String(options[key]).replace(' ', '').length === 0) {
         delete options[key];

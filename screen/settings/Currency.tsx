@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
 import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import { FlatList, NativeSyntheticEvent, StyleSheet, View, LayoutAnimation, UIManager, Platform } from 'react-native';
+import { FlatList, NativeSyntheticEvent, StyleSheet, View, LayoutAnimation, UIManager, Platform, Keyboard } from 'react-native';
 
 import {
   CurrencyRate,
@@ -10,7 +10,7 @@ import {
   mostRecentFetchedRate,
   setPreferredCurrency,
 } from '../../blue_modules/currency';
-import { BlueCard, BlueSpacing10, BlueText } from '../../BlueComponents';
+import { BlueCard, BlueSpacing10, BlueSpacing20, BlueText } from '../../BlueComponents';
 import presentAlert from '../../components/Alert';
 import ListItem from '../../components/ListItem';
 import { useTheme } from '../../components/themes';
@@ -87,6 +87,7 @@ const Currency: React.FC = () => {
       isLoading={isSavingNewPreferredCurrency && selectedCurrency.endPointKey === item.endPointKey}
       subtitle={item.country}
       onPress={async () => {
+        Keyboard.dismiss();
         setIsSavingNewPreferredCurrency(item);
         try {
           await getFiatRate(item.endPointKey);
@@ -135,6 +136,7 @@ const Currency: React.FC = () => {
           <BlueText>
             {loc.settings.last_updated}: {dayjs(currencyRate.LastUpdated).calendar() ?? loc._.never}
           </BlueText>
+          <BlueSpacing20 />
         </BlueCard>
       ) : null}
     </View>

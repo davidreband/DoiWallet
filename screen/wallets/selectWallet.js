@@ -151,7 +151,7 @@ const SelectWallet = () => {
             <Image
               source={(() => {
                 switch (item.type) {
-                  case LightningLdkWallet.type:
+                  //case LightningLdkWallet.type:
                   // case LightningCustodianWallet.type:
                   //   return I18nManager.isRTL ? require('../../img/lnd-shape-rtl.png') : require('../../img/lnd-shape.png');
                   case MultisigHDWallet.type:

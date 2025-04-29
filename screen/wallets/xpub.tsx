@@ -8,11 +8,13 @@ import CopyTextToClipboard from '../../components/CopyTextToClipboard';
 import HandOffComponent from '../../components/HandOffComponent';
 import QRCodeComponent from '../../components/QRCodeComponent';
 import SafeArea from '../../components/SafeArea';
-import usePrivacy from '../../hooks/usePrivacy';
+import { disallowScreenshot } from 'react-native-screen-capture';
 import loc from '../../loc';
 import { styles, useDynamicStyles } from './xpub.styles';
 import { useStorage } from '../../hooks/context/useStorage';
 import { HandOffActivityType } from '../../components/types';
+import { useSettings } from '../../hooks/context/useSettings';
+import { isDesktop } from '../../blue_modules/environment';
 
 type WalletXpubRouteProp = RouteProp<{ params: { walletID: string; xpub: string } }, 'params'>;
 export type RootStackParamList = {
@@ -27,21 +29,21 @@ const WalletXpub: React.FC = () => {
   const route = useRoute<WalletXpubRouteProp>();
   const { walletID, xpub } = route.params;
   const wallet = wallets.find(w => w.getID() === walletID);
+  const { isPrivacyBlurEnabled } = useSettings();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [xPubText, setXPubText] = useState<string | undefined>(undefined);
   const navigation = useNavigation<NavigationProp<RootStackParamList, 'WalletXpub'>>();
   const stylesHook = useDynamicStyles(); // This now includes the theme implicitly
   const [qrCodeSize, setQRCodeSize] = useState<number>(90);
   const lastWalletIdRef = useRef<string | undefined>();
-  const { enableBlur, disableBlur } = usePrivacy();
 
   useFocusEffect(
     useCallback(() => {
+      if (!isDesktop) disallowScreenshot(isPrivacyBlurEnabled);
       // Skip execution if walletID hasn't changed
       if (lastWalletIdRef.current === walletID) {
         return;
       }
-      enableBlur();
       const task = InteractionManager.runAfterInteractions(async () => {
         if (wallet) {
           const walletXpub = wallet.getXpub();
@@ -56,10 +58,10 @@ const WalletXpub: React.FC = () => {
       });
       lastWalletIdRef.current = walletID;
       return () => {
+        if (!isDesktop) disallowScreenshot(false);
         task.cancel();
-        disableBlur();
       };
-    }, [walletID, enableBlur, wallet, xpub, navigation, disableBlur]),
+    }, [isPrivacyBlurEnabled, walletID, wallet, xpub, navigation]),
   );
 
   useEffect(() => {

@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:visibility="gone"/>
+        android:visibility="visible"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,25 +29,28 @@
             android:textSize="10sp"
             android:textStyle="bold"
             android:layout_marginEnd="6dp"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:layout_gravity="end"/>
 
         <TextView
             android:id="@+id/last_updated_time"
             style="@style/WidgetTextPrimary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="10sp"
-            android:layout_marginEnd="6dp"
-            
-            android:visibility="gone"/>
+            android:text="--:--"
+            android:textSize="12sp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="2dp"
+            android:visibility="gone"
+            android:layout_gravity="end"/>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="end">
+        android:gravity="end"
+        android:layout_gravity="end">
 
         <TextView
             android:id="@+id/coin_name"

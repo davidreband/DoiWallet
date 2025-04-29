@@ -7,7 +7,6 @@ import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
-import Notifications from '../../blue_modules/notifications';
 import { BlueCard, BlueSpacing20, BlueText } from '../../BlueComponents';
 import presentAlert from '../../components/Alert';
 import CopyToClipboardButton from '../../components/CopyToClipboardButton';
@@ -15,21 +14,23 @@ import { DynamicQRCode } from '../../components/DynamicQRCode';
 import SaveFileButton from '../../components/SaveFileButton';
 import { SecondButton } from '../../components/SecondButton';
 import { useTheme } from '../../components/themes';
-import { requestCameraAuthorization } from '../../helpers/scan-qr';
 import { useBiometrics, unlockWithBiometrics } from '../../hooks/useBiometrics';
 import loc from '../../loc';
+import { DOICHAIN } from '../../blue_modules/network'
 
 import { useStorage } from '../../hooks/context/useStorage';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
-import { DOICHAIN } from "../../blue_modules/network";
-
+import { useSettings } from '../../hooks/context/useSettings';
+import { majorTomToGroundControl } from '../../blue_modules/notifications';
 
 const PsbtWithHardwareWallet = () => {
-  const { txMetadata, fetchAndSaveWalletTransactions, isElectrumDisabled } = useStorage();
+  const { txMetadata, fetchAndSaveWalletTransactions, wallets } = useStorage();
+  const { isElectrumDisabled } = useSettings();
   const { isBiometricUseCapableAndEnabled } = useBiometrics();
   const navigation = useExtendedNavigation();
   const route = useRoute();
-  const { fromWallet, memo, psbt, deepLinkPSBT, launchedBy } = route.params;
+  const { walletID, memo, psbt, deepLinkPSBT, launchedBy } = route.params;
+  const wallet = wallets.find(w => w.getID() === walletID);
   const routeParamsPSBT = useRef(route.params.psbt);
   const routeParamsTXHex = route.params.txhex;
   const { colors } = useTheme();
@@ -62,34 +63,40 @@ const PsbtWithHardwareWallet = () => {
     },
   });
 
-  const _combinePSBT = receivedPSBT => {
-    return fromWallet.combinePsbt(psbt, receivedPSBT);
-  };
+  const _combinePSBT = useCallback(
+    receivedPSBT => {
+      return wallet.combinePsbt(psbt, receivedPSBT);
+    },
+    [psbt, wallet],
+  );
 
-  const onBarScanned = ret => {
-    if (ret && !ret.data) ret = { data: ret };
-    if (ret.data.toUpperCase().startsWith('UR')) {
-      presentAlert({ message: 'BC-UR not decoded. This should never happen' });
-    }
-    if (ret.data.indexOf('+') === -1 && ret.data.indexOf('=') === -1 && ret.data.indexOf('=') === -1) {
-      // this looks like NOT base64, so maybe its transaction's hex
-      setTxHex(ret.data);
-      return;
-    }
-    try {
-      const Tx = _combinePSBT(ret.data);
-      setTxHex(Tx.toHex());
-      if (launchedBy) {
-        // we must navigate back to the screen who requested psbt (instead of broadcasting it ourselves)
-        // most likely for LN channel opening
-        navigation.navigate({ name: launchedBy, params: { psbt }, merge: true });
-        // ^^^ we just use `psbt` variable sinse it was finalized in the above _combinePSBT()
-        // (passed by reference)
+  const onBarScanned = useCallback(
+    ret => {
+      if (ret && !ret.data) ret = { data: ret };
+      if (ret.data.toUpperCase().startsWith('UR')) {
+        presentAlert({ message: 'BC-UR not decoded. This should never happen' });
       }
-    } catch (Err) {
-      presentAlert({ message: Err.message });
-    }
-  };
+      if (ret.data.indexOf('+') === -1 && ret.data.indexOf('=') === -1 && ret.data.indexOf('=') === -1) {
+        // this looks like NOT base64, so maybe its transaction's hex
+        setTxHex(ret.data);
+        return;
+      }
+      try {
+        const Tx = _combinePSBT(ret.data);
+        setTxHex(Tx.toHex());
+        if (launchedBy) {
+          // we must navigate back to the screen who requested psbt (instead of broadcasting it ourselves)
+          // most likely for LN channel opening
+          navigation.navigate({ name: launchedBy, params: { psbt }, merge: true });
+          // ^^^ we just use `psbt` variable sinse it was finalized in the above _combinePSBT()
+          // (passed by reference)
+        }
+      } catch (Err) {
+        presentAlert({ message: Err.message });
+      }
+    },
+    [_combinePSBT, launchedBy, navigation, psbt],
+  );
 
   useEffect(() => {
     if (isFocused) {
@@ -107,7 +114,7 @@ const PsbtWithHardwareWallet = () => {
     if (deepLinkPSBT) {
       const newPsbt = bitcoin.Psbt.fromBase64(deepLinkPSBT, { network: DOICHAIN });
       try {
-        const Tx = fromWallet.combinePsbt(routeParamsPSBT.current, newPsbt);
+        const Tx = wallet.combinePsbt(routeParamsPSBT.current, newPsbt);
         setTxHex(Tx.toHex());
       } catch (Err) {
         presentAlert({ message: Err });
@@ -131,18 +138,18 @@ const PsbtWithHardwareWallet = () => {
     try {
       await BlueElectrum.ping();
       await BlueElectrum.waitTillConnected();
-      const result = await fromWallet.broadcastTx(txHex);
+      const result = await wallet.broadcastTx(txHex);
       if (result) {
         setIsLoading(false);
         const txDecoded = bitcoin.Transaction.fromHex(txHex);
         const txid = txDecoded.getId();
-        Notifications.majorTomToGroundControl([], [], [txid]);
+        majorTomToGroundControl([], [], [txid]);
         if (memo) {
           txMetadata[txid] = { memo };
         }
         navigation.navigate('Success', { amount: undefined });
         await new Promise(resolve => setTimeout(resolve, 3000)); // sleep to make sure network propagates
-        fetchAndSaveWalletTransactions(fromWallet.getID());
+        fetchAndSaveWalletTransactions(wallet.getID());
       } else {
         triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
         setIsLoading(false);
@@ -199,7 +206,10 @@ const PsbtWithHardwareWallet = () => {
   const openSignedTransaction = async () => {
     try {
       const res = await DocumentPicker.pickSingle({
-        type: Platform.OS === 'ios' ? ['io.bluewallet.psbt', 'io.bluewallet.psbt.txn'] : [DocumentPicker.types.allFiles],
+        type:
+          Platform.OS === 'ios'
+            ? ['io.bluewallet.psbt', 'io.bluewallet.psbt.txn', DocumentPicker.types.json]
+            : [DocumentPicker.types.allFiles],
       });
       const file = await RNFS.readFile(res.uri);
       if (file) {
@@ -214,16 +224,17 @@ const PsbtWithHardwareWallet = () => {
     }
   };
 
-  const openScanner = () => {
-    requestCameraAuthorization().then(() => {
-      navigation.navigate('ScanQRCodeRoot', {
-        screen: 'ScanQRCode',
-        params: {
-          launchedBy: route.name,
-          showFileImportButton: false,
-          onBarScanned,
-        },
-      });
+  useEffect(() => {
+    const data = route.params.onBarScanned;
+    if (data) {
+      onBarScanned(data);
+      navigation.setParams({ onBarScanned: undefined });
+    }
+  }, [navigation, onBarScanned, route.params.onBarScanned]);
+
+  const openScanner = async () => {
+    navigation.navigate('ScanQRCode', {
+      showFileImportButton: true,
     });
   };
 

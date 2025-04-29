@@ -1,12 +1,14 @@
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Platform, ScrollView, StyleSheet } from 'react-native';
-import { BlueCard, BlueSpacing20, BlueText } from '../../BlueComponents';
+import { BlueSpacing20 } from '../../BlueComponents';
 import ListItem, { PressableWrapper } from '../../components/ListItem';
 import { useTheme } from '../../components/themes';
 import loc from '../../loc';
 import { useStorage } from '../../hooks/context/useStorage';
 import { useSettings } from '../../hooks/context/useSettings';
+import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
+import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamList';
 
 const styles = StyleSheet.create({
   root: {
@@ -14,17 +16,12 @@ const styles = StyleSheet.create({
   },
 });
 
+type NavigationProps = NavigationProp<DetailViewStackParamList, 'GeneralSettings'>;
+
 const GeneralSettings: React.FC = () => {
   const { wallets } = useStorage();
-  const {
-    isAdvancedModeEnabled,
-    setIsAdvancedModeEnabledStorage,
-    isHandOffUseEnabled,
-    setIsHandOffUseEnabledAsyncStorage,
-    isLegacyURv1Enabled,
-    setIsLegacyURv1EnabledStorage,
-  } = useSettings();
-  const { navigate } = useNavigation();
+  const { isHandOffUseEnabled, setIsHandOffUseEnabledAsyncStorage, isLegacyURv1Enabled, setIsLegacyURv1EnabledStorage } = useSettings();
+  const { navigate } = useExtendedNavigation<NavigationProps>();
   const { colors } = useTheme();
 
   const navigateToPrivacy = () => {
@@ -57,22 +54,10 @@ const GeneralSettings: React.FC = () => {
             title={loc.settings.general_continuity}
             Component={PressableWrapper}
             switch={{ onValueChange: onHandOffUseEnabledChange, value: isHandOffUseEnabled }}
+            subtitle={loc.settings.general_continuity_e}
           />
-          <BlueCard>
-            <BlueText>{loc.settings.general_continuity_e}</BlueText>
-          </BlueCard>
-          <BlueSpacing20 />
         </>
       ) : null}
-      <ListItem
-        Component={PressableWrapper}
-        title={loc.settings.general_adv_mode}
-        switch={{ onValueChange: setIsAdvancedModeEnabledStorage, value: isAdvancedModeEnabled, testID: 'AdvancedMode' }}
-      />
-      <BlueCard>
-        <BlueText>{loc.settings.general_adv_mode_e}</BlueText>
-      </BlueCard>
-      <BlueSpacing20 />
       <ListItem
         Component={PressableWrapper}
         title="Legacy URv1 QR"

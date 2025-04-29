@@ -4,7 +4,7 @@ import { ActivityIndicator, FlatList, StyleSheet, View, Platform, UIManager } fr
 import { WatchOnlyWallet } from '../../class';
 import { AddressItem } from '../../components/addresses/AddressItem';
 import { useTheme } from '../../components/themes';
-import usePrivacy from '../../hooks/usePrivacy';
+import { disallowScreenshot } from 'react-native-screen-capture';
 import { useStorage } from '../../hooks/context/useStorage';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamList';
@@ -12,6 +12,8 @@ import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import SegmentedControl from '../../components/SegmentControl';
 import loc from '../../loc';
 import { DoichainUnit} from '../../models/doichainUnits';
+
+import { isDesktop } from '../../blue_modules/environment';
 
 export const TABS = {
   EXTERNAL: 'receive',
@@ -131,7 +133,6 @@ const WalletAddresses: React.FC = () => {
 
   const { colors } = useTheme();
   const { setOptions } = useExtendedNavigation<NavigationProps>();
-  const { enableBlur, disableBlur } = usePrivacy();
 
   const stylesHook = StyleSheet.create({
     root: {
@@ -177,12 +178,12 @@ const WalletAddresses: React.FC = () => {
 
   useFocusEffect(
     useCallback(() => {
-      enableBlur();
+      if (!isDesktop) disallowScreenshot(true);
       getAddresses();
       return () => {
-        disableBlur();
+        if (!isDesktop) disallowScreenshot(false);
       };
-    }, [enableBlur, disableBlur, getAddresses]),
+    }, [getAddresses]),
   );
 
   const data =

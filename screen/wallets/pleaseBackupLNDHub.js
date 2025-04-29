@@ -7,9 +7,11 @@ import CopyTextToClipboard from '../../components/CopyTextToClipboard';
 import QRCodeComponent from '../../components/QRCodeComponent';
 import SafeArea from '../../components/SafeArea';
 import { useTheme } from '../../components/themes';
-import usePrivacy from '../../hooks/usePrivacy';
+import { disallowScreenshot } from 'react-native-screen-capture';
 import loc from '../../loc';
 import { useStorage } from '../../hooks/context/useStorage';
+import { useSettings } from '../../hooks/context/useSettings';
+import { isDesktop } from '../../blue_modules/environment';
 
 const PleaseBackupLNDHub = () => {
   const { wallets } = useStorage();
@@ -18,7 +20,7 @@ const PleaseBackupLNDHub = () => {
   const navigation = useNavigation();
   const { colors } = useTheme();
   const [qrCodeSize, setQRCodeSize] = useState(90);
-  const { enableBlur, disableBlur } = usePrivacy();
+  const { isPrivacyBlurEnabled } = useSettings();
 
   const handleBackButton = useCallback(() => {
     navigation.getParent().pop();
@@ -39,13 +41,13 @@ const PleaseBackupLNDHub = () => {
   });
 
   useEffect(() => {
-    enableBlur();
+    if (!isDesktop) disallowScreenshot(isPrivacyBlurEnabled);
     BackHandler.addEventListener('hardwareBackPress', handleBackButton);
     return () => {
-      disableBlur();
+      if (!isDesktop) disallowScreenshot(false);
       BackHandler.removeEventListener('hardwareBackPress', handleBackButton);
     };
-  }, [disableBlur, enableBlur, handleBackButton]);
+  }, [handleBackButton, isPrivacyBlurEnabled]);
 
   const pop = () => navigation.getParent().pop();
 

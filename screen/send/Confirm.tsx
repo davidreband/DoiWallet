@@ -7,7 +7,6 @@ import * as bitcoin from '@doichain/doichainjs-lib';
 import { BlueText, BlueCard } from '../../BlueComponents';
 import { DoichainUnit} from '../../models/doichainUnits';
 import loc, { formatBalance, formatBalanceWithoutSuffix } from '../../loc';
-import Notifications from '../../blue_modules/notifications';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import presentAlert from '../../components/Alert';
 import { useTheme } from '../../components/themes';
@@ -25,7 +24,9 @@ import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import { ContactList } from '../../class/contact-list';
 import { useStorage } from '../../hooks/context/useStorage';
 import { HDSegwitBech32Wallet } from '../../class';
+import { useSettings } from '../../hooks/context/useSettings';
 import { DOICHAIN } from '../../blue_modules/network';
+import { majorTomToGroundControl } from '../../blue_modules/notifications';
 
 enum ActionType {
   SET_LOADING = 'SET_LOADING',
@@ -67,7 +68,8 @@ type ConfirmRouteProp = RouteProp<SendDetailsStackParamList, 'Confirm'>;
 type ConfirmNavigationProp = NativeStackNavigationProp<SendDetailsStackParamList, 'Confirm'>;
 
 const Confirm: React.FC = () => {
-  const { wallets, fetchAndSaveWalletTransactions, counterpartyMetadata, isElectrumDisabled } = useStorage();
+  const { wallets, fetchAndSaveWalletTransactions, counterpartyMetadata } = useStorage();
+  const { isElectrumDisabled } = useSettings();
   const { isBiometricUseCapableAndEnabled } = useBiometrics();
   const navigation = useExtendedNavigation<ConfirmNavigationProp>();
   const route = useRoute<ConfirmRouteProp>(); // Get the route and its params
@@ -130,7 +132,6 @@ const Confirm: React.FC = () => {
             memo,
             tx,
             satoshiPerByte,
-            wallet,
             feeSatoshi,
           });
         }}
@@ -148,7 +149,6 @@ const Confirm: React.FC = () => {
       memo,
       tx,
       satoshiPerByte,
-      wallet,
       feeSatoshi,
     ],
   );
@@ -171,15 +171,31 @@ const Confirm: React.FC = () => {
     return bitcoin.address.toOutputScript(recipients[0].address, DOICHAIN);
   };
 
-  const send = async () => {
+  const handleSendTransaction = async () => {
     dispatch({ type: ActionType.SET_BUTTON_DISABLED, payload: true });
     dispatch({ type: ActionType.SET_LOADING, payload: true });
     try {
-      const txids2watch = [];
+      // Perform biometric authentication first
+      if (await isBiometricUseCapableAndEnabled()) {
+        if (!(await unlockWithBiometrics())) {
+          // Stop execution if biometric unlock fails
+          dispatch({ type: ActionType.SET_LOADING, payload: false });
+          dispatch({ type: ActionType.SET_BUTTON_DISABLED, payload: false });
+          return;
+        }
+      }
+
+      const txidsToWatch = [];
       if (!state.isPayjoinEnabled) {
-        await broadcast(tx);
+        // Only broadcast the transaction after biometrics pass
+        const result = await broadcastTransaction(tx);
+        if (!result) {
+          dispatch({ type: ActionType.SET_LOADING, payload: false });
+          dispatch({ type: ActionType.SET_BUTTON_DISABLED, payload: false });
+          return;
+        }
       } else {
-        const payJoinWallet = new PayjoinTransaction(psbt, (txHex: string) => broadcast(txHex), wallet as HDSegwitBech32Wallet);
+        const payJoinWallet = new PayjoinTransaction(psbt, (txHex: string) => broadcastTransaction(txHex), wallet as HDSegwitBech32Wallet);
         const paymentScript = getPaymentScript();
         if (!paymentScript) {
           throw new Error('Invalid payment script');
@@ -192,15 +208,14 @@ const Confirm: React.FC = () => {
         await payjoinClient.run();
         const payjoinPsbt = payJoinWallet.getPayjoinPsbt();
         if (payjoinPsbt) {
-          const tx2watch = payjoinPsbt.extractTransaction();
-          txids2watch.push(tx2watch.getId());
+          const txToWatch = payjoinPsbt.extractTransaction();
+          txidsToWatch.push(txToWatch.getId());
         }
       }
 
       const txid = bitcoin.Transaction.fromHex(tx).getId();
-      txids2watch.push(txid);
-      // @ts-ignore: Notifications has to be TSed
-      Notifications.majorTomToGroundControl([], [], txids2watch);
+      txidsToWatch.push(txid);
+      majorTomToGroundControl([], [], txidsToWatch);
       let amount = 0;
       for (const recipient of recipients) {
         if (recipient.value) {
@@ -228,15 +243,9 @@ const Confirm: React.FC = () => {
     }
   };
 
-  const broadcast = async (transaction: string) => {
+  const broadcastTransaction = async (transaction: string) => {
     await BlueElectrum.ping();
     await BlueElectrum.waitTillConnected();
-
-    if (await isBiometricUseCapableAndEnabled()) {
-      if (!(await unlockWithBiometrics())) {
-        return;
-      }
-    }
 
     const result = await wallet.broadcastTx(transaction);
     if (!result) {
@@ -331,7 +340,11 @@ const Confirm: React.FC = () => {
           {state.isLoading ? (
             <ActivityIndicator />
           ) : (
-            <Button disabled={isElectrumDisabled || state.isButtonDisabled} onPress={send} title={loc.send.confirm_sendNow} />
+            <Button
+              disabled={isElectrumDisabled || state.isButtonDisabled}
+              onPress={handleSendTransaction}
+              title={loc.send.confirm_sendNow}
+            />
           )}
         </BlueCard>
       </View>

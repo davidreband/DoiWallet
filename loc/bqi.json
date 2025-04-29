@@ -18,15 +18,9 @@
     "close": "بستن",
     "change_input_currency": "آلشتکاری ارز وۊرۊڌی",
     "refresh": "وانۊ کردن",
-    "more": "بیشتر",
-    "pick_image": "پسند شؽوات ز شؽوات مال",
-    "pick_file": "پسند فایل",
     "enter_amount": "مقدار نه بزن",
     "qr_custom_input_button": "سی زیڌن وۊرۊڌی سفارشی، 10 کرت ریس بزن",
     "unlock": "گۊشیڌن چفت"
-  },
-  "alert": {
-    "default": "هوشتار"
   },
   "azteco": {
     "codeIs": "کوڌ تخفیف ایسا",
@@ -73,12 +67,8 @@
   },
   "plausibledeniability": {
     "create_fake_storage": "وورکل جاگه رزم ناڌه وابیڌه سی زفت کردن",
-    "create_password": "یه رزم وورکل کۊنین",
     "create_password_explanation": "رزمی که سی جاگه زفت کردنی جعلی هڌ، نوا وا رزم جاگه زفت کردنی السی یه جۊر بۊ.",
-    "password_should_not_match": "رزم هونی به کار اروه. یه رزم دیری نه به کار بگر.",
-    "passwords_do_not_match": "رزمات جۊر یک نؽڌن، زه نۊ امتهانسۉ کو.",
-    "confirm_password": "رزمنه زه نۊ هؽل کو",
-    "success": "سر ٱنجوم گرهڌ"
+    "password_should_not_match": "رزم هونی به کار اروه. یه رزم دیری نه به کار بگر."
   },
   "pleasebackup": {
     "ask_no": "نه، مو نڌاروم.",
@@ -154,8 +144,6 @@
     "permission_camera_message": "سی به کار گرهڌن شؽوات گر، لنگ اجازه ایسانیم.",
     "psbt_sign": "امزا کردن تراکونش",
     "open_settings": "گۊشیڌن سامووا",
-    "permission_storage_later": "دینداتر زوم بپورس.",
-    "permission_storage_message": "سی زفت کردن ای فایل، وا بؽلین برنومه BlueWallet وه جاگه زفت کردنی ایسا دسرسی داشته بۊ.",
     "permission_storage_title": "موجوز دسرسی به جاگه زفت کردنی",
     "psbt_clipboard": "لف گیری منه ویرگه",
     "psbt_tx_export": "گرؽڌن جۊر فایل",
@@ -181,11 +169,9 @@
     "about_sm_discord": "سرور دیسکورد",
     "about_sm_telegram": "تورگه تلگرام",
     "about_sm_twitter": "ایما نه منه توییتر وه دین کۊنین",
-    "advanced_options": "گۊزینیل پؽش رئڌه",
     "biometrics": "بیومتریک",
     "biom_conf_identity": "هۊویته خوته تاییڌ کو.",
     "currency": "واهڌ پیل",
-    "currency_source": "قیمت گرؽڌه وابیڌه زه",
     "currency_fetch_error": "منه گرؽڌن نرخ سی واهڌ پیل پسند بیڌه یه ختا پؽش اووڌ.",
     "default_info": "دۉسمندیا پؽش فرز",
     "default_title": "موقه ره وندن",
@@ -197,35 +183,27 @@
     "electrum_offline_mode": "هالت آفلاین",
     "use_ssl": "SSL نه به کار بگر",
     "set_electrum_server_as_default": "{server} سی سرور پؽش فرز الکترام ساموو بۊوه؟",
-    "set_lndhub_as_default": "{server} سی سرور پؽش فرز LNDHub ساموو بۊوه؟",
     "electrum_settings_server": "سرور الکترام",
-    "electrum_settings_explain": "سی استفاڌه زه سامووا پؽش فرز، بؽلین پتی بمهنه.",
     "electrum_status": "وزیت",
     "electrum_clear_alert_title": "ویرگار پاک بۊ؟",
     "electrum_clear_alert_message": "اخۊی ویرگار سرورا الکترام نه پاک کۊنی؟",
     "electrum_clear_alert_cancel": "لقو",
     "electrum_clear_alert_ok": "هری",
-    "electrum_select": "پسند",
     "electrum_reset": "ورگندن به پؽش فرز",
     "electrum_unable_to_connect": "نا مۉفق منه منپیز به {server}",
-    "electrum_history": "ویرگار سرور",
     "electrum_reset_to_default": "الن اخۊی سامووا الکترام نه به هالت پؽش فرز وورنشۊوی کۊنی؟",
-    "electrum_clear": "روفتن",
     "encrypt_decrypt": "رزم گوشایی جاگه زفت کردنی",
     "encrypt_title": "امنیت",
     "encrypt_tstorage": "جاگه زفت کردنی",
     "encrypt_use": "{type} نه به کار بگر",
     "general": "پوی وولاتی",
-    "general_adv_mode": "هالت پؽش رئڌه",
     "header": "سامووا",
     "language": "زۉ",
     "last_updated": "ورۊ رسۊوی دیندایی",
     "language_isRTL": "ره وندن دووارته BlueWallet سی انجوم آلشت کاریا ری زۉ الن وا انجوم بۊ.",
     "license": "موجوز",
-    "lightning_error_lndhub_uri": "یۊآرآی LNDHub زبال نؽ",
     "lightning_saved": "آلشت کاریا ایسا وه خۊوی زفت وابین.",
     "lightning_settings": "سامووا لایتنینگ",
-    "lightning_settings_explain": "سی منپیز وه گره LND خوت، LNDHub نه بپۊرن ۉ آدرسسه ایچونا منه سامووا بنه. ویرت بۊ که کیف پیلا وورکل وابیڌه دیندا زفت کردن آلشت کاریا وه LNDHub موشخس وابیڌه منپیز ابۊ.",
     "network": "شبکه",
     "network_electrum": "سرور الکترام",
     "notifications": "وارسۊویا",
@@ -234,14 +212,10 @@
     "privacy_read_clipboard": "خوندن ویرگه",
     "privacy_system_settings": "سامووا دسگا",
     "rate": "نرخ",
-    "confirm_password": "رزمنه زه نۊ هؽل کو",
     "save": "زفت کردن",
     "saved": "زفت وابی",
     "widgets": "اوزارکا",
     "tools": "اوزارا"
-  },
-  "notifications": {
-    "ask_me_later": "دینداتر زوم بپورس."
   },
   "transactions": {
     "copy_link": "لف گیری لینگ",
@@ -249,7 +223,6 @@
     "details_copy": "لف گیری",
     "date": "ویرگار",
     "details_received": "گرؽڌه وابیڌه",
-    "transaction_saved": "زفت وابی",
     "pending": "مندیر سی زفت",
     "open_url_error": "نا مۉفق منه گۊشیڌن لینگ وا مۊرۊرگر پؽش فرز. مۊرۊرگر پؽش فرز خوته آلشت کو ۉ زه نۊ تفره کو."
   },
@@ -258,7 +231,7 @@
     "add_create": "وورکل",
     "add_entropy": "آنتروپی",
     "details_address": "آدرس",
-    "details_save": "زفت کردن"
+    "paste_from_clipboard": "جا وندن"
   },
   "multisig": {
     "confirm": "تاییڌ",
@@ -267,6 +240,9 @@
     "create": "وورکل",
     "co_sign_transaction": "امزا کردن تراکونش",
     "ms_help_title5": "هالت پؽش رئڌه"
+  },
+  "cc": {
+    "sort_status": "وزیت"
   },
   "addresses": {
     "sign_placeholder_address": "آدرس",

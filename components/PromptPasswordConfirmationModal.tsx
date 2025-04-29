@@ -1,10 +1,11 @@
 import React, { useState, useRef, forwardRef, useImperativeHandle, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, Animated, Easing, ViewStyle, Keyboard, Platform, UIManager } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Animated, Easing, ViewStyle, Keyboard, Platform, UIManager, ScrollView } from 'react-native';
 import BottomModal, { BottomModalHandle } from './BottomModal';
 import { useTheme } from '../components/themes';
 import loc from '../loc';
 import { SecondButton } from './SecondButton';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../blue_modules/hapticFeedback';
+import { useKeyboard } from '../hooks/useKeyboard';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -46,6 +47,8 @@ const PromptPasswordConfirmationModal = forwardRef<PromptPasswordConfirmationMod
     const { colors } = useTheme();
     const passwordInputRef = useRef<TextInput>(null);
     const confirmPasswordInputRef = useRef<TextInput>(null);
+    const scrollView = useRef<ScrollView>(null);
+    const { isVisible } = useKeyboard();
 
     const stylesHook = StyleSheet.create({
       modalContent: {
@@ -248,7 +251,6 @@ const PromptPasswordConfirmationModal = forwardRef<PromptPasswordConfirmationMod
       opacity: fadeOutAnimation,
       transform: [{ scale: scaleAnimation }],
       width: '100%',
-      paddingTop: 20,
     };
 
     const onModalDismiss = () => {
@@ -259,43 +261,18 @@ const PromptPasswordConfirmationModal = forwardRef<PromptPasswordConfirmationMod
     return (
       <BottomModal
         ref={modalRef}
-        showCloseButton={showExplanation}
         onDismiss={onModalDismiss}
         grabber={false}
+        showCloseButton={!isSuccess}
+        onCloseModalPressed={handleCancel}
         backgroundColor={colors.modal}
-        contentContainerStyle={styles.modalContent}
+        isGrabberVisible={!isSuccess}
+        scrollRef={scrollView}
+        dismissible={false}
         footer={
           !isSuccess ? (
-            showExplanation && modalType === MODAL_TYPES.CREATE_PASSWORD ? null : (
-              <Animated.View style={{ opacity: fadeOutAnimation, transform: [{ scale: scaleAnimation }] }}>
-                <View style={styles.feeModalFooter}>
-                  <SecondButton testID="CancelButton" title={loc._.cancel} onPress={handleCancel} disabled={isLoading} />
-                  <View style={styles.feeModalFooterSpacing} />
-                  <SecondButton
-                    title={isLoading ? '' : loc._.ok}
-                    onPress={handleSubmit}
-                    testID="OKButton"
-                    loading={isLoading}
-                    disabled={isLoading || !password || (modalType === MODAL_TYPES.CREATE_PASSWORD && !confirmPassword)}
-                  />
-                </View>
-              </Animated.View>
-            )
-          ) : null
-        }
-      >
-        {!isSuccess && (
-          <Animated.View style={animatedViewStyle}>
-            {modalType === MODAL_TYPES.CREATE_PASSWORD && showExplanation && (
-              <Animated.View style={{ opacity: explanationOpacity }}>
-                <Text style={[styles.textLabel, stylesHook.feeModalLabel]}>{loc.settings.encrypt_storage_explanation_headline}</Text>
-                <Text style={[styles.description, stylesHook.feeModalCustomText]}>
-                  {loc.settings.encrypt_storage_explanation_description_line1}
-                </Text>
-                <Text style={[styles.description, stylesHook.feeModalCustomText]}>
-                  {loc.settings.encrypt_storage_explanation_description_line2}
-                </Text>
-                <View style={styles.feeModalFooter} />
+            showExplanation && modalType === MODAL_TYPES.CREATE_PASSWORD ? (
+              <Animated.View style={[{ opacity: explanationOpacity }, styles.feeModalFooterSpacing]}>
                 <SecondButton
                   title={loc.settings.i_understand}
                   onPress={handleTransitionToCreatePassword}
@@ -303,11 +280,42 @@ const PromptPasswordConfirmationModal = forwardRef<PromptPasswordConfirmationMod
                   testID="IUnderstandButton"
                 />
               </Animated.View>
+            ) : (
+              <Animated.View style={[{ opacity: fadeOutAnimation, transform: [{ scale: scaleAnimation }] }, styles.feeModalFooter]}>
+                {!isVisible && (
+                  <SecondButton
+                    title={isLoading ? '' : loc._.ok}
+                    onPress={handleSubmit}
+                    testID="OKButton"
+                    loading={isLoading}
+                    disabled={isLoading || !password || (modalType === MODAL_TYPES.CREATE_PASSWORD && !confirmPassword)}
+                  />
+                )}
+              </Animated.View>
+            )
+          ) : null
+        }
+      >
+        {!isSuccess && (
+          <Animated.View style={[animatedViewStyle, styles.minHeight]}>
+            {modalType === MODAL_TYPES.CREATE_PASSWORD && showExplanation && (
+              <Animated.View style={{ opacity: explanationOpacity }}>
+                <Text style={[styles.textLabel, stylesHook.feeModalLabel]}>{loc.settings.encrypt_storage_explanation_headline}</Text>
+                <Animated.ScrollView style={styles.explanationScrollView} ref={scrollView}>
+                  <Text style={[styles.description, stylesHook.feeModalCustomText]}>
+                    {loc.settings.encrypt_storage_explanation_description_line1}
+                  </Text>
+                  <Text style={[styles.description, stylesHook.feeModalCustomText]}>
+                    {loc.settings.encrypt_storage_explanation_description_line2}
+                  </Text>
+                </Animated.ScrollView>
+                <View style={styles.feeModalFooter} />
+              </Animated.View>
             )}
             {(modalType === MODAL_TYPES.ENTER_PASSWORD ||
               ((modalType === MODAL_TYPES.CREATE_PASSWORD || modalType === MODAL_TYPES.CREATE_FAKE_STORAGE) && !showExplanation)) && (
               <>
-                <Text style={[styles.textLabel, stylesHook.feeModalLabel]}>
+                <Text adjustsFontSizeToFit style={[styles.textLabel, stylesHook.feeModalLabel]}>
                   {modalType === MODAL_TYPES.CREATE_PASSWORD
                     ? loc.settings.password_explain
                     : modalType === MODAL_TYPES.CREATE_FAKE_STORAGE
@@ -392,16 +400,15 @@ const styles = StyleSheet.create({
     width: '100%', // Ensure modal content takes full width
     justifyContent: 'center',
     alignItems: 'center',
-    minHeight: 450,
+  },
+  minHeight: {
+    minHeight: 280,
   },
   feeModalFooter: {
-    paddingBottom: 36,
-    paddingHorizontal: 24,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    padding: 16,
   },
   feeModalFooterSpacing: {
-    paddingHorizontal: 24,
+    padding: 16,
   },
   inputContainer: {
     marginBottom: 10,
@@ -415,7 +422,7 @@ const styles = StyleSheet.create({
     width: '100%', // Ensure full width
   },
   textLabel: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '600',
     marginBottom: 16,
     textAlign: 'center',
@@ -441,5 +448,8 @@ const styles = StyleSheet.create({
   checkmark: {
     color: 'white',
     fontSize: 30,
+  },
+  explanationScrollView: {
+    maxHeight: 200,
   },
 });

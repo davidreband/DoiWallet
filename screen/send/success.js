@@ -14,12 +14,14 @@ import loc from '../../loc';
 import HandOffComponent from '../../components/HandOffComponent';
 import { HandOffActivityType } from '../../components/types';
 import ToolTipMenu from '../../components/TooltipMenu';
+import { useSettings } from '../../hooks/context/useSettings';
 
 const Success = () => {
   const pop = () => {
     getParent().pop();
   };
   const { colors } = useTheme();
+  const { selectedBlockExplorer } = useSettings();
   const { getParent } = useNavigation();
   const { amount, fee, amountUnit = DoichainUnit.DOI, invoiceDescription = '', onDonePressed = pop, txid } = useRoute().params;
   

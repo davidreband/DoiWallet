@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { openSettings } from 'react-native-permissions';
 import A from '../../blue_modules/analytics';
-import { BlueCard, BlueSpacing20, BlueSpacing40, BlueText } from '../../BlueComponents';
 import { Header } from '../../components/Header';
 import ListItem, { PressableWrapper } from '../../components/ListItem';
 import { useTheme } from '../../components/themes';
-import { setBalanceDisplayAllowed } from '../../components/WidgetCommunication';
 import loc from '../../loc';
 import { useStorage } from '../../hooks/context/useStorage';
 import { useSettings } from '../../hooks/context/useSettings';
+import { BlueSpacing20 } from '../../BlueComponents';
+import { isDesktop } from '../../blue_modules/environment';
 
 enum SettingsPrivacySection {
   None,
@@ -28,7 +28,7 @@ const SettingsPrivacy: React.FC = () => {
     isDoNotTrackEnabled,
     setDoNotTrackStorage,
     isPrivacyBlurEnabled,
-    setIsPrivacyBlurEnabledState,
+    setIsPrivacyBlurEnabled,
     isWidgetBalanceDisplayAllowed,
     setIsWidgetBalanceDisplayAllowedStorage,
     isClipboardGetContentEnabled,
@@ -44,9 +44,6 @@ const SettingsPrivacy: React.FC = () => {
   const styleHooks = StyleSheet.create({
     root: {
       backgroundColor: colors.background,
-    },
-    widgetsHeader: {
-      color: colors.foregroundColor,
     },
   });
 
@@ -85,7 +82,6 @@ const SettingsPrivacy: React.FC = () => {
   const onWidgetsTotalBalanceValueChange = async (value: boolean) => {
     setIsLoading(SettingsPrivacySection.Widget);
     try {
-      await setBalanceDisplayAllowed(value);
       setIsWidgetBalanceDisplayAllowedStorage(value);
     } catch (e) {
       console.debug('onWidgetsTotalBalanceValueChange catch', e);
@@ -105,7 +101,7 @@ const SettingsPrivacy: React.FC = () => {
 
   const onTemporaryScreenshotsValueChange = (value: boolean) => {
     setIsLoading(SettingsPrivacySection.TemporaryScreenshots);
-    setIsPrivacyBlurEnabledState(!value);
+    setIsPrivacyBlurEnabled(!value);
     setIsLoading(SettingsPrivacySection.None);
   };
 
@@ -130,13 +126,9 @@ const SettingsPrivacy: React.FC = () => {
           disabled: isLoading === SettingsPrivacySection.All,
           testID: 'ClipboardSwitch',
         }}
+        subtitle={loc.settings.privacy_clipboard_explanation}
       />
-      <BlueCard>
-        <Pressable accessibilityRole="button">
-          <BlueText>{loc.settings.privacy_clipboard_explanation}</BlueText>
-        </Pressable>
-      </BlueCard>
-      <BlueSpacing20 />
+
       <ListItem
         title={loc.settings.privacy_quickactions}
         Component={TouchableWithoutFeedback}
@@ -146,12 +138,14 @@ const SettingsPrivacy: React.FC = () => {
           disabled: isLoading === SettingsPrivacySection.All || storageIsEncrypted,
           testID: 'QuickActionsSwitch',
         }}
+        subtitle={
+          <>
+            <Text style={styles.subtitleText}>{loc.settings.privacy_quickactions_explanation}</Text>
+            {storageIsEncrypted && <Text style={styles.subtitleText}>{loc.settings.encrypted_feature_disabled}</Text>}
+          </>
+        }
       />
-      <BlueCard>
-        <BlueText>{loc.settings.privacy_quickactions_explanation}</BlueText>
-        <BlueSpacing20 />
-        {storageIsEncrypted && <BlueText>{loc.settings.encrypted_feature_disabled}</BlueText>}
-      </BlueCard>
+
       <ListItem
         title={loc.total_balance_view.title}
         Component={PressableWrapper}
@@ -161,37 +155,37 @@ const SettingsPrivacy: React.FC = () => {
           disabled: isLoading === SettingsPrivacySection.All || wallets.length < 2,
           testID: 'TotalBalanceSwitch',
         }}
+        subtitle={<Text style={styles.subtitleText}>{loc.total_balance_view.explanation}</Text>}
       />
-      <BlueCard>
-        <BlueText>{loc.total_balance_view.explanation}</BlueText>
-        <BlueSpacing20 />
-      </BlueCard>
-      <ListItem
-        title={loc.settings.privacy_temporary_screenshots}
-        Component={TouchableWithoutFeedback}
-        switch={{
-          onValueChange: onTemporaryScreenshotsValueChange,
-          value: !isPrivacyBlurEnabled,
-          disabled: isLoading === SettingsPrivacySection.All,
-        }}
-      />
-      <BlueCard>
-        <BlueText>{loc.settings.privacy_temporary_screenshots_instructions}</BlueText>
-      </BlueCard>
+
+      {!isDesktop && (
+        <ListItem
+          title={loc.settings.privacy_temporary_screenshots}
+          Component={TouchableWithoutFeedback}
+          switch={{
+            onValueChange: onTemporaryScreenshotsValueChange,
+            value: !isPrivacyBlurEnabled,
+            disabled: isLoading === SettingsPrivacySection.All,
+          }}
+          subtitle={<Text style={styles.subtitleText}>{loc.settings.privacy_temporary_screenshots_instructions}</Text>}
+        />
+      )}
+
       <ListItem
         title={loc.settings.privacy_do_not_track}
         Component={TouchableWithoutFeedback}
-        switch={{ onValueChange: onDoNotTrackValueChange, value: isDoNotTrackEnabled, disabled: isLoading === SettingsPrivacySection.All }}
+        switch={{
+          onValueChange: onDoNotTrackValueChange,
+          value: isDoNotTrackEnabled,
+          disabled: isLoading === SettingsPrivacySection.All,
+        }}
+        subtitle={<Text style={styles.subtitleText}>{loc.settings.privacy_do_not_track_explanation}</Text>}
       />
-      <BlueCard>
-        <BlueText>{loc.settings.privacy_do_not_track_explanation}</BlueText>
-      </BlueCard>
+
       {Platform.OS === 'ios' && (
         <>
-          <BlueSpacing40 />
-          <Text adjustsFontSizeToFit style={[styles.widgetsHeader, styleHooks.widgetsHeader]}>
-            {loc.settings.widgets}
-          </Text>
+          <BlueSpacing20 />
+          <Header leftText={loc.settings.widgets} />
           <ListItem
             title={loc.settings.total_balance}
             Component={TouchableWithoutFeedback}
@@ -200,18 +194,17 @@ const SettingsPrivacy: React.FC = () => {
               value: storageIsEncrypted ? false : isWidgetBalanceDisplayAllowed,
               disabled: isLoading === SettingsPrivacySection.All || storageIsEncrypted,
             }}
+            subtitle={
+              <>
+                <Text style={styles.subtitleText}>{loc.settings.total_balance_explanation}</Text>
+                {storageIsEncrypted && <Text style={styles.subtitleText}>{loc.settings.encrypted_feature_disabled}</Text>}
+              </>
+            }
           />
-          <BlueCard>
-            <BlueText>{loc.settings.total_balance_explanation}</BlueText>
-            <BlueSpacing20 />
-            {storageIsEncrypted && <BlueText>{loc.settings.encrypted_feature_disabled}</BlueText>}
-          </BlueCard>
         </>
       )}
 
-      <BlueSpacing20 />
       <ListItem title={loc.settings.privacy_system_settings} chevron onPress={openApplicationSettings} testID="PrivacySystemSettings" />
-      <BlueSpacing20 />
     </ScrollView>
   );
 };
@@ -220,13 +213,13 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
   },
-  widgetsHeader: {
-    fontWeight: 'bold',
-    fontSize: 30,
-    marginLeft: 17,
-  },
+
   headerContainer: {
     paddingVertical: 16,
+  },
+  subtitleText: {
+    fontSize: 14,
+    marginTop: 5,
   },
 });
 

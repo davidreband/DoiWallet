@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Image, LayoutAnimation, Pressable, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Image, LayoutAnimation, Pressable, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { Badge, Icon, Text } from '@rneui/themed';
 
 import {
@@ -148,7 +148,9 @@ class AmountInput extends Component {
   textInput = React.createRef();
 
   handleTextInputOnPress = () => {
-    this.textInput.current.focus();
+    if (this.textInput && this.textInput.current && typeof this.textInput.current.focus === 'function') {
+      this.textInput.current.focus();
+    }
   };
 
   handleChangeText = text => {
@@ -216,6 +218,13 @@ class AmountInput extends Component {
     });
   };
 
+  handleSelectionChange = event => {
+    const { selection } = event.nativeEvent;
+    if (selection.start !== selection.end || selection.start !== this.props.amount?.length) {
+      this.textInput?.setNativeProps({ selection: { start: this.props.amount?.length, end: this.props.amount?.length } });
+    }
+  };
+
   render() {
     const { colors, disabled, unit } = this.props;
     const amount = this.props.amount || 0;
@@ -269,11 +278,15 @@ class AmountInput extends Component {
     });
 
     return (
-      <TouchableWithoutFeedback
+      <Pressable
         accessibilityRole="button"
         accessibilityLabel={loc._.enter_amount}
         disabled={this.props.pointerEvents === 'none'}
-        onPress={() => this.textInput.focus()}
+        onPress={() => {
+          if (this.textInput && this.textInput.current && typeof this.textInput.current.focus === 'function') {
+            this.textInput.current.focus();
+          }
+        }}
       >
         <>
           <View style={styles.root}>
@@ -286,6 +299,7 @@ class AmountInput extends Component {
                 {amount !== DoichainUnit.MAX ? (
                   <TextInput
                     {...this.props}
+                    onSelectionChange={this.handleSelectionChange}
                     testID="BitcoinAmountInput"
                     keyboardType="numeric"
                     adjustsFontSizeToFit
@@ -354,7 +368,7 @@ class AmountInput extends Component {
             </View>
           )}
         </>
-      </TouchableWithoutFeedback>
+      </Pressable>
     );
   }
 }
@@ -383,7 +397,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 8,
+    margin: 16,
   },
   container: {
     flexDirection: 'row',

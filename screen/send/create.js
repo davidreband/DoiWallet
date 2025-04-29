@@ -16,99 +16,100 @@ import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import Notifications from '../../blue_modules/notifications';
 import { satoshiToBTC } from "../../blue_modules/currency";
 import { isDesktop } from '../../blue_modules/environment';
-import { BlueText } from "../../BlueComponents";
-import presentAlert from "../../components/Alert";
-import { DynamicQRCode } from "../../components/DynamicQRCode";
+import { BlueSpacing20, BlueText } from '../../BlueComponents';
+import presentAlert from '../../components/Alert';
+import { DynamicQRCode } from '../../components/DynamicQRCode';
 import { useTheme } from '../../components/themes';
-import usePrivacy from '../../hooks/usePrivacy';
+import { disallowScreenshot } from 'react-native-screen-capture';
 import loc from '../../loc';
 import { useStorage } from '../../hooks/context/useStorage';
 import { useBiometrics, unlockWithBiometrics } from '../../hooks/useBiometrics';
 import { useExtendedNavigation } from "../../hooks/useExtendedNavigation";
+import { useSettings } from '../../hooks/context/useSettings';
 
+  const SendCreate = () => {
+    const { fee, recipients, wallet,  memo = "", satoshiPerByte, psbt, showAnimatedQr, tx,} = useRoute().params;
 
-const SendCreate = () => {
-  const { fee, recipients, wallet,  memo = "", satoshiPerByte, psbt, showAnimatedQr, tx,} = useRoute().params;
+    const { txMetadata, fetchAndSaveWalletTransactions, isElectrumDisabled } = useStorage();
+    const route = useRoute();
+    const transaction = tx?bitcoin.Transaction.fromHex(tx):0;
+    const size = tx?transaction.virtualSize():1;
+    const { isPrivacyBlurEnabled } = useSettings();
+    const { colors } = useTheme();
+    const { setOptions } = useNavigation();
+   
+    const navigation = useExtendedNavigation();
 
-  const { txMetadata, fetchAndSaveWalletTransactions, isElectrumDisabled } = useStorage();
-  const route = useRoute();
-  const transaction = tx?bitcoin.Transaction.fromHex(tx):0;
-  const size = tx?transaction.virtualSize():1;
-  const { colors } = useTheme();
-  const { setOptions } = useNavigation();
-  const { enableBlur, disableBlur } = usePrivacy();
-  const navigation = useExtendedNavigation();
-
-  const inputs = psbt.data.inputs.map((input, index) => {
-    if (input.witnessUtxo) {
-      return {
-        address: bitcoin.address.fromOutputScript(input.witnessUtxo.script, DOICHAIN),
-        value: input.witnessUtxo.value,
-        index: index,
-        sig: input.finalScriptSig || input.finalScriptWitness || input.partialSig,
-      };
-    } else if (input.nonWitnessUtxo) {
-      const txin = psbt.txInputs[index];
-      const txout = bitcoin.Transaction.fromBuffer(input.nonWitnessUtxo).outs[txin.index];
-      return {
-        address: bitcoin.address.fromOutputScript(txout.script, DOICHAIN),
-        value: txout.value,
-        index: index,
-        sig: input.finalScriptSig || input.finalScriptWitness || input.partialSig,
-      };
-    } else {
-      throw new Error("Could not get input of #" + index);
-    }
-  });
-
-  const inputAndOutput = inputs.concat(recipients);
-
-  //console.log("____inputAndOutput___", inputAndOutput);
-  
- // const [isLoading, setIsLoading] = useState(true);
-  const { isBiometricUseCapableAndEnabled } = useBiometrics();
-  const broadcast = async () => {
-   // setIsLoading(true);
-    const isBiometricsEnabled = await isBiometricUseCapableAndEnabled();
-    if (isBiometricsEnabled) {
-      if (!(await unlockWithBiometrics())) {
-       // setIsLoading(false);
-        return;
-      }
-    }
-    try {
-      await BlueElectrum.ping();
-      await BlueElectrum.waitTillConnected();
-      const result = await wallet.broadcastTx(tx);
-      if (result) {
-      //  setIsLoading(false);      
-        const txDecoded = bitcoin.Transaction.fromHex(tx);
-        const txid = txDecoded.getId();
-        Notifications.majorTomToGroundControl([], [], [txid]);
-        if (memo) {
-          txMetadata[txid] = { memo };
-        }
-        navigation.navigate("Success", {
-          amount: undefined,
-          txid: txid,
-        });
-        await new Promise((resolve) => setTimeout(resolve, 3000)); // sleep to make sure network propagates
-        fetchAndSaveWalletTransactions(wallet.getID());
+    const inputs = psbt.data.inputs.map((input, index) => {
+      if (input.witnessUtxo) {
+        return {
+          address: bitcoin.address.fromOutputScript(input.witnessUtxo.script, DOICHAIN),
+          value: input.witnessUtxo.value,
+          index: index,
+          sig: input.finalScriptSig || input.finalScriptWitness || input.partialSig,
+        };
+      } else if (input.nonWitnessUtxo) {
+        const txin = psbt.txInputs[index];
+        const txout = bitcoin.Transaction.fromBuffer(input.nonWitnessUtxo).outs[txin.index];
+        return {
+          address: bitcoin.address.fromOutputScript(txout.script, DOICHAIN),
+          value: txout.value,
+          index: index,
+          sig: input.finalScriptSig || input.finalScriptWitness || input.partialSig,
+        };
       } else {
+        throw new Error("Could not get input of #" + index);
+      }
+    });
+
+    const inputAndOutput = inputs.concat(recipients);
+
+    //console.log("____inputAndOutput___", inputAndOutput);
+    
+  // const [isLoading, setIsLoading] = useState(true);
+    const { isBiometricUseCapableAndEnabled } = useBiometrics();
+    const broadcast = async () => {
+    // setIsLoading(true);
+      const isBiometricsEnabled = await isBiometricUseCapableAndEnabled();
+      if (isBiometricsEnabled) {
+        if (!(await unlockWithBiometrics())) {
+        // setIsLoading(false);
+          return;
+        }
+      }
+      try {
+        await BlueElectrum.ping();
+        await BlueElectrum.waitTillConnected();
+        const result = await wallet.broadcastTx(tx);
+        if (result) {
+        //  setIsLoading(false);      
+          const txDecoded = bitcoin.Transaction.fromHex(tx);
+          const txid = txDecoded.getId();
+          //Notifications.majorTomToGroundControl([], [], [txid]);
+          if (memo) {
+            txMetadata[txid] = { memo };
+          }
+          navigation.navigate("Success", {
+            amount: undefined,
+            txid: txid,
+          });
+          await new Promise((resolve) => setTimeout(resolve, 3000)); // sleep to make sure network propagates
+          fetchAndSaveWalletTransactions(wallet.getID());
+        } else {
+          /*
+          triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
+          setIsLoading(false);
+          */
+          presentAlert({ message: loc.errors.broadcast });
+        }
+      } catch (error) {
         /*
         triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
         setIsLoading(false);
         */
-        presentAlert({ message: loc.errors.broadcast });
+        presentAlert({ message: error.message });
       }
-    } catch (error) {
-      /*
-      triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
-      setIsLoading(false);
-      */
-      presentAlert({ message: error.message });
-    }
-  };
+    };
 
   const styleHooks = StyleSheet.create({
     transactionDetailsTitle: {
@@ -132,12 +133,12 @@ const SendCreate = () => {
   });
 
   useEffect(() => {
-    console.log("send/create - useEffect");
-    enableBlur();
+    console.log('send/create - useEffect');
+    if (!isDesktop) disallowScreenshot(isPrivacyBlurEnabled);
     return () => {
-      disableBlur();
+      if (!isDesktop) disallowScreenshot(false);
     };
-  }, [disableBlur, enableBlur]);
+  }, [isPrivacyBlurEnabled]);
 
   const exportTXN = useCallback(async () => {
     const fileName = `${Date.now()}.txn`;
@@ -343,18 +344,16 @@ const SendCreate = () => {
 
   const ListHeaderComponent = (
     <View>
-      {showAnimatedQr && psbt ? <DynamicQRCode value={psbt.toHex()} /> : null}
-      <BlueText style={[styles.cardText, styleHooks.cardText]}>
-        {loc.send.create_this_is_hex}
-      </BlueText>
-      <TextInput
-        testID="TxhexInput"
-        style={styles.cardTx}
-        height={72}
-        multiline
-        editable={false}
-        value={tx ? tx : psbt.toBase64()}
-      />
+      {showAnimatedQr && psbt ? (
+        <>
+          <BlueSpacing20 />
+          <DynamicQRCode value={psbt.toHex()} />
+          <BlueSpacing20 />
+        </>
+      ) : null}
+      <BlueText style={[styles.cardText, styleHooks.cardText]}>{loc.send.create_this_is_hex}</BlueText>
+      <TextInput testID="TxhexInput" style={styles.cardTx} height={72} multiline editable={false} value={tx ? tx : psbt.toBase64()} />
+
 
       <TouchableOpacity
         accessibilityRole="button"
