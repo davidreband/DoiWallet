@@ -75,7 +75,7 @@ class DeeplinkSchemaMatch {
             ]);
           } else if (action === 'openReceive') {
             completionHandler([
-              'ReceiveDetailsRoot',
+              'ReceiveDetails',
               {
                 screen: 'ReceiveDetails',
                 params: {
