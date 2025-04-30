@@ -99,6 +99,7 @@
     "details_label": "Description",
     "details_setAmount": "Receive with amount",
     "details_share": "Share...",
+    "address_not_found": "Unable to generate receiving address.",
     "header": "Receive",
     "reset": "Reset",
     "qrcode_for_the_address": "QR Code for the address",
