@@ -35,13 +35,15 @@ interface TransactionListItemProps {
   searchQuery?: string;
   style?: ViewStyle;
   renderHighlightedText?: (text: string, query: string) => JSX.Element;
+  onPress?: () => void;
 }
 
 type NavigationProps = NativeStackNavigationProp<DetailViewStackParamList>;
 
 
 export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
-  ({ item, itemPriceUnit = DoichainUnit.DOI, walletID, searchQuery, style, renderHighlightedText }) => {
+
+  ({ item, itemPriceUnit = DoichainUnit.DOI, walletID, searchQuery, style, renderHighlightedText, onPress: customOnPress }) => {
 
     const [subtitleNumberOfLines, setSubtitleNumberOfLines] = useState(1);
     const { colors } = useTheme();
@@ -302,6 +304,12 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
 
     const onPress = useCallback(async () => {
       menuRef?.current?.dismissMenu?.();
+      // If a custom onPress handler was provided, use it and return
+      if (customOnPress) {
+        customOnPress();
+        return;
+      }
+
       if (item.hash) {
         if (renderHighlightedText) {
           pop();
@@ -339,7 +347,7 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
           });
         }
       }
-    }, [item, renderHighlightedText, navigate, walletID, wallets]);
+    }, [item, renderHighlightedText, navigate, walletID, wallets, customOnPress]);
 
     const handleOnExpandNote = useCallback(() => {
       setSubtitleNumberOfLines(0);
@@ -484,7 +492,8 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
       prevProps.item.hash === nextProps.item.hash &&
       prevProps.item.received === nextProps.item.received &&
       prevProps.itemPriceUnit === nextProps.itemPriceUnit &&
-      prevProps.walletID === nextProps.walletID
+      prevProps.walletID === nextProps.walletID &&
+      prevProps.searchQuery === nextProps.searchQuery
     );
   },
 );

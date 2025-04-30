@@ -165,17 +165,6 @@ const MainRoot = () => {
             component={LazySignVerifyStackRoot}
             options={{ ...NavigationDefaultOptions, ...StatusBarLightOptions }}
           />
-          <DetailViewStack.Screen
-            name="ReceiveDetailsRoot"
-            initialParams={{ screen: 'ReceiveDetails', params: { walletID: '', address: '' } }}
-            component={ReceiveDetailsStackRoot}
-            options={navigationStyle({
-              closeButtonPosition: CloseButtonPosition.Left,
-              title: loc.receive.header,
-              presentation: 'modal',
-              statusBarStyle: 'light',
-            })(theme)}
-          />
 
           <DetailViewStack.Screen
             name="ScanQRCode"
