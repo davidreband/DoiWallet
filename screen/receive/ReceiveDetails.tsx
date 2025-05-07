@@ -72,7 +72,7 @@ const ReceiveDetails = () => {
   const [displayBalance, setDisplayBalance] = useState('');
   const [qrCodeSize, setQRCodeSize] = useState(90);
 
-  const wallet = wallets.find(w => w.getID() === walletID);
+  const wallet = walletID ? wallets.find(w => w.getID() === walletID) : undefined;
   const isBIP47Enabled = wallet?.isBIP47Enabled();
 
   const stylesHook = StyleSheet.create({
@@ -185,6 +185,12 @@ const ReceiveDetails = () => {
       triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
     }
   }, [showConfirmedBalance]);
+
+  useEffect(() => {
+    if (address) {
+      setAddressBIP21Encoded(address);
+    }
+  }, [address, setAddressBIP21Encoded]);
 
   const toolTipActions = useMemo(() => {
     const action = { ...CommonToolTipActions.PaymentsCode };
@@ -354,11 +360,6 @@ const ReceiveDetails = () => {
   }, []);
 
   const renderTabContent = () => {
-    // wallet is always defined here
-    if (!wallet) {
-      return null;
-    }
-
     if (currentTab === segmentControlValues[0]) {
       return (
         <View style={styles.container}>
@@ -378,7 +379,6 @@ const ReceiveDetails = () => {
                   )}
                 </>
               )}
-
               <View style={styles.qrCodeContainer}>
                 <QRCodeComponent value={bip21encoded} size={qrCodeSize} />
               </View>
@@ -387,10 +387,12 @@ const ReceiveDetails = () => {
           )}
         </View>
       );
-    } else {
+    } else if (wallet && isBIP47Enabled) {
+      // wallet is always defined here
       const qrValue =
-        currentTab === segmentControlValues[1] && isBIP47Enabled && 'getBIP47PaymentCode' in wallet && wallet.getBIP47PaymentCode();
-
+        wallet && 'getBIP47PaymentCode' in wallet && typeof wallet.getBIP47PaymentCode === 'function'
+          ? wallet.getBIP47PaymentCode()
+          : undefined;
       return (
         <View style={styles.container}>
           {qrValue ? (
@@ -406,6 +408,8 @@ const ReceiveDetails = () => {
           )}
         </View>
       );
+    } else {
+      return null;
     }
   };
 
@@ -479,22 +483,6 @@ const ReceiveDetails = () => {
     bottomModalRef.current?.dismiss();
   };
 
-  const handleShareButtonPressed = () => {
-    let message: string | false = false;
-    if (currentTab === segmentControlValues[0]) {
-      message = bip21encoded;
-    } else {
-      message = (wallet && 'getBIP47PaymentCode' in wallet && wallet.getBIP47PaymentCode()) ?? false;
-    }
-
-    if (!message) {
-      presentAlert({ title: loc.errors.error, message: loc.bip47.not_found });
-      return;
-    }
-
-    Share.open({ message }).catch(error => console.debug('Error sharing:', error));
-  };
-
   /**
    * @returns {string} BTC amount, accounting for current `customUnit` and `customUnit`
    */
@@ -515,8 +503,35 @@ const ReceiveDetails = () => {
     }
   };
 
+  const handleShareButtonPressed = () => {
+    let message: string | false = false;
+    if (currentTab === segmentControlValues[0]) {
+      message = bip21encoded;
+    } else {
+      message = (wallet && 'getBIP47PaymentCode' in wallet && wallet.getBIP47PaymentCode()) ?? false;
+    }
+
+    if (!message) {
+      presentAlert({ title: loc.errors.error, message: loc.bip47.not_found });
+      return;
+    }
+
+    Share.open({ message }).catch(error => console.debug('Error sharing:', error));
+  };
+
   return (
-    <>
+    <View style={styles.flex}>
+      {wallet && isBIP47Enabled ? (
+        <SafeArea style={styles.tabsContainer}>
+          <SegmentedControl
+            values={segmentControlValues}
+            selectedIndex={segmentControlValues.findIndex(tab => tab === currentTab)}
+            onChange={index => {
+              setCurrentTab(segmentControlValues[index]);
+            }}
+          />
+        </SafeArea>
+      ) : null}
       <ScrollView
         automaticallyAdjustContentInsets
         contentInsetAdjustmentBehavior="automatic"
@@ -529,18 +544,6 @@ const ReceiveDetails = () => {
         onLayout={onLayout}
       >
         <SafeArea style={stylesHook.root}>
-          {isBIP47Enabled && (
-            <View style={styles.tabsContainer}>
-              <SegmentedControl
-                values={segmentControlValues}
-                selectedIndex={segmentControlValues.findIndex(tab => tab === currentTab)}
-                onChange={index => {
-                  setCurrentTab(segmentControlValues[index]);
-                }}
-              />
-            </View>
-          )}
-
           {showAddress && renderTabContent()}
           {showAddress && address !== undefined && (
             <HandOffComponent title={loc.send.details_address} type={HandOffActivityType.ReceiveOnchain} userInfo={{ address }} />
@@ -617,7 +620,7 @@ const ReceiveDetails = () => {
 
         <BlueSpacing20 />
       </BottomModal>
-    </>
+    </View>
   );
 };
 
@@ -643,16 +646,16 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'space-between',
   },
+  flex: {
+    flex: 1,
+  },
   tabsContainer: {
-    marginTop: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
   scrollBody: {
-    marginTop: 16,
     flexGrow: 1,
     alignItems: 'center',
-    paddingHorizontal: 16,
   },
   share: {
     width: '100%',
@@ -704,7 +707,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     borderRadius: 12,
     padding: 16,
-    marginVertical: 24,
   },
   qrCodeContainer: {
     alignItems: 'center',
