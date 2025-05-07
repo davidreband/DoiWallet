@@ -64,7 +64,7 @@ import ToolsScreen from '../screen/settings/tools';
 import SettingsPrivacy from '../screen/settings/SettingsPrivacy';
 import { ScanQRCodeComponent } from './LazyLoadScanQRCodeStack';
 import { useIsLargeScreen } from '../hooks/useIsLargeScreen';
-import ScanLNDInvoiceRoot from './ScanLNDInvoiceStack';
+
 
 const DetailViewStackScreensStack = () => {
   const theme = useTheme();
