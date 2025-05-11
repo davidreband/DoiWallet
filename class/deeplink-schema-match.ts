@@ -75,7 +75,7 @@ class DeeplinkSchemaMatch {
             ]);
           } else if (action === 'openReceive') {
             completionHandler([
-              'ReceiveDetails',
+              'DetailViewStackScreensStack',
               {
                 screen: 'ReceiveDetails',
                 params: {
