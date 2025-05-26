@@ -14,7 +14,7 @@ class BitcoinPriceWidget : AppWidgetProvider() {
 
     companion object {
         private const val TAG = "BitcoinPriceWidget"
-        private const val SHARED_PREF_NAME = "group.io.bluewallet.bluewallet"
+        private const val SHARED_PREF_NAME = "group.org.doichain.doiwallet"
         
         /**
          * Update network status and apply proper theme
@@ -107,9 +107,6 @@ class BitcoinPriceWidget : AppWidgetProvider() {
         Log.d(TAG, "Cache cleared from $SHARED_PREF_NAME")
     }
 
-<<<<<<< HEAD:android/app/src/main/java/org/doichain/doiwallet/BitcoinPriceWidget.kt
-}
-=======
     /**
      * Called when widget is receiving configuration changes
      */
@@ -120,4 +117,3 @@ class BitcoinPriceWidget : AppWidgetProvider() {
         refreshWidget(context, appWidgetId)
     }
 }
->>>>>>> a8e603f3f (FIX: Android widgets):android/app/src/main/java/io/bluewallet/bluewallet/BitcoinPriceWidget.kt

@@ -41,28 +41,18 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-<<<<<<< HEAD
-        android:orientation="horizontal"
-        android:gravity="end">
-=======
         android:orientation="vertical"
         android:gravity="end"
         android:layout_gravity="end"
         android:layout_marginBottom="10dp">
->>>>>>> a8e603f3f (FIX: Android widgets)
         <TextView
             android:id="@+id/last_updated_label"
             style="@style/WidgetTextSecondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-<<<<<<< HEAD
-            android:text="Updated: "
-            android:textSize="10sp"
-=======
             android:text="@string/last_updated"
             android:textColor="@color/text_secondary"
             android:textSize="12sp"
->>>>>>> a8e603f3f (FIX: Android widgets)
             android:textStyle="bold"
             android:layout_marginEnd="6dp"
             android:visibility="gone"
@@ -118,8 +108,7 @@
             android:textSize="24sp"
             android:textColor="@color/text_primary"
             android:textStyle="bold"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="4dp"
+            
             android:visibility="gone"/>
     </LinearLayout>
     <LinearLayout
@@ -163,26 +152,6 @@
             android:textStyle="bold"
             android:layout_marginBottom="4dp"/>
 
-<<<<<<< HEAD
-        <TextView
-            android:id="@+id/percent_arrow"            
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/WidgetTextPrimary"
-            android:text=""
-            android:textSize="12sp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"/>    
-        <TextView
-            android:id="@+id/percent"
-            style="@style/WidgetTextPrimary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="12sp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"/>
-=======
             <ImageView
                 android:id="@+id/price_arrow"
                 android:layout_width="wrap_content"
@@ -212,6 +181,5 @@
                 android:layout_marginBottom="8dp"
                 android:layout_gravity="end"/>
         </LinearLayout>
->>>>>>> a8e603f3f (FIX: Android widgets)
-    </LinearLayout>
+   
 </LinearLayout>

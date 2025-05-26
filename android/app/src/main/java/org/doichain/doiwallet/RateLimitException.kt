@@ -1,4 +1,4 @@
-package io.bluewallet.bluewallet
+package org.doichain.doiwallet
 
 /**
  * Exception thrown when an API rate limit is encountered

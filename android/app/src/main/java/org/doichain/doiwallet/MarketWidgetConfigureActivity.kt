@@ -1,4 +1,4 @@
-package io.bluewallet.bluewallet
+package org.doichain.doiwallet
 
 import android.appwidget.AppWidgetManager
 import android.content.Intent
