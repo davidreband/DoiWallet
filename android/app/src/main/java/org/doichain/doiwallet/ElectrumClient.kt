@@ -29,12 +29,9 @@ class ElectrumClient {
         
         // Default list of Electrum servers to try
         val hardcodedPeers = listOf(
-            ElectrumServer("electrum1.bluewallet.io", 50001, false),
-            ElectrumServer("electrum2.bluewallet.io", 50001, false),
-            ElectrumServer("electrum3.bluewallet.io", 50001, false),
-            ElectrumServer("electrum1.bluewallet.io", 443, true),
-            ElectrumServer("electrum2.bluewallet.io", 443, true),
-            ElectrumServer("electrum3.bluewallet.io", 443, true)
+            ElectrumServer("itchy-jellyfish-89.doi.works", 50002, false),
+            ElectrumServer("big-parrot-60.doi.works", 50002, false),
+            ElectrumServer("ugly-bird-70.doi.works", 50002, false)
         )
     }
 

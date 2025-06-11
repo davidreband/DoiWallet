@@ -50,7 +50,7 @@ const ReceiveDetails = () => {
   const [customLabel, setCustomLabel] = useState('');
   const [customAmount, setCustomAmount] = useState('');
 
-  const [customUnit, setCustomUnit] = useState<BitcoinUnit>(DoichainUnit.DOI);
+  const [customUnit, setCustomUnit] = useState<DoichainUnit>(DoichainUnit.DOI);
 
   const [bip21encoded, setBip21encoded] = useState('');
   const [isCustom, setIsCustom] = useState(false);

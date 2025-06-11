@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
-import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { NativeSyntheticEvent, StyleSheet, View, LayoutAnimation, UIManager, Platform, Keyboard } from 'react-native';
 
 import {

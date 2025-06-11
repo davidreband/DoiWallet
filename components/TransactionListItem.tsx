@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, memo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { Linking, View, ViewStyle, StyleSheet } from 'react-native';
+import {Image, Linking, View, ViewStyle, StyleSheet } from 'react-native';
 import Lnurl from '../class/lnurl';
 import {Transaction } from '../class/wallets/types';
 import { NameOpTransaction, NameOpOutput } from '../types/transaction';
@@ -27,6 +27,7 @@ import { CommonToolTipActions } from '../typings/CommonToolTipActions';
 import { pop } from '../NavigationService';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import HighlightedText from './HighlightedText';
+import { getIPFSImageUrl } from '../utils/ipfs';
 
 const styles = StyleSheet.create({
   subtitle: {
@@ -102,7 +103,7 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
       let sub = '';
       // Check for nameOp with IPFS URL
       for (const output of item.outputs || []) {
-        if (output?.scriptPubKey?.nameOp) {          
+        if (output?.scriptPubKey?.nameOp) {
           sub = `[${output.scriptPubKey.nameOp.name}] `;
           break;
         }
@@ -191,6 +192,7 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
               setIsLoadingImage(true);
               setImageError(null);
               const imageUrl = await getIPFSImageUrl(scriptPubKey.nameOp.value);
+
               if (imageUrl) {
                 setIpfsImageUrl(imageUrl);
                 break;

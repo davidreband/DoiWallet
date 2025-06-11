@@ -16,7 +16,7 @@ enum DoichainUnit: String, Codable, Equatable, CustomStringConvertible{
     case localCurrency = "Local Currency"
     case max = "MAX"
 
-    /// Provides a user-friendly description of the `BitcoinUnit`.
+    /// Provides a user-friendly description of the `DoichainUnit`.
     var description: String {
         switch self {
         case .DOI:
@@ -30,7 +30,7 @@ enum DoichainUnit: String, Codable, Equatable, CustomStringConvertible{
         }
     }
 
-    /// Initializes a `BitcoinUnit` from a raw string.
+    /// Initializes a `DoichainUnit` from a raw string.
     /// - Parameter rawString: The raw string representing the balance unit.
     init(rawString: String) {
         switch rawString.lowercased() {

@@ -46,7 +46,7 @@ import { useSettings } from '../../hooks/context/useSettings';
 import { getClipboardContent } from '../../blue_modules/clipboard';
 import HandOffComponent from '../../components/HandOffComponent';
 import { HandOffActivityType } from '../../components/types';
-import WalletGradient from '../../class/wallet-gradient';
+
 
 const buttonFontSize =
   PixelRatio.roundToNearestPixel(Dimensions.get('window').width / 26) > 22

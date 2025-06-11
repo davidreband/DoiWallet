@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Alert, NativeModules } from 'react-native';
 import { subscribeToTransactionConfirmed, getAllTxIds } from '../helpers/transactionsMonitorUtils'; // Adjust the path as necessary
 import { useStorage } from '../hooks/context/useStorage';
-import { Chain } from '../models/bitcoinUnits';
+import { Chain } from '../models/doichainUnits';
 import LiveActivityManager from 'react-native-live-activity';
 
 type StartLiveActivityParams = {

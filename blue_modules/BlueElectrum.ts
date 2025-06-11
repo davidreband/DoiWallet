@@ -87,7 +87,7 @@ const defaultPeer = { host: 'itchy-jellyfish-89.doi.works', ssl: 50002 };
 export const hardcodedPeers: Peer[] = [
   { host: 'itchy-jellyfish-89.doi.works', ssl: 50002 },
   { host: 'big-parrot-60.doi.works', ssl: 50002 },
-  { host: 'ugly-bird-70.doi.works', ssl: 50002 },
+  { host: 'ugly-bird-70.doi.works', ssl: 50002 }
 ];
 
 export const suggestedServers: Peer[] = hardcodedPeers.map(peer => ({
@@ -483,7 +483,7 @@ async function getRandomDynamicPeer(): Promise<Peer> {
 export const getBalanceByAddress = async function (address: string): Promise<{ confirmed: number; unconfirmed: number }> {
   try {
     if (!mainClient) throw new Error('Electrum client is not connected');
-    const script = bitcoin.address.toOutputScript(address);
+    const script = bitcoin.address.toOutputScript(address, DOICHAIN);
     const hash = bitcoin.crypto.sha256(script);
     const reversedHash = Buffer.from(hash).reverse();
     const balance = await mainClient.blockchainScripthash_getBalance(reversedHash.toString('hex'));

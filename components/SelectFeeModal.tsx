@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-nativ
 import BottomModal, { BottomModalHandle } from './BottomModal';
 import { useTheme } from './themes';
 import loc, { formatBalance } from '../loc';
-
 import { DoichainUnit} from '../models/doichainUnits';
 import { IFee } from '../screen/send/SendDetails';
 
@@ -40,7 +39,7 @@ interface FeeOptionProps {
   disabled?: boolean;
   onPress: () => void;
   formatFee: (fee: number) => string;
-  feeUnit: BitcoinUnit;
+  feeUnit: DoichainUnit;
 }
 
 const FeeOption = React.memo<FeeOptionProps>(
@@ -335,7 +334,7 @@ const SelectFeeModal = forwardRef<BottomModalHandle, SelectFeeModalProps>(
                   onBlur={handleCustomFeeBlur}
                 />
                 {customFeeValue && /^\d+(\.\d+)?$/.test(customFeeValue) && Number(customFeeValue) > 0 && (
-                  <Text style={stylesHook.feeModalValue}>{loc.units.sat_vbyte}</Text>
+                  <Text style={stylesHook.feeModalValue}>{loc.units.sat_byte}</Text>
                 )}
               </View>
             </View>

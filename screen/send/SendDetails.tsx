@@ -409,41 +409,8 @@ const SendDetails = () => {
       }
     });
 
-    
 
-      let targets = [];
-      for (const transaction of addresses) {
-        if (transaction.amount === DoichainUnit.MAX) {
-          // single output with MAX
-          targets = [{ address: transaction.address }];
-          break;
-        }
-        const value = transaction.amountSats;
-        if (Number(value) > 0) {
-          targets.push({ address: transaction.address, value });
-        } else if (transaction.amount) {
-          if (btcToSatoshi(transaction.amount) > 0) {
-            targets.push({ address: transaction.address, value: btcToSatoshi(transaction.amount) });
-          }
-        }
-      }
-
-      // if targets is empty, insert dust
-      if (targets.length === 0) {
-        targets.push({ address: '36JxaUrpDzkEerkTf1FzwHNE1Hb7cCjgJV', value: 546 });
-      }
-
-      // replace wrong addresses with dump
-      targets = targets.map(t => {
-        if (!wallet.isAddressValid(t.address)) {
-          return { ...t, address: '36JxaUrpDzkEerkTf1FzwHNE1Hb7cCjgJV' };
-        } else {
-          return t;
-        }
-      });
-
-
-    for (const opt of options) {      
+    for (const opt of options) {
       let flag = false;
       while (true) {
         try {
@@ -1201,12 +1168,12 @@ const SendDetails = () => {
       if (buttonIndex === 1) {
         Keyboard.dismiss();
         setAddresses(addrs => {
-          addrs[scrollIndex.current].amount = BitcoinUnit.MAX;
-          addrs[scrollIndex.current].amountSats = BitcoinUnit.MAX;
+          addrs[scrollIndex.current].amount = DoichainUnit.MAX;
+          addrs[scrollIndex.current].amountSats = DoichainUnit.MAX;
           return [...addrs];
         });
         setAddresses(addrs => {
-          addrs[scrollIndex.current].unit = BitcoinUnit.BTC;
+          addrs[scrollIndex.current].unit = DoichainUnit.DOI;
           return [...addrs];
         });
       }
@@ -1635,7 +1602,7 @@ const SendDetails = () => {
           feePrecalc={feePrecalc}
           feeRate={feeRate}
           setCustomFee={setCustomFee}
-          feeUnit={addresses[scrollIndex.current]?.unit ?? BitcoinUnit.BTC}
+          feeUnit={addresses[scrollIndex.current]?.unit ?? DoichainUnit.DOI}
         />
       </View>
       <DismissKeyboardInputAccessory />

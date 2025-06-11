@@ -13,8 +13,7 @@ import ReceiveDetailsStackRoot from './ReceiveDetailsStack';
 const DrawerRoot = lazy(() => import('./DrawerRoot'));
 const AddWalletStack = lazy(() => import('./AddWalletStack'));
 const SendDetailsStack = lazy(() => import('./SendDetailsStack'));
-const LNDCreateInvoiceRoot = lazy(() => import('./LNDCreateInvoiceStack'));
-const ScanLNDInvoiceRoot = lazy(() => import('./ScanLNDInvoiceStack'));
+
 const AztecoRedeemStackRoot = lazy(() => import('./AztecoRedeemStack'));
 const WalletExportStack = lazy(() => import('./WalletExportStack'));
 const ExportMultisigCoordinationSetupStack = lazy(() => import('./ExportMultisigCoordinationSetupStack'));

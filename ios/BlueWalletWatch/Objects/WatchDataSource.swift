@@ -295,7 +295,7 @@ class WatchDataSource: NSObject, ObservableObject, WCSessionDelegate {
                 balance: "\(balance) BTC",
                 type: WalletType(rawString: typeString),
                 chain: chain,
-                preferredBalanceUnit: BitcoinUnit(rawString: preferredBalanceUnitString),
+                preferredBalanceUnit: DoichainUnit(rawString: preferredBalanceUnitString),
                 receiveAddress: receiveAddress,
                 transactions: transactionsProcessed,
                 xpub: xpub,

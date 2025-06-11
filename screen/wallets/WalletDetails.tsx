@@ -102,7 +102,7 @@ const WalletDetails: React.FC = () => {
   const presentWalletHasBalanceAlert = useCallback(async () => {
     triggerHapticFeedback(HapticFeedbackTypes.NotificationWarning);
     try {
-      const balance = formatBalanceWithoutSuffix(wallet.getBalance(), BitcoinUnit.SATS, true);
+      const balance = formatBalanceWithoutSuffix(wallet.getBalance(), DoichainUnit.SWARTZ , true);
       const walletBalanceConfirmation = await prompt(
         loc.wallets.details_delete_wallet,
         loc.formatString(loc.wallets.details_del_wb_q, { balance }),
@@ -163,7 +163,7 @@ const WalletDetails: React.FC = () => {
   }, [isBiometricUseCapableAndEnabled, navigateToOverviewAndDeleteWallet, presentWalletHasBalanceAlert, wallet]);
 
   const exportHistoryContent = useCallback(() => {
-    const headers = [loc.transactions.date, loc.transactions.txid, `${loc.send.create_amount} (${BitcoinUnit.BTC})`, loc.send.create_memo];
+    const headers = [loc.transactions.date, loc.transactions.txid, `${loc.send.create_amount} (${DoichainUnit.DOI})`, loc.send.create_memo];
     if (wallet.chain === Chain.OFFCHAIN) {
       headers.push(loc.lnd.payment);
     }
@@ -172,7 +172,7 @@ const WalletDetails: React.FC = () => {
     const transactions = wallet.getTransactions();
 
     transactions.forEach((transaction: Transaction & LightningTransaction) => {
-      const value = formatBalanceWithoutSuffix(transaction.value || 0, BitcoinUnit.BTC, true);
+      const value = formatBalanceWithoutSuffix(transaction.value || 0, DoichainUnit.DOI, true);
       let hash: string = transaction.hash || '';
       let memo = (transaction.hash && txMetadata[transaction.hash]?.memo?.trim()) || '';
       let status = '';
@@ -492,12 +492,7 @@ const WalletDetails: React.FC = () => {
                 </>
               )}
 
-              {wallet.type === LightningCustodianWallet.type && (
-                <>
-                  <Text style={[styles.textLabel1, stylesHook.textLabel1]}>{loc.wallets.details_connected_to.toLowerCase()}</Text>
-                  <BlueText>{wallet.getBaseURI()}</BlueText>
-                </>
-              )}
+             
 
               {wallet.type === HDAezeedWallet.type && (
                 <>

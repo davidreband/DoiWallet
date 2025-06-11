@@ -95,8 +95,8 @@ interface SettingsContextType {
   setIsQuickActionsEnabledStorage: (value: boolean) => Promise<void>;
   isTotalBalanceEnabled: boolean;
   setIsTotalBalanceEnabledStorage: (value: boolean) => Promise<void>;
-  totalBalancePreferredUnit: BitcoinUnit;
-  setTotalBalancePreferredUnitStorage: (unit: BitcoinUnit) => Promise<void>;
+  totalBalancePreferredUnit: DoichainUnit;
+  setTotalBalancePreferredUnitStorage: (unit: DoichainUnit) => Promise<void>;
   selectedBlockExplorer: BlockExplorer;
   setBlockExplorerStorage: (explorer: BlockExplorer) => Promise<boolean>;
   isElectrumDisabled: boolean;
@@ -124,7 +124,7 @@ const defaultSettingsContext: SettingsContextType = {
   setIsQuickActionsEnabledStorage: async () => {},
   isTotalBalanceEnabled: true,
   setIsTotalBalanceEnabledStorage: async () => {},
-  totalBalancePreferredUnit: BitcoinUnit.BTC,
+  totalBalancePreferredUnit: DoichainUnit.DOI,
   setTotalBalancePreferredUnitStorage: async () => {},
   selectedBlockExplorer: BLOCK_EXPLORERS.default,
   setBlockExplorerStorage: async () => false,
@@ -145,7 +145,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
   const [isClipboardGetContentEnabled, setIsClipboardGetContentEnabled] = useState<boolean>(true);
   const [isQuickActionsEnabled, setIsQuickActionsEnabled] = useState<boolean>(true);
   const [isTotalBalanceEnabled, setIsTotalBalanceEnabled] = useState<boolean>(true);
-  const [totalBalancePreferredUnit, setTotalBalancePreferredUnit] = useState<BitcoinUnit>(BitcoinUnit.BTC);
+  const [totalBalancePreferredUnit, setTotalBalancePreferredUnit] = useState<DoichainUnit>(DoichainUnit.DOI);
   const [selectedBlockExplorer, setSelectedBlockExplorer] = useState<BlockExplorer>(BLOCK_EXPLORERS.default);
   const [isElectrumDisabled, setIsElectrumDisabled] = useState<boolean>(true);
 

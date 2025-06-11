@@ -283,7 +283,7 @@ const PsbtMultisig = () => {
         <View style={styles.textBtcUnit}>
           <BlueText selectable style={[styles.textBtcUnitValue, stylesHook.textBtcUnitValue]}>
             {' '}
-            {BitcoinUnit.BTC}
+            {DoichainUnit.DOI}
           </BlueText>
         </View>
       </View>

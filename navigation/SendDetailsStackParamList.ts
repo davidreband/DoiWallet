@@ -95,7 +95,7 @@ export type SendDetailsStackParamList = {
   Success: {
     fee?: number;
     amount: number;
-    amountUnit?: BitcoinUnit;
+    amountUnit?: DoichainUnit;
     txid?: string;
     invoiceDescription?: string;
   };

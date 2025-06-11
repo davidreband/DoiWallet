@@ -366,8 +366,23 @@ export const WalletCarouselItem: React.FC<WalletCarouselItemProps> = React.memo(
                       item.getLabel()
                     )}
                   </Text>
-                )}
-              </View>
+                  <View style={iStyles.balanceContainer}>
+                    {item.hideBalance ? (
+                      <>
+                        <BlueSpacing10 />
+                        <BlurredBalanceView />
+                      </>
+                    ) : (
+                      <Text
+                        numberOfLines={1}
+                        adjustsFontSizeToFit
+                        key={`${balance}`} // force component recreation on balance change. To fix right-to-left languages, like Farsi
+                        style={[iStyles.balance, { color: colors.inverseForegroundColor }]}
+                      >
+                        {`${balance} `}
+                      </Text>
+                    )}
+                  </View>
               <Text style={iStyles.br} />
               <Text numberOfLines={1} style={[iStyles.latestTx, { color: colors.inverseForegroundColor }]}>
                 {loc.wallets.list_latest_transaction}
@@ -375,6 +390,8 @@ export const WalletCarouselItem: React.FC<WalletCarouselItemProps> = React.memo(
               <Text numberOfLines={1} style={[iStyles.latestTxTime, { color: colors.inverseForegroundColor }]}>
                 {latestTransactionText}
               </Text>
+              </>
+              )}
             </LinearGradient>
           </View>
         </Pressable>

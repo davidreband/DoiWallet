@@ -45,7 +45,7 @@ const AddressInput = ({
   style,
 }: AddressInputProps) => {
   const { colors } = useTheme();
-  const { isClipboardGetContentEnabled } = useSettings();
+ 
   const stylesHook = StyleSheet.create({
     root: {
       borderColor: colors.formBorder,

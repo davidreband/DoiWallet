@@ -127,7 +127,7 @@ class MarketWidgetUpdateWorker(context: Context, workerParams: WorkerParameters)
             
             // Fetch market data
             Log.i(TAG, "About to call MarketAPI.fetchMarketData")
-            val marketData = withContext(Dispatchers.IO) {
+            val marketData: MarketData = withContext(Dispatchers.IO) {
                 MarketAPI.fetchMarketData(applicationContext, currency)
             }
             Log.i(TAG, "Received market data from API: $marketData with nextBlock=${marketData.nextBlock}")

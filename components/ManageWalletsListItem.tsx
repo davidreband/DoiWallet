@@ -293,7 +293,7 @@ const ManageWalletsListItem: React.FC<ManageWalletsListItemProps> = ({
         balance: 0,
         transactions: 0,
       },
-      balanceUnit: wallet.getPreferredBalanceUnit() || BitcoinUnit.BTC,
+      balanceUnit: wallet.getPreferredBalanceUnit() || DoichainUnit.DOI,
       walletID: item.data.walletID,
       allowSignVerifyMessage: wallet.allowSignVerifyMessage ? wallet.allowSignVerifyMessage() : false,
       onPress: navigateToAddress ? () => navigateToAddress(item.data.address, item.data.walletID) : undefined,
@@ -451,7 +451,7 @@ const WalletGroupComponent: React.FC<WalletGroupProps> = ({
                     <View style={childItemStyle()}>
                       <TransactionListItem
                         item={transaction.data}
-                        itemPriceUnit={wallet.getPreferredBalanceUnit() || BitcoinUnit.BTC}
+                        itemPriceUnit={wallet.getPreferredBalanceUnit() || DoichainUnit.DOI}
                         walletID={wallet.getID()}
                         searchQuery={state.searchQuery}
                         renderHighlightedText={renderHighlightedText}
@@ -481,7 +481,7 @@ const WalletGroupComponent: React.FC<WalletGroupProps> = ({
                       balance: 0,
                       transactions: 0,
                     },
-                    balanceUnit: wallet.getPreferredBalanceUnit() || BitcoinUnit.BTC,
+                    balanceUnit: wallet.getPreferredBalanceUnit() || DoichainUnit.DOI,
                     walletID: address.data.walletID,
                     allowSignVerifyMessage: wallet.allowSignVerifyMessage ? wallet.allowSignVerifyMessage() : false,
                     // Use the onPress function returned by navigateToAddress instead of calling it directly
