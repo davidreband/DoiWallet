@@ -980,8 +980,8 @@ const SendDetails = () => {
           psbt.setVersion(VERSION);
           try {
             let isIncluded = changeAddresses.includes(String(address)) || externalAddresses.includes(String(address)) ? true : false;
-            //const utf16Decoder = new TextDecoder('ascii');
-            const utf16Decoder = new TextDecoder('utf-8');
+            const utf16Decoder = new TextDecoder('ascii');
+            //const utf16Decoder = new TextDecoder('utf-8');
             const nameId = utf16Decoder.decode(chunks[1]);
             //const nameId = utf16Decoder.decode(Buffer.from(chunks[1].toString(), 'hex'));
             //const nameValue = utf16Decoder.decode(Buffer.from(chunks[2].toString(), 'hex'));

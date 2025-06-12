@@ -361,9 +361,9 @@ const TransactionDetails = () => {
           <>            
             {nameOps.map((nameOp: { name: string, value: string }, index: number) => (
               <React.Fragment key={index}>
-                <BlueText style={styles.rowCaption}>{loc.transactions.nameOps_name}: {nameOp.name}aa</BlueText>
+                <BlueText style={styles.rowCaption}>{loc.transactions.nameOps_name}: {nameOp.name}</BlueText>
                 
-                <BlueText style={styles.rowCaption}>{loc.transactions.nameOps_value}: {nameOp.value}aa</BlueText>
+                <BlueText style={styles.rowCaption}>{loc.transactions.nameOps_value}: {nameOp.value}</BlueText>
                 <BlueText style={styles.rowValue}> </BlueText>
               </React.Fragment>
             ))}
