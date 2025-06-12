@@ -96,7 +96,7 @@ const SendDetails = () => {
   const feeUnit = route.params?.feeUnit ?? DoichainUnit.DOI;
   const amountUnit = route.params?.amountUnit ?? DoichainUnit.DOI;
   const frozenBalance = route.params?.frozenBalance ?? 0;
-  const transactionMemo = route.params?.transactionMemo;  
+  const transactionMemo = route.params?.transactionMemo;
   const utxos = route.params?.utxos;
   const payjoinUrl = route.params?.payjoinUrl;
   const isTransactionReplaceable = route.params?.isTransactionReplaceable;
@@ -166,6 +166,7 @@ const SendDetails = () => {
   useEffect(() => {
     // decode route params
     const currentAddress = addresses[scrollIndex.current];
+    
     if (routeParams.uri && DeeplinkSchemaMatch.isPsbtNameOpTransactions(routeParams.uri)) {
       try {
         const psbt = bitcoin.Psbt.fromBase64(routeParams.uri, { network: DOICHAIN });
@@ -250,6 +251,7 @@ const SendDetails = () => {
         return [...u];
       });
     } else if (routeParams.nameOp) {
+      
       const { nameId, nameValue, sendTo } = routeParams.nameOp;
       setAddresses([{ address: sendTo, key: String(Math.random()) } as IPaymentDestinations]);
       // Store nameOp data in txMetadata for use in transaction creation
@@ -264,7 +266,7 @@ const SendDetails = () => {
           }
         };
         txMetadata[tempTxId] = metadata;
-      }  
+      }
     } else if (routeParams.addRecipientParams) {
       // used to add a recipient, mainly from contacts aka paymentcodes screen
       const index = addresses.length === 0 ? 0 : scrollIndex.current;
@@ -978,9 +980,13 @@ const SendDetails = () => {
           psbt.setVersion(VERSION);
           try {
             let isIncluded = changeAddresses.includes(String(address)) || externalAddresses.includes(String(address)) ? true : false;
-            const utf16Decoder = new TextDecoder('ascii');
-            const nameId = utf16Decoder.decode(Buffer.from(chunks[1].toString(), 'hex'));
-            const nameValue = utf16Decoder.decode(Buffer.from(chunks[2].toString(), 'hex'));
+            //const utf16Decoder = new TextDecoder('ascii');
+            const utf16Decoder = new TextDecoder('utf-8');
+            const nameId = utf16Decoder.decode(chunks[1]);
+            //const nameId = utf16Decoder.decode(Buffer.from(chunks[1].toString(), 'hex'));
+            //const nameValue = utf16Decoder.decode(Buffer.from(chunks[2].toString(), 'hex'));
+            const nameValue = utf16Decoder.decode(chunks[2]);
+           
             return { ...output, nameId, nameValue, isIncluded };
           } catch (e) {
             console.log('error during decode', e);

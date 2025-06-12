@@ -1264,11 +1264,11 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
       let outputScript;
       const extendedOutput = output as ExtendedCoinSelectOutput;
 
-      if (!change && nameOpAsInput && nameOpAsInput.nameId ) {        
+      if (!change && nameOpAsInput && nameOpAsInput.nameId ) {
         // Create NameOp script using the utility function
         const { nameId, nameValue, sendTo } = nameOpAsInput;
         
-        outputScript = getNameOPStackScript(nameId, nameValue, sendTo, DOICHAIN.name);        
+        outputScript = getNameOPStackScript(nameId, nameValue, sendTo, DOICHAIN.name);
         
         psbt.setVersion(VERSION);
         

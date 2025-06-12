@@ -70,7 +70,7 @@ const TransactionDetails = () => {
   const { selectedBlockExplorer } = useSettings();
   const [from, setFrom] = useState<string[]>([]);
   const [to, setTo] = useState<string[]>([]);
-  const [nameOps, setNameOps] = useState<{ name: string; value: string }[]>([]);  
+  const [nameOps, setNameOps] = useState<{ name: string; value: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [tx, setTX] = useState<Transaction>();
   const [memo, setMemo] = useState<string>('');
@@ -112,7 +112,7 @@ const TransactionDetails = () => {
         let foundTx: Transaction | false = false;
         let newFrom: string[] = [];
         let newTo: string[] = [];
-        let newNameOps: { name: string; value: string }[] = [];       
+        let newNameOps: { name: string; value: string }[] = [];
         for (const transaction of getTransactions(undefined, Infinity, true)) {
           if (transaction.hash === hash) {
             foundTx = transaction;
@@ -361,9 +361,9 @@ const TransactionDetails = () => {
           <>            
             {nameOps.map((nameOp: { name: string, value: string }, index: number) => (
               <React.Fragment key={index}>
-                <BlueText style={styles.rowCaption}>{loc.transactions.nameOps_name}: {nameOp.name}</BlueText>
+                <BlueText style={styles.rowCaption}>{loc.transactions.nameOps_name}: {nameOp.name}aa</BlueText>
                 
-                <BlueText style={styles.rowCaption}>{loc.transactions.nameOps_value}: {nameOp.value}</BlueText>
+                <BlueText style={styles.rowCaption}>{loc.transactions.nameOps_value}: {nameOp.value}aa</BlueText>
                 <BlueText style={styles.rowValue}> </BlueText>
               </React.Fragment>
             ))}
