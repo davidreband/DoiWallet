@@ -87,7 +87,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
 
-        versionCode 123
+        versionCode 124
         versionName "7.1.8"
 
         testBuildType System.getProperty('testBuildType', 'debug')
