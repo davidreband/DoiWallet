@@ -63,7 +63,7 @@ import { useKeyboard } from '../../hooks/useKeyboard';
 import loc, { formatBalance, formatBalanceWithoutSuffix } from '../../loc';
 import { DoichainUnit, Chain } from "../../models/doichainUnits";
 import { TTXMetadata } from '../../class/blue-app';
-import { DOICHAIN } from "../../blue_modules/network.js";
+import { DOICHAIN } from '../../blue_modules/network.js';
 import NetworkTransactionFees, { NetworkTransactionFee } from '../../models/networkTransactionFees';
 import { SendDetailsStackParamList } from '../../navigation/SendDetailsStackParamList';
 import { CommonToolTipActions, ToolTipAction } from '../../typings/CommonToolTipActions';
@@ -147,21 +147,14 @@ const SendDetails = () => {
     return initialFee;
   }, [customFee, feePrecalc, networkTransactionFees]);
 
-  useEffect(() => {
-    console.log('send/details - useEffect');
-    if (wallet) {
-      setHeaderRightOptions();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [colors, wallet, isTransactionReplaceable, balance, addresses, isEditable, isLoading]);
 
   useEffect(() => {
-    const data = route.params?.onBarScanned;    
-    if (data && !data.toLowerCase().startsWith('doichain:')) {     
-      navigation.setParams({ onBarScanned: undefined });      
+    const data = routeParams?.onBarScanned;
+    if (data && !data.toLowerCase().startsWith('doichain:')) {
+      navigation.setParams({ onBarScanned: undefined });
       handlePsbtSign();
     }
-  }, [route.params?.onBarScanned]);
+  }, [routeParams?.onBarScanned]);
   
   useEffect(() => {
     // decode route params
@@ -225,7 +218,7 @@ const SendDetails = () => {
 
         if (memo?.trim().length > 0) {
           setTransactionMemo(memo);
-        }        
+        }
       } catch (error) {
         console.log(error);
         triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
@@ -431,8 +424,13 @@ const SendDetails = () => {
       }
     }
 
-    setFeePrecalc(newFeePrecalc);
-    setParams({ frozenBalance: frozen });
+    if (JSON.stringify(feePrecalc) !== JSON.stringify(newFeePrecalc)) {
+      setFeePrecalc(newFeePrecalc);
+    }
+  
+   if (frozenBalance !== undefined) {
+    setParams({ frozenBalance: frozen  });
+  }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet, networkTransactionFees, utxos, addresses, feeRate, dumb]);
 
@@ -502,18 +500,20 @@ const SendDetails = () => {
 
       const dataWithoutSchema = data.replace('doichain:', '').replace('DOICHAIN:', '');
       if (wallet.isAddressValid(dataWithoutSchema) || cl.isPaymentCodeValid(dataWithoutSchema)) {
+        
         setAddresses(addrs => {
           addrs[scrollIndex.current].address = dataWithoutSchema;
           return [...addrs];
         });
         setIsLoading(false);
         setTimeout(() => scrollView.current?.scrollToIndex({ index: currentIndex, animated: false }), 50);
+        
         return;
       }
 
       let address = '';
       let options: TOptions;
-      try {       
+      try {
         if (!data.toLowerCase().startsWith('doichain:')) data = `doichain:${data}`;
         const decoded = DeeplinkSchemaMatch.bip21decode(data);
         address = decoded.address;
@@ -526,7 +526,6 @@ const SendDetails = () => {
         options = decoded.options;
       }
 
-      console.log('options', options);
       if (wallet.isAddressValid(address)) {
         setAddresses(addrs => {
           addrs[scrollIndex.current].address = address;
@@ -1037,6 +1036,7 @@ const SendDetails = () => {
     console.log('SendDetails - onBarScanned hook triggered');
     const data = routeParams.onBarScanned;
     console.log('SendDetails - data:', data);
+    console.log('SendDetails - selectedDataProcessor.current:', selectedDataProcessor.current);
     if (data) {
       if (selectedDataProcessor.current) {
         console.log('SendDetails - selectedDataProcessor:', selectedDataProcessor.current);
@@ -1062,7 +1062,12 @@ const SendDetails = () => {
       }
     }
     selectedDataProcessor.current = undefined;
-   // setParams({ onBarScanned: undefined });
+   
+   // Verhindert Endlosschleife
+   if (routeParams.onBarScanned) {
+      navigation.setParams({ onBarScanned: undefined });
+    }
+   
   }, [
     handlePsbtSign,
     importQrTransactionOnBarScanned,
@@ -1513,6 +1518,8 @@ const SendDetails = () => {
           <AddressInput
             onChangeText={text => {
               const { address, amount, memo, payjoinUrl: pjUrl } = DeeplinkSchemaMatch.decodeBitcoinUri(text.trim());
+
+              console.log('____Decoded Bitcoin URI:', { address, amount, memo, pjUrl });
               setAddresses(addrs => {
                 item.address = address || text.trim();
                 item.amount = amount || item.amount;
@@ -1719,10 +1726,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 4,
-  },
-  transactionItemContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
   },
   amountInputContainer: {
     marginBottom: 8,
