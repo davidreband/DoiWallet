@@ -26,8 +26,7 @@ let hardcodedPeers = DefaultElectrumPeers.map { settings in
 let DefaultElectrumPeers = [
     UserDefaultsElectrumSettings(host: "itchy-jellyfish-89.doi.works", port: 5001, sslPort: 50002), 
     UserDefaultsElectrumSettings(host: "big-parrot-60.doi.works", port: 5001, sslPort: 50002),
-    UserDefaultsElectrumSettings(host: "ugly-bird-70.doi.works", port: 5001, sslPort: 50002),
-] 
+]
 
 class UserDefaultsGroup {
     static private let suite = UserDefaults(suiteName: UserDefaultsGroupKey.GroupName.rawValue)

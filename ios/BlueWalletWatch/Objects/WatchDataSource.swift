@@ -335,7 +335,7 @@ class WatchDataSource: NSObject, ObservableObject, WCSessionDelegate {
             }
             
             do {
-                let widgetData = WidgetDataStore(rate: "\(marketData.rate)", lastUpdate: marketData.dateString, rateDouble: marketData.rate)
+                let widgetData = WidgetDataStore(rate: "\(marketData.rate)", lastUpdate: marketData.dateString, rateDouble: marketData.rate, volume:0.00,  percent:0.00 )
                 if let encodedData = try? JSONEncoder().encode(widgetData) {
                     self.groupUserDefaults?.set(encodedData, forKey: MarketData.string)
                     print("Market data updated for currency: \(fiatCurrency)")

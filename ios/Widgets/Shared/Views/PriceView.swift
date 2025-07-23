@@ -1,3 +1,4 @@
+
 //
 //  PriceView.swift
 //  BlueWallet
@@ -9,22 +10,30 @@
 import SwiftUI
 import WidgetKit
 
-@available(iOS 16.0, *)
+@available(iOS 17.0, *)
 struct PriceView: View {
   var entry: PriceWidgetEntry
   
   var body: some View {
     switch entry.family {
     case .accessoryInline, .accessoryCircular, .accessoryRectangular:
-      if #available(iOSApplicationExtension 16.0, *) {
+      if #available(iOSApplicationExtension 17.0, *) {
         wrappedView(for: getView(for: entry.family), family: entry.family)
+          .containerBackground(for: .widget) {
+            Color.clear
+          }
       } else {
-        getView(for: entry.family)
+        wrappedView(for: getView(for: entry.family), family: entry.family)
       }
     default:
-      defaultView.background(Color(UIColor.systemBackground))
+      defaultView
+        .containerBackground(for: .widget) {
+          Color.clear
+        }
     }
   }
+
+
   
   private func getView(for family: WidgetFamily) -> some View {
     switch family {
@@ -180,7 +189,7 @@ struct PriceView: View {
   }
 }
 
-@available(iOS 16.0, *)
+@available(iOS 17.0, *)
 struct PriceView_Previews: PreviewProvider {
   static var previews: some View {
     Group {

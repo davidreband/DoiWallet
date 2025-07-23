@@ -9,10 +9,10 @@
 import Foundation
 
 enum UserDefaultsGroupKey: String {
-  case GroupName = "group.org.doichain.doiwallet"
-  case PreferredCurrency = "preferredCurrency"  
-  case WatchAppBundleIdentifier = "org.doichain.doiwallet.watch"
-  case BundleIdentifier = "org.doichain.doiwallet"
+  case GroupName = "group.org.doichain.Doiwallet"
+  case PreferredCurrency = "preferredCurrency"
+  case WatchAppBundleIdentifier = "org.doichain.Doiwallet.watch"
+  case BundleIdentifier = "org.doichain.Doiwallet"
   case ElectrumSettingsHost = "electrum_host"
   case ElectrumSettingsTCPPort = "electrum_tcp_port"
   case ElectrumSettingsSSLPort = "electrum_ssl_port"

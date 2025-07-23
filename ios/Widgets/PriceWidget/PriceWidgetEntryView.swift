@@ -6,14 +6,13 @@
 //  Copyright © 2024 BlueWallet. All rights reserved.
 //
 
-import SwiftUICore
+import SwiftUI
 
-
-@available(iOS 16.0, *)
+@available(iOS 17.0, *)
 struct PriceWidgetEntryView: View {
     let entry: PriceWidgetEntry
 
     var body: some View {
-        PriceView(entry: entry)
+      PriceView(entry: entry)
     }
 }

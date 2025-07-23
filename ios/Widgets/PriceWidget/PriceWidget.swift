@@ -9,7 +9,7 @@
 import WidgetKit
 import SwiftUI
 
-@available(iOS 16.0, *)
+@available(iOS 17.0, *)
 struct PriceWidget: Widget {
     let kind: String = "PriceWidget"
 
@@ -23,7 +23,7 @@ struct PriceWidget: Widget {
         .contentMarginsDisabledIfAvailable() 
     }
 
-  @available(iOS 16.0, *)
+  @available(iOS 17.0, *)
   private var supportedFamilies: [WidgetFamily] {
         if #available(iOSApplicationExtension 16.0, *) {
             return [.systemSmall, .accessoryCircular, .accessoryInline, .accessoryRectangular]
@@ -33,7 +33,7 @@ struct PriceWidget: Widget {
     }
 }
 
-@available(iOS 16.0, *)
+@available(iOS 17.0, *)
 struct PriceWidget_Previews: PreviewProvider {
   static var previews: some View {
         Group {

@@ -40,7 +40,8 @@ struct PriceWidgetProvider: TimelineProvider {
         Task {
             do {
                 if let data = try await MarketAPI.fetchPrice(currency: userPreferredCurrency), let formattedRate = data.formattedRate {
-                    let currentMarketData = MarketData(nextBlock: "", sats: "", price: formattedRate, rate: data.rateDouble,volume:"...", percent: 0.00,dateString: data.lastUpdate)
+                  let currentMarketData = MarketData(nextBlock: "", sats: "", price: formattedRate, rate: data.rateDouble,volume: String(format: "%.2f", data.volume), percent: data.percent,dateString: data.lastUpdate)
+                  
                     let previousMarketData = PriceWidgetProvider.lastSuccessfulEntry?.currentMarketData
 
                     let entry = createEntry(
