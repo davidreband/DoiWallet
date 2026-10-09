@@ -267,6 +267,7 @@
     "electrum_preferred_server": "Preferred Server",
     "electrum_preferred_server_description": "Enter the server you want your wallet to use for all Bitcoin activities. Once set, your wallet will exclusively use this server to check balances, send transactions, and fetch network data. Ensure you trust this server before setting it.",
     "electrum_unable_to_connect": "Unable to connect to {server}.",
+    "electrum_wrong_chain": "{server} follows a different Doichain chain than this wallet, so its balances and confirmations do not apply here. The server was dropped.",
     "electrum_history": "History",
     "electrum_reset_to_default": "This will let BlueWallet randomly choose a server from the server list.",
     "electrum_reset": "Reset to default",

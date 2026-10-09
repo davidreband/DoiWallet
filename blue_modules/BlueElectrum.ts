@@ -100,6 +100,8 @@ let wasConnectedAtLeastOnce: boolean = false;
 let serverName: string | false = false;
 let disableBatching: boolean = false;
 let connectionAttempt: number = 0;
+/** The last server that answered but follows the other Doichain chain, so we can name it. */
+let wrongChainPeer: Peer | undefined;
 let currentPeerIndex = Math.floor(Math.random() * hardcodedPeers.length);
 let latestBlock: { height: number; time: number } | { height: undefined; time: undefined } = { height: undefined, time: undefined };
 const txhashHeightCache: Record<string, number> = {};
@@ -275,6 +277,23 @@ export async function connectMain(): Promise<void> {
     if (ver && ver[0]) {
       console.log('connected to ', ver);
       serverName = ver[0];
+
+      // Since 11 September 2026 there are two Doichain chains: the new rules of Core v31 took
+      // effect at block 431,017, the old 0.20 nodes kept mining, and their chain ran thousands of
+      // blocks ahead. A server on that chain answers every request, with balances and confirmations
+      // that mean nothing here, so ask which chain it follows before trusting it. The check is a
+      // single header at block 431,018 - the first block the two chains do not share
+      // (Doichain/DoiWallet#40).
+      const chain = await bitcoin.electrum.verifyChain(
+        { request: (method: string, params?: unknown[]) => mainClient.request(method, params) },
+        DOICHAIN,
+      );
+      if (!chain.ok) {
+        wrongChainPeer = chain.reason === 'wrongChain' ? usingPeer : undefined;
+        throw new Error(`server ${usingPeer.host} does not follow our Doichain chain: ${chain.reason}`);
+      }
+      wrongChainPeer = undefined;
+
       mainConnected = true;
       wasConnectedAtLeastOnce = true;
       if (ver[0].startsWith('ElectrumPersonalServer') || ver[0].startsWith('electrs') || ver[0].startsWith('Fulcrum')) {
@@ -399,11 +418,19 @@ const presentNetworkErrorAlert = async (usingPeer?: Peer) => {
     return;
   }
 
+  // a server that answers but follows the other chain is a different problem than an unreachable
+  // one, and silently retrying it would leave the user with balances that mean nothing (#40)
+  const wrongChain = wrongChainPeer && usingPeer && wrongChainPeer.host === usingPeer.host;
+
   presentAlert({
     allowRepeat: false,
     title: loc.errors.network,
     message: loc.formatString(
-      usingPeer ? loc.settings.electrum_unable_to_connect : loc.settings.electrum_error_connect,
+      wrongChain
+        ? loc.settings.electrum_wrong_chain
+        : usingPeer
+          ? loc.settings.electrum_unable_to_connect
+          : loc.settings.electrum_error_connect,
       usingPeer ? { server: `${usingPeer.host}:${usingPeer.ssl ?? usingPeer.tcp}` } : {},
     ),
     buttons: [
