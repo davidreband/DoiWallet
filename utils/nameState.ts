@@ -2,15 +2,17 @@
  * Reading a name's state off its operations on the chain.
  *
  * Kept apart from BlueElectrum so it carries no connection and no React Native imports: this is the
- * part that decides who holds a name and until when, and it is worth testing on its own
+ * part that says which operation holds a name, and it is worth testing on its own
  * (Doichain/DoiWallet#35).
+ *
+ * Whether a name has expired is deliberately NOT decided here. That is a consensus rule and the
+ * chain owns it: Doichain Core's NameExpirationDepth is 36,000 blocks on mainnet but 30 on regtest,
+ * so a single constant in the wallet is wrong on two networks out of three, and a wallet that
+ * refuses an operation on its own arithmetic refuses things the chain would have accepted. Measured
+ * on a v31.1.6 regtest node: a name_doi registered at height 230 reported expires_in=30 and was
+ * gone from name_show 35 blocks later, after which anybody could register it again - so names do
+ * expire, including Doichain's own OP_NAME_DOI, and it is the node that says when.
  */
-
-/**
- * A name expires this many blocks after its newest operation, after which anybody can register it
- * again without a name input. Doichain Core, `src/consensus/params.h`.
- */
-export const NAME_EXPIRY_BLOCKS = 36000;
 
 export type NameOperation = {
   /** the transaction that carried out the operation */
@@ -26,13 +28,10 @@ export type NameOperation = {
   address: string;
 };
 
-/** What a name's newest operation says about it: who holds it and until when. */
+/** Which operation holds a name right now. */
 export type NameState = {
   /** the operation that holds the name; its outpoint is what a transfer or update has to spend */
   operation: NameOperation;
-  /** 0 while the operation is still in the mempool */
-  expiresAtHeight: number;
-  expired: boolean;
 };
 
 /**
@@ -52,20 +51,13 @@ export const sortNameOperations = (operations: NameOperation[]): NameOperation[]
 };
 
 /**
- * Reads a name's state off its operations, given the current block height. Returns null for a name
- * nobody has registered - that name is free.
+ * Reads which operation holds a name. Returns null when the name has no operations at all - and
+ * note that this is not the same as the name being free: a name whose last operation has expired
+ * still has a history, and only the node can say whether it is available again.
  */
-export const readNameState = (operations: NameOperation[], currentHeight: number): NameState | null => {
+export const readNameState = (operations: NameOperation[]): NameState | null => {
   const sorted = sortNameOperations(operations);
   if (sorted.length === 0) return null;
 
-  const operation = sorted[sorted.length - 1];
-  const expiresAtHeight = operation.height <= 0 ? 0 : operation.height + NAME_EXPIRY_BLOCKS;
-
-  return {
-    operation,
-    expiresAtHeight,
-    // an operation still in the mempool cannot have expired
-    expired: expiresAtHeight > 0 && currentHeight >= expiresAtHeight,
-  };
+  return { operation: sorted[sorted.length - 1] };
 };

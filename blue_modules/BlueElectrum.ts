@@ -11,9 +11,9 @@ import loc from '../loc';
 import { GROUP_IO_BLUEWALLET } from './currency';
 import { ElectrumServerItem } from '../screen/settings/ElectrumSettings';
 import { triggerWarningHapticFeedback } from './hapticFeedback';
-import { NAME_EXPIRY_BLOCKS, NameOperation, NameState, readNameState, sortNameOperations } from '../utils/nameState';
+import { NameOperation, NameState, readNameState, sortNameOperations } from '../utils/nameState';
 
-export { NAME_EXPIRY_BLOCKS, readNameState, sortNameOperations };
+export { readNameState, sortNameOperations };
 export type { NameOperation, NameState };
 
 const ElectrumClient = require('electrum-client');
@@ -596,10 +596,14 @@ export const getNameOperations = async function (name: string): Promise<NameOper
 };
 
 /**
- * The state of a name on the chain, over the existing connection. Null means nobody holds it.
+ * Which operation currently holds a name, over the existing connection.
+ *
+ * Null means the name has no operations at all. Whether a name that does have a history is still
+ * held or has expired and become available again is the node's call, not ours - see
+ * utils/nameState.ts.
  */
 export const nameShow = async function (name: string): Promise<NameState | null> {
-  return readNameState(await getNameOperations(name), estimateCurrentBlockheight());
+  return readNameState(await getNameOperations(name));
 };
 
 export const getMempoolTransactionsByAddress = async function (address: string): Promise<MempoolTransaction[]> {

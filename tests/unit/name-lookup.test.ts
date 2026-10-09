@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { nameops } from '@doichain/doichainjs-lib';
 
-import { NAME_EXPIRY_BLOCKS, NameOperation, readNameState, sortNameOperations } from '../../utils/nameState';
+import { NameOperation, readNameState, sortNameOperations } from '../../utils/nameState';
 
 const op = (height: number, txid: string): NameOperation => ({
   txid,
@@ -48,29 +48,14 @@ describe('name lookup through the ElectrumX name index', () => {
     );
   });
 
-  it('reads the holder and the expiry off the newest operation', () => {
-    const state = readNameState([op(353030, 'older'), op(400000, 'newer')], 400001);
-    assert.ok(state);
-    assert.strictEqual(state.operation.txid, 'newer');
-    assert.strictEqual(state.expiresAtHeight, 400000 + NAME_EXPIRY_BLOCKS);
-    assert.strictEqual(state.expired, false);
+  it('names the operation that holds the name', () => {
+    const state = readNameState([op(353030, 'older'), op(400000, 'newer')]);
+    assert.strictEqual(state?.operation.txid, 'newer');
+    assert.strictEqual(state?.operation.vout, 0);
   });
 
-  it('calls a name expired once 36,000 blocks have passed', () => {
-    const operations = [op(400000, 'newer')];
-    const expiry = 400000 + NAME_EXPIRY_BLOCKS;
-
-    assert.strictEqual(readNameState(operations, expiry - 1)?.expired, false);
-    assert.strictEqual(readNameState(operations, expiry)?.expired, true);
-  });
-
-  it('never calls an operation in the mempool expired', () => {
-    const state = readNameState([op(-1, 'in-mempool')], 999999);
-    assert.strictEqual(state?.expiresAtHeight, 0);
-    assert.strictEqual(state?.expired, false);
-  });
-
-  it('returns null for a name nobody holds', () => {
-    assert.strictEqual(readNameState([], 400000), null);
+  it('returns null for a name with no operations at all', () => {
+    // not the same as "free": only the node can say whether an expired name is available again
+    assert.strictEqual(readNameState([]), null);
   });
 });
