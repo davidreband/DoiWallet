@@ -396,9 +396,16 @@ export class LegacyWallet extends AbstractWallet {
     }
 
     for (const t of _targets) {
-      if (t.address?.startsWith('bc1')) {
-        // in case address is non-typical and takes more bytes than coinselect library anticipates by default
-        t.script = { length: bitcoin.address.toOutputScript(t.address).length + 3 };
+      // a caller that already knows the output script's length wins - a name output, for one, is
+      // longer than the holder's address suggests
+      if (!t.script?.length && t.address?.startsWith(`${DOICHAIN.bech32}1`)) {
+        // in case address is non-typical and takes more bytes than coinselect library anticipates by
+        // default. This used to look for 'bc1', which no Doichain address ever starts with, so the
+        // correction never ran: coinselect assumed 34 bytes per output while a taproot (dc1p…) or a
+        // multisig (dc1q…, 32-byte program) output really costs 43, and every such send underpaid
+        // the fee by 9 bytes' worth. The network has to be passed as well, or decoding a dc1…
+        // address throws.
+        t.script = { length: bitcoin.address.toOutputScript(t.address, DOICHAIN).length + 3 };
       }
 
       if (t.script?.hex) {
