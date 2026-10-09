@@ -1181,26 +1181,37 @@ export const broadcastV2 = async function (hex: string): Promise<string> {
   return mainClient.blockchainTransaction_broadcast(hex);
 };
 
+/** Doichain targets ten minutes per block. */
+const BLOCK_INTERVAL_MINUTES = 10;
+
+/**
+ * A real Doichain block, used only to fill the gap before the first header has arrived and
+ * `latestBlock.height` is still unset. These numbers may drift without anything breaking, but they
+ * have to be Doichain's: this code came with Bitcoin's anchors (height 627,179 at 22 April 2020),
+ * which answered roughly 969,000 while the chain stood near 435,000. Everything derived from it was
+ * nonsense for that moment - a transaction's confirmation count and its displayed time
+ * (Doichain/DoiWallet#41).
+ */
+const ANCHOR_HEIGHT = 432000;
+const ANCHOR_TIMESTAMP = 1789612459; // block 432,000, 17 September 2026 02:34:19 UTC
+
 export const estimateCurrentBlockheight = function (): number {
   if (latestBlock.height) {
     const timeDiff = Math.floor(+new Date() / 1000) - latestBlock.time;
-    const extraBlocks = Math.floor(timeDiff / (9.93 * 60));
+    const extraBlocks = Math.floor(timeDiff / (BLOCK_INTERVAL_MINUTES * 60));
     return latestBlock.height + extraBlocks;
   }
 
-  const baseTs = 1587570465609; // uS
-  const baseHeight = 627179;
-  return Math.floor(baseHeight + (+new Date() - baseTs) / 1000 / 60 / 9.93);
+  const secondsSinceAnchor = Math.floor(+new Date() / 1000) - ANCHOR_TIMESTAMP;
+  return Math.floor(ANCHOR_HEIGHT + secondsSinceAnchor / 60 / BLOCK_INTERVAL_MINUTES);
 };
 
 export const calculateBlockTime = function (height: number): number {
   if (latestBlock.height) {
-    return Math.floor(latestBlock.time + (height - latestBlock.height) * 9.93 * 60);
+    return Math.floor(latestBlock.time + (height - latestBlock.height) * BLOCK_INTERVAL_MINUTES * 60);
   }
 
-  const baseTs = 1585837504; // sec
-  const baseHeight = 624083;
-  return Math.floor(baseTs + (height - baseHeight) * 9.93 * 60);
+  return Math.floor(ANCHOR_TIMESTAMP + (height - ANCHOR_HEIGHT) * BLOCK_INTERVAL_MINUTES * 60);
 };
 
 /**
