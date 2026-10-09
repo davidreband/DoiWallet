@@ -1007,6 +1007,12 @@ const SendDetails = () => {
       });
 
       console.log("_updatedTxOutputs", updatedTxOutputs)
+      // A name transaction must already carry version 0x7100 when it reaches us. Setting it here
+      // would invalidate the buyer's signature on a names-on-chain purchase, and doichainjs-lib
+      // refuses to change a transaction that already has signatures (Doichain/DoiWallet#38).
+      if (hasNameOutput && psbt.version !== VERSION) {
+        throw new Error(`A name transaction needs version 0x${VERSION.toString(16)}, this one has 0x${psbt.version.toString(16)}`);
+      }
       const retval = (actWallet as MultisigHDWallet).cosignPsbt(psbt)
       tx = retval.tx
       psbt = retval.psbt
