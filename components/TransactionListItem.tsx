@@ -103,8 +103,11 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
       let sub = '';
       // Check for nameOp with IPFS URL
       for (const output of item.outputs || []) {
-        if (output?.scriptPubKey?.nameOp) {
-          sub = `[${output.scriptPubKey.nameOp.name}] `;
+        const nameOp = output?.scriptPubKey?.nameOp;
+        if (nameOp) {
+          // A name_new only commits to a hash and carries no name at all, so printing nameOp.name
+          // unchecked put the literal "undefined" in the transaction list. Name the operation then.
+          sub = `[${nameOp.name ?? nameOp.op}] `;
           break;
         }
       }
