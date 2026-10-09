@@ -95,3 +95,6 @@ android/app/.project
 notes.txt
 .cursorrules
 .cursor/rules/frontend-dev-rules.mdc
+
+# local Doichain Core regtest node (scripts/regtest-node.sh)
+.regtest/
