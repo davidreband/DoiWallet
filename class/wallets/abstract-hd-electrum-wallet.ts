@@ -990,8 +990,37 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
     }
     if (!respectFrozen) {
       ret = ret.filter(({ txid, vout }) => !this.getUTXOMetadata(txid, vout).frozen);
+      // Name outputs are kept out of coin selection the same way frozen ones are. A caller that
+      // wants to show every output (coin control) passes respectFrozen and still sees them.
+      ret = ret.filter(({ txid, vout }) => !this.isNameOutput(txid, vout));
     }
     return ret;
+  }
+
+  /**
+   * Whether one of our outputs carries a name operation.
+   *
+   * ElectrumX lists a name output under its holder's address right next to that address's coins, so
+   * coin selection would pick it like any other. A payment that spends one is a non-name
+   * transaction with a name input, and Doichain Core rejects it with "Non-name transaction has name
+   * input" - the more names a wallet holds, the likelier a payment fails, and the error says nothing
+   * about why (Doichain/DoiWallet#37). A name output may only be spent by a name transaction, as its
+   * single name input.
+   */
+  isNameOutput(txid: string, vout: number): boolean {
+    for (const tx of this.getTransactions()) {
+      if (tx.txid !== txid) continue;
+
+      for (const output of tx.outputs) {
+        if (output.n !== vout) continue;
+        if (output.scriptPubKey?.nameOp) return true;
+
+        // the server does not always decode the name for us, so read it off the script itself
+        const hex = output.scriptPubKey?.hex;
+        return hex ? bitcoin.nameops.nameScriptOwner(Buffer.from(hex, 'hex')) !== undefined : false;
+      }
+    }
+    return false;
   }
 
   getDerivedUtxoFromOurTransaction(returnSpentUtxoAsWell = false): Utxo[] {
@@ -1161,12 +1190,38 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
   ): CreateTransactionResult {
     if (targets.length === 0) throw new Error('No destination provided');
 
-    let { inputs, outputs, fee } = this.coinselect(utxos, targets, feeRate);
-    const result = utxos.find(item => item.address === nameOpAsInput?.nameOpAddress);
+    let selectionTargets = targets;
+    if (nameOpAsInput?.nameId) {
+      // Coin selection sizes an output from its address, but a name output carries the name and its
+      // value on top of the holder's script - some twenty bytes more. Sized as a plain payment it
+      // underpays, and a node that enforces its relay minimum answers "min relay fee not met", so
+      // tell coin selection how long the output really is. Same +3 as the other script override
+      // below in coinselect(): the output's own length prefix and value field.
+      const { nameId, nameValue, sendTo } = nameOpAsInput;
+      const length = getNameOPStackScript(nameId, nameValue, sendTo, DOICHAIN).length + 3;
+      // the first output that is not change becomes the name output, see further down
+      const index = Math.max(
+        0,
+        targets.findIndex(t => t.address === sendTo),
+      );
+      selectionTargets = targets.map((t, i) => (i === index ? { ...t, script: { length } } : t));
+    }
 
-    if (result) {
-      inputs.push.apply(inputs, [result]);  
-      
+    let { inputs, outputs, fee } = this.coinselect(utxos, selectionTargets, feeRate);
+
+    if (nameOpAsInput?.nameOpAddress) {
+      // The name output is deliberately kept out of coin selection (Doichain/DoiWallet#37), so the
+      // list handed to us no longer contains it - look for it in the wallet's full set instead.
+      // Without its name input Core rejects the transfer with "NAME_DOI on an existing name must
+      // spend its previous output". Requiring a name output here also keeps us from grabbing a
+      // plain coin that happens to sit at the same address (Doichain/DoiWallet#35).
+      const nameInput = this.getUtxo(true).find(
+        item => item.address === nameOpAsInput.nameOpAddress && this.isNameOutput(item.txid, item.vout),
+      );
+      if (!nameInput) {
+        throw new Error(`Could not find the name output held by ${nameOpAsInput.nameOpAddress}`);
+      }
+      inputs.push(nameInput);
     }
     
     const hasSilentPaymentOutput: boolean = !!outputs.find(o => o.address?.startsWith('sp1'));
