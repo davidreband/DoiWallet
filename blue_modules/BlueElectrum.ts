@@ -12,6 +12,10 @@ import { GROUP_IO_BLUEWALLET } from './currency';
 import { ElectrumServerItem } from '../screen/settings/ElectrumSettings';
 import { triggerWarningHapticFeedback } from './hapticFeedback';
 import { AlertButton } from 'react-native';
+import { NAME_EXPIRY_BLOCKS, NameOperation, NameState, readNameState, sortNameOperations } from '../utils/nameState';
+
+export { NAME_EXPIRY_BLOCKS, readNameState, sortNameOperations };
+export type { NameOperation, NameState };
 
 const ElectrumClient = require('electrum-client');
 const net = require('net');
@@ -547,6 +551,56 @@ export const getTransactionsByAddress = async function (address: string): Promis
   }
 
   return history;
+};
+
+/**
+ * Every operation ever carried out on a name, oldest first.
+ *
+ * ElectrumX indexes them all under one script hash per name, so this is a single query by name -
+ * something DoiWallet could not do before: it only ever knew the names in its own transactions, and
+ * could not say who holds a name now, what its value is, when it expires, or whether it is free
+ * (Doichain/DoiWallet#35). The index script and its hash come from the library, which writes the
+ * pushes exactly as ElectrumX does - counting characters instead of bytes yields another hash, and
+ * then a name that is taken looks free.
+ *
+ * @param name - The name. Normalized to NFC, the form names are registered in.
+ */
+export const getNameOperations = async function (name: string): Promise<NameOperation[]> {
+  if (!mainClient) throw new Error('Electrum client is not connected');
+
+  const scriptHash = bitcoin.nameops.nameIndexScriptHash(name.normalize('NFC'));
+  const history = await mainClient.blockchainScripthash_getHistory(scriptHash);
+
+  const operations: NameOperation[] = [];
+  for (const entry of history || []) {
+    if (!entry.tx_hash) continue;
+    txhashHeightCache[entry.tx_hash] = entry.height;
+
+    const tx = await mainClient.blockchainTransaction_get(entry.tx_hash, true);
+    for (const output of tx?.vout || []) {
+      const nameOp = output?.scriptPubKey?.nameOp;
+      if (!nameOp) continue;
+
+      operations.push({
+        txid: entry.tx_hash,
+        vout: output.n,
+        height: entry.height,
+        op: nameOp.op,
+        name: nameOp.name,
+        value: nameOp.value,
+        address: output.scriptPubKey.address ?? output.scriptPubKey.addresses?.[0],
+      });
+    }
+  }
+
+  return sortNameOperations(operations);
+};
+
+/**
+ * The state of a name on the chain, over the existing connection. Null means nobody holds it.
+ */
+export const nameShow = async function (name: string): Promise<NameState | null> {
+  return readNameState(await getNameOperations(name), estimateCurrentBlockheight());
 };
 
 export const getMempoolTransactionsByAddress = async function (address: string): Promise<MempoolTransaction[]> {
