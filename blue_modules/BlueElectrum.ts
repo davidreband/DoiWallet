@@ -4,7 +4,7 @@ import { Alert } from 'react-native';
 import DefaultPreference from 'react-native-default-preference';
 import RNFS from 'react-native-fs';
 import Realm from 'realm';
-import { DOICHAIN} from './network.js';
+import { DOICHAIN, MIN_RELAY_FEE_SAT_PER_VBYTE } from './network.js';
 import { LegacyWallet, SegwitBech32Wallet, SegwitP2SHWallet, TaprootWallet } from '../class';
 import presentAlert from '../components/Alert';
 import loc from '../loc';
@@ -1105,11 +1105,12 @@ export const estimateFees = async function (): Promise<{ fast: number; medium: n
   if (!histogram || histogram?.[0]?.[0] > 1000) return { fast: _fast, medium: _medium, slow: _slow };
 
   // calculating fast fees from mempool:
-  const fast = Math.max(2, calcEstimateFeeFromFeeHistorgam(1, histogram));
+  // the mempool is usually empty here, so the histogram gives 1 sat/vByte - every preset has to
+  // stay at or above the chain's floor to be mineable at all (Doichain/DoiWallet#39)
+  const fast = Math.max(MIN_RELAY_FEE_SAT_PER_VBYTE, calcEstimateFeeFromFeeHistorgam(1, histogram));
   // recalculating medium and slow fees using bitcoincore estimations only like relative weights:
-  // (minimum 1 sat, just for any case)
-  const medium = Math.max(1, Math.round((fast * _medium) / _fast));
-  const slow = Math.max(1, Math.round((fast * _slow) / _fast));
+  const medium = Math.max(MIN_RELAY_FEE_SAT_PER_VBYTE, Math.round((fast * _medium) / _fast));
+  const slow = Math.max(MIN_RELAY_FEE_SAT_PER_VBYTE, Math.round((fast * _slow) / _fast));
   return { fast, medium, slow };
 };
 
@@ -1123,8 +1124,14 @@ export const estimateFee = async function (numberOfBlocks: number): Promise<numb
   if (!mainClient) throw new Error('Electrum client is not connected');
   numberOfBlocks = numberOfBlocks || 1;
   const coinUnitsPerKilobyte = await mainClient.blockchainEstimatefee(numberOfBlocks);
-  if (coinUnitsPerKilobyte === -1) return 1;
-  return Math.round(new BigNumber(coinUnitsPerKilobyte).dividedBy(1024).multipliedBy(100000000).toNumber());
+  // Core's estimator answers -1 on our near-empty chain: it has no fee-paying backlog to learn
+  // from. Falling back to 1 sat/vByte produced fees the miner never accepts (Doichain/DoiWallet#39).
+  if (coinUnitsPerKilobyte === -1) return MIN_RELAY_FEE_SAT_PER_VBYTE;
+  // rounded up, as upstream BlueWallet 8.0.2 does: a fee rounded down can land under the estimate
+  return Math.max(
+    MIN_RELAY_FEE_SAT_PER_VBYTE,
+    Math.ceil(new BigNumber(coinUnitsPerKilobyte).dividedBy(1024).multipliedBy(100000000).toNumber()),
+  );
 };
 
 export const serverFeatures = async function () {
