@@ -6,8 +6,7 @@ import BIP32Factory, { BIP32Interface } from 'bip32';
 import * as bip39 from 'bip39';
 import * as bitcoin from '@doichain/doichainjs-lib';
 import { Psbt,  Transaction as BTransaction } from '@doichain/doichainjs-lib';
-//import { getNameOPStackScript } from '@doichain/doichainjs-lib';
-import { getNameOPStackScript } from '../../tests/unit/getNameOPStackScript';
+import { getNameOPStackScript } from '../../utils/getNameOPStackScript';
 import b58 from 'bs58check';
 import { CoinSelectOutput, CoinSelectReturnInput } from 'coinselect';
 import { ECPairFactory } from 'ecpair';
@@ -20,7 +19,7 @@ import { randomBytes } from '../rng';
 import { AbstractHDWallet } from './abstract-hd-wallet';
 import { CreateTransactionResult, CreateTransactionTarget, CreateTransactionUtxo, ExtendedCoinSelectOutput, Transaction, Utxo } from './types';
 import { SilentPayment, UTXOType as SPUTXOType, UTXO as SPUTXO } from 'silent-payments';
-import { DOICHAIN, VERSION } from '../../blue_modules/network.js';
+import { DOICHAIN, MIN_NAME_AMOUNT_SAT, VERSION } from '../../blue_modules/network.js';
 const ECPair = ECPairFactory(ecc);
 const bip32 = BIP32Factory(ecc);
 const bip47 = BIP47Factory(ecc);
@@ -1267,9 +1266,15 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
       if (!change && nameOpAsInput && nameOpAsInput.nameId ) {
         // Create NameOp script using the utility function
         const { nameId, nameValue, sendTo } = nameOpAsInput;
-        
-        outputScript = getNameOPStackScript(nameId, nameValue, sendTo, DOICHAIN.name);
-        
+
+        // Core rejects a name output under MinNameCoinAmount with "tx-name-greedy", which says
+        // nothing a user could act on - so refuse it here, where we can name the real limit.
+        if (output.value < MIN_NAME_AMOUNT_SAT) {
+          throw new Error(`A name output must hold at least ${MIN_NAME_AMOUNT_SAT / 100000000} DOI, not ${output.value / 100000000}`);
+        }
+
+        outputScript = getNameOPStackScript(nameId, nameValue, sendTo, DOICHAIN);
+
         psbt.setVersion(VERSION);
         
         psbt.addOutput({

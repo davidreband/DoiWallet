@@ -11,6 +11,14 @@ export const VERSION = 0x7100;
 // (Doichain/DoiWallet#39). This is a floor, not a fixed price: a server estimate above it wins.
 export const MIN_RELAY_FEE_SAT_PER_VBYTE = 100;
 
+// The smallest amount a name output may hold, in satoshi.
+//
+// Doichain Core's MinNameCoinAmount is COIN/100, i.e. 0.01 DOI, and it rejects anything less with
+// "tx-name-greedy" (src/names/main.cpp, src/consensus/params.h of v31.1.6, confirmed on a regtest
+// node). These coins stay locked in the name and can only be moved by the next operation on it, so
+// the fee of a name transfer has to come from a separate input rather than out of the name itself.
+export const MIN_NAME_AMOUNT_SAT = 1000000;
+
 // The prefixes come from doichainjs-lib, which reads them from chainparams.cpp in Doichain Core.
 // Keeping our own copy here had drifted: the mainnet BIP32 private prefix read 0x0499ade4 while
 // Core uses 0x0488ade4, so DoiWallet rejected every standard extended private key on mainnet and

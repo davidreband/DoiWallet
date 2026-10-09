@@ -12,7 +12,7 @@ import { TOptions } from 'bip21';
 import * as bitcoin from "@doichain/doichainjs-lib";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { VERSION } from '../../blue_modules/network.js';
+import { DOICHAIN, MIN_NAME_AMOUNT_SAT, VERSION } from '../../blue_modules/network.js';
 //import * as Progress from 'react-native-progress';
 import {
   ActivityIndicator,
@@ -63,10 +63,10 @@ import { useKeyboard } from '../../hooks/useKeyboard';
 import loc, { formatBalance, formatBalanceWithoutSuffix } from '../../loc';
 import { DoichainUnit, Chain } from "../../models/doichainUnits";
 import { TTXMetadata } from '../../class/blue-app';
-import { DOICHAIN } from '../../blue_modules/network.js';
 import NetworkTransactionFees, { NetworkTransactionFee } from '../../models/networkTransactionFees';
 import { SendDetailsStackParamList } from '../../navigation/SendDetailsStackParamList';
 import { CommonToolTipActions, ToolTipAction } from '../../typings/CommonToolTipActions';
+import { decodeNameBytes } from '../../utils/getNameOPStackScript';
 import ActionSheet from '../ActionSheet';
 
 interface IPaymentDestinations {
@@ -246,7 +246,18 @@ const SendDetails = () => {
     } else if (routeParams.nameOp) {
       
       const { nameId, nameValue, sendTo } = routeParams.nameOp;
-      setAddresses([{ address: sendTo, key: String(Math.random()) } as IPaymentDestinations]);
+      // A name output always carries the amount locked in the name, and Core refuses anything under
+      // it, so there is nothing for the user to choose here - prefill it instead of leaving the
+      // field empty and letting the transaction fail with "tx-name-greedy" (Doichain/DoiWallet#36).
+      setAddresses([
+        {
+          address: sendTo,
+          amount: String(MIN_NAME_AMOUNT_SAT / 100000000),
+          amountSats: MIN_NAME_AMOUNT_SAT,
+          unit: DoichainUnit.DOI,
+          key: String(Math.random()),
+        } as IPaymentDestinations,
+      ]);
       // Store nameOp data in txMetadata for use in transaction creation
       // Store nameOp data for transaction creation
       const tempTxId = `nameOp-${Date.now()}`;
@@ -972,20 +983,19 @@ const SendDetails = () => {
     try {
       psbt = bitcoin.Psbt.fromBase64(scannedData, { network: DOICHAIN });
       console.log("_____psbt.inputs", psbt.data.inputs);
+      let hasNameOutput = false;
       updatedTxOutputs = psbt.txOutputs.map((output, index) => {
         const chunks = bitcoin.script.decompile(output.script);
         let address = output.address; //TODO check if this is segwit if so make an error message
         if (chunks && chunks[0] === 90) { //make this const and support also name_new, name_update, name_firstupdate
-          psbt.setVersion(VERSION);
+          hasNameOutput = true;
           try {
             let isIncluded = changeAddresses.includes(String(address)) || externalAddresses.includes(String(address)) ? true : false;
-            const utf16Decoder = new TextDecoder('ascii');
-            //const utf16Decoder = new TextDecoder('utf-8');
-            const nameId = utf16Decoder.decode(chunks[1]);
-            //const nameId = utf16Decoder.decode(Buffer.from(chunks[1].toString(), 'hex'));
-            //const nameValue = utf16Decoder.decode(Buffer.from(chunks[2].toString(), 'hex'));
-            const nameValue = utf16Decoder.decode(chunks[2]);
-           
+            // Names are UTF-8 on the chain. Decoding them as ASCII garbled every non-ASCII name on
+            // the very screen where the user confirms what they are signing (Doichain/DoiWallet#36).
+            const nameId = decodeNameBytes(chunks[1]);
+            const nameValue = decodeNameBytes(chunks[2]);
+
             return { ...output, nameId, nameValue, isIncluded };
           } catch (e) {
             console.log('error during decode', e);
