@@ -55,7 +55,10 @@ export class TaprootWallet extends SegwitBech32Wallet {
     if (this._address) return this._address;
     let address;
     try {
-      const keyPair = ECPair.fromWIF(this.secret);
+      // Without the network this reads the WIF as a Bitcoin one: a Doichain WIF (version 180) was
+      // rejected outright, a Bitcoin one accepted, and p2tr() then handed back a bc1p… address -
+      // a Bitcoin address shown as if it were ours on Doichain.
+      const keyPair = ECPair.fromWIF(this.secret, DOICHAIN);
       if (!keyPair.compressed) {
         console.warn('only compressed public keys are good for segwit');
         return false;
@@ -63,6 +66,7 @@ export class TaprootWallet extends SegwitBech32Wallet {
       const xOnlyPubkey = keyPair.publicKey.subarray(1, 33);
       address = bitcoin.payments.p2tr({
         pubkey: Buffer.from(xOnlyPubkey),
+        network: DOICHAIN,
       }).address;
     } catch (err: any) {
       console.log(err.message);
@@ -87,17 +91,20 @@ export class TaprootWallet extends SegwitBech32Wallet {
     sequence = sequence || 0xffffffff; // default if not passed
 
     // Derive keyPair & x-only pubkey
-    const keyPair = ECPair.fromWIF(this.secret);
+    const keyPair = ECPair.fromWIF(this.secret, DOICHAIN);
     const pubkey = keyPair.publicKey; // compressed: 0x02/03 || X
     const xOnlyPub = pubkey.subarray(1, 33); // strip prefix
 
     // Precompute the P2TR payment (to rebuild scriptPubKey)
     const p2tr = bitcoin.payments.p2tr({
       pubkey: xOnlyPub,
+      network: DOICHAIN,
     });
     if (!p2tr.output) throw new Error('Could not build p2tr.output');
 
-    const psbt = new bitcoin.Psbt();
+    // without the network every output address is decoded as a Bitcoin one, so paying to a dc1…
+    // address throws instead of building a transaction
+    const psbt = new bitcoin.Psbt({ network: DOICHAIN });
 
     // Add Taproot inputs
     inputs.forEach((input, idx) => {
