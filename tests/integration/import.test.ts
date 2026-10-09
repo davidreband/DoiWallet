@@ -318,7 +318,12 @@ describe('import procedure', () => {
 
   it('can import Legacy with uncompressed pubkey', async () => {
     const store = createStore();
-    const { promise } = startImport('ypub6XVkermxAiBz6QRqXjqpPxm6iL8tmtsFvA2ZASWY4ixrSMoLbJDePiKAqm2WtQzEpmsJAU3xVpFoPg8qgMXYwRAjDWd7gX1Yw1pV8czej5c', false, false, ...store.callbacks);
+    const { promise } = startImport(
+      'ypub6XVkermxAiBz6QRqXjqpPxm6iL8tmtsFvA2ZASWY4ixrSMoLbJDePiKAqm2WtQzEpmsJAU3xVpFoPg8qgMXYwRAjDWd7gX1Yw1pV8czej5c',
+      false,
+      false,
+      ...store.callbacks,
+    );
     await promise;
     assert.strictEqual(store.state.wallets[0].getSecret(), '5KE6tf9vhYkzYSbgEL6M7xvkY69GMFHF3WxzYaCFMvwMxn3QgRS');
     assert.strictEqual(store.state.wallets[0].type, LegacyWallet.type);

@@ -339,7 +339,7 @@ class DeeplinkSchemaMatch {
     }
     return isValidBitcoinAddress;
   }
-  
+
   static isPsbtNameOpTransactions(psbt: string): boolean {
     let isPsbtNameOpTransactions = false;
     try {
@@ -444,8 +444,8 @@ class DeeplinkSchemaMatch {
       if (key === 'amount' && !(Number(options[key]) > 0)) {
         delete options[key];
       }
-    }    
-    return  bip21.encode(address, options, 'doichain'); 
+    }
+    return bip21.encode(address, options, 'doichain');
   }
 
   static decodeBitcoinUri(uri: string) {

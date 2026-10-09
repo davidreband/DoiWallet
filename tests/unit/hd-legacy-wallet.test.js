@@ -15,7 +15,7 @@ describe('Legacy HD (BIP44)', () => {
 
     assert.strictEqual(
       hd.getXpub(),
-      "xpub6BsPb3yhpgS8qgZ8LuSv1L3gnAXkjVNk34vX3Fco5wT13oEnQyvHv3sQWnhL8Zbq36x6eEk6SB8UeXa3SmwGG22M67EZ1CwXzpNDkeM86zq"
+      'xpub6BsPb3yhpgS8qgZ8LuSv1L3gnAXkjVNk34vX3Fco5wT13oEnQyvHv3sQWnhL8Zbq36x6eEk6SB8UeXa3SmwGG22M67EZ1CwXzpNDkeM86zq',
     );
 
     assert.strictEqual(hd._getExternalAddressByIndex(0), 'N7XRdUDbEKuVnrbrwHrDczupHYSM361M82');
@@ -28,12 +28,12 @@ describe('Legacy HD (BIP44)', () => {
     assert.ok(!hd.getAllExternalAddresses().includes('1J9zoJz5LsAJ361SQHYnLTWg46Tc2AXUCj')); // not internal
 
     assert.strictEqual(
-      hd._getPubkeyByAddress(hd._getExternalAddressByIndex(0)).toString("hex"),
-      "03415cef3849debb777718ff1aeae2b6d75802392d8c5b40df66a13a42929c475a"
+      hd._getPubkeyByAddress(hd._getExternalAddressByIndex(0)).toString('hex'),
+      '03415cef3849debb777718ff1aeae2b6d75802392d8c5b40df66a13a42929c475a',
     );
     assert.strictEqual(
-      hd._getPubkeyByAddress(hd._getInternalAddressByIndex(0)).toString("hex"),
-      "0243ace72389bdd3c420f1bad5ab316d2de98daa5f3d9f0da10f89c7ad8ae196da"
+      hd._getPubkeyByAddress(hd._getInternalAddressByIndex(0)).toString('hex'),
+      '0243ace72389bdd3c420f1bad5ab316d2de98daa5f3d9f0da10f89c7ad8ae196da',
     );
 
     assert.strictEqual(hd._getDerivationPathByAddress(hd._getExternalAddressByIndex(0)), "m/44'/0'/0'/0/0");
@@ -98,9 +98,9 @@ describe('Legacy HD (BIP44)', () => {
 
     let txNew = hd.createTransaction(
       utxo,
-      [{ address: "N7XRdUDbEKuVnrbrwHrDczupHYSM361M82", value: 80000 }],
+      [{ address: 'N7XRdUDbEKuVnrbrwHrDczupHYSM361M82', value: 80000 }],
       1,
-      hd._getInternalAddressByIndex(hd.next_free_change_address_index)
+      hd._getInternalAddressByIndex(hd.next_free_change_address_index),
     );
     let tx = bitcoin.Transaction.fromHex(txNew.tx.toHex());
     assert.strictEqual(tx.ins.length, 3);

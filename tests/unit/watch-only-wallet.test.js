@@ -15,8 +15,8 @@ describe('Watch only wallet', () => {
       w.setSecret(secret);
       assert.ok(w.valid());
       assert.deepStrictEqual(
-        w.getAllExternalAddresses().map((elem) => elem.toUpperCase()),
-        [secret.toUpperCase()]
+        w.getAllExternalAddresses().map(elem => elem.toUpperCase()),
+        [secret.toUpperCase()],
       );
       assert.strictEqual(w.isHd(), false);
       assert.ok(!w.useWithHardwareWalletEnabled());
@@ -133,7 +133,7 @@ describe('Watch only wallet', () => {
     // hardcoding utxo so we wont have to call w.fetchUtxo() and w.getUtxo()
 
     const { psbt } = w.createTransaction(utxos, [{ address: 'dc1qj93genwg3y84zjh550zwjvfzmh9ncchww8fmxm', value: 5000 }], 1, changeAddress);
-  
+
     assert.strictEqual(
       psbt.toBase64(),
       'cHNidP8BAHECAAAAAYBbjCRXw4r66Ly1aI/SCvis+CDQsCdQej1BhCoDnjt/AAAAAAAAAACAAogTAAAAAAAAFgAUkWKMzciJD1FK9KPE6TEi3cs8Yu4GOgAAAAAAABYAFJFijM3IiQ9RSvSjxOkxIt3LPGLuAAAAAAABAR8gTgAAAAAAABYAFJFijM3IiQ9RSvSjxOkxIt3LPGLuIgYC/uhsuBAaFTfFWYRnlPRuH0RgSD2lfcr1AviR/EdKnqgYAAAAAFQAAIAAAACAAAAAgAEAAAAAAAAAAAAiAgL+6Gy4EBoVN8VZhGeU9G4fRGBIPaV9yvUC+JH8R0qeqBgAAAAAVAAAgAAAAIAAAACAAQAAAAAAAAAA',

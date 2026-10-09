@@ -10,7 +10,7 @@ import {
   HDSegwitBech32Wallet,
   HDSegwitElectrumSeedP2WPKHWallet,
   HDSegwitP2SHWallet,
-  LegacyWallet,  
+  LegacyWallet,
   MultisigHDWallet,
   SegwitBech32Wallet,
   SegwitP2SHWallet,

@@ -108,11 +108,9 @@ describe('BlueElectrum', () => {
     assert.ok(await BlueElectrum.testConnection('electrum1.bluewallet.io', false, 443));
     assert.ok(await BlueElectrum.testConnection('electrum1.bluewallet.io', false, 443));
 */
-   assert.ok(await BlueElectrum.testConnection("itchy-jellyfish-89.doi.works",'', '50002'));
-    assert.ok(await BlueElectrum.testConnection('big-parrot-60.doi.works','', '50002'));
-    assert.ok(await BlueElectrum.testConnection('ugly-bird-70.doi.works','', '50002'));
-
-
+    assert.ok(await BlueElectrum.testConnection('itchy-jellyfish-89.doi.works', '', '50002'));
+    assert.ok(await BlueElectrum.testConnection('big-parrot-60.doi.works', '', '50002'));
+    assert.ok(await BlueElectrum.testConnection('ugly-bird-70.doi.works', '', '50002'));
   });
 
   it('ElectrumClient can estimate fees', async () => {
@@ -132,7 +130,7 @@ describe('BlueElectrum', () => {
   });
 
   it('BlueElectrum can do getBalanceByAddress()', async function () {
-    const address = "N32Ny2Fb4eTsLNAKoR1C7xbM2XRGntYN6D";
+    const address = 'N32Ny2Fb4eTsLNAKoR1C7xbM2XRGntYN6D';
     const balance = await BlueElectrum.getBalanceByAddress(address);
     assert.strictEqual(balance.confirmed, 10000000);
     assert.strictEqual(balance.unconfirmed, 0);
@@ -167,7 +165,7 @@ describe('BlueElectrum', () => {
       assert.ok(!tx.vin);
       assert.ok(!tx.vout);
       assert.ok(tx.inputs);
-    //  assert.strictEqual(tx.inputs[0]?.addresses[0],'dc1q8nkcs8v7ad9qyjth3cgwwsdu255cpk8w2u7put');
+      //  assert.strictEqual(tx.inputs[0]?.addresses[0],'dc1q8nkcs8v7ad9qyjth3cgwwsdu255cpk8w2u7put');
       assert.ok(tx.inputs[0].addresses.length > 0);
       assert.ok(tx.inputs[0].value > 0);
       assert.ok(tx.outputs);
@@ -181,18 +179,15 @@ describe('BlueElectrum', () => {
     const tx =
       '0200000000010137d07edbc9db9a072a79c6f03e7274e52642d64d760143adc64832501087f37b00000000000000008002102700000000000022512040ef293a8a0ebaf8b351a27d89ff4b5b3822a635e4afdca77a30170c363bafa3e4ad0b00000000001600147dfe2249fa56a2f2b4b7ed3b16ee55e7c565198002483045022100e5b9f1c12e133ef659a0e5cc417b1f8625ba9e951bc7083408de2a33d6fb1a84022035ebb1e2d4ab620ee178dc6cd0b58c54123d1526d9a1b3efba612ea80e48edd101210295b56fc62cdd09c200ce19f873d5ddb3074f7141b2533448829385f48f093a1600000000';
     const decoded = BlueElectrum.txhexToElectrumTransaction(tx);
-    assert.strictEqual(
-      decoded.vout[0].scriptPubKey.addresses[0],
-      "dc1pgrhjjw52p6a03v635f7cnl6ttvuz9f34ujhaefm6xqtscd3m473sy0cr9l"
-    );
+    assert.strictEqual(decoded.vout[0].scriptPubKey.addresses[0], 'dc1pgrhjjw52p6a03v635f7cnl6ttvuz9f34ujhaefm6xqtscd3m473sy0cr9l');
   });
 
   it.each([false, true])('BlueElectrum can do multiGetBalanceByAddress(), disableBatching=%p', async function (diableBatching) {
     if (diableBatching) BlueElectrum.setBatchingDisabled();
     const balances = await BlueElectrum.multiGetBalanceByAddress([
-      "dc1q8nkcs8v7ad9qyjth3cgwwsdu255cpk8w2u7put",
-      "dc1qszy3say7llzamvqy82q6260urg3uvpt3ast5ls",
-      "N32Ny2Fb4eTsLNAKoR1C7xbM2XRGntYN6D",
+      'dc1q8nkcs8v7ad9qyjth3cgwwsdu255cpk8w2u7put',
+      'dc1qszy3say7llzamvqy82q6260urg3uvpt3ast5ls',
+      'N32Ny2Fb4eTsLNAKoR1C7xbM2XRGntYN6D',
     ]);
 
     assert.strictEqual(balances.balance, 765011011685);
@@ -202,26 +197,22 @@ describe('BlueElectrum', () => {
     assert.strictEqual(balances.addresses.dc1q8nkcs8v7ad9qyjth3cgwwsdu255cpk8w2u7put.unconfirmed, 0);
     assert.strictEqual(balances.addresses.dc1qszy3say7llzamvqy82q6260urg3uvpt3ast5ls.confirmed, 765001011685);
     assert.strictEqual(balances.addresses.dc1qszy3say7llzamvqy82q6260urg3uvpt3ast5ls.unconfirmed, -765001011685);
-    assert.strictEqual(balances.addresses['N32Ny2Fb4eTsLNAKoR1C7xbM2XRGntYN6D'].confirmed, 10000000);
-    assert.strictEqual(balances.addresses['N32Ny2Fb4eTsLNAKoR1C7xbM2XRGntYN6D'].unconfirmed, 0);
+    assert.strictEqual(balances.addresses.N32Ny2Fb4eTsLNAKoR1C7xbM2XRGntYN6D.confirmed, 10000000);
+    assert.strictEqual(balances.addresses.N32Ny2Fb4eTsLNAKoR1C7xbM2XRGntYN6D.unconfirmed, 0);
     if (diableBatching) BlueElectrum.setBatchingEnabled();
   });
 
   it('BlueElectrum can do multiGetUtxoByAddress()', async () => {
     const utxos = await BlueElectrum.multiGetUtxoByAddress(
-      [
-        "dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk",
-        "dc1qszy3say7llzamvqy82q6260urg3uvpt3ast5ls",
-
-      ],
-      3
+      ['dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk', 'dc1qszy3say7llzamvqy82q6260urg3uvpt3ast5ls'],
+      3,
     );
 
     assert.strictEqual(Object.keys(utxos).length, 2);
-   // assert.strictEqual(
+    // assert.strictEqual(
     //  utxos.dc1q8nkcs8v7ad9qyjth3cgwwsdu255cpk8w2u7put[0].txid,
-     // "1303af0df52df06500a714bb4ed507dff56ea5d8da0732eeef1edcb2d76be023"
-   // );
+    // "1303af0df52df06500a714bb4ed507dff56ea5d8da0732eeef1edcb2d76be023"
+    // );
     assert.strictEqual(utxos.dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk[0].vout, 0);
     assert.strictEqual(utxos.dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk[0].value, 1000000);
     assert.strictEqual(utxos.dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk[0].address, 'dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk');
@@ -231,25 +222,25 @@ describe('BlueElectrum', () => {
     if (disableBatching) BlueElectrum.setBatchingDisabled();
     const histories = await BlueElectrum.multiGetHistoryByAddress(
       [
-        "dc1q8nkcs8v7ad9qyjth3cgwwsdu255cpk8w2u7put",
-        "dc1qszy3say7llzamvqy82q6260urg3uvpt3ast5ls",
-         // duplicate intended
+        'dc1q8nkcs8v7ad9qyjth3cgwwsdu255cpk8w2u7put',
+        'dc1qszy3say7llzamvqy82q6260urg3uvpt3ast5ls',
+        // duplicate intended
       ],
-      3
+      3,
     );
 
     assert.ok(
       histories.dc1q8nkcs8v7ad9qyjth3cgwwsdu255cpk8w2u7put[0].tx_hash ===
-        "62b9473772a3642f052a1e0b907c7f8cdcdbe131913eabfea38c1f6474965785"
+        '62b9473772a3642f052a1e0b907c7f8cdcdbe131913eabfea38c1f6474965785',
     );
     assert.ok(
       histories.dc1qszy3say7llzamvqy82q6260urg3uvpt3ast5ls[0].tx_hash ===
-        "5d5f2f2dea448f8e420b9f9a69004d3b5f0fba71138d2e1008e9e97756e62d78"
+        '5d5f2f2dea448f8e420b9f9a69004d3b5f0fba71138d2e1008e9e97756e62d78',
     );
     assert.ok(Object.keys(histories).length === 2);
     if (disableBatching) BlueElectrum.setBatchingEnabled();
   });
- //.each([false, true])
+  // .each([false, true])
   it.skip('ElectrumClient can do multiGetTransactionByTxid(), disableBatching=%p', async disableBatching => {
     if (disableBatching) BlueElectrum.setBatchingDisabled();
     const txdatas = await BlueElectrum.multiGetTransactionByTxid(
@@ -309,7 +300,7 @@ describe('BlueElectrum', () => {
     assert.ok(txdatas['484a11c5e086a281413b9192b4f60c06abf745f08c2c28c4b4daefe6df3b9e5c']);
   });
 
-  //.each([false, true])
+  // .each([false, true])
   it.skip('ElectrumClient can do multiGetHistoryByAddress() to obtain txhex, disableBatching=%p', async disableBatching => {
     if (disableBatching) BlueElectrum.setBatchingDisabled();
     const txdatas = await BlueElectrum.multiGetTransactionByTxid(

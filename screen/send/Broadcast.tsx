@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import * as bitcoin from '@doichain/doichainjs-lib';

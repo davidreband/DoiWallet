@@ -196,7 +196,7 @@ const ImportWallet = () => {
   }, [colors, navigation, toolTipActions, HeaderRight, styles.button, closeImage]);
 
   const renderOptionsAndImportButton = (
-    <>  
+    <>
       <BlueSpacing20 />
       <View style={styles.center}>
         <>

@@ -37,11 +37,10 @@ describe('Watch only wallet', () => {
     assert.strictEqual(w.getTransactions().length, 6);
 
     // fetch again and make sure no duplicates
-   // await w.fetchTransactions();
-   // assert.strictEqual(w.getTransactions().length, 6);
+    // await w.fetchTransactions();
+    // assert.strictEqual(w.getTransactions().length, 6);
   });
 
-  // eslint-disable-next-line jest/no-disabled-tests
   it('can fetch tx from huge wallet', async () => {
     const w = new WatchOnlyWallet();
     w.setSecret('zpub6r6B6XiuwEubH2cC5X7cgAVuVgNdD7X5LAhpq7HbNnN4qrJ5DKy6hy6HRmLy8o1GqUksTkGERwii1hnY5q3zbGgrg3svPdSrjTB4NdNwR32'); // binance wallet
@@ -51,11 +50,7 @@ describe('Watch only wallet', () => {
 
   it('can fetch TXs with values', async () => {
     const w = new WatchOnlyWallet();
-    for (const sec of [
-      'dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk',
-      'dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk',
-
-    ]) {
+    for (const sec of ['dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk', 'dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk']) {
       w.setSecret(sec);
       assert.strictEqual(w.getAddress(), 'dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk');
       assert.strictEqual(await w.getAddressAsync(), 'dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk');
@@ -71,7 +66,7 @@ describe('Watch only wallet', () => {
         assert.ok(tx.confirmations > 1);
       }
 
-     // assert.strictEqual(w.getTransactions()[0].value, 100000000);
+      // assert.strictEqual(w.getTransactions()[0].value, 100000000);
       assert.strictEqual(w.getTransactions()[1].value, -93692735);
     }
   });
@@ -103,7 +98,7 @@ describe('Watch only wallet', () => {
   });
 
   // skipped because its generally rare case
-  // eslint-disable-next-line jest/no-disabled-tests
+
   it('can fetch txs for address funded by genesis txs', async () => {
     const w = new WatchOnlyWallet();
     w.setSecret('N5ac3ywbkm11zVrtUfBFkRPhcjAygsc3SP');

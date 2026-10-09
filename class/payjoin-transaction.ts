@@ -6,8 +6,8 @@ import ecc from '../blue_modules/noble_ecc';
 import presentAlert from '../components/Alert';
 import { HDSegwitBech32Wallet } from './wallets/hd-segwit-bech32-wallet';
 import assert from 'assert';
+import { DOICHAIN } from '../blue_modules/network.js';
 const ECPair = ECPairFactory(ecc);
-import { DOICHAIN } from "../blue_modules/network.js";
 
 const delay = (milliseconds: number) => new Promise(resolve => setTimeout(resolve, milliseconds));
 

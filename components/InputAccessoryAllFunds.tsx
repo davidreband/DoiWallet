@@ -3,7 +3,7 @@ import { InputAccessoryView, Keyboard, Platform, StyleSheet, View } from 'react-
 import { Text } from '@rneui/themed';
 import { BlueButtonLink } from '../BlueComponents';
 import loc from '../loc';
-import { DoichainUnit } from "../models/doichainUnits";
+import { DoichainUnit } from '../models/doichainUnits';
 import { useTheme } from './themes';
 
 interface InputAccessoryAllFundsProps {

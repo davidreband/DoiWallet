@@ -34,7 +34,7 @@ describe('Legacy wallet', () => {
   it.skip('can create transaction', async () => {
     const l = new LegacyWallet();
     l.setSecret('L4ccWrPMmFDZw4kzAKFqJNxgHANjdy6b7YKNXMwB4xac4FLF3Tov');
-    console.log("____l", l.getAddress())
+    console.log('____l', l.getAddress());
 
     assert.strictEqual(l.getAddress(), 'N5ac3ywbkm11zVrtUfBFkRPhcjAygsc3SP');
     assert.deepStrictEqual(l.getAllExternalAddresses(), ['N5ac3ywbkm11zVrtUfBFkRPhcjAygsc3SP']);

@@ -2,7 +2,7 @@ import React, { useMemo, useCallback } from 'react';
 import { TouchableOpacity, Text, StyleSheet, LayoutAnimation, View } from 'react-native';
 import { useStorage } from '../hooks/context/useStorage';
 import loc, { formatBalanceWithoutSuffix } from '../loc';
-import { DoichainUnit} from '../models/doichainUnits';
+import { DoichainUnit } from '../models/doichainUnits';
 import ToolTipMenu from './TooltipMenu';
 import { CommonToolTipActions } from '../typings/CommonToolTipActions';
 import { useSettings } from '../hooks/context/useSettings';
@@ -43,7 +43,7 @@ const TotalWalletsBalance: React.FC = React.memo(() => {
             text: loc.formatString(loc.total_balance_view.display_in_fiat, { currency: preferredFiatCurrency.endPointKey }),
             hidden: totalBalancePreferredUnit === DoichainUnit.LOCAL_CURRENCY,
           },
-          { ...CommonToolTipActions.ViewInSats, hidden: totalBalancePreferredUnit === DoichainUnit.SWARTZ},
+          { ...CommonToolTipActions.ViewInSats, hidden: totalBalancePreferredUnit === DoichainUnit.SWARTZ },
           { ...CommonToolTipActions.ViewInBitcoin, hidden: totalBalancePreferredUnit === DoichainUnit.DOI },
         ],
       },

@@ -12,7 +12,7 @@ import { BlueStorageContext } from '../../blue_modules/storage-context';
 import { useTheme } from '../../components/themes';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import SafeArea from '../../components/SafeArea';
-import { Chain } from "../../models/doichainUnits";
+import { Chain } from '../../models/doichainUnits';
 import { BlurredBalanceView } from '../../components/BlurredBalanceView';
 
 const SelectWallet = () => {
@@ -151,7 +151,7 @@ const SelectWallet = () => {
             <Image
               source={(() => {
                 switch (item.type) {
-                  //case LightningLdkWallet.type:
+                  // case LightningLdkWallet.type:
                   // case LightningCustodianWallet.type:
                   //   return I18nManager.isRTL ? require('../../img/lnd-shape-rtl.png') : require('../../img/lnd-shape.png');
                   case MultisigHDWallet.type:

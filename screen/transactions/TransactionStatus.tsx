@@ -118,7 +118,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
   const { colors } = useTheme();
   const { selectedBlockExplorer } = useSettings();
   const fetchTxInterval = useRef<NodeJS.Timeout>();
-  
+
   const stylesHook = StyleSheet.create({
     value: {
       color: colors.alternativeTextColor2,
@@ -190,28 +190,30 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
   const [sendToDoiAddress, setSendToDoiAddress] = useState<string>('');
   const [hasNameOpInputs, setHasNameOpInputs] = useState(false);
 
- // const [nameOpAddress, setNameOpAddress] = useState<string>('');
+  // const [nameOpAddress, setNameOpAddress] = useState<string>('');
 
-  const handleNameOpSendPress = useCallback((recipientAddress: string, nameOpData: { name: string; value: string; }, nameOpAddress: string) => {
-    if (!recipientAddress) {
-      Alert.alert(loc.errors.error, 'Please enter a DoiAddress');
-      return;
-    }
+  const handleNameOpSendPress = useCallback(
+    (recipientAddress: string, nameOpData: { name: string; value: string }, nameOpAddress: string) => {
+      if (!recipientAddress) {
+        Alert.alert(loc.errors.error, 'Please enter a DoiAddress');
+        return;
+      }
 
-    navigate('SendDetailsRoot', {
-      screen: 'SendDetails',
-      params: {
-        nameOp: {
-          nameId: nameOpData.name,
-          nameValue: nameOpData.value,
-          sendTo: recipientAddress,
-          nameOpAddress: nameOpAddress
+      navigate('SendDetailsRoot', {
+        screen: 'SendDetails',
+        params: {
+          nameOp: {
+            nameId: nameOpData.name,
+            nameValue: nameOpData.value,
+            sendTo: recipientAddress,
+            nameOpAddress,
+          },
+          walletID,
         },
-        walletID: walletID,
-      },
-    });
-  }, [navigate]);
- 
+      });
+    },
+    [navigate],
+  );
 
   useEffect(() => {
     setOptions({
@@ -457,7 +459,6 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
       const response = await fetch(url);
       if (!response.ok) {
         console.error('FetchJson error:', response.status);
-
       }
       const data = await response.json();
       return data;
@@ -470,12 +471,12 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
     {
       id: 'copyToClipboard',
       text: loc.transactions.details_copy,
-      icon: { iconValue: 'doc.on.doc' }, 
-    }
+      icon: { iconValue: 'doc.on.doc' },
+    },
   ];
 
-  const onPressMenuItem = (key: string) => {    
-    Clipboard.setString(key);        
+  const onPressMenuItem = (key: string) => {
+    Clipboard.setString(key);
   };
 
   const isTransactionInputHasNameOp = async (txid: string, name: string, wallet) => {
@@ -485,7 +486,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
       for (const output of fetchedTx.outputs) {
         if (output.scriptPubKey?.nameOp?.name === name) {
           return true;
-        }else{
+        } else {
           return false;
         }
       }
@@ -495,15 +496,14 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
   };
 
   useEffect(() => {
-    const checkInputs = async () => {      
+    const checkInputs = async () => {
       try {
-
         if (!tx || typeof tx.value !== 'number' || !Array.isArray(tx.inputs) || !Array.isArray(tx.outputs)) {
           return;
         }
 
         if (tx.value < 0 && tx.inputs) {
-          for (const output of tx.outputs) {            
+          for (const output of tx.outputs) {
             if (output?.scriptPubKey?.nameOp) {
               for (const input of tx.inputs) {
                 if (input.txid) {
@@ -520,7 +520,6 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
       } catch (error) {
         console.error('Error in checkInputs:', error);
       } finally {
-        
       }
     };
 
@@ -529,92 +528,95 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
 
   const renderNameOps = () => {
     if (tx.outputs && tx.confirmations > 0) {
-        for (const output of tx.outputs) {
-          if (output?.scriptPubKey?.nameOp) {
-            if (tx.value < 0 && hasNameOpInputs) {
-              return null;             
-            }
+      for (const output of tx.outputs) {
+        if (output?.scriptPubKey?.nameOp) {
+          if (tx.value < 0 && hasNameOpInputs) {
+            return null;
+          }
 
-            const nameOpValue = output.scriptPubKey.nameOp.value;
-            // setNameOpAddress(output.scriptPubKey.addresses)
-            //const nameOpValue = 'ipfs://bafkreiewupt5xwng6jjn3xpewq2q6tta32zohkvad3rqnhiatlklhv3gha';
-            //const nameOpValue = 'ipfs://bafkreidjj5xgyvlxcmuuaqphnsyiu4gnlyddfwmufazlea4xf6uckyr6qy';
-            const urlPattern = /(ipfs?:\/\/[^\s]+)/g;
-            const containsUrl = urlPattern.test(nameOpValue);
-            if (containsUrl) {
-              const ipfsGateway = 'https://ipfs.le-space.de/ipfs/';
-              const jsonUrl = nameOpValue.replace('ipfs://', ipfsGateway);
-              fetchJson(jsonUrl).then(data => {
-                if(data){
-                  const imageUrl = data.image.replace('ipfs://', ipfsGateway);
-                  checkUrlAccessibility(imageUrl);
-                  setDescription(data.description)
-                  setImage(imageUrl)
-                  setName(data.name)
-                }                
-              });
-            }
-            return (
-              <View style={styles.memo}>
+          const nameOpValue = output.scriptPubKey.nameOp.value;
+          // setNameOpAddress(output.scriptPubKey.addresses)
+          // const nameOpValue = 'ipfs://bafkreiewupt5xwng6jjn3xpewq2q6tta32zohkvad3rqnhiatlklhv3gha';
+          // const nameOpValue = 'ipfs://bafkreidjj5xgyvlxcmuuaqphnsyiu4gnlyddfwmufazlea4xf6uckyr6qy';
+          const urlPattern = /(ipfs?:\/\/[^\s]+)/g;
+          const containsUrl = urlPattern.test(nameOpValue);
+          if (containsUrl) {
+            const ipfsGateway = 'https://ipfs.le-space.de/ipfs/';
+            const jsonUrl = nameOpValue.replace('ipfs://', ipfsGateway);
+            fetchJson(jsonUrl).then(data => {
+              if (data) {
+                const imageUrl = data.image.replace('ipfs://', ipfsGateway);
+                checkUrlAccessibility(imageUrl);
+                setDescription(data.description);
+                setImage(imageUrl);
+                setName(data.name);
+              }
+            });
+          }
+          return (
+            <View style={styles.memo}>
+              {isUrlAccessible ? (
+                <>
+                  <Text selectable style={styles.title}>
+                    {name}
+                  </Text>
+                  <Text selectable style={styles.description}>
+                    {description}
+                  </Text>
+                  <Image
+                    // source={{ uri: 'https://ipfs.le-space.de/ipfs/bafkreihvhtwrjc3kpl273q7nwk2peiuhr7zr4vugzam4x3guoht66udjf4' }}
+                    source={{ uri: image }}
+                    style={styles.image}
+                    resizeMode="contain"
+                  />
+                  <BlueSpacing20 />
 
-                {isUrlAccessible ? (
-                  <>  
-                    <Text selectable style={styles.title}>{name}</Text>
-                    <Text selectable style={styles.description}>{description}</Text>
-                    <Image  
-                      //source={{ uri: 'https://ipfs.le-space.de/ipfs/bafkreihvhtwrjc3kpl273q7nwk2peiuhr7zr4vugzam4x3guoht66udjf4' }}
-                      source={{ uri: image }}
-                      style={styles.image}
-                      resizeMode="contain"                      
-                    />   
-                    <BlueSpacing20 />
-
-                    {/* <ToolTipMenu key={'name'} isButton title={""} actions={actions} onPressMenuItem={onPressMenuItem}>
+                  {/* <ToolTipMenu key={'name'} isButton title={""} actions={actions} onPressMenuItem={onPressMenuItem}>
                       <Text selectable style={styles.memoText}>
                         {loc.transactions.nameOps_name}: {output.scriptPubKey.nameOp.name}
                       </Text>
                     </ToolTipMenu>             */}
 
-                    <Text selectable style={styles.memoText}>
-                      {loc.transactions.nameOps_name}: {output.scriptPubKey.nameOp.name}
-                    </Text>
+                  <Text selectable style={styles.memoText}>
+                    {loc.transactions.nameOps_name}: {output.scriptPubKey.nameOp.name}
+                  </Text>
 
-                    <Text selectable style={styles.memoText}>
-                      {loc.transactions.nameOps_value}: {output.scriptPubKey.nameOp.value}
-                    </Text>
-                    <BlueSpacing20 />
-                  </>
-                ) : (
-                  <>
-                      <Text selectable style={styles.memoText}>
-                        {loc.transactions.nameOps_name}: {output.scriptPubKey.nameOp.name}
-                      </Text>
-                      <Text selectable style={styles.memoText}>
-                        {loc.transactions.nameOps_value}: {output.scriptPubKey.nameOp.value}
-                      </Text>
-                      <BlueSpacing20 />
-                  </>
-                )}
-                <View style={styles.sendContainer}>
-                  <TextInput
-                    placeholder={loc.transactions.send_to_doi_address}
-                    value={sendToDoiAddress}
-                    onChangeText={setSendToDoiAddress}
-                    style={styles.addressInput}
-                    placeholderTextColor={colors.alternativeTextColor}
-                  />
-                  <BlueSpacing10 />
-                  <Button
-                    title={loc.transactions.send}
-                    onPress={() => handleNameOpSendPress(sendToDoiAddress, output.scriptPubKey.nameOp, output.scriptPubKey.addresses[0])}
-                    disabled={!sendToDoiAddress}
-                  />
-                </View>
+                  <Text selectable style={styles.memoText}>
+                    {loc.transactions.nameOps_value}: {output.scriptPubKey.nameOp.value}
+                  </Text>
+                  <BlueSpacing20 />
+                </>
+              ) : (
+                <>
+                  <Text selectable style={styles.memoText}>
+                    {loc.transactions.nameOps_name}: {output.scriptPubKey.nameOp.name}
+                  </Text>
+                  <Text selectable style={styles.memoText}>
+                    {loc.transactions.nameOps_value}: {output.scriptPubKey.nameOp.value}
+                  </Text>
+                  <BlueSpacing20 />
+                </>
+              )}
+              <View style={styles.sendContainer}>
+                <TextInput
+                  placeholder={loc.transactions.send_to_doi_address}
+                  value={sendToDoiAddress}
+                  onChangeText={setSendToDoiAddress}
+                  style={styles.addressInput}
+                  placeholderTextColor={colors.alternativeTextColor}
+                />
+                <BlueSpacing10 />
+                <Button
+                  title={loc.transactions.send}
+                  onPress={() => handleNameOpSendPress(sendToDoiAddress, output.scriptPubKey.nameOp, output.scriptPubKey.addresses[0])}
+                  disabled={!sendToDoiAddress}
+                />
               </View>
-            );
-          }
+            </View>
+          );
         }
       }
+    }
     return null;
   };
 
@@ -779,7 +781,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
 
           <View style={styles.container}>
             <BlueCard>
-            {renderNameOps()}
+              {renderNameOps()}
               <View style={styles.center}>
                 <Text style={[styles.value, stylesHook.value]} selectable>
                   {wallet && formatBalanceWithoutSuffix(tx.value, wallet.preferredBalanceUnit, true)}
@@ -872,7 +874,7 @@ const styles = StyleSheet.create({
     fontSize: 36,
     fontWeight: '600',
   },
-  valueSmall:{
+  valueSmall: {
     fontSize: 26,
     fontWeight: '600',
   },
@@ -961,20 +963,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   image: {
-    width: '100%', 
+    width: '100%',
     height: 300,
-    margin:10,
+    margin: 10,
   },
   card: {
     backgroundColor: '#fff',
     borderRadius: 12,
-    elevation: 4, 
-    shadowColor: '#000', 
-    shadowOffset: { width: 0, height: 4 }, 
-    shadowOpacity: 0.1, 
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
     shadowRadius: 8,
     overflow: 'hidden',
-
   },
   title: {
     fontSize: 16,
@@ -982,7 +983,7 @@ const styles = StyleSheet.create({
     color: '#9aa0aa',
     marginBottom: 5,
   },
-  description:{
+  description: {
     color: '#9aa0aa',
     fontSize: 14,
     alignSelf: 'center',
@@ -1001,5 +1002,5 @@ const styles = StyleSheet.create({
   sendContainer: {
     paddingHorizontal: 20,
     width: '100%',
-  }
+  },
 });

@@ -17,7 +17,7 @@ const ECPair = ECPairFactory(ecc);
  */
 function pubkeyToP2shSegwitAddress(pubkey: Buffer): string | false {
   const { address } = bitcoin.payments.p2sh({
-    redeem: bitcoin.payments.p2wpkh({pubkey: pubkey, network: DOICHAIN, }),
+    redeem: bitcoin.payments.p2wpkh({ pubkey, network: DOICHAIN }),
   });
   return address ?? false;
 }
@@ -52,7 +52,7 @@ export class SegwitP2SHWallet extends LegacyWallet {
       return (
         bitcoin.payments.p2sh({
           output: scriptPubKey2,
-          network:  DOICHAIN,
+          network: DOICHAIN,
         }).address ?? false
       );
     } catch (_) {
@@ -112,7 +112,7 @@ export class SegwitP2SHWallet extends LegacyWallet {
       c++;
 
       const pubkey = keyPair.publicKey;
-      const p2wpkh = bitcoin.payments.p2wpkh({ pubkey: pubkey, network: DOICHAIN });
+      const p2wpkh = bitcoin.payments.p2wpkh({ pubkey, network: DOICHAIN });
       const p2sh = bitcoin.payments.p2sh({ redeem: p2wpkh });
       if (!p2sh.output) {
         throw new Error('Internal error: no p2sh.output during createTransaction()');

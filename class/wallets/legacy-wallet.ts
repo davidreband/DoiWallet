@@ -60,7 +60,7 @@ export class LegacyWallet extends AbstractWallet {
 
   async generate(): Promise<void> {
     const buf = await randomBytes(32);
-    this.secret = ECPair.makeRandom({ rng: () => buf,  network: DOICHAIN, }).toWIF();
+    this.secret = ECPair.makeRandom({ rng: () => buf, network: DOICHAIN }).toWIF();
   }
 
   async generateFromEntropy(user: Buffer): Promise<void> {
@@ -316,7 +316,6 @@ export class LegacyWallet extends AbstractWallet {
             ...txRest,
             inputs: [...vin2],
             outputs: [...vout],
-           
           };
 
           _txsByExternalIndex.push(clonedTx);
@@ -330,7 +329,6 @@ export class LegacyWallet extends AbstractWallet {
             ...txRest,
             inputs: [...vin],
             outputs: [...vout2],
-           
           };
 
           _txsByExternalIndex.push(clonedTx);
@@ -418,7 +416,7 @@ export class LegacyWallet extends AbstractWallet {
 
     // .inputs and .outputs will be undefined if no solution was found
     if (!inputs || !outputs) {
-     // throw new Error('Not enough balance. Try sending smaller amount or decrease the fee.');
+      // throw new Error('Not enough balance. Try sending smaller amount or decrease the fee.');
     }
 
     return { inputs, outputs, fee };

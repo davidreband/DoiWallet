@@ -34,7 +34,7 @@ describe('HDLegacyBreadwalletWallet', () => {
 
     assert.strictEqual(
       hdBread.getXpub(),
-      "xpub68iahKkKPy8X7xgYGfLuSFwxMAMQk96mBSoomvgvdCezzREWVbDtg8gZm4fRAkzLGxofEPUK5REqV6R7t31UfCoYGPR6L3gFqT9HnJACCvP"
+      'xpub68iahKkKPy8X7xgYGfLuSFwxMAMQk96mBSoomvgvdCezzREWVbDtg8gZm4fRAkzLGxofEPUK5REqV6R7t31UfCoYGPR6L3gFqT9HnJACCvP',
     );
 
     assert.ok(hdBread.getAllExternalAddresses().includes('NBuSLSfdJqeJ479ccT4fcg2CMZLmnXYT8L'));

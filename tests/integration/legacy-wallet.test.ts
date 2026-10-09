@@ -37,7 +37,7 @@ describe('LegacyWallet', function () {
     assert.ok(w.getBalance() === 0);
     assert.ok(w.getUnconfirmedBalance() === 0);
     assert.ok(w._lastBalanceFetch === 0);
-    await w.fetchBalance();   
+    await w.fetchBalance();
     assert.ok(w.getBalance() === 9948820);
     assert.ok(w.getUnconfirmedBalance() === 0);
     assert.ok(w._lastBalanceFetch > 0);
@@ -63,9 +63,9 @@ describe('LegacyWallet', function () {
 
     for (const tx of w.getUtxo()) {
       assert.strictEqual(tx.txid, '9e972369a17c468bfcebf67c3fe11b90222959023685ecfa73024bcb3677f2d7');
-      //assert.strictEqual(tx.vout, 1);
+      // assert.strictEqual(tx.vout, 1);
       assert.strictEqual(tx.address, 'N6dXumt8aJhkAZAnKNzUBNrBJJez2Efu7e');
-      //assert.strictEqual(tx.value, 1000000);
+      // assert.strictEqual(tx.value, 1000000);
       assert.ok(tx.confirmations! > 0);
     }
   });
@@ -102,7 +102,7 @@ describe('LegacyWallet', function () {
     assert.ok(w.getUtxo().length > 0, 'unexpected empty UTXO');
 
     assert.ok(w.getUtxo()[0].value);
-    //assert.ok(w.getUtxo()[0].vout === 1, JSON.stringify(w.getUtxo()[0]));
+    // assert.ok(w.getUtxo()[0].vout === 1, JSON.stringify(w.getUtxo()[0]));
     assert.ok(w.getUtxo()[0].txid);
     assert.ok(w.getUtxo()[0].confirmations);
     assert.ok(w.getUtxo()[0].txhex);

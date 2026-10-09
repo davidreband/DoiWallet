@@ -7,7 +7,6 @@ import Localization, { LocalizedStrings } from 'react-localization';
 import { I18nManager } from 'react-native';
 import * as RNLocalize from 'react-native-localize';
 
-
 import { satoshiToLocalCurrency } from '../blue_modules/currency';
 import { DoichainUnit } from '../models/doichainUnits';
 
@@ -323,11 +322,10 @@ export function formatBalance(balance: number, toUnit: string, withFormatting = 
     const value = new BigNumber(balance).dividedBy(100000000).toFixed(8);
     return removeTrailingZeros(+value) + ' ' + loc.units[DoichainUnit.DOI];
   } else if (toUnit === DoichainUnit.SWARTZ) {
-    return (withFormatting ? new Intl.NumberFormat().format(balance).toString() : String(balance)) + ' ' + loc.units[DoichainUnit.SWARTZ];  
+    return (withFormatting ? new Intl.NumberFormat().format(balance).toString() : String(balance)) + ' ' + loc.units[DoichainUnit.SWARTZ];
   } else {
     return satoshiToLocalCurrency(balance);
   }
-  
 }
 
 /**
@@ -348,7 +346,6 @@ export function formatBalanceWithoutSuffix(balance = 0, toUnit: string, withForm
     return withFormatting ? new Intl.NumberFormat().format(balance).toString() : String(balance);
   } else {
     return satoshiToLocalCurrency(balance);
-
   }
 }
 

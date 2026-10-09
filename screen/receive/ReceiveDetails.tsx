@@ -29,7 +29,7 @@ import { useStorage } from '../../hooks/context/useStorage';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import loc, { formatBalance } from '../../loc';
 
-import { DoichainUnit, Chain } from "../../models/doichainUnits";
+import { DoichainUnit, Chain } from '../../models/doichainUnits';
 import { DOICHAIN } from '../../blue_modules/network';
 import { ReceiveDetailsStackParamList } from '../../navigation/ReceiveDetailsStackParamList';
 
@@ -454,7 +454,6 @@ const ReceiveDetails = () => {
           // cache hit! we reuse old value that supposedly doesnt have rounding errors
 
           amount = satoshiToBTC(Number(AmountInput.conversionCache[amount + DoichainUnit.LOCAL_CURRENCY]));
-
         } else {
           amount = fiatToBTC(amountNumber);
         }
@@ -489,11 +488,11 @@ const ReceiveDetails = () => {
     if (number > 0) {
       switch (customUnit) {
         case DoichainUnit.DOI:
-          return customAmount + " BTC";
+          return customAmount + ' BTC';
         case DoichainUnit.SWARTZ:
-          return satoshiToBTC(customAmount) + " BTC";
+          return satoshiToBTC(customAmount) + ' BTC';
         case DoichainUnit.LOCAL_CURRENCY:
-          return fiatToBTC(customAmount) + " BTC";
+          return fiatToBTC(customAmount) + ' BTC';
       }
       return customAmount + ' ' + customUnit;
     } else {

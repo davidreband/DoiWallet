@@ -1,4 +1,3 @@
-
 import * as bitcoin from '@doichain/doichainjs-lib';
 import { DOICHAIN } from '../../blue_modules/network.js';
 import { ECPairFactory } from 'ecpair';
@@ -9,7 +8,6 @@ import { SegwitBech32Wallet } from './segwit-bech32-wallet';
 import { CreateTransactionResult, CreateTransactionUtxo } from './types.ts';
 import { CoinSelectTarget } from 'coinselect';
 const ECPair = ECPairFactory(ecc);
-
 
 export class TaprootWallet extends SegwitBech32Wallet {
   static readonly type = 'taproot';

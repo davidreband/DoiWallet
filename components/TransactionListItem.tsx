@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, memo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
-import {Image, Linking, View, ViewStyle, StyleSheet } from 'react-native';
+import { Image, Linking, View, ViewStyle, StyleSheet } from 'react-native';
 import Lnurl from '../class/lnurl';
-import {Transaction } from '../class/wallets/types';
+import { Transaction } from '../class/wallets/types';
 import { NameOpTransaction, NameOpOutput } from '../types/transaction';
 import TransactionExpiredIcon from '../components/icons/TransactionExpiredIcon';
 import TransactionIncomingIcon from '../components/icons/TransactionIncomingIcon';
@@ -13,7 +13,7 @@ import TransactionOnchainIcon from '../components/icons/TransactionOnchainIcon';
 import TransactionOutgoingIcon from '../components/icons/TransactionOutgoingIcon';
 import TransactionPendingIcon from '../components/icons/TransactionPendingIcon';
 import loc, { formatBalanceWithoutSuffix, transactionTimeToReadable } from '../loc';
-import { DoichainUnit } from "../models/doichainUnits";
+import { DoichainUnit } from '../models/doichainUnits';
 import { useSettings } from '../hooks/context/useSettings';
 import ListItem from './ListItem';
 import { useTheme } from './themes';
@@ -54,11 +54,8 @@ interface TransactionListItemProps {
 
 type NavigationProps = NativeStackNavigationProp<DetailViewStackParamList>;
 
-
 export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
-
   ({ item, itemPriceUnit = DoichainUnit.DOI, walletID, searchQuery, style, renderHighlightedText, onPress: customOnPress }) => {
-
     const [subtitleNumberOfLines, setSubtitleNumberOfLines] = useState(1);
     const { colors } = useTheme();
     const { navigate } = useExtendedNavigation<NavigationProps>();
@@ -113,7 +110,7 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
       }
       sub += Number(item.confirmations) < 7 ? loc.formatString(loc.transactions.list_conf, { number: item.confirmations }) : '';
       if (sub !== '') sub += ' ';
-      
+
       sub += txMemo;
       if (item.memo) sub += item.memo;
       return sub || undefined;
@@ -122,8 +119,6 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
     const formattedAmount = useMemo(() => {
       return formatBalanceWithoutSuffix(item.value && item.value, itemPriceUnit, true).toString();
     }, [item.value, itemPriceUnit]);
-
-   
 
     const rowTitle = useMemo(() => {
       if (item.type === 'user_invoice' || item.type === 'payment_request') {
@@ -187,7 +182,7 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
     useEffect(() => {
       const fetchIPFSImage = async () => {
         if (!item.outputs) return;
-        
+
         for (const output of item.outputs) {
           const scriptPubKey = output?.scriptPubKey;
           if (scriptPubKey?.nameOp?.value?.startsWith('ipfs://')) {
@@ -314,7 +309,6 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
       const unitSuffix = itemPriceUnit === DoichainUnit.DOI || itemPriceUnit === DoichainUnit.SWARTZ ? ` ${itemPriceUnit}` : ' ';
       return `${formattedAmount}${unitSuffix}`;
     }, [formattedAmount, itemPriceUnit]);
-
 
     useEffect(() => {
       setSubtitleNumberOfLines(1);

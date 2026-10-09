@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import * as bitcoin from '@doichain/doichainjs-lib';
-import { Alert } from 'react-native';
+import { Alert, AlertButton } from 'react-native';
 import DefaultPreference from 'react-native-default-preference';
 import RNFS from 'react-native-fs';
 import Realm from 'realm';
@@ -11,7 +11,6 @@ import loc from '../loc';
 import { GROUP_IO_BLUEWALLET } from './currency';
 import { ElectrumServerItem } from '../screen/settings/ElectrumSettings';
 import { triggerWarningHapticFeedback } from './hapticFeedback';
-import { AlertButton } from 'react-native';
 import { NAME_EXPIRY_BLOCKS, NameOperation, NameState, readNameState, sortNameOperations } from '../utils/nameState';
 
 export { NAME_EXPIRY_BLOCKS, readNameState, sortNameOperations };
@@ -91,7 +90,7 @@ const defaultPeer = { host: 'itchy-jellyfish-89.doi.works', ssl: 50002 };
 export const hardcodedPeers: Peer[] = [
   { host: 'itchy-jellyfish-89.doi.works', ssl: 50002 },
   { host: 'big-parrot-60.doi.works', ssl: 50002 },
-  { host: 'ugly-bird-70.doi.works', ssl: 50002 }
+  { host: 'ugly-bird-70.doi.works', ssl: 50002 },
 ];
 
 export const suggestedServers: Peer[] = hardcodedPeers.map(peer => ({

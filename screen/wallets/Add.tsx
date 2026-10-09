@@ -106,7 +106,7 @@ const WalletsAdd: React.FC = () => {
   const label = state.label;
   const selectedWalletType = state.selectedWalletType;
   const colorScheme = useColorScheme();
-  
+
   const { addWallet, saveToDisk } = useStorage();
   const { entropy: entropyHex, words } = useRoute<RouteProps>().params || {};
   const entropy = entropyHex ? Buffer.from(entropyHex, 'hex') : undefined;
@@ -192,7 +192,6 @@ const WalletsAdd: React.FC = () => {
         subtitle: 'p2sh/non-HD',
         menuState: selectedIndex === 2 && selectedWalletType === ButtonSelected.ONCHAIN,
       },
-      
     ];
 
     const walletAction: Action = {

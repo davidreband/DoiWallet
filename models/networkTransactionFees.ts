@@ -15,11 +15,7 @@ export class NetworkTransactionFee {
   public mediumFee: number;
   public slowFee: number;
 
-  constructor(
-    fastestFee = MIN_RELAY_FEE_SAT_PER_VBYTE,
-    mediumFee = MIN_RELAY_FEE_SAT_PER_VBYTE,
-    slowFee = MIN_RELAY_FEE_SAT_PER_VBYTE,
-  ) {
+  constructor(fastestFee = MIN_RELAY_FEE_SAT_PER_VBYTE, mediumFee = MIN_RELAY_FEE_SAT_PER_VBYTE, slowFee = MIN_RELAY_FEE_SAT_PER_VBYTE) {
     // No preset may fall under the chain's floor: a transaction below it relays on the doi.works
     // fleet, shows as sent and is never mined (Doichain/DoiWallet#39).
     this.fastestFee = Math.max(MIN_RELAY_FEE_SAT_PER_VBYTE, fastestFee);

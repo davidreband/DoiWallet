@@ -4,8 +4,8 @@ import b58 from 'bs58check';
 import ecc from '../blue_modules/noble_ecc';
 import { MultisigHDWallet } from './wallets/multisig-hd-wallet';
 import assert from 'assert';
+import { DOICHAIN } from '../blue_modules/network.js';
 const bip32 = BIP32Factory(ecc);
-import { DOICHAIN } from "../blue_modules/network.js";
 
 export class MultisigCosigner {
   private _data: string;

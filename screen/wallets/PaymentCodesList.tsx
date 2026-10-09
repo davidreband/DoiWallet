@@ -19,7 +19,7 @@ import { Action } from '../../components/types';
 import confirm from '../../helpers/confirm';
 import prompt from '../../helpers/prompt';
 import loc, { formatBalance } from '../../loc';
-import { DoichainUnit} from '../../models/doichainUnits';
+import { DoichainUnit } from '../../models/doichainUnits';
 import SafeArea from '../../components/SafeArea';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import { useStorage } from '../../hooks/context/useStorage';

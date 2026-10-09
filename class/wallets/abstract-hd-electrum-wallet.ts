@@ -5,7 +5,7 @@ import BigNumber from 'bignumber.js';
 import BIP32Factory, { BIP32Interface } from 'bip32';
 import * as bip39 from 'bip39';
 import * as bitcoin from '@doichain/doichainjs-lib';
-import { Psbt,  Transaction as BTransaction } from '@doichain/doichainjs-lib';
+import { Psbt, Transaction as BTransaction } from '@doichain/doichainjs-lib';
 import { getNameOPStackScript } from '../../utils/getNameOPStackScript';
 import b58 from 'bs58check';
 import { CoinSelectOutput, CoinSelectReturnInput } from 'coinselect';
@@ -17,7 +17,14 @@ import { ElectrumHistory } from '../../blue_modules/BlueElectrum';
 import ecc from '../../blue_modules/noble_ecc';
 import { randomBytes } from '../rng';
 import { AbstractHDWallet } from './abstract-hd-wallet';
-import { CreateTransactionResult, CreateTransactionTarget, CreateTransactionUtxo, ExtendedCoinSelectOutput, Transaction, Utxo } from './types';
+import {
+  CreateTransactionResult,
+  CreateTransactionTarget,
+  CreateTransactionUtxo,
+  ExtendedCoinSelectOutput,
+  Transaction,
+  Utxo,
+} from './types';
 import { SilentPayment, UTXOType as SPUTXOType, UTXO as SPUTXO } from 'silent-payments';
 import { DOICHAIN, MIN_NAME_AMOUNT_SAT, VERSION } from '../../blue_modules/network.js';
 const ECPair = ECPairFactory(ecc);
@@ -29,11 +36,11 @@ type BalanceByIndex = {
   u: number;
 };
 
-interface NameOpInput {  
-    nameId: string;
-    nameValue: string;
-    sendTo: string;
-    nameOpAddress: string;
+interface NameOpInput {
+  nameId: string;
+  nameValue: string;
+  sendTo: string;
+  nameOpAddress: string;
 }
 
 /**
@@ -423,7 +430,6 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
             this._txs_by_external_index[c] = this._txs_by_external_index[c] || [];
             const { vin: txVin, vout: txVout, ...txRest } = tx;
             const clonedTx = { ...txRest, inputs: txVin.slice(0), outputs: txVout.slice(0) };
-           
 
             // trying to replace tx if it exists already (because it has lower confirmations, for example)
             let replaced = false;
@@ -442,7 +448,6 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
             this._txs_by_external_index[c] = this._txs_by_external_index[c] || [];
             const { vin: txVin, vout: txVout, ...txRest } = tx;
             const clonedTx = { ...txRest, inputs: txVin.slice(0), outputs: txVout.slice(0) };
-                   
 
             // trying to replace tx if it exists already (because it has lower confirmations, for example)
             let replaced = false;
@@ -466,7 +471,6 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
             this._txs_by_internal_index[c] = this._txs_by_internal_index[c] || [];
             const { vin: txVin, vout: txVout, ...txRest } = tx;
             const clonedTx = { ...txRest, inputs: txVin.slice(0), outputs: txVout.slice(0) };
-         
 
             // trying to replace tx if it exists already (because it has lower confirmations, for example)
             let replaced = false;
@@ -485,7 +489,6 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
             this._txs_by_internal_index[c] = this._txs_by_internal_index[c] || [];
             const { vin: txVin, vout: txVout, ...txRest } = tx;
             const clonedTx = { ...txRest, inputs: txVin.slice(0), outputs: txVout.slice(0) };
-         
 
             // trying to replace tx if it exists already (because it has lower confirmations, for example)
             let replaced = false;
@@ -512,7 +515,6 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
               this._txs_by_payment_code_index[pc][c] = this._txs_by_payment_code_index[pc][c] || [];
               const { vin: txVin, vout: txVout, ...txRest } = tx;
               const clonedTx = { ...txRest, inputs: txVin.slice(0), outputs: txVout.slice(0) };
-           
 
               // trying to replace tx if it exists already (because it has lower confirmations, for example)
               let replaced = false;
@@ -1186,7 +1188,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
     sequence: number = AbstractHDElectrumWallet.defaultRBFSequence,
     skipSigning = false,
     masterFingerprint: number = 0,
-    nameOpAsInput?: NameOpInput | undefined,    
+    nameOpAsInput?: NameOpInput | undefined,
   ): CreateTransactionResult {
     if (targets.length === 0) throw new Error('No destination provided');
 
@@ -1223,7 +1225,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
       }
       inputs.push(nameInput);
     }
-    
+
     const hasSilentPaymentOutput: boolean = !!outputs.find(o => o.address?.startsWith('sp1'));
     if (hasSilentPaymentOutput) {
       if (!this.allowSilentPaymentSend()) {
@@ -1307,7 +1309,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
 
       // this is not correct fingerprint, as we dont know realfingerprint - we got zpub with 84/0, but fingerpting
       // should be from root. basically, fingerprint should be provided from outside  by user when importing zpub
-      
+
       if (output.address?.startsWith('PM')) {
         // ok its BIP47 payment code, so we need to unwrap a joint address for the receiver and use it instead:
         output.address = this._getNextFreePaymentCodeAddressSend(output.address);
@@ -1318,7 +1320,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
       let outputScript;
       const extendedOutput = output as ExtendedCoinSelectOutput;
 
-      if (!change && nameOpAsInput && nameOpAsInput.nameId ) {
+      if (!change && nameOpAsInput && nameOpAsInput.nameId) {
         // Create NameOp script using the utility function
         const { nameId, nameValue, sendTo } = nameOpAsInput;
 
@@ -1331,22 +1333,21 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
         outputScript = getNameOPStackScript(nameId, nameValue, sendTo, DOICHAIN);
 
         psbt.setVersion(VERSION);
-        
+
         psbt.addOutput({
           script: outputScript,
           value: output.value,
           bip32Derivation:
             change && path && pubkey
               ? [
-                {
-                  masterFingerprint: masterFingerprintBuffer,
-                  path,
-                  pubkey,
-                },
-              ]
+                  {
+                    masterFingerprint: masterFingerprintBuffer,
+                    path,
+                    pubkey,
+                  },
+                ]
               : [],
         });
-
       } else {
         outputScript = extendedOutput.script?.hex ? Buffer.from(extendedOutput.script.hex, 'hex') : undefined;
         psbt.addOutput({
@@ -1357,19 +1358,19 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
           bip32Derivation:
             change && path && pubkey
               ? [
-                {
-                  masterFingerprint: masterFingerprintBuffer,
-                  path,
-                  pubkey,
-                },
-              ]
+                  {
+                    masterFingerprint: masterFingerprintBuffer,
+                    path,
+                    pubkey,
+                  },
+                ]
               : [],
         });
-      }      
+      }
     });
-    //console.log("__count", count)
-    //console.log("__outputs", outputs)
-    //console.log("__inputs", inputs)
+    // console.log("__count", count)
+    // console.log("__outputs", outputs)
+    // console.log("__inputs", inputs)
 
     if (!skipSigning) {
       // skiping signing related stuff
@@ -1380,9 +1381,8 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
 
     let tx;
     if (!skipSigning) {
-    
       tx = psbt.finalizeAllInputs().extractTransaction();
-    }   
+    }
     return { tx, inputs, outputs, fee, psbt };
   }
 
@@ -1395,7 +1395,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
     if (!pubkey || !path) {
       throw new Error('Internal error: pubkey or path are invalid');
     }
-    const p2wpkh = bitcoin.payments.p2wpkh({ pubkey:pubkey, network: DOICHAIN,});
+    const p2wpkh = bitcoin.payments.p2wpkh({ pubkey, network: DOICHAIN });
     if (!p2wpkh.output) {
       throw new Error('Internal error: could not create p2wpkh output during _addPsbtInput');
     }
@@ -1478,7 +1478,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
    */
   _nodeToP2shSegwitAddress(hdNode: BIP32Interface): string {
     const { address } = bitcoin.payments.p2sh({
-      redeem: bitcoin.payments.p2wpkh({ pubkey: hdNode.publicKey, network: DOICHAIN, }),
+      redeem: bitcoin.payments.p2wpkh({ pubkey: hdNode.publicKey, network: DOICHAIN }),
     });
 
     if (!address) {
@@ -1571,7 +1571,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
   calculateHowManySignaturesWeHaveFromPsbt(psbt: Psbt) {
     let sigsHave = 0;
     for (const inp of psbt.data.inputs) {
-      console.log("___inp___", inp)
+      console.log('___inp___', inp);
       if (inp.finalScriptSig || inp.finalScriptWitness || inp.partialSig) sigsHave++;
     }
     return sigsHave;
@@ -1589,32 +1589,35 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
     const hdRoot = bip32.fromSeed(seed, DOICHAIN);
 
     const inputs = psbt.data.inputs.map((input, index) => {
-      console.log("____input", input);
+      console.log('____input', input);
       try {
-        if (input.witnessUtxo){
-            return {
-                address: bitcoin.address.fromOutputScript(input.witnessUtxo.script, DOICHAIN),
-                value: input.witnessUtxo.value,
-            }
+        if (input.witnessUtxo) {
+          return {
+            address: bitcoin.address.fromOutputScript(input.witnessUtxo.script, DOICHAIN),
+            value: input.witnessUtxo.value,
+          };
         } else if (input.nonWitnessUtxo) {
-            const txin = psbt.txInputs[index];
-            const txout = bitcoin.Transaction.fromBuffer(input.nonWitnessUtxo).outs[txin.index];
-            console.log("____input_adress", bitcoin.address.fromOutputScript(txout.script, DOICHAIN))
-            return {
-                address: bitcoin.address.fromOutputScript(txout.script, DOICHAIN),
-                value: txout.value,
-            }
+          const txin = psbt.txInputs[index];
+          const txout = bitcoin.Transaction.fromBuffer(input.nonWitnessUtxo).outs[txin.index];
+          console.log('____input_adress', bitcoin.address.fromOutputScript(txout.script, DOICHAIN));
+          return {
+            address: bitcoin.address.fromOutputScript(txout.script, DOICHAIN),
+            value: txout.value,
+          };
         } else {
-            throw new Error('Could not get input of #' + index);
+          throw new Error('Could not get input of #' + index);
         }
-      } catch (e) { console.log("_______input__e", e)}
-  });
-
+      } catch (e) {
+        console.log('_______input__e', e);
+      }
+    });
 
     for (let cc = 0; cc < psbt.inputCount; cc++) {
       try {
         psbt.signInputHD(cc, hdRoot);
-      } catch (e) { console.log("___signInputHD_1", e); } // protects agains duplicate cosignings
+      } catch (e) {
+        console.log('___signInputHD_1', e);
+      } // protects agains duplicate cosignings
 
       if (!psbt.inputHasHDKey(cc, hdRoot)) {
         for (const derivation of psbt.data.inputs[cc].bip32Derivation || []) {
@@ -1628,7 +1631,9 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
           const keyPair = ECPair.fromWIF(wif, DOICHAIN);
           try {
             psbt.signInput(cc, keyPair);
-          } catch (e) { console.log('___signInput__2', e) } // protects agains duplicate cosignings or if this output can't be signed with current wallet
+          } catch (e) {
+            console.log('___signInput__2', e);
+          } // protects agains duplicate cosignings or if this output can't be signed with current wallet
         }
       }
       console.log('_____cc', cc);
@@ -1655,12 +1660,12 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
 
         const keyPair = ECPair.fromWIF(wif, DOICHAIN);
         try {
-         // console.log('____psbt.data.inputs', psbt.data.inputs);
-         // console.log('____keyPair', keyPair);
-         // console.log('____cc_3', cc);
+          // console.log('____psbt.data.inputs', psbt.data.inputs);
+          // console.log('____keyPair', keyPair);
+          // console.log('____cc_3', cc);
 
           psbt.signInput(cc, keyPair);
-        //  console.log('____psbt.data.inputs_2', psbt.data.inputs); 
+          //  console.log('____psbt.data.inputs_2', psbt.data.inputs);
         } catch (e) {
           console.log('___signInput__3', e);
           throw new Error(String(e));
@@ -1718,7 +1723,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
 
   getBIP47FromSeed(): BIP47Interface {
     if (!this._bip47_instance || !this._bip47_instance.getNotificationAddress) {
-      this._bip47_instance = bip47.fromBip39Seed(this.secret, {network: DOICHAIN, coin: 'DOICHAIN'}, this.passphrase);
+      this._bip47_instance = bip47.fromBip39Seed(this.secret, { network: DOICHAIN, coin: 'DOICHAIN' }, this.passphrase);
     }
 
     return this._bip47_instance;
@@ -1894,7 +1899,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
 
         // final check if PC is even valid (could've been constructed by a buggy code, and our code would crash with that):
         try {
-          bip47.fromPaymentCode(paymentCode, {network: DOICHAIN, coin: 'DOICHAIN'});
+          bip47.fromPaymentCode(paymentCode, { network: DOICHAIN, coin: 'DOICHAIN' });
         } catch (_) {
           continue;
         }

@@ -27,7 +27,7 @@ import {
 import { BlueText } from '../BlueComponents';
 import confirm from '../helpers/confirm';
 import loc, { formatBalancePlain, formatBalanceWithoutSuffix, removeTrailingZeros } from '../loc';
-import { DoichainUnit} from '../models/doichainUnits';
+import { DoichainUnit } from '../models/doichainUnits';
 import { useTheme } from './themes';
 
 export const conversionCache: { [key: string]: string } = {};

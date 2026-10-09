@@ -8,8 +8,7 @@ import { Linking, ScrollView, StyleSheet, View } from 'react-native';
 // @ts-ignore theres no type declaration for this
 import BlueCrypto from 'react-native-blue-crypto';
 import wif from 'wif';
-import { DOICHAIN } from "../../blue_modules/network.js";
-
+import { DOICHAIN } from '../../blue_modules/network.js';
 
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import * as encryption from '../../blue_modules/encryption';

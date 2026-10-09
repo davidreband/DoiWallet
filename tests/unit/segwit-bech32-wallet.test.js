@@ -9,7 +9,6 @@ describe('Segwit P2SH wallet', () => {
     const wallet = new SegwitBech32Wallet();
     wallet.setSecret('TkpCRCZ7tPwcHWjVHGrFdeYYL5sbQ5FzU4JmzUx3BDDMiKcw2yUG');
 
-
     assert.strictEqual(wallet.getAddress(), 'dc1qydvmn0gvk9xwdq8pzd3gxm3vtftte948y66fzj');
     assert.deepStrictEqual(wallet.getAllExternalAddresses(), ['dc1qydvmn0gvk9xwdq8pzd3gxm3vtftte948y66fzj']);
     assert.strictEqual(await wallet.getChangeAddressAsync(), wallet.getAddress());
@@ -22,7 +21,6 @@ describe('Segwit P2SH wallet', () => {
         value: 100000,
       },
     ];
-
 
     let txNew = wallet.createTransaction(
       utxos,
@@ -51,7 +49,7 @@ describe('Segwit P2SH wallet', () => {
     assert.strictEqual(Math.round((txNew.fee / tx.virtualSize()) * 10), feeRate * 10);
     assert.strictEqual(tx.ins.length, 1);
     assert.strictEqual(tx.outs.length, 1);
-    assert.strictEqual('N5ac3ywbkm11zVrtUfBFkRPhcjAygsc3SP', bitcoin.address.fromOutputScript(tx.outs[0].script,DOICHAIN)); // to address
+    assert.strictEqual('N5ac3ywbkm11zVrtUfBFkRPhcjAygsc3SP', bitcoin.address.fromOutputScript(tx.outs[0].script, DOICHAIN)); // to address
 
     // batch send + send max
     txNew = wallet.createTransaction(
@@ -123,8 +121,8 @@ describe('Segwit P2SH wallet', () => {
     assert.strictEqual(Math.round((txNew.fee / tx.virtualSize()) * 10), feeRate * 10);
     assert.strictEqual(tx.ins.length, 1);
     assert.strictEqual(tx.outs.length, 2);
-    assert.strictEqual('N5ac3ywbkm11zVrtUfBFkRPhcjAygsc3SP', bitcoin.address.fromOutputScript(tx.outs[0].script,DOICHAIN)); // to address
-    assert.strictEqual('6VZxBkWzXYdhzX2Brq3hnQ6f8KYRDYNa4y', bitcoin.address.fromOutputScript(tx.outs[1].script,DOICHAIN)); // to address
+    assert.strictEqual('N5ac3ywbkm11zVrtUfBFkRPhcjAygsc3SP', bitcoin.address.fromOutputScript(tx.outs[0].script, DOICHAIN)); // to address
+    assert.strictEqual('6VZxBkWzXYdhzX2Brq3hnQ6f8KYRDYNa4y', bitcoin.address.fromOutputScript(tx.outs[1].script, DOICHAIN)); // to address
   });
 
   it('can sign and verify messages', async () => {

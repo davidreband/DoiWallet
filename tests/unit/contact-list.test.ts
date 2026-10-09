@@ -7,7 +7,6 @@ describe('ContactList', () => {
     const cl = new ContactList();
     assert.ok(cl.isAddressValid('N5ac3ywbkm11zVrtUfBFkRPhcjAygsc3SP'));
     assert.ok(cl.isAddressValid('dc1qvtztrf6zpxffxgfeewd9aq2ytzuny5yjepecen'));
-    
 
     assert.ok(!cl.isAddressValid('sfhsdhsdf'));
   });

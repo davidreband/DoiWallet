@@ -11,7 +11,7 @@ import { Transaction, TWallet } from '../../class/wallets/types';
 import presentAlert from '../../components/Alert';
 import CopyToClipboardButton from '../../components/CopyToClipboardButton';
 
-import { DoichainUnit } from "../../models/doichainUnits";
+import { DoichainUnit } from '../../models/doichainUnits';
 
 import HandOffComponent from '../../components/HandOffComponent';
 import { useTheme } from '../../components/themes';
@@ -112,7 +112,7 @@ const TransactionDetails = () => {
         let foundTx: Transaction | false = false;
         let newFrom: string[] = [];
         let newTo: string[] = [];
-        let newNameOps: { name: string; value: string }[] = [];
+        const newNameOps: { name: string; value: string }[] = [];
         for (const transaction of getTransactions(undefined, Infinity, true)) {
           if (transaction.hash === hash) {
             foundTx = transaction;
@@ -121,8 +121,8 @@ const TransactionDetails = () => {
             }
             for (const output of foundTx.outputs) {
               if (output?.scriptPubKey?.addresses) newTo = newTo.concat(output.scriptPubKey.addresses);
-              
-              if (output?.scriptPubKey?.nameOp){
+
+              if (output?.scriptPubKey?.nameOp) {
                 const nameOp = output.scriptPubKey.nameOp;
                 if (nameOp) {
                   newNameOps.push({ name: nameOp.name, value: nameOp.value });
@@ -152,10 +152,10 @@ const TransactionDetails = () => {
         setMemo(txMetadata[foundTx.hash]?.memo ?? '');
         setTX(foundTx);
         setFrom(newFrom);
-        
+
         setTo(newTo.filter(onlyUnique));
-        //setNameOps(newNameOps.map(name => ({ name, value: '' }))); 
-        setNameOps(newNameOps); 
+        // setNameOps(newNameOps.map(name => ({ name, value: '' })));
+        setNameOps(newNameOps);
         setIsLoading(false);
       });
       return () => {
@@ -170,7 +170,6 @@ const TransactionDetails = () => {
   }, [saveTransactionDetails]);
 
   const handleOnOpenTransactionOnBlockExplorerTapped = () => {
-
     let url = `https://explorer.doichain.org`;
     if (tx) url += `/tx/?txid=${tx.hash}`;
 
@@ -316,11 +315,10 @@ const TransactionDetails = () => {
               <BlueText style={styles.rowCaption}>{loc.transactions.details_to}</BlueText>
               <CopyToClipboardButton stringToCopy={to.join(', ')} />
             </View>
-            {renderSection( to)}
+            {renderSection(to)}
             <View style={styles.marginBottom18} />
           </>
         )}
-
 
         {tx.hash && (
           <>
@@ -358,12 +356,16 @@ const TransactionDetails = () => {
         )}
 
         {nameOps.length > 0 && (
-          <>            
-            {nameOps.map((nameOp: { name: string, value: string }, index: number) => (
+          <>
+            {nameOps.map((nameOp: { name: string; value: string }, index: number) => (
               <React.Fragment key={index}>
-                <BlueText style={styles.rowCaption}>{loc.transactions.nameOps_name}: {nameOp.name}</BlueText>
-                
-                <BlueText style={styles.rowCaption}>{loc.transactions.nameOps_value}: {nameOp.value}</BlueText>
+                <BlueText style={styles.rowCaption}>
+                  {loc.transactions.nameOps_name}: {nameOp.name}
+                </BlueText>
+
+                <BlueText style={styles.rowCaption}>
+                  {loc.transactions.nameOps_value}: {nameOp.value}
+                </BlueText>
                 <BlueText style={styles.rowValue}> </BlueText>
               </React.Fragment>
             ))}

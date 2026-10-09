@@ -15,7 +15,7 @@ const config = {
         sourceMap: true, // Make sure source maps are enabled
       },
     }),
-  }
+  },
 };
 
 module.exports = mergeConfig(getDefaultConfig(__dirname), config);

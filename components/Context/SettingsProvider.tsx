@@ -12,7 +12,7 @@ import {
 } from '../../hooks/useDeviceQuickActions';
 import { getIsHandOffUseEnabled, setIsHandOffUseEnabled } from '../HandOffComponent';
 import { useStorage } from '../../hooks/context/useStorage';
-import { DoichainUnit} from '../../models/doichainUnits';
+import { DoichainUnit } from '../../models/doichainUnits';
 import { TotalWalletsBalanceKey, TotalWalletsBalancePreferredUnit } from '../TotalWalletsBalance';
 import { BLOCK_EXPLORERS, getBlockExplorerUrl, saveBlockExplorer, BlockExplorer, normalizeUrl } from '../../models/blockExplorer';
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
@@ -59,9 +59,7 @@ export const setTotalBalancePreferredUnitStorageFunc = async (unit: DoichainUnit
   } catch (e) {
     console.error('Error setting TotalBalancePreferredUnit:', e);
   }
-
 };
-
 
 export const getTotalBalancePreferredUnit = async (): Promise<DoichainUnit> => {
   try {

@@ -188,7 +188,7 @@ describe('multisig-wallet (p2sh)', () => {
       'xpub69SfFhG5eA9cqxHKM6b1HhXMpDzipUPDBNMBrjNgWWbbzKqnqwx2mvMyB5bRgmLAi7cBgr8euuz4Lvz3maWxpfUmdM71dyQuvq68mTAG4Cp',
     );
     assert.strictEqual(w.getFingerprint(1), fp1cobo);
-    //assert.strictEqual(w.getFingerprint(2), fp2coldcard);
+    // assert.strictEqual(w.getFingerprint(2), fp2coldcard);
 
     assert.strictEqual(w._getExternalAddressByIndex(0), '6EX6dreCD75JtMoC589324eVjZhMjLaqHw');
     assert.strictEqual(w._getExternalAddressByIndex(1), '6RRwS6H4GUsKVJoxmxXPF8MbwKV2eeb8RL');
@@ -1703,7 +1703,7 @@ describe('multisig-wallet (native segwit)', () => {
     assert.strictEqual(w.getCosigner(1), Zpub1);
     assert.strictEqual(w.getCosigner(2), process.env.MNEMONICS_COLDCARD);
     assert.strictEqual(w.getFingerprint(1), fp1cobo);
-    //assert.strictEqual(w.getFingerprint(2), fp2coldcard);
+    // assert.strictEqual(w.getFingerprint(2), fp2coldcard);
     assert.strictEqual(w.getCustomDerivationPathForCosigner(1), path);
     assert.strictEqual(w.getCustomDerivationPathForCosigner(2), path);
 

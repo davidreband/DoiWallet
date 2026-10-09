@@ -5,9 +5,8 @@ import presentAlert from './Alert';
 import { useTheme } from './themes';
 import loc, { formatBalance } from '../loc';
 import { MIN_RELAY_FEE_SAT_PER_VBYTE } from '../blue_modules/network.js';
-import { DoichainUnit} from '../models/doichainUnits';
+import { DoichainUnit } from '../models/doichainUnits';
 import { IFee } from '../screen/send/SendDetails';
-
 
 interface NetworkTransactionFees {
   fastestFee: number;
@@ -20,7 +19,7 @@ interface SelectFeeModalProps {
   feePrecalc: IFee;
   feeRate: string;
   setCustomFee: (fee: string) => void;
-  
+
   feeUnit: DoichainUnit;
 }
 
@@ -117,7 +116,6 @@ const CustomFeeInput = React.memo<CustomFeeInputProps>(
 );
 
 const SelectFeeModal = forwardRef<BottomModalHandle, SelectFeeModalProps>(
-
   ({ networkTransactionFees, feePrecalc, feeRate, setCustomFee, setFeePrecalc, feeUnit = DoichainUnit.DOI }, ref) => {
     const [customFeeValue, setCustomFeeValue] = useState<string>('');
     const [isCustomFeeFocused, setIsCustomFeeFocused] = useState(false);

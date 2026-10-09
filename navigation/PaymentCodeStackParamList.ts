@@ -1,4 +1,4 @@
-import { DoichainUnit} from '../models/doichainUnits';
+import { DoichainUnit } from '../models/doichainUnits';
 
 export type PaymentCodeStackParamList = {
   PaymentCode: { paymentCode: string };
@@ -9,7 +9,7 @@ export type PaymentCodeStackParamList = {
     amount: number;
     amountSats: number;
     unit: DoichainUnit;
-    noRbf: boolean;    
+    noRbf: boolean;
     isTransactionReplaceable: boolean;
     launchedBy: string;
     isEditable: boolean;

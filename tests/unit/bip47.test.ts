@@ -15,9 +15,9 @@ describe('Bech32 Segwit HD (BIP84) with BIP47', () => {
   it('should work', async () => {
     const bobWallet = new HDSegwitBech32Wallet();
     // @see https://gist.github.com/SamouraiDev/6aad669604c5930864bd
-    //bobWallet.setSecret('reward upper indicate eight swift arch injury crystal super wrestle already dentist');
+    // bobWallet.setSecret('reward upper indicate eight swift arch injury crystal super wrestle already dentist');
     bobWallet.setSecret('coil earn raccoon party result public shrug corn scrap field security devote');
-    
+
     expect(bobWallet.getBIP47PaymentCode()).toEqual(
       'PM8TJS7d8ryvmPTk57d7NYJug8eLQpHHdmfcHidoBqqXgqMdjW56SBaK5R9wSSj5bRjhrVafyUBpgpdGqT7Si2XWQSu8zPxnWsjCyKwo5Mog1mGUo3as',
     );
@@ -62,10 +62,8 @@ describe('Bech32 Segwit HD (BIP84) with BIP47', () => {
     const ourNotificationAddress = w.getBIP47NotificationAddress();
     const publicBip47 = BIP47Factory(ecc).fromPaymentCode(w.getBIP47PaymentCode(), { network: DOICHAIN, coin: 'DOICHAIN' });
     expect(ourNotificationAddress).toEqual(publicBip47.getNotificationAddress()); // same address we derived internally for ourselves and from public Payment Code
-    //expect(ourNotificationAddress).toEqual('13VrzVGGdYErtQRggFWvccFtyeELRMbzG1'); // our notif address
+    // expect(ourNotificationAddress).toEqual('13VrzVGGdYErtQRggFWvccFtyeELRMbzG1'); // our notif address
     expect(ourNotificationAddress).toEqual('My5EC8mFYvLRQwgBx4qVq8QohsdPJUPedP'); // our notif address
-
-
 
     // since we dont do network calls in unit test we cant get counterparties payment codes from our notif address,
     // and thus, dont know collaborative addresses with our payers. lets hardcode our counterparty payment code to test

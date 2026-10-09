@@ -88,7 +88,7 @@ export class HDSegwitP2SHWallet extends AbstractHDElectrumWallet {
     if (!pubkey || !path) {
       throw new Error('Internal error: pubkey or path are invalid');
     }
-    const p2wpkh = bitcoin.payments.p2wpkh({ pubkey:pubkey, network: DOICHAIN });
+    const p2wpkh = bitcoin.payments.p2wpkh({ pubkey, network: DOICHAIN });
     const p2sh = bitcoin.payments.p2sh({ redeem: p2wpkh });
     if (!p2sh.output) {
       throw new Error('Internal error: no p2sh.output during _addPsbtInput()');

@@ -1,5 +1,5 @@
 import assert from 'assert';
-import * as bitcoin from "@doichain/doichainjs-lib";
+import * as bitcoin from '@doichain/doichainjs-lib';
 
 import { SegwitP2SHWallet } from '../../class';
 import { DOICHAIN } from '../../blue_modules/network';

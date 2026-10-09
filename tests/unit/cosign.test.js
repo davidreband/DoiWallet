@@ -3,14 +3,11 @@ import assert from 'assert';
 import * as bitcoin from '@doichain/doichainjs-lib';
 import { DOICHAIN } from '../../blue_modules/network.js';
 
-//import { HDLegacyP2PKHWallet, HDSegwitBech32Wallet, HDSegwitP2SHWallet, WatchOnlyWallet } from '../../class';
-import { HDLegacyP2PKHWallet, HDSegwitBech32Wallet, HDSegwitP2SHWallet} from '../../class';
+// import { HDLegacyP2PKHWallet, HDSegwitBech32Wallet, HDSegwitP2SHWallet, WatchOnlyWallet } from '../../class';
+import { HDLegacyP2PKHWallet, HDSegwitBech32Wallet, HDSegwitP2SHWallet } from '../../class';
 
 describe('AbstractHDElectrumWallet.cosign', () => {
-
-
   it('different descendants of AbstractHDElectrumWallet can cosign one transaction', async () => {
-    
     if (!process.env.HD_MNEMONIC || !process.env.HD_MNEMONIC_BIP49) {
       console.error('process.env.HD_MNEMONIC or HD_MNEMONIC_BIP49 not set, skipped');
       return;
@@ -23,13 +20,13 @@ describe('AbstractHDElectrumWallet.cosign', () => {
       {
         height: 349566,
         value: 8323200,
-        address: "N5ac3ywbkm11zVrtUfBFkRPhcjAygsc3SP",
+        address: 'N5ac3ywbkm11zVrtUfBFkRPhcjAygsc3SP',
         vout: 0,
-        txid: "95e43c0040fe3fdd679e0fc95be1f8a8babe3f2b902ebabfea1381bf52cd1b54",
+        txid: '95e43c0040fe3fdd679e0fc95be1f8a8babe3f2b902ebabfea1381bf52cd1b54',
         amount: 8323200,
         confirmations: 1,
         txhex:
-          "0200000001ef6f84cebcd950e65fbd6b50d779be2858ac25288781cc436a52934acf003226010000006a47304402204f80244fb0c261dbb2f345d7c5f7a1949786bbadb822768cedf6e4f19bc2947e02204accd7381d927470adcf04231def150f5b009031995cfcbde4044d98e0b46de10121032a029a507302347d599d44b47a7d9698a7256471f5ec8f4c74aa336b3005d8fefdffffff0280007f00000000001976a9142fa11256aaa10f62176794887c0aae99490c243088ac8096980000000000160014d7c61c3f9cc28e36e1fbc8f884177af9f27913d8f0550500",
+          '0200000001ef6f84cebcd950e65fbd6b50d779be2858ac25288781cc436a52934acf003226010000006a47304402204f80244fb0c261dbb2f345d7c5f7a1949786bbadb822768cedf6e4f19bc2947e02204accd7381d927470adcf04231def150f5b009031995cfcbde4044d98e0b46de10121032a029a507302347d599d44b47a7d9698a7256471f5ec8f4c74aa336b3005d8fefdffffff0280007f00000000001976a9142fa11256aaa10f62176794887c0aae99490c243088ac8096980000000000160014d7c61c3f9cc28e36e1fbc8f884177af9f27913d8f0550500',
       },
     ];
 
@@ -40,9 +37,9 @@ describe('AbstractHDElectrumWallet.cosign', () => {
       {
         height: 198350,
         value: 10000000,
-        address: "dc1qvtztrf6zpxffxgfeewd9aq2ytzuny5yjepecen",
+        address: 'dc1qvtztrf6zpxffxgfeewd9aq2ytzuny5yjepecen',
         vout: 1,
-        txid: "615174140e35fa06044c75165ca41c8bbeffb81185845e3df1d9c51d9b7580cd",
+        txid: '615174140e35fa06044c75165ca41c8bbeffb81185845e3df1d9c51d9b7580cd',
         amount: 10000000,
         confirmations: 1,
       },
@@ -86,7 +83,7 @@ describe('AbstractHDElectrumWallet.cosign', () => {
         hash: input.txid,
         index: input.vout,
         sequence,
-       /*
+        /*
         bip32Derivation: [
           {
             masterFingerprint: masterFingerprintBuffer,
@@ -106,7 +103,7 @@ describe('AbstractHDElectrumWallet.cosign', () => {
       const pubkey = w2._getPubkeyByAddress(input.address);
       const path = w2._getDerivationPathByAddress(input.address);
       const p2wpkh = bitcoin.payments.p2wpkh({
-        pubkey: pubkey,
+        pubkey,
         network: DOICHAIN,
       });
 
@@ -191,7 +188,7 @@ describe('AbstractHDElectrumWallet.cosign', () => {
       '020000000001035fbc74110c2d6fcf4d1161a59913fbcd2b6ab3c5a9eb4d0dc0859515cbc8654f000000006a473044022041df555e5f6a3769fafdbe23bfe29de84a1341b8fd85ffd279e238309c5df07702207cf1628b35ccacdb7d34e20fd46a3bc8adc0b1bd3b63249a3a4442b5a993d73501210316e84a2556f30a199541633f5dda6787710ccab26771b7084f4c9e1104f47667000000806d93fb792280e26304b370abebd237430ceddb5670877f1d2a98d80924a900ad01000000000000008087c9acd9d5714845343b18abaa26cb83299be2487c22da9c0e270f241b4d9cfe0000000017160014a239b6a0cbc7aadc2e77643de36306a6167fad15000000800110270000000000001976a9144dc6cbf64df9ab106cee812c7501960b93e9217788ac0002483045022100efe66403aba1441041dfdeff1f24b5e89ab5728ae7ceb9edb264eee004d5883c02207bf03cb611c9322086ac75fa97c374e9540c911359ede4f62de3c94c429ea2320121027aaff1bd274812d012464be25dc06587287a4b578678e58c949a133b9fb93c7f0247304402207a99c115f0b372d151caf991bb5af9f880e7d87625eeb4233fefa671489ed8e702200e5675b92e4e22b2fe37f563b2a0e75fb81def5a6efb431c7ca3b654ef63fe5801210202ac3bd159e54dc31e65842ad5f9a10b4eb024e83864a319b27de65ee08b2a3900000000',
     );
   });
-/*
+  /*
   it('HDSegwitBech32Wallet can cosign psbt with correct fingerprint', async () => {
     if (!process.env.MNEMONICS_COBO) {
       console.error('process.env.HD_MNEMONIC or HD_MNEMONIC_BIP49 not set, skipped');

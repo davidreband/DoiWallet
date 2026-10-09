@@ -155,7 +155,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     // turn on notifications if available
     // console.warn('waitForId');
     // await sleep(300000);
-    if(await expectToBeVisible('NotificationSettings')) {
+    if (await expectToBeVisible('NotificationSettings')) {
       await element(by.id('NotificationSettings')).tap();
       await element(by.id('NotificationsSwitch')).tap();
       await sleep(3_000);

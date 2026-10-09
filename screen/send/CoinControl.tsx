@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import * as RNLocalize from 'react-native-localize';
 
-import { DoichainUnit } from "../../models/doichainUnits";
+import { DoichainUnit } from '../../models/doichainUnits';
 import debounce from '../../blue_modules/debounce';
 import { BlueSpacing10, BlueSpacing20 } from '../../BlueComponents';
 import { TWallet, Utxo } from '../../class/wallets/types';
@@ -98,10 +98,10 @@ const OutputList: React.FC<TOutputListProps> = ({
     },
     containerSelected: {
       backgroundColor: colors.ballOutgoingExpired,
-      borderBottomColor: "rgba(0, 0, 0, 0)",
+      borderBottomColor: 'rgba(0, 0, 0, 0)',
     },
-    avatar: { borderColor: "white", borderWidth: 1, backgroundColor: color },
-    amount: { fontWeight: "bold", color: colors.foregroundColor },
+    avatar: { borderColor: 'white', borderWidth: 1, backgroundColor: color },
+    amount: { fontWeight: 'bold', color: colors.foregroundColor },
     memo: { fontSize: 13, marginTop: 3, color: colors.alternativeTextColor },
   });
 
@@ -120,14 +120,8 @@ const OutputList: React.FC<TOutputListProps> = ({
         icon={selected ? { name: 'check', type: 'font-awesome-6' } : undefined}
       />
       <RNElementsListItem.Content>
-        <RNElementsListItem.Title style={oStyles.amount}>
-          {amount}
-        </RNElementsListItem.Title>
-        <RNElementsListItem.Subtitle
-          style={oStyles.memo}
-          numberOfLines={1}
-          ellipsizeMode="middle"
-        >
+        <RNElementsListItem.Title style={oStyles.amount}>{amount}</RNElementsListItem.Title>
+        <RNElementsListItem.Subtitle style={oStyles.memo} numberOfLines={1} ellipsizeMode="middle">
           {memo || address}
         </RNElementsListItem.Subtitle>
       </RNElementsListItem.Content>

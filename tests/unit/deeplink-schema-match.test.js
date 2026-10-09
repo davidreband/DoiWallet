@@ -60,7 +60,7 @@ describe.each(['', '//'])('unit - DeepLinkSchemaMatch', function (suffix) {
       ),
     );
   });
-/*
+  /*
   it('isBoth doichain & Invoice', () => {
     assert.ok(
       DeeplinkSchemaMatch.isBothBitcoinAndLightning(
@@ -118,7 +118,7 @@ describe.each(['', '//'])('unit - DeepLinkSchemaMatch', function (suffix) {
       ),
     );
   });
-/*
+  /*
   it('navigationForRoute', async () => {
     const events = [
       {
@@ -368,7 +368,7 @@ describe.each(['', '//'])('unit - DeepLinkSchemaMatch', function (suffix) {
       address: 'N6dXumt8aJhkAZAnKNzUBNrBJJez2Efu7e',
       options: {
         amount: 20.3,
-        label: "Foobar",
+        label: 'Foobar',
       },
     });
   });
@@ -388,7 +388,7 @@ describe.each(['', '//'])('unit - DeepLinkSchemaMatch', function (suffix) {
       label: ' ',
       amoount: undefined,
     });
-    assert.strictEqual(encoded, "doichain:N6dXumt8aJhkAZAnKNzUBNrBJJez2Efu7e");
+    assert.strictEqual(encoded, 'doichain:N6dXumt8aJhkAZAnKNzUBNrBJJez2Efu7e');
   });
 
   it('can decodeBitcoinUri', () => {
@@ -503,5 +503,4 @@ describe.each(['', '//'])('unit - DeepLinkSchemaMatch', function (suffix) {
   // isBothBitcoinAndLightning() therefore returns undefined, so such a URI falls through
   // to the plain address branch and opens SendDetails directly, which is what a wallet
   // without Lightning should do.
-
 });

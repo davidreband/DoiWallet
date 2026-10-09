@@ -53,16 +53,13 @@ describe('Bech32 Segwit HD (BIP84)', () => {
     const zpub = 'zpub6rFR7y4Q2AijBEqTUquhVz398htDFrtymD9xYYfG1m4wAcvPhXNfE3EfH1r1ADqtfSdVCToUG868RvUUkgDKf31mGDtKsAYz2oz2AGutZYs';
     const hd = new HDSegwitBech32Wallet();
     hd._xpub = zpub;
-    assert.strictEqual(
-      hd._getExternalAddressByIndex(0),
-      "dc1qcr8te4kr609gcawutmrza0j4xv80jy8zxfp7yf"
-    );
+    assert.strictEqual(hd._getExternalAddressByIndex(0), 'dc1qcr8te4kr609gcawutmrza0j4xv80jy8zxfp7yf');
     assert.strictEqual(hd._getExternalAddressByIndex(1), 'dc1qnjg0jd8228aq7egyzacy8cys3knf9xvrw9d79a');
     assert.strictEqual(hd._getInternalAddressByIndex(0), 'dc1q8c6fshw2dlwun7ekn9qwf37cu2rn755uk76de2');
     assert.ok(hd._getInternalAddressByIndex(0) !== hd._getInternalAddressByIndex(1));
 
     assert.ok(hd.getAllExternalAddresses().includes('dc1qnjg0jd8228aq7egyzacy8cys3knf9xvrw9d79a'));
-    //assert.ok(hd.getAllExternalAddresses().includes('dc1q8c6fshw2dlwun7ekn9qwf37cu2rn755uk76de2'));
+    // assert.ok(hd.getAllExternalAddresses().includes('dc1q8c6fshw2dlwun7ekn9qwf37cu2rn755uk76de2'));
     assert.ok(!hd.getAllExternalAddresses().includes('bc1q8c6fshw2dlwun7ekn9qwf37cu2rn755upcp6el')); // not internal
   });
 

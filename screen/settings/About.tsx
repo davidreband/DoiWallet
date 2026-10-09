@@ -1,7 +1,15 @@
 import React from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { Alert, Image, Linking, Platform, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import { getApplicationName, getBuildNumber, getBundleId, getUniqueIdSync, getVersion, hasGmsSync, useFirstInstallTime} from 'react-native-device-info';
+import {
+  getApplicationName,
+  getBuildNumber,
+  getBundleId,
+  getUniqueIdSync,
+  getVersion,
+  hasGmsSync,
+  useFirstInstallTime,
+} from 'react-native-device-info';
 import { Icon } from '@rneui/themed';
 import Rate, { AndroidMarket } from 'react-native-rate';
 import A from '../../blue_modules/analytics';
@@ -68,17 +76,17 @@ const About: React.FC = () => {
   };
 
   const handleOnGithubPress = () => {
-    Linking.openURL("https://github.com/Doichain/DoiWallet");
+    Linking.openURL('https://github.com/Doichain/DoiWallet');
   };
 
   const handleOnRatePress = () => {
     const options = {
-      AppleAppID: "1376878040",
-      GooglePackageName: "org.doichain.doiwallet",
+      AppleAppID: '1376878040',
+      GooglePackageName: 'org.doichain.doiwallet',
       preferredAndroidMarket: AndroidMarket.Google,
-      preferInApp: Platform.OS !== "android",
+      preferInApp: Platform.OS !== 'android',
       openAppStoreIfInAppFails: true,
-      fallbackPlatformURL: "https://www.doichain.org",
+      fallbackPlatformURL: 'https://www.doichain.org',
     };
     Rate.rate(options, success => {
       if (success) {
@@ -86,7 +94,7 @@ const About: React.FC = () => {
       }
     });
   };
-  const firstInstallTime = useFirstInstallTime().result; 
+  const firstInstallTime = useFirstInstallTime().result;
 
   return (
     <SafeAreaScrollView testID="AboutScrollView" contentInsetAdjustmentBehavior="automatic" automaticallyAdjustContentInsets>
@@ -136,13 +144,13 @@ const About: React.FC = () => {
         onPress={handleOnLicensingPress}
         title={loc.settings.about_license}
       />
-     
+
       <BlueSpacing20 />
       <BlueSpacing20 />
       <BlueTextCentered>
         {getApplicationName()} ver {getVersion()} (build {getBuildNumber() + ' ' + branch})
       </BlueTextCentered>
-      <BlueTextCentered>{new Date(firstInstallTime).toString()   }</BlueTextCentered>
+      <BlueTextCentered>{new Date(firstInstallTime).toString()}</BlueTextCentered>
       <BlueTextCentered>{getBundleId()}</BlueTextCentered>
       <BlueTextCentered>
         w, h = {width}, {height}
