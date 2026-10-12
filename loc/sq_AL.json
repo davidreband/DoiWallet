@@ -70,7 +70,6 @@
     "open_direct_channel": "Hap një kanal direkt me këtë nyje:",
     "please_pay_between_and": "Ju lutem paguani ndërmjet {min} dhe {max}",
     "please_pay": "Ju lutem paguani",
-    "preimage": "Pre-imazh",
     "sats": "sats.",
     "wasnt_paid_and_expired": "Fatura nuk është paguar dhe ka skaduar."
   },
@@ -198,7 +197,6 @@
     "language": "Gjuha",
     "last_updated": "Perditesimi i Fundit",
     "license": "Licenca",
-    "lightning_saved": "Ndryshimet tuaja jane shpetuar me sukses.",
     "lightning_settings": "Serveri Lightning",
     "network": "Rrjeti",
     "network_broadcast": "Publiko Transferten",
