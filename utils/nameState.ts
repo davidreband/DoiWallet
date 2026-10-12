@@ -61,3 +61,30 @@ export const readNameState = (operations: NameOperation[]): NameState | null => 
 
   return { operation: sorted[sorted.length - 1] };
 };
+
+/**
+ * What a name output on screen is, relative to what the chain says about that name.
+ *
+ * `holds` - this very output is the operation holding the name, so it is the one a transfer would
+ * spend. `superseded` - the name has moved on and this output is history; the operation that holds
+ * it now comes with the answer, so the screen can say where it went. `unknown` - the chain was not
+ * reachable or has no operation on this name, and nothing should be claimed either way.
+ */
+export type NameOutputStatus = { status: 'holds' } | { status: 'superseded'; heldBy: NameOperation } | { status: 'unknown' };
+
+/**
+ * Says whether the name output being looked at still holds its name.
+ *
+ * The transaction a user opens may be years old: the name can have moved on since, and deciding
+ * from that transaction alone is what left the transfer form available on an output that holds
+ * nothing (Doichain/DoiWallet#35). Pass what the chain answered; pass null when it could not be
+ * asked.
+ */
+export const describeNameOutput = (output: { txid: string; vout: number }, state: NameState | null): NameOutputStatus => {
+  if (!state) return { status: 'unknown' };
+
+  const held = state.operation;
+  if (held.txid === output.txid && held.vout === output.vout) return { status: 'holds' };
+
+  return { status: 'superseded', heldBy: held };
+};

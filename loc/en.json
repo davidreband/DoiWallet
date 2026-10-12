@@ -378,6 +378,11 @@
     "watchOnlyWarningDescription": "Be cautious of scammers who often use “watch-only” wallets to deceive users. These wallets do not allow you to control or send funds; they only let you view the balance.",
     "nameOps_name": "Name",
     "nameOps_value": "Value",
+    "nameOps_checking": "Checking who holds this name…",
+    "nameOps_moved": "This name has moved on since this transaction. It is now held by {address}.",
+    "nameOps_unchecked": "Could not check who holds this name. Connect to a server and open this screen again.",
+    "nameOps_current_value": "Value now",
+    "nameOps_last_changed": "Last changed in block {height}",
     "send_to_doi_address": "Send to DoiAddress",
     "send": "Send"
   },

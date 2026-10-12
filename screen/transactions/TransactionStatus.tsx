@@ -26,6 +26,7 @@ import HeaderRightButton from '../../components/HeaderRightButton';
 import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamList';
 import { useSettings } from '../../hooks/context/useSettings';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
+import { NameState, describeNameOutput } from '../../utils/nameState';
 
 enum ButtonStatus {
   Possible,
@@ -188,9 +189,42 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
   const [image, setImage] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [sendToDoiAddress, setSendToDoiAddress] = useState<string>('');
-  const [hasNameOpInputs, setHasNameOpInputs] = useState(false);
 
-  // const [nameOpAddress, setNameOpAddress] = useState<string>('');
+  /**
+   * What the chain says about the name on this screen. `loading` until the answer is in; `state`
+   * stays null when there is no connection or the index knows nothing, and then nothing is claimed
+   * about the output either way (Doichain/DoiWallet#35).
+   */
+  const [nameChain, setNameChain] = useState<{ loading: boolean; state: NameState | null }>({ loading: true, state: null });
+
+  /** The name output of the transaction being looked at, if it has one. */
+  const nameOutputOnScreen = useMemo(() => {
+    const output = tx?.outputs?.find((o: any) => o?.scriptPubKey?.nameOp);
+    if (!output) return undefined;
+    return { output, outpoint: { txid: tx.txid ?? hash, vout: output.n } };
+  }, [tx, hash]);
+
+  useEffect(() => {
+    const name = nameOutputOnScreen?.output?.scriptPubKey?.nameOp?.name;
+    if (!name) {
+      setNameChain({ loading: false, state: null });
+      return;
+    }
+
+    let cancelled = false;
+    setNameChain({ loading: true, state: null });
+    BlueElectrum.nameShow(name)
+      .then(state => {
+        if (!cancelled) setNameChain({ loading: false, state });
+      })
+      .catch(() => {
+        if (!cancelled) setNameChain({ loading: false, state: null });
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [nameOutputOnScreen]);
 
   const handleNameOpSendPress = useCallback(
     async (recipientAddress: string, nameOpData: { name: string; value: string }) => {
@@ -495,60 +529,15 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
     Clipboard.setString(key);
   };
 
-  const isTransactionInputHasNameOp = async (txid: string, name: string, wallet) => {
-    try {
-      const transactions = wallet.getTransactions();
-      const fetchedTx = transactions.find((tx: Transaction) => tx.txid === txid);
-      for (const output of fetchedTx.outputs) {
-        if (output.scriptPubKey?.nameOp?.name === name) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching transaction:', error);
-    }
-  };
 
-  useEffect(() => {
-    const checkInputs = async () => {
-      try {
-        if (!tx || typeof tx.value !== 'number' || !Array.isArray(tx.inputs) || !Array.isArray(tx.outputs)) {
-          return;
-        }
-
-        if (tx.value < 0 && tx.inputs) {
-          for (const output of tx.outputs) {
-            if (output?.scriptPubKey?.nameOp) {
-              for (const input of tx.inputs) {
-                if (input.txid) {
-                  const hasName = await isTransactionInputHasNameOp(input.txid, output.scriptPubKey.nameOp.name, wallet);
-                  if (hasName) {
-                    setHasNameOpInputs(true);
-                    break;
-                  }
-                }
-              }
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error in checkInputs:', error);
-      } finally {
-      }
-    };
-
-    checkInputs();
-  }, [tx, wallet]);
 
   const renderNameOps = () => {
     if (tx.outputs && tx.confirmations > 0) {
       for (const output of tx.outputs) {
         if (output?.scriptPubKey?.nameOp) {
-          if (tx.value < 0 && hasNameOpInputs) {
-            return null;
-          }
+          // Whether this output still holds its name is the chain's answer, not something to work
+          // out from the transaction on screen - which may be years old (Doichain/DoiWallet#35).
+          const held = nameChain.loading ? undefined : describeNameOutput({ txid: tx.txid ?? hash, vout: output.n }, nameChain.state);
 
           const nameOpValue = output.scriptPubKey.nameOp.value;
           // setNameOpAddress(output.scriptPubKey.addresses)
@@ -613,21 +602,50 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
                   <BlueSpacing20 />
                 </>
               )}
-              <View style={styles.sendContainer}>
-                <TextInput
-                  placeholder={loc.transactions.send_to_doi_address}
-                  value={sendToDoiAddress}
-                  onChangeText={setSendToDoiAddress}
-                  style={styles.addressInput}
-                  placeholderTextColor={colors.alternativeTextColor}
-                />
-                <BlueSpacing10 />
-                <Button
-                  title={loc.transactions.send}
-                  onPress={() => handleNameOpSendPress(sendToDoiAddress, output.scriptPubKey.nameOp)}
-                  disabled={!sendToDoiAddress}
-                />
-              </View>
+              {nameChain.state && (
+                <>
+                  <Text selectable style={styles.memoText}>
+                    {loc.transactions.nameOps_current_value}: {nameChain.state.operation.value}
+                  </Text>
+                  <Text selectable style={styles.memoText}>
+                    {loc.formatString(loc.transactions.nameOps_last_changed, { height: nameChain.state.operation.height })}
+                  </Text>
+                  <BlueSpacing20 />
+                </>
+              )}
+
+              {held === undefined && (
+                <View style={styles.sendContainer}>
+                  <ActivityIndicator />
+                  <Text style={styles.memoText}>{loc.transactions.nameOps_checking}</Text>
+                </View>
+              )}
+
+              {held?.status === 'superseded' && (
+                <Text selectable style={styles.memoText}>
+                  {loc.formatString(loc.transactions.nameOps_moved, { address: held.heldBy.address })}
+                </Text>
+              )}
+
+              {held?.status === 'unknown' && <Text style={styles.memoText}>{loc.transactions.nameOps_unchecked}</Text>}
+
+              {held?.status === 'holds' && (
+                <View style={styles.sendContainer}>
+                  <TextInput
+                    placeholder={loc.transactions.send_to_doi_address}
+                    value={sendToDoiAddress}
+                    onChangeText={setSendToDoiAddress}
+                    style={styles.addressInput}
+                    placeholderTextColor={colors.alternativeTextColor}
+                  />
+                  <BlueSpacing10 />
+                  <Button
+                    title={loc.transactions.send}
+                    onPress={() => handleNameOpSendPress(sendToDoiAddress, output.scriptPubKey.nameOp)}
+                    disabled={!sendToDoiAddress}
+                  />
+                </View>
+              )}
             </View>
           );
         }

@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { nameops } from '@doichain/doichainjs-lib';
 
-import { NameOperation, readNameState, sortNameOperations } from '../../utils/nameState';
+import { NameOperation, describeNameOutput, readNameState, sortNameOperations } from '../../utils/nameState';
 
 const op = (height: number, txid: string): NameOperation => ({
   txid,
@@ -57,5 +57,31 @@ describe('name lookup through the ElectrumX name index', () => {
   it('returns null for a name with no operations at all', () => {
     // not the same as "free": only the node can say whether an expired name is available again
     assert.strictEqual(readNameState([]), null);
+  });
+});
+
+describe('what a name output on screen is, relative to the chain', () => {
+  const held = op(400000, 'holder');
+
+  it('says the output holds the name when it is the operation the chain names', () => {
+    const r = describeNameOutput({ txid: 'holder', vout: 0 }, { operation: held });
+    assert.strictEqual(r.status, 'holds');
+  });
+
+  it('says the name moved on, and where to, for an older output', () => {
+    // the transaction a user opens can be years old - this is the case that left the transfer form
+    // available on an output holding nothing
+    const r = describeNameOutput({ txid: 'an-older-transfer', vout: 0 }, { operation: held });
+    assert.strictEqual(r.status, 'superseded');
+    assert.strictEqual(r.status === 'superseded' && r.heldBy.txid, 'holder');
+  });
+
+  it('tells the same txid from a different output index apart', () => {
+    const r = describeNameOutput({ txid: 'holder', vout: 1 }, { operation: held });
+    assert.strictEqual(r.status, 'superseded');
+  });
+
+  it('claims nothing when the chain could not be asked', () => {
+    assert.strictEqual(describeNameOutput({ txid: 'holder', vout: 0 }, null).status, 'unknown');
   });
 });
