@@ -55,6 +55,18 @@ type ElectrumTransaction = {
       reqSigs: number;
       type: string;
       addresses: string[];
+      address?: string;
+      /**
+       * What ElectrumX decoded of a name operation, when the output carries one. A name_new only
+       * commits to a hash, so it arrives as {op, hash} with no name and no value - see
+       * class/wallets/types.ts, which says the same about stored transactions.
+       */
+      nameOp?: {
+        op?: string;
+        hash?: string;
+        name: string;
+        value: string;
+      };
     };
   }[];
   blockhash: string;
