@@ -193,9 +193,24 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
   // const [nameOpAddress, setNameOpAddress] = useState<string>('');
 
   const handleNameOpSendPress = useCallback(
-    (recipientAddress: string, nameOpData: { name: string; value: string }, nameOpAddress: string) => {
+    async (recipientAddress: string, nameOpData: { name: string; value: string }) => {
       if (!recipientAddress) {
         Alert.alert(loc.errors.error, 'Please enter a DoiAddress');
+        return;
+      }
+
+      // Ask the chain which output holds the name instead of taking the holder address off the
+      // transaction being looked at. That transaction may be old: the name could have moved on
+      // since, and one address can hold several names at once (Doichain/DoiWallet#35).
+      let heldBy;
+      try {
+        heldBy = await BlueElectrum.nameShow(nameOpData.name);
+      } catch (e: any) {
+        Alert.alert(loc.errors.error, e.message);
+        return;
+      }
+      if (!heldBy) {
+        Alert.alert(loc.errors.error, `No operation on "${nameOpData.name}" found on the chain`);
         return;
       }
 
@@ -203,16 +218,17 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
         screen: 'SendDetails',
         params: {
           nameOp: {
-            nameId: nameOpData.name,
-            nameValue: nameOpData.value,
+            nameId: heldBy.operation.name,
+            // the value the name carries now, not the one in the transaction on screen
+            nameValue: heldBy.operation.value,
             sendTo: recipientAddress,
-            nameOpAddress,
+            nameOutpoint: { txid: heldBy.operation.txid, vout: heldBy.operation.vout },
           },
           walletID,
         },
       });
     },
-    [navigate],
+    [navigate, walletID],
   );
 
   useEffect(() => {
@@ -608,7 +624,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
                 <BlueSpacing10 />
                 <Button
                   title={loc.transactions.send}
-                  onPress={() => handleNameOpSendPress(sendToDoiAddress, output.scriptPubKey.nameOp, output.scriptPubKey.addresses[0])}
+                  onPress={() => handleNameOpSendPress(sendToDoiAddress, output.scriptPubKey.nameOp)}
                   disabled={!sendToDoiAddress}
                 />
               </View>

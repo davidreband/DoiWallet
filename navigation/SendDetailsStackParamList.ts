@@ -7,7 +7,15 @@ export interface NameOpParams {
   nameId: string;
   nameValue: string;
   sendTo: string;
-  nameOpAddress: string;
+  /**
+   * The output the chain says currently holds the name, from the ElectrumX name index. Picking the
+   * input by holder address instead was wrong: a wallet reuses its addresses, so one address can
+   * hold several names at once - seven of them on a single address in our own regtest runs - and
+   * nothing said which one would be found (Doichain/DoiWallet#35).
+   *
+   * Absent for a first registration, which has no previous output to spend.
+   */
+  nameOutpoint?: { txid: string; vout: number };
 }
 
 export type SendDetailsParams = {

@@ -84,8 +84,8 @@ describeIfNode('name operations against Doichain Core regtest', () => {
       HDSegwitBech32Wallet.finalRBFSequence,
       false,
       0,
-      // no nameOpAddress: a first registration has no previous name output to spend
-      { nameId: name, nameValue: 'hello', sendTo: ourAddress, nameOpAddress: '' },
+      // no outpoint: a first registration has no previous name output to spend
+      { nameId: name, nameValue: 'hello', sendTo: ourAddress },
     );
 
     const verdict = testAccept(tx!.toHex());
@@ -114,7 +114,7 @@ describeIfNode('name operations against Doichain Core regtest', () => {
       HDSegwitBech32Wallet.finalRBFSequence,
       false,
       0,
-      { nameId: name, nameValue: 'first', sendTo: ourAddress, nameOpAddress: '' },
+      { nameId: name, nameValue: 'first', sendTo: ourAddress },
     );
     const regTxid = broadcast(registration.tx!.toHex());
     const nameOut = nameOutputOf(regTxid);
@@ -152,7 +152,7 @@ describeIfNode('name operations against Doichain Core regtest', () => {
       HDSegwitBech32Wallet.finalRBFSequence,
       false,
       0,
-      { nameId: name, nameValue: 'moved', sendTo: recipient, nameOpAddress: ourAddress },
+      { nameId: name, nameValue: 'moved', sendTo: recipient, nameOutpoint: { txid: nameOut.txid, vout: nameOut.vout } },
     );
 
     const verdict = testAccept(tx!.toHex());
@@ -162,6 +162,90 @@ describeIfNode('name operations against Doichain Core regtest', () => {
     const shown = nameShow(name);
     assert.strictEqual(shown.address, recipient, 'the name did not move to the recipient');
     assert.strictEqual(shown.value, 'moved');
+  });
+
+  it('moves the name the outpoint names, not whichever one sits at that address', () => {
+    // A wallet reuses its addresses, so one address ends up holding several names at once - the
+    // regtest runs put seven on a single address. Picking the input by holder address could not say
+    // which one, and would move an arbitrary name (Doichain/DoiWallet#35).
+    const first = uniqueName('two');
+    const second = uniqueName('two');
+    const registered: Record<string, ReturnType<typeof nameOutputOf>> = {};
+
+    for (const name of [first, second]) {
+      const coin = fundAddress(ourAddress, 1);
+      const utxo: CreateTransactionUtxo[] = [
+        { txid: coin.txid, vout: coin.vout, value: coin.value, address: ourAddress, wif: wallet._getWifForAddress(ourAddress) },
+      ];
+      giveWalletUtxos(utxo);
+      giveWalletTransactions([]);
+      const reg = wallet.createTransaction(
+        utxo,
+        [{ address: ourAddress, value: MIN_NAME_AMOUNT }],
+        FEE_RATE,
+        changeAddress,
+        HDSegwitBech32Wallet.finalRBFSequence,
+        false,
+        0,
+        { nameId: name, nameValue: name, sendTo: ourAddress },
+      );
+      registered[name] = nameOutputOf(broadcast(reg.tx!.toHex()));
+    }
+
+    // both are held by the very same address
+    assert.strictEqual(nameShow(first).address, ourAddress);
+    assert.strictEqual(nameShow(second).address, ourAddress);
+
+    // hand the wallet both name outputs, so only the outpoint can tell them apart
+    const feeCoin = fundAddress(ourAddress, 1);
+    const spendable: CreateTransactionUtxo[] = [
+      { txid: feeCoin.txid, vout: feeCoin.vout, value: feeCoin.value, address: ourAddress, wif: wallet._getWifForAddress(ourAddress) },
+    ];
+    giveWalletUtxos([
+      ...spendable,
+      ...[first, second].map(n => ({
+        txid: registered[n].txid,
+        vout: registered[n].vout,
+        value: registered[n].value,
+        address: ourAddress,
+        wif: wallet._getWifForAddress(ourAddress),
+      })),
+    ]);
+    giveWalletTransactions(
+      [first, second].map(n => ({
+        txid: registered[n].txid,
+        confirmations: 1,
+        inputs: [],
+        outputs: [
+          {
+            n: registered[n].vout,
+            value: registered[n].value / 1e8,
+            scriptPubKey: { hex: registered[n].script, addresses: [ourAddress] },
+          },
+        ],
+      })),
+    );
+
+    const recipient = wallet._getExternalAddressByIndex(1);
+    const { tx } = wallet.createTransaction(
+      spendable,
+      [{ address: recipient, value: MIN_NAME_AMOUNT }],
+      FEE_RATE,
+      changeAddress,
+      HDSegwitBech32Wallet.finalRBFSequence,
+      false,
+      0,
+      { nameId: second, nameValue: 'moved', sendTo: recipient, nameOutpoint: registered[second] },
+    );
+
+    const verdict = testAccept(tx!.toHex());
+    assert.strictEqual(verdict.allowed, true, `Core rejected the transfer: ${verdict.reason}`);
+    broadcast(tx!.toHex());
+
+    assert.strictEqual(nameShow(second).address, recipient, 'the named one did not move');
+    assert.strictEqual(nameShow(second).value, 'moved');
+    assert.strictEqual(nameShow(first).address, ourAddress, 'the other name must not have been touched');
+    assert.strictEqual(nameShow(first).value, first);
   });
 
   it('refuses to build a name output under MinNameCoinAmount instead of letting Core reject it', () => {
@@ -183,7 +267,7 @@ describeIfNode('name operations against Doichain Core regtest', () => {
           HDSegwitBech32Wallet.finalRBFSequence,
           false,
           0,
-          { nameId: name, nameValue: 'x', sendTo: ourAddress, nameOpAddress: '' },
+          { nameId: name, nameValue: 'x', sendTo: ourAddress },
         ),
       /must hold at least/,
     );
@@ -211,13 +295,13 @@ describeIfNode('name operations against Doichain Core regtest', () => {
           HDSegwitBech32Wallet.finalRBFSequence,
           false,
           0,
-          { nameId: name, nameValue: 'x', sendTo: p2sh, nameOpAddress: '' },
+          { nameId: name, nameValue: 'x', sendTo: p2sh },
         ),
       /can only be held by an address DoiWallet can spend from/,
     );
   });
 
-  it('says so when the name output it has to spend is nowhere to be found', () => {
+  it('says so when the outpoint it has to spend is not ours', () => {
     const coin = fundAddress(ourAddress, 1);
     const utxo: CreateTransactionUtxo[] = [
       { txid: coin.txid, vout: coin.vout, value: coin.value, address: ourAddress, wif: wallet._getWifForAddress(ourAddress) },
@@ -235,9 +319,9 @@ describeIfNode('name operations against Doichain Core regtest', () => {
           HDSegwitBech32Wallet.finalRBFSequence,
           false,
           0,
-          { nameId: 'whatever', nameValue: 'x', sendTo: ourAddress, nameOpAddress: ourAddress },
+          { nameId: 'whatever', nameValue: 'x', sendTo: ourAddress, nameOutpoint: { txid: 'f'.repeat(64), vout: 0 } },
         ),
-      /Could not find the name output/,
+      /does not hold the name output/,
     );
   });
 });

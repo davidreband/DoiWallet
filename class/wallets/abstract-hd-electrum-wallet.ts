@@ -40,7 +40,8 @@ interface NameOpInput {
   nameId: string;
   nameValue: string;
   sendTo: string;
-  nameOpAddress: string;
+  /** the output the chain says holds the name; absent for a first registration */
+  nameOutpoint?: { txid: string; vout: number };
 }
 
 /**
@@ -1211,17 +1212,21 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
 
     let { inputs, outputs, fee } = this.coinselect(utxos, selectionTargets, feeRate);
 
-    if (nameOpAsInput?.nameOpAddress) {
+    if (nameOpAsInput?.nameOutpoint) {
+      // Spend exactly the output the chain named, nothing else. The caller reads it from the
+      // ElectrumX name index, so it is the operation that holds the name right now; picking by
+      // holder address instead was wrong, because a wallet reuses addresses and one address can
+      // hold several names at once (Doichain/DoiWallet#35).
+      //
       // The name output is deliberately kept out of coin selection (Doichain/DoiWallet#37), so the
-      // list handed to us no longer contains it - look for it in the wallet's full set instead.
-      // Without its name input Core rejects the transfer with "NAME_DOI on an existing name must
-      // spend its previous output". Requiring a name output here also keeps us from grabbing a
-      // plain coin that happens to sit at the same address (Doichain/DoiWallet#35).
-      const nameInput = this.getUtxo(true).find(
-        item => item.address === nameOpAsInput.nameOpAddress && this.isNameOutput(item.txid, item.vout),
-      );
+      // list handed to us no longer contains it - look in the wallet's full set. Not finding it
+      // there is also the answer to "is this name ours": if it moved on, or never was, it is not
+      // among our outputs. Core would otherwise reject the transfer with "NAME_DOI on an existing
+      // name must spend its previous output".
+      const { txid, vout } = nameOpAsInput.nameOutpoint;
+      const nameInput = this.getUtxo(true).find(item => item.txid === txid && item.vout === vout);
       if (!nameInput) {
-        throw new Error(`Could not find the name output held by ${nameOpAsInput.nameOpAddress}`);
+        throw new Error(`This wallet does not hold the name output ${txid}:${vout}`);
       }
       inputs.push(nameInput);
     }
