@@ -162,7 +162,7 @@ describe('import procedure', () => {
 
   it('can import Bech32 Segwit', async () => {
     const store = createStore();
-    const { promise } = startImport('TkpCRCZ7tPwcHWjVHGrFdeYYL5sbQ5FzU4JmzUx3BDDMiKcw2yUG', false, false, ...store.callbacks);
+    const { promise } = startImport('TkpCRCZ7tPwcHWjVHGrFdeYYL5sbQ5FzU4JmzUx3BDDMiKcw2yUG', false, false, false, ...store.callbacks);
     await promise;
     assert.strictEqual(store.state.wallets[0].type, SegwitBech32Wallet.type);
     assert.strictEqual(store.state.wallets[0].getAddress(), 'dc1qydvmn0gvk9xwdq8pzd3gxm3vtftte948y66fzj');
@@ -172,7 +172,7 @@ describe('import procedure', () => {
 
   it('can import Legacy/P2SH/Bech32 from an empty wallet', async () => {
     const store = createStore();
-    const { promise } = startImport('TkpCRCZ7tPwcHWjVHGrFdeYYL5sbQ5FzU4JmzUx3BDDMiKcw2yUG', false, false, ...store.callbacks);
+    const { promise } = startImport('TkpCRCZ7tPwcHWjVHGrFdeYYL5sbQ5FzU4JmzUx3BDDMiKcw2yUG', false, false, false, ...store.callbacks);
     await promise;
     assert.strictEqual(store.state.wallets[0].type, SegwitBech32Wallet.type);
     assert.strictEqual(store.state.wallets[0].getAddress(), 'dc1qydvmn0gvk9xwdq8pzd3gxm3vtftte948y66fzj');
@@ -367,17 +367,17 @@ describe('import procedure', () => {
 
   it('can import watch-only address', async () => {
     const store1 = createStore();
-    const { promise: promise1 } = startImport('N5ac3ywbkm11zVrtUfBFkRPhcjAygsc3SP', false, false, ...store1.callbacks);
+    const { promise: promise1 } = startImport('N5ac3ywbkm11zVrtUfBFkRPhcjAygsc3SP', false, false, false, ...store1.callbacks);
     await promise1;
     assert.strictEqual(store1.state.wallets[0].type, WatchOnlyWallet.type);
 
     const store2 = createStore();
-    const { promise: promise2 } = startImport('dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk', false, false, ...store2.callbacks);
+    const { promise: promise2 } = startImport('dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk', false, false, false, ...store2.callbacks);
     await promise2;
     assert.strictEqual(store2.state.wallets[0].type, WatchOnlyWallet.type);
 
     const store3 = createStore();
-    const { promise: promise3 } = startImport('dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk', false, false, ...store3.callbacks);
+    const { promise: promise3 } = startImport('dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk', false, false, false, ...store3.callbacks);
     await promise3;
     assert.strictEqual(store3.state.wallets[0].type, WatchOnlyWallet.type);
 
