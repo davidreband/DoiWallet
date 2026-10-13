@@ -12,6 +12,10 @@ jest.mock('../../blue_modules/BlueElectrum', () => {
   };
 });
 
+// the self test derives keys for every wallet type it knows, and AEZEED alone takes several
+// seconds, so the 5 second default is not enough for it
+jest.setTimeout(120 * 1000);
+
 const Wrapper = ({ children }) => <NavigationContainer theme={BlueDefaultTheme}>{children}</NavigationContainer>;
 
 it('Header works', () => {
@@ -33,12 +37,16 @@ it.skip('Settings work', () => {
   expect(toJSON()).toBeTruthy();
 });
 
-it('SelfTest work', () => {
-  const { toJSON, getByText } = render(
+it('SelfTest work', async () => {
+  const { toJSON, findByTestId } = render(
     <Wrapper>
       <SelfTest />
     </Wrapper>,
   );
   expect(toJSON()).toBeTruthy();
-  expect(getByText('OK')).toBeTruthy();
+
+  // The screen runs its checks in componentDidMount and shows a spinner until they finish, so
+  // looking for the result the moment it renders only ever found the spinner. Waiting for it also
+  // means a failing check is reported as what it says rather than as a missing "OK".
+  await findByTestId('SelfTestOk', {}, { timeout: 60000 });
 });
