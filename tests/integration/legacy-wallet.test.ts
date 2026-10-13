@@ -5,6 +5,14 @@ import { LegacyWallet, SegwitBech32Wallet, SegwitP2SHWallet } from '../../class'
 
 jest.setTimeout(30 * 1000);
 
+/**
+ * A single address that holds seven names (Fulda, Wien, Braunau, Salzburg, Muenchen, Zuerich and
+ * one more) alongside its coins. The tests used to compare its balance and transaction count
+ * against what they were when they were written - 9948820 and 2 - and both have long since been
+ * overtaken by the chain, so they now assert what stays true as it moves on.
+ */
+const NAME_HOLDER = 'N6dXumt8aJhkAZAnKNzUBNrBJJez2Efu7e';
+
 afterAll(async () => {
   // after all tests we close socket so the test suite can actually terminate
   BlueElectrum.forceDisconnect();
@@ -29,25 +37,29 @@ describe('LegacyWallet', function () {
 
   it('can fetch balance', async () => {
     const w = new LegacyWallet();
-    w._address = 'N6dXumt8aJhkAZAnKNzUBNrBJJez2Efu7e'; // hack internals
-    assert.ok(w.weOwnAddress('N6dXumt8aJhkAZAnKNzUBNrBJJez2Efu7e'));
+    w._address = NAME_HOLDER; // hack internals
+    assert.ok(w.weOwnAddress(NAME_HOLDER));
     assert.ok(!w.weOwnAddress('aaa'));
     // @ts-ignore wrong type on purpose
     assert.ok(!w.weOwnAddress(false));
     assert.ok(w.getBalance() === 0);
     assert.ok(w.getUnconfirmedBalance() === 0);
     assert.ok(w._lastBalanceFetch === 0);
+
     await w.fetchBalance();
-    assert.ok(w.getBalance() === 9948820);
-    assert.ok(w.getUnconfirmedBalance() === 0);
+
+    // the amount was 9948820 when this was written and is whatever it is now; what has to hold is
+    // that fetching found something and said when
+    assert.ok(w.getBalance() > 0, `${NAME_HOLDER} was spent empty, pick another address`);
+    assert.strictEqual(w.getUnconfirmedBalance(), 0);
     assert.ok(w._lastBalanceFetch > 0);
   });
 
   it('can fetch TXs and derive UTXO from them', async () => {
     const w = new LegacyWallet();
-    w._address = 'N6dXumt8aJhkAZAnKNzUBNrBJJez2Efu7e';
+    w._address = NAME_HOLDER;
     await w.fetchTransactions();
-    assert.strictEqual(w.getTransactions().length, 2);
+    assert.ok(w.getTransactions().length > 0, `${NAME_HOLDER} has no history, pick another address`);
 
     for (const tx of w.getTransactions()) {
       assert.ok(tx.hash);
@@ -59,14 +71,34 @@ describe('LegacyWallet', function () {
     assert.ok(w.weOwnTransaction('9e972369a17c468bfcebf67c3fe11b90222959023685ecfa73024bcb3677f2d7'));
     assert.ok(!w.weOwnTransaction('ffeadec08bbe7b21bf7cc50317b037f30db6923604e2ccf6a56a97e7efc07753'));
 
-    assert.strictEqual(w.getUtxo().length, 2);
+    for (const utxo of w.getUtxo(true)) {
+      assert.strictEqual(utxo.address, NAME_HOLDER);
+      assert.match(utxo.txid!, /^[0-9a-f]{64}$/);
+      assert.ok(utxo.confirmations! > 0);
+    }
+  });
 
-    for (const tx of w.getUtxo()) {
-      assert.strictEqual(tx.txid, '9e972369a17c468bfcebf67c3fe11b90222959023685ecfa73024bcb3677f2d7');
-      // assert.strictEqual(tx.vout, 1);
-      assert.strictEqual(tx.address, 'N6dXumt8aJhkAZAnKNzUBNrBJJez2Efu7e');
-      // assert.strictEqual(tx.value, 1000000);
-      assert.ok(tx.confirmations! > 0);
+  it('keeps the names it holds out of its spendable coins', async () => {
+    // This address holds seven names, which makes it the case a single-address wallet is worst at:
+    // coin selection sees eight outputs and seven of them may only be spent by a name transaction,
+    // so a payment that picks one is rejected by Doichain Core with "Non-name transaction has name
+    // input" (Doichain/DoiWallet#37).
+    const w = new LegacyWallet();
+    w._address = NAME_HOLDER;
+    await w.fetchTransactions();
+    await w.fetchUtxo();
+
+    const all = w.getUtxo(true);
+    const spendable = w.getUtxo();
+    assert.ok(all.length > spendable.length, `${NAME_HOLDER} no longer holds names, pick another address`);
+
+    for (const utxo of all) {
+      const held = w.isNameOutput(utxo.txid!, utxo.vout!);
+      assert.strictEqual(
+        spendable.some(s => s.txid === utxo.txid && s.vout === utxo.vout),
+        !held,
+        `${utxo.txid}:${utxo.vout} is ${held ? '' : 'not '}a name output and should ${held ? 'not ' : ''}be spendable`,
+      );
     }
   });
 
@@ -154,19 +186,35 @@ describe('SegwitBech32Wallet', function () {
 
   it('can fetch TXs LegacyWallet', async () => {
     const w = new LegacyWallet();
-    w._address = 'N6dXumt8aJhkAZAnKNzUBNrBJJez2Efu7e';
+    w._address = NAME_HOLDER;
     await w.fetchTransactions();
-    assert.strictEqual(w.getTransactions().length, 2);
+    const txs = w.getTransactions();
+    assert.ok(txs.length > 0, `${NAME_HOLDER} has no history, pick another address`);
 
-    for (const tx of w.getTransactions()) {
-      assert.ok(tx.hash);
-      assert.ok(tx.value);
+    // the amount shown next to a transaction is what we gained minus what we spent, in satoshi.
+    // The two values this used to compare against, -51180 and 10000000, said nothing about whether
+    // that sum is computed right; recomputing it from the transaction does.
+    for (const tx of txs) {
+      assert.strictEqual(tx.hash, tx.txid);
       assert.ok(tx.received);
       assert.ok(tx.confirmations! > 1);
+
+      let gained = 0;
+      for (const output of tx.outputs) {
+        if (output.scriptPubKey.addresses?.[0] === NAME_HOLDER) gained += Math.round(output.value * 100000000);
+      }
+      let spent = 0;
+      for (const input of tx.inputs) {
+        if (input.addresses?.[0] === NAME_HOLDER) spent += Math.round((input.value ?? 0) * 100000000);
+      }
+
+      assert.strictEqual(tx.value, gained - spent, `${tx.txid} does not add up`);
     }
 
-    assert.strictEqual(w.getTransactions()[0].value, -51180);
-    assert.strictEqual(w.getTransactions()[1].value, 10000000);
+    // newest first, which is the order the transaction list is drawn in
+    for (let i = 1; i < txs.length; i++) {
+      assert.ok(Number(txs[i - 1].received) >= Number(txs[i].received), 'transactions are not newest first');
+    }
   });
 
   it('can fetch TXs SegwitBech32Wallet', async () => {

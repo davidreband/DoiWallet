@@ -4,6 +4,18 @@ import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 
 jest.setTimeout(150 * 1000);
 
+/**
+ * These used to be checked against balances, heights and txids recorded when the tests were
+ * written, and every one of them has since been overtaken by the chain: the funded address below
+ * went from 10000000 to 8948819, the history from 9 entries to 10. The assertions now cross-check
+ * the methods against each other instead - a balance against the unspent outputs it is made of, a
+ * batch against the same query one address at a time - which is what these methods are for and
+ * does not expire.
+ */
+const FUNDED_ADDRESS = 'N32Ny2Fb4eTsLNAKoR1C7xbM2XRGntYN6D';
+const USED_ADDRESS = 'dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk';
+const SPENT_ADDRESS = 'dc1q8nkcs8v7ad9qyjth3cgwwsdu255cpk8w2u7put';
+
 afterAll(() => {
   // after all tests we close socket so the test suite can actually terminate
   BlueElectrum.forceDisconnect();
@@ -130,18 +142,42 @@ describe('BlueElectrum', () => {
   });
 
   it('BlueElectrum can do getBalanceByAddress()', async function () {
-    const address = 'N32Ny2Fb4eTsLNAKoR1C7xbM2XRGntYN6D';
-    const balance = await BlueElectrum.getBalanceByAddress(address);
-    assert.strictEqual(balance.confirmed, 10000000);
-    assert.strictEqual(balance.unconfirmed, 0);
-    assert.strictEqual(balance.addr, address);
+    const balance = await BlueElectrum.getBalanceByAddress(FUNDED_ADDRESS);
+    assert.strictEqual(balance.addr, FUNDED_ADDRESS);
+    assert.strictEqual(typeof balance.confirmed, 'number');
+    assert.strictEqual(typeof balance.unconfirmed, 'number');
+    assert.ok(balance.confirmed > 0, `${FUNDED_ADDRESS} was spent empty, pick another address`);
+
+    // the balance has to be the coins that are actually there, which is the only claim about it
+    // that stays true as the chain moves on
+    const utxos = await BlueElectrum.multiGetUtxoByAddress([FUNDED_ADDRESS], 1);
+    const sum = utxos[FUNDED_ADDRESS].reduce((total, utxo) => total + utxo.value, 0);
+    assert.strictEqual(balance.confirmed, sum, 'the balance does not add up to the unspent outputs');
   });
 
   it('BlueElectrum can do getTransactionsByAddress()', async function () {
-    const txs = await BlueElectrum.getTransactionsByAddress('dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk');
-    assert.strictEqual(txs.length, 9);
-    assert.strictEqual(txs[0].tx_hash, '615174140e35fa06044c75165ca41c8bbeffb81185845e3df1d9c51d9b7580cd');
-    assert.strictEqual(txs[0].height, 198350);
+    const txs = await BlueElectrum.getTransactionsByAddress(USED_ADDRESS);
+    assert.ok(txs.length > 0, `${USED_ADDRESS} has no history, pick another address`);
+
+    let previousHeight = 0;
+    for (const tx of txs) {
+      assert.match(tx.tx_hash, /^[0-9a-f]{64}$/, `bad txid ${tx.tx_hash}`);
+      // mempool entries come back as 0 or -1, confirmed ones ascend
+      if (tx.height > 0) {
+        assert.ok(tx.height >= previousHeight, 'the history is not in order');
+        previousHeight = tx.height;
+      }
+    }
+
+    // the history is what the wallet reads to decide a transaction is its own, so the address has
+    // to really appear in the transactions it names
+    const full = await BlueElectrum.multiGetTransactionByTxid([txs[0].tx_hash], true);
+    const tx = full[txs[0].tx_hash];
+    assert.ok(
+      tx.vout.some(vout => (vout.scriptPubKey.addresses || [vout.scriptPubKey.address]).includes(USED_ADDRESS)) ||
+        tx.vin.some(vin => vin.addresses?.includes(USED_ADDRESS)),
+      'the history returned a transaction that does not touch the address',
+    );
   });
 
   // skipped because requires fresh address with pending txs every time
@@ -183,39 +219,48 @@ describe('BlueElectrum', () => {
   });
 
   it.each([false, true])('BlueElectrum can do multiGetBalanceByAddress(), disableBatching=%p', async function (diableBatching) {
+    const addresses = [SPENT_ADDRESS, USED_ADDRESS, FUNDED_ADDRESS];
+
     if (diableBatching) BlueElectrum.setBatchingDisabled();
-    const balances = await BlueElectrum.multiGetBalanceByAddress([
-      'dc1q8nkcs8v7ad9qyjth3cgwwsdu255cpk8w2u7put',
-      'dc1qszy3say7llzamvqy82q6260urg3uvpt3ast5ls',
-      'N32Ny2Fb4eTsLNAKoR1C7xbM2XRGntYN6D',
-    ]);
-
-    assert.strictEqual(balances.balance, 765011011685);
-    assert.strictEqual(balances.unconfirmed_balance, -765001011685);
-
-    assert.strictEqual(balances.addresses.dc1q8nkcs8v7ad9qyjth3cgwwsdu255cpk8w2u7put.confirmed, 0);
-    assert.strictEqual(balances.addresses.dc1q8nkcs8v7ad9qyjth3cgwwsdu255cpk8w2u7put.unconfirmed, 0);
-    assert.strictEqual(balances.addresses.dc1qszy3say7llzamvqy82q6260urg3uvpt3ast5ls.confirmed, 765001011685);
-    assert.strictEqual(balances.addresses.dc1qszy3say7llzamvqy82q6260urg3uvpt3ast5ls.unconfirmed, -765001011685);
-    assert.strictEqual(balances.addresses.N32Ny2Fb4eTsLNAKoR1C7xbM2XRGntYN6D.confirmed, 10000000);
-    assert.strictEqual(balances.addresses.N32Ny2Fb4eTsLNAKoR1C7xbM2XRGntYN6D.unconfirmed, 0);
+    const balances = await BlueElectrum.multiGetBalanceByAddress(addresses);
     if (diableBatching) BlueElectrum.setBatchingEnabled();
+
+    // asking for three addresses at once has to give the same answer as asking for each of them,
+    // batched or not - that is the whole purpose of the method
+    let confirmed = 0;
+    let unconfirmed = 0;
+    for (const address of addresses) {
+      const one = await BlueElectrum.getBalanceByAddress(address);
+      assert.strictEqual(balances.addresses[address].confirmed, one.confirmed, `${address} confirmed`);
+      assert.strictEqual(balances.addresses[address].unconfirmed, one.unconfirmed, `${address} unconfirmed`);
+      confirmed += one.confirmed;
+      unconfirmed += one.unconfirmed;
+    }
+
+    assert.strictEqual(balances.balance, confirmed, 'the total is not the sum of the addresses');
+    assert.strictEqual(balances.unconfirmed_balance, unconfirmed);
   });
 
   it('BlueElectrum can do multiGetUtxoByAddress()', async () => {
-    const utxos = await BlueElectrum.multiGetUtxoByAddress(
-      ['dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk', 'dc1qszy3say7llzamvqy82q6260urg3uvpt3ast5ls'],
-      3,
-    );
+    const utxos = await BlueElectrum.multiGetUtxoByAddress([FUNDED_ADDRESS, USED_ADDRESS, SPENT_ADDRESS], 3);
 
-    assert.strictEqual(Object.keys(utxos).length, 2);
-    // assert.strictEqual(
-    //  utxos.dc1q8nkcs8v7ad9qyjth3cgwwsdu255cpk8w2u7put[0].txid,
-    // "1303af0df52df06500a714bb4ed507dff56ea5d8da0732eeef1edcb2d76be023"
-    // );
-    assert.strictEqual(utxos.dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk[0].vout, 0);
-    assert.strictEqual(utxos.dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk[0].value, 1000000);
-    assert.strictEqual(utxos.dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk[0].address, 'dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk');
+    assert.ok(utxos[FUNDED_ADDRESS]?.length > 0, `${FUNDED_ADDRESS} was spent empty, pick another address`);
+    assert.deepStrictEqual(utxos[SPENT_ADDRESS], [], 'an address with nothing on it gets an empty list');
+
+    for (const address of Object.keys(utxos)) {
+      for (const utxo of utxos[address]) {
+        // every one of these is read by coin selection, and the wrong address here would make the
+        // wallet sign an input with a key that does not hold it
+        assert.strictEqual(utxo.address, address);
+        assert.match(utxo.txid, /^[0-9a-f]{64}$/, `bad txid ${utxo.txid}`);
+        assert.ok(utxo.vout >= 0);
+        assert.ok(utxo.value > 0);
+        assert.ok(utxo.height > 0, 'a confirmed output knows its block');
+        // the raw names from the server are renamed on the way out and must not leak through
+        assert.strictEqual(utxo.tx_hash, undefined);
+        assert.strictEqual(utxo.tx_pos, undefined);
+      }
+    }
   });
 
   it.each([false, true])('ElectrumClient can do multiGetHistoryByAddress(), disableBatching=%p', async disableBatching => {
