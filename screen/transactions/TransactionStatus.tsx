@@ -536,8 +536,12 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
       for (const output of tx.outputs) {
         if (output?.scriptPubKey?.nameOp) {
           // Whether this output still holds its name is the chain's answer, not something to work
-          // out from the transaction on screen - which may be years old (Doichain/DoiWallet#35).
-          const held = nameChain.loading ? undefined : describeNameOutput({ txid: tx.txid ?? hash, vout: output.n }, nameChain.state);
+          // out from the transaction on screen - which may be years old. And holding the name is
+          // only half of it: the transfer form may only be offered for an output this wallet can
+          // sign for (Doichain/DoiWallet#35).
+          const held = nameChain.loading
+            ? undefined
+            : describeNameOutput({ txid: tx.txid ?? hash, vout: output.n }, nameChain.state, address => !!wallet?.weOwnAddress(address));
 
           const nameOpValue = output.scriptPubKey.nameOp.value;
           // setNameOpAddress(output.scriptPubKey.addresses)
@@ -624,6 +628,12 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
               {held?.status === 'superseded' && (
                 <Text selectable style={styles.memoText}>
                   {loc.formatString(loc.transactions.nameOps_moved, { address: held.heldBy.address })}
+                </Text>
+              )}
+
+              {held?.status === 'notOurs' && (
+                <Text selectable style={styles.memoText}>
+                  {loc.formatString(loc.transactions.nameOps_not_ours, { address: held.heldBy.address })}
                 </Text>
               )}
 

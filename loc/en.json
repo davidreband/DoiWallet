@@ -380,6 +380,7 @@
     "nameOps_value": "Value",
     "nameOps_checking": "Checking who holds this name…",
     "nameOps_moved": "This name has moved on since this transaction. It is now held by {address}.",
+    "nameOps_not_ours": "This name is held by {address}, which is not an address of this wallet, so it cannot be sent from here.",
     "nameOps_unchecked": "Could not check who holds this name. Connect to a server and open this screen again.",
     "nameOps_current_value": "Value now",
     "nameOps_last_changed": "Last changed in block {height}",

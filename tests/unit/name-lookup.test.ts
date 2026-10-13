@@ -62,26 +62,46 @@ describe('name lookup through the ElectrumX name index', () => {
 
 describe('what a name output on screen is, relative to the chain', () => {
   const held = op(400000, 'holder');
+  const ours = () => true;
+  const theirs = () => false;
 
-  it('says the output holds the name when it is the operation the chain names', () => {
-    const r = describeNameOutput({ txid: 'holder', vout: 0 }, { operation: held });
+  it('says the output holds the name when it is the operation the chain names and it is ours', () => {
+    const r = describeNameOutput({ txid: 'holder', vout: 0 }, { operation: held }, ours);
     assert.strictEqual(r.status, 'holds');
   });
 
   it('says the name moved on, and where to, for an older output', () => {
     // the transaction a user opens can be years old - this is the case that left the transfer form
     // available on an output holding nothing
-    const r = describeNameOutput({ txid: 'an-older-transfer', vout: 0 }, { operation: held });
+    const r = describeNameOutput({ txid: 'an-older-transfer', vout: 0 }, { operation: held }, ours);
     assert.strictEqual(r.status, 'superseded');
     assert.strictEqual(r.status === 'superseded' && r.heldBy.txid, 'holder');
   });
 
   it('tells the same txid from a different output index apart', () => {
-    const r = describeNameOutput({ txid: 'holder', vout: 1 }, { operation: held });
+    const r = describeNameOutput({ txid: 'holder', vout: 1 }, { operation: held }, ours);
     assert.strictEqual(r.status, 'superseded');
   });
 
+  it('refuses an output that holds the name for somebody else', () => {
+    // The transaction a user opens to look at a name they sent away IS the transfer: its name
+    // output holds the name, so the chain alone says "holds" and the transfer form appeared on a
+    // name the wallet had given away and cannot sign for.
+    const r = describeNameOutput({ txid: 'holder', vout: 0 }, { operation: held }, theirs);
+    assert.strictEqual(r.status, 'notOurs');
+    assert.strictEqual(r.status === 'notOurs' && r.heldBy.address, held.address);
+  });
+
+  it('asks about the holder, not about the output it was handed', () => {
+    const seen: string[] = [];
+    describeNameOutput({ txid: 'holder', vout: 0 }, { operation: held }, address => {
+      seen.push(address);
+      return true;
+    });
+    assert.deepStrictEqual(seen, [held.address]);
+  });
+
   it('claims nothing when the chain could not be asked', () => {
-    assert.strictEqual(describeNameOutput({ txid: 'holder', vout: 0 }, null).status, 'unknown');
+    assert.strictEqual(describeNameOutput({ txid: 'holder', vout: 0 }, null, ours).status, 'unknown');
   });
 });

@@ -65,26 +65,42 @@ export const readNameState = (operations: NameOperation[]): NameState | null => 
 /**
  * What a name output on screen is, relative to what the chain says about that name.
  *
- * `holds` - this very output is the operation holding the name, so it is the one a transfer would
- * spend. `superseded` - the name has moved on and this output is history; the operation that holds
- * it now comes with the answer, so the screen can say where it went. `unknown` - the chain was not
- * reachable or has no operation on this name, and nothing should be claimed either way.
+ * `holds` - this very output is the operation holding the name AND the holder is an address of
+ * ours, so it is the one a transfer would spend and we can sign for it. `notOurs` - this output
+ * does hold the name, but somebody else holds it. `superseded` - the name has moved on and this
+ * output is history; the operation that holds it now comes with the answer, so the screen can say
+ * where it went. `unknown` - the chain was not reachable or has no operation on this name, and
+ * nothing should be claimed either way.
  */
-export type NameOutputStatus = { status: 'holds' } | { status: 'superseded'; heldBy: NameOperation } | { status: 'unknown' };
+export type NameOutputStatus =
+  | { status: 'holds' }
+  | { status: 'notOurs'; heldBy: NameOperation }
+  | { status: 'superseded'; heldBy: NameOperation }
+  | { status: 'unknown' };
 
 /**
- * Says whether the name output being looked at still holds its name.
+ * Says whether the name output being looked at still holds its name, and whether it is ours.
  *
- * The transaction a user opens may be years old: the name can have moved on since, and deciding
- * from that transaction alone is what left the transfer form available on an output that holds
- * nothing (Doichain/DoiWallet#35). Pass what the chain answered; pass null when it could not be
- * asked.
+ * Both halves matter and each one alone has been wrong on screen. The transaction a user opens may
+ * be years old and the name can have moved on since, which is what left the transfer form on an
+ * output holding nothing. But the chain saying an output holds the name is not enough either: the
+ * transaction a user opens to look at a name they sent away IS the transfer, and its name output
+ * holds the name perfectly well - for the recipient. Offering to send it on from there asks the
+ * wallet to sign for a key it does not have (Doichain/DoiWallet#35).
+ *
+ * Pass what the chain answered, null when it could not be asked, and a predicate that says whether
+ * an address is one of ours - the wallet is deliberately not imported here.
  */
-export const describeNameOutput = (output: { txid: string; vout: number }, state: NameState | null): NameOutputStatus => {
+export const describeNameOutput = (
+  output: { txid: string; vout: number },
+  state: NameState | null,
+  weOwnAddress: (address: string) => boolean,
+): NameOutputStatus => {
   if (!state) return { status: 'unknown' };
 
   const held = state.operation;
-  if (held.txid === output.txid && held.vout === output.vout) return { status: 'holds' };
+  if (held.txid !== output.txid || held.vout !== output.vout) return { status: 'superseded', heldBy: held };
+  if (!weOwnAddress(held.address)) return { status: 'notOurs', heldBy: held };
 
-  return { status: 'superseded', heldBy: held };
+  return { status: 'holds' };
 };
