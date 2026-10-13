@@ -336,7 +336,10 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
       this._txs_by_external_index[c] = this._txs_by_external_index[c] || [];
       for (const tx of this._txs_by_external_index[c]) hasUnconfirmed = hasUnconfirmed || !tx.confirmations || tx.confirmations < 7;
 
-      if (hasUnconfirmed || this._txs_by_external_index[c].length === 0 || this._balances_by_external_index[c].u !== 0) {
+      // the balance may not have been fetched yet - fetchWalletTransactions() in blue-app.ts asks
+      // for transactions on their own - and an address with no balance recorded has nothing
+      // unconfirmed to go and look for, so treat it as zero rather than throwing on undefined
+      if (hasUnconfirmed || this._txs_by_external_index[c].length === 0 || this._balances_by_external_index[c]?.u) {
         addresses2fetch.push(this._getExternalAddressByIndex(c));
       }
     }
@@ -347,7 +350,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
       this._txs_by_internal_index[c] = this._txs_by_internal_index[c] || [];
       for (const tx of this._txs_by_internal_index[c]) hasUnconfirmed = hasUnconfirmed || !tx.confirmations || tx.confirmations < 7;
 
-      if (hasUnconfirmed || this._txs_by_internal_index[c].length === 0 || this._balances_by_internal_index[c].u !== 0) {
+      if (hasUnconfirmed || this._txs_by_internal_index[c].length === 0 || this._balances_by_internal_index[c]?.u) {
         addresses2fetch.push(this._getInternalAddressByIndex(c));
       }
     }
@@ -1000,57 +1003,6 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
       ret = ret.filter(({ txid, vout }) => !nameOutpoints.has(`${txid}:${vout}`));
     }
     return ret;
-  }
-
-  /**
-   * Whether one of our outputs carries a name operation.
-   *
-   * ElectrumX lists a name output under its holder's address right next to that address's coins, so
-   * coin selection would pick it like any other. A payment that spends one is a non-name
-   * transaction with a name input, and Doichain Core rejects it with "Non-name transaction has name
-   * input" - the more names a wallet holds, the likelier a payment fails, and the error says nothing
-   * about why (Doichain/DoiWallet#37). A name output may only be spent by a name transaction, as its
-   * single name input.
-   */
-  isNameOutput(txid: string, vout: number): boolean {
-    return this.nameOutpoints().has(`${txid}:${vout}`);
-  }
-
-  /**
-   * Every output of ours that carries a name, as "txid:vout".
-   *
-   * Built in one pass over the transactions. Asking per output instead - which is what getUtxo()
-   * did at first - walks the whole transaction list again for every single output, and
-   * getTransactions() is not cheap: it concatenates every address's transactions and derives the
-   * wallet's addresses to build its owned-address map. On a wallet with 60 outputs and 200
-   * transactions that turned getUtxo() from no measurable time at all into 37 ms, and it is called
-   * whenever a balance, the send screen or coin control is drawn.
-   */
-  nameOutpoints(): Set<string> {
-    const outpoints = new Set<string>();
-
-    for (const tx of this.getTransactions()) {
-      for (const output of tx.outputs) {
-        const scriptPubKey = output.scriptPubKey;
-        if (!scriptPubKey) continue;
-
-        if (scriptPubKey.nameOp) {
-          outpoints.add(`${tx.txid}:${output.n}`);
-          continue;
-        }
-
-        // The server does not always decode the name for us, so read it off the script. A name
-        // script opens with OP_NAME_NEW, OP_NAME_FIRSTUPDATE, OP_NAME_UPDATE or OP_NAME_DOI, so
-        // one byte tells plain payments apart without parsing them.
-        const hex = scriptPubKey.hex;
-        if (!hex || !['51', '52', '53', '5a'].includes(hex.slice(0, 2))) continue;
-        if (bitcoin.nameops.nameScriptOwner(Buffer.from(hex, 'hex')) !== undefined) {
-          outpoints.add(`${tx.txid}:${output.n}`);
-        }
-      }
-    }
-
-    return outpoints;
   }
 
   getDerivedUtxoFromOurTransaction(returnSpentUtxoAsWell = false): Utxo[] {

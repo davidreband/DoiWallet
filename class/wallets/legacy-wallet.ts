@@ -175,8 +175,69 @@ export class LegacyWallet extends AbstractWallet {
 
     if (!respectFrozen) {
       ret = ret.filter(({ txid, vout }) => !txid || !this.getUTXOMetadata(txid, vout).frozen);
+      // Name outputs are kept out of coin selection the same way frozen ones are. A caller that
+      // wants to show every output (coin control) passes respectFrozen and still sees them. The
+      // set is built once for the whole list, not once per output - see nameOutpoints().
+      const nameOutpoints = this.nameOutpoints();
+      ret = ret.filter(({ txid, vout }) => !nameOutpoints.has(`${txid}:${vout}`));
     }
     return ret;
+  }
+
+  /**
+   * Whether one of our outputs carries a name operation.
+   *
+   * ElectrumX lists a name output under its holder's address right next to that address's coins, so
+   * coin selection would pick it like any other. A payment that spends one is a non-name
+   * transaction with a name input, and Doichain Core rejects it with "Non-name transaction has name
+   * input" - the more names a wallet holds, the likelier a payment fails, and the error says nothing
+   * about why (Doichain/DoiWallet#37). A name output may only be spent by a name transaction, as its
+   * single name input.
+   *
+   * This lives here rather than on the HD wallet because every wallet type descends from this one,
+   * and a single-address wallet is the worst case: one imported WIF holding seven names, which is
+   * what the test address in the integration suite looks like, has nothing but name outputs to
+   * choose from.
+   */
+  isNameOutput(txid: string, vout: number): boolean {
+    return this.nameOutpoints().has(`${txid}:${vout}`);
+  }
+
+  /**
+   * Every output of ours that carries a name, as "txid:vout".
+   *
+   * Built in one pass over the transactions. Asking per output instead - which is what getUtxo()
+   * did at first - walks the whole transaction list again for every single output, and
+   * getTransactions() is not cheap: it concatenates every address's transactions and derives the
+   * wallet's addresses to build its owned-address map. On a wallet with 60 outputs and 200
+   * transactions that turned getUtxo() from no measurable time at all into 37 ms, and it is called
+   * whenever a balance, the send screen or coin control is drawn.
+   */
+  nameOutpoints(): Set<string> {
+    const outpoints = new Set<string>();
+
+    for (const tx of this.getTransactions()) {
+      for (const output of tx.outputs ?? []) {
+        const scriptPubKey = output.scriptPubKey;
+        if (!scriptPubKey) continue;
+
+        if (scriptPubKey.nameOp) {
+          outpoints.add(`${tx.txid}:${output.n}`);
+          continue;
+        }
+
+        // The server does not always decode the name for us, so read it off the script. A name
+        // script opens with OP_NAME_NEW, OP_NAME_FIRSTUPDATE, OP_NAME_UPDATE or OP_NAME_DOI, so
+        // one byte tells plain payments apart without parsing them.
+        const hex = scriptPubKey.hex;
+        if (!hex || !['51', '52', '53', '5a'].includes(hex.slice(0, 2))) continue;
+        if (bitcoin.nameops.nameScriptOwner(Buffer.from(hex, 'hex')) !== undefined) {
+          outpoints.add(`${tx.txid}:${output.n}`);
+        }
+      }
+    }
+
+    return outpoints;
   }
 
   getDerivedUtxoFromOurTransaction(returnSpentUtxoAsWell = false): Utxo[] {
