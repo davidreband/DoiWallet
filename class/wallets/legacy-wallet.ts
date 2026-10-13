@@ -484,6 +484,21 @@ export class LegacyWallet extends AbstractWallet {
   }
 
   /**
+   * How many vbytes one input of ours adds to a transaction, counted the way coinselect counts it.
+   *
+   * Its TX_INPUT_BASE is 41 bytes - txid 32, index 4, the script's length byte, sequence 4 - and
+   * then the script itself, for which the overrides in coinselect() above are the same numbers:
+   * 27 for p2wpkh, 50 for p2sh(p2wpkh), and the library's own 107 for a bare pubkey hash.
+   *
+   * Needed because a name transfer adds its input after coin selection has run, so the cost of
+   * that input has to be worked out separately - see createTransaction().
+   */
+  inputVbytes(): number {
+    const scriptLength = this.segwitType === 'p2wpkh' ? 27 : this.segwitType === 'p2sh(p2wpkh)' ? 50 : 107;
+    return 41 + scriptLength;
+  }
+
+  /**
    *
    * @param utxos {Array.<{vout: Number, value: Number, txid: String, address: String, txhex: String, }>} List of spendable utxos
    * @param targets {Array.<{value: Number, address: String}>} Where coins are going. If theres only 1 target and that target has no value - this will send MAX to that address (respecting fee rate)

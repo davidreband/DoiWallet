@@ -1208,6 +1208,23 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
         throw new Error(`This wallet does not hold the name output ${txid}:${vout}`);
       }
       inputs.push(nameInput);
+
+      // Coin selection never saw this input, so none of its value was assigned to an output and
+      // all of it would go to the miner. The first real transfer paid 1,018,055 satoshi where
+      // about 25,000 was due: the extra 1,000,000 is what the name output carries, which this
+      // input brings in and the new name output hands straight back. Give that value to the
+      // change output, less what one more input costs at the rate the user asked for.
+      const extraFee = Math.ceil(feeRate * this.inputVbytes());
+      fee += extraFee;
+
+      const refund = nameInput.value - extraFee;
+      // the change output is the one coin selection left without an address, same test as below
+      const changeOutput = outputs.find(output => !output.address && !(output as ExtendedCoinSelectOutput).script?.hex);
+      if (changeOutput) {
+        changeOutput.value = (changeOutput.value ?? 0) + refund;
+      } else if (refund > 0) {
+        outputs.push({ value: refund } as CoinSelectOutput);
+      }
     }
 
     const hasSilentPaymentOutput: boolean = !!outputs.find(o => o.address?.startsWith('sp1'));

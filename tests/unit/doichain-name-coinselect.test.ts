@@ -58,4 +58,43 @@ describe('#37 - name outputs stay out of coin selection', () => {
     assert.strictEqual(all.length, 2);
     assert.ok(all.some((u: any) => u.txid === nameTxid));
   });
+
+  it('does not pay the name output away as fee when it transfers it', () => {
+    // The name input is added after coin selection has run, because coin selection must not be
+    // free to pick it. Its value was then assigned to no output at all and went to the miner: the
+    // first real transfer on mainnet paid 1,018,055 satoshi, 1,000,000 of which is simply what the
+    // name output carries in and the new name output carries straight back out.
+    const wallet = buildWallet();
+    const feeRate = 100;
+    const recipient = wallet._getExternalAddressByIndex(1);
+
+    // the 500000 the other tests use cannot even fund the name output; give it a whole coin, the
+    // same as the transfer this was found on
+    const coin = 100000000;
+    // @ts-ignore standing in for fetchUtxo()
+    wallet._utxo.find((u: any) => u.txid === coinTxid)!.value = coin;
+
+    const { tx, fee } = wallet.createTransaction(
+      wallet.getUtxo(),
+      [{ address: recipient, value: MIN_NAME_AMOUNT_SAT }],
+      feeRate,
+      wallet._getInternalAddressByIndex(0),
+      HDSegwitBech32Wallet.defaultRBFSequence,
+      false,
+      0,
+      { nameId: 'somename', nameValue: 'somevalue', sendTo: recipient, nameOutpoint: { txid: nameTxid, vout: 0 } } as any,
+    );
+    assert.ok(tx, 'no transaction was built');
+
+    const spent = coin + MIN_NAME_AMOUNT_SAT; // both inputs
+    const received = tx!.outs.reduce((total: number, out: any) => total + out.value, 0);
+    const paidFee = spent - received;
+
+    assert.strictEqual(paidFee, fee, `the transaction pays ${paidFee} while it reports ${fee}`);
+    // what the chain charges for: every byte of the signed transaction, at the rate asked for
+    const expected = tx!.virtualSize() * feeRate;
+    assert.ok(paidFee >= expected, `${paidFee} is below the ${feeRate} sat/vByte the user asked for (${expected})`);
+    assert.ok(paidFee < expected * 2, `${paidFee} is more than twice the ${expected} due`);
+    assert.ok(paidFee < MIN_NAME_AMOUNT_SAT, `the name output's own ${MIN_NAME_AMOUNT_SAT} satoshi went into the fee`);
+  });
 });
