@@ -1,6 +1,7 @@
 import bip38 from 'bip38';
 import wif from 'wif';
 
+import { DOICHAIN } from '../blue_modules/network.js';
 import loc from '../loc';
 import {
   HDAezeedWallet,
@@ -170,7 +171,10 @@ const startImport = (
       const decryptedKey = await bip38.decryptAsync(text, password);
 
       if (decryptedKey) {
-        text = wif.encode(0x80, decryptedKey.privateKey, decryptedKey.compressed);
+        // Doichain's WIF version byte, not Bitcoin's 0x80: the key is written back out as a WIF
+        // and handed to the wallet classes below, which do not recognise a Bitcoin one, so a
+        // correctly decrypted backup imported as nothing at all.
+        text = wif.encode(DOICHAIN.wif, decryptedKey.privateKey, decryptedKey.compressed);
       }
     }
 
