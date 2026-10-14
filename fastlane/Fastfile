@@ -34,6 +34,7 @@ platform :android do
       UI.message("Keystore created successfully.")
 
       File.delete("bluewallet-release-key.keystore.hex")
+    end
   end
 
   desc "Update version, build number, and sign APK"
