@@ -100,7 +100,7 @@ const About: React.FC = () => {
     <SafeAreaScrollView testID="AboutScrollView" contentInsetAdjustmentBehavior="automatic" automaticallyAdjustContentInsets>
       <BlueCard>
         <View style={styles.center}>
-          <Image style={styles.logo} source={require('../../img/bluebeast.png')} />
+          <Image style={styles.logo} source={require('../../img/icon.png')} />
           <Text style={styles.textFree}>{loc.settings.about_free}</Text>
           <Text style={[styles.textBackup, stylesHook.textBackup]}>{formatStringAddTwoWhiteSpaces(loc.settings.about_backup)}</Text>
           {((Platform.OS === 'android' && hasGmsSync()) || Platform.OS !== 'android') && (
@@ -192,8 +192,10 @@ const styles = StyleSheet.create({
     marginTop: 54,
   },
   logo: {
+    // square, because the Doichain mark is - the 102x124 here was the proportion of the
+    // BlueWallet mascot this used to show, and would stretch it
     width: 102,
-    height: 124,
+    height: 102,
   },
   textFree: {
     maxWidth: 260,
