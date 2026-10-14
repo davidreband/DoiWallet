@@ -21,7 +21,9 @@ const SafeAreaSectionList = <ItemT, SectionT>(props: SafeAreaSectionListProps<It
   const contentStyle = useMemo(() => {
     return StyleSheet.compose(
       {
-        paddingBottom: insets.bottom,
+        // the prop was accepted and then dropped on the floor, so the last rows of the wallets
+        // list sat under the floating button; SafeArea and SafeAreaScrollView both add it
+        paddingBottom: insets.bottom + floatingButtonHeight,
         paddingLeft: insets.left,
         paddingTop: ignoreTopInset ? 0 : insets.top,
       },

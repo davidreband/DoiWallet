@@ -250,7 +250,7 @@ const WalletsAdd: React.FC = () => {
         actions={toolTipActions}
       />
     ),
-    [handleOnLightningButtonPressed, toolTipActions, entropy, confirmResetEntropy, navigate],
+    [toolTipActions, entropy, confirmResetEntropy, navigate],
   );
 
   useEffect(() => {
