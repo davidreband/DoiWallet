@@ -23,7 +23,6 @@ import loc from '../../loc';
 import { useStorage } from '../../hooks/context/useStorage';
 import { TTXMetadata } from '../../class';
 import { ExtendedTransaction, LightningTransaction, Transaction, TWallet } from '../../class/wallets/types';
-import { DoichainUnit } from '../../models/doichainUnits';
 import useBounceAnimation from '../../hooks/useBounceAnimation';
 import HeaderRightButton from '../../components/HeaderRightButton';
 import DragList, { DragListRenderItemInfo } from 'react-native-draglist';

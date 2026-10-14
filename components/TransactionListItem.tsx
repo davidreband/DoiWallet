@@ -4,7 +4,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { Image, Linking, View, ViewStyle, StyleSheet } from 'react-native';
 import Lnurl from '../class/lnurl';
 import { Transaction } from '../class/wallets/types';
-import { NameOpTransaction, NameOpOutput } from '../types/transaction';
+import { NameOpTransaction } from '../types/transaction';
 import TransactionExpiredIcon from '../components/icons/TransactionExpiredIcon';
 import TransactionIncomingIcon from '../components/icons/TransactionIncomingIcon';
 import TransactionOffchainIcon from '../components/icons/TransactionOffchainIcon';

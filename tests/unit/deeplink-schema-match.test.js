@@ -1,7 +1,6 @@
 import assert from 'assert';
 
 import DeeplinkSchemaMatch from '../../class/deeplink-schema-match';
-import { HDSegwitBech32Wallet, LightningCustodianWallet } from '../../class';
 
 jest.mock('../../blue_modules/BlueElectrum', () => {
   return {

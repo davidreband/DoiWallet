@@ -1,4 +1,4 @@
-import BIP47Factory, { NetworkCoin } from '@spsina/bip47';
+import BIP47Factory from '@spsina/bip47';
 import assert from 'assert';
 import * as bitcoin from '@doichain/doichainjs-lib';
 import { ECPairFactory } from 'ecpair';
@@ -7,7 +7,6 @@ import { DOICHAIN } from '../../blue_modules/network.js';
 import ecc from '../../blue_modules/noble_ecc';
 import { HDSegwitBech32Wallet, WatchOnlyWallet } from '../../class';
 import { CreateTransactionUtxo } from '../../class/wallets/types';
-import { Network } from '@keystonehq/bc-ur-registry';
 
 const ECPair = ECPairFactory(ecc);
 

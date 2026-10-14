@@ -30,7 +30,6 @@ import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import loc, { formatBalance } from '../../loc';
 
 import { DoichainUnit, Chain } from '../../models/doichainUnits';
-import { DOICHAIN } from '../../blue_modules/network';
 import { ReceiveDetailsStackParamList } from '../../navigation/ReceiveDetailsStackParamList';
 
 import { CommonToolTipActions } from '../../typings/CommonToolTipActions';

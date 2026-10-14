@@ -12,7 +12,6 @@ import {
   ListRenderItemInfo,
   Platform,
   StyleSheet,
-  Switch,
   Text,
   View,
 } from 'react-native';

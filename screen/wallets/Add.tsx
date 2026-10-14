@@ -7,7 +7,6 @@ import {
   Linking,
   Platform,
   StyleSheet,
-  Text,
   TextInput,
   useColorScheme,
   View,
@@ -19,7 +18,6 @@ import { BlueButtonLink, BlueFormLabel, BlueSpacing20, BlueSpacing40, BlueText }
 import { BlueApp, HDSegwitBech32Wallet, HDSegwitP2SHWallet, SegwitP2SHWallet } from '../../class';
 import presentAlert from '../../components/Alert';
 import Button from '../../components/Button';
-import ListItem from '../../components/ListItem';
 import { useTheme } from '../../components/themes';
 import WalletButton from '../../components/WalletButton';
 import loc from '../../loc';

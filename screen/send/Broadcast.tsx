@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useRoute, RouteProp } from '@react-navigation/native';
+import React, { useState, useCallback } from 'react';
 import * as bitcoin from '@doichain/doichainjs-lib';
 
 import { ActivityIndicator, Keyboard, Linking, StyleSheet, TextInput, View } from 'react-native';
