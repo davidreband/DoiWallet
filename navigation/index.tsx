@@ -4,10 +4,6 @@ import UnlockWith from '../screen/UnlockWith';
 import { LazyLoadingIndicator } from './LazyLoadingIndicator';
 import { DetailViewStackParamList } from './DetailViewStackParamList';
 import { useStorage } from '../hooks/context/useStorage';
-import loc from '../loc';
-import navigationStyle, { CloseButtonPosition } from '../components/navigationStyle';
-import { useTheme } from '../components/themes';
-import ReceiveDetailsStackRoot from './ReceiveDetailsStack';
 
 // Lazy load all components except UnlockWith
 const DrawerRoot = lazy(() => import('./DrawerRoot'));
@@ -20,7 +16,7 @@ const ExportMultisigCoordinationSetupStack = lazy(() => import('./ExportMultisig
 const WalletXpubStackRoot = lazy(() => import('./WalletXpubStack'));
 const SignVerifyStackRoot = lazy(() => import('./SignVerifyStack'));
 const ScanQRCode = lazy(() => import('../screen/send/ScanQRCode'));
-const ViewEditMultisigCosigners = lazy(() => import('../screen/wallets/ViewEditMultisigCosigners'));
+const ViewEditMultisigCosignersStack = lazy(() => import('./ViewEditMultisigCosignersStack'));
 
 export const NavigationDefaultOptions: NativeStackNavigationOptions = {
   headerShown: false,
@@ -61,18 +57,6 @@ const LazySendDetailsStack = () => (
   </Suspense>
 );
 
-const LazyLNDCreateInvoiceRoot = () => (
-  <Suspense fallback={<LazyLoadingIndicator />}>
-    <LNDCreateInvoiceRoot />
-  </Suspense>
-);
-
-const LazyScanLNDInvoiceRoot = () => (
-  <Suspense fallback={<LazyLoadingIndicator />}>
-    <ScanLNDInvoiceRoot />
-  </Suspense>
-);
-
 const LazyAztecoRedeemStackRoot = () => (
   <Suspense fallback={<LazyLoadingIndicator />}>
     <AztecoRedeemStackRoot />
@@ -91,9 +75,9 @@ const LazyExportMultisigCoordinationSetupStack = () => (
   </Suspense>
 );
 
-const LazyViewEditMultisigCosigners = () => (
+const LazyViewEditMultisigCosignersStack = () => (
   <Suspense fallback={<LazyLoadingIndicator />}>
-    <ViewEditMultisigCosigners />
+    <ViewEditMultisigCosignersStack />
   </Suspense>
 );
 
@@ -117,7 +101,6 @@ const LazyScanQRCodeComponent = () => (
 
 const MainRoot = () => {
   const { walletsInitialized } = useStorage();
-  const theme = useTheme();
 
   return (
     <DetailViewStack.Navigator screenOptions={{ headerShown: false }}>
@@ -130,8 +113,6 @@ const MainRoot = () => {
           {/* Modal stacks */}
           <DetailViewStack.Screen name="AddWalletRoot" component={LazyAddWalletStack} options={NavigationDefaultOptions} />
           <DetailViewStack.Screen name="SendDetailsRoot" component={LazySendDetailsStack} options={NavigationFormNoSwipeDefaultOptions} />
-          <DetailViewStack.Screen name="LNDCreateInvoiceRoot" component={LazyLNDCreateInvoiceRoot} options={NavigationDefaultOptions} />
-          <DetailViewStack.Screen name="ScanLNDInvoiceRoot" component={LazyScanLNDInvoiceRoot} options={NavigationDefaultOptions} />
           <DetailViewStack.Screen name="AztecoRedeemRoot" component={LazyAztecoRedeemStackRoot} options={NavigationDefaultOptions} />
           <DetailViewStack.Screen
             name="WalletExportRoot"
@@ -144,15 +125,12 @@ const MainRoot = () => {
             options={NavigationDefaultOptions}
           />
           <DetailViewStack.Screen
-            name="ViewEditMultisigCosigners"
-            component={LazyViewEditMultisigCosigners}
-            options={navigationStyle({
-              title: loc.multisig.view_edit_cosigners,
-              presentation: 'modal',
-              headerShown: true,
-              gestureEnabled: false,
-              closeButtonPosition: CloseButtonPosition.Right,
-            })(theme)}
+            name="ViewEditMultisigCosignersRoot"
+            component={LazyViewEditMultisigCosignersStack}
+            // the stack draws its own header and title, so the outer screen must not add a second
+            // one; gestureEnabled stays off, as it was, so a half-finished edit cannot be swiped
+            // away
+            options={{ ...NavigationDefaultOptions, gestureEnabled: false }}
           />
           <DetailViewStack.Screen
             name="WalletXpubRoot"
