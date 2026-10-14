@@ -306,6 +306,9 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
   });
 
   const renderItem = useCallback(
+    // item is the row being rendered, not a component prop; the rule reads this destructured
+    // callback parameter as one
+    // eslint-disable-next-line react/no-unused-prop-types
     ({ item }: { item: Transaction }) => {
       return <TransactionListItem item={item} itemPriceUnit={wallet?.preferredBalanceUnit} walletID={walletID} />;
     },

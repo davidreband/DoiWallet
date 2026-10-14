@@ -30,6 +30,11 @@ import HighlightedText from './HighlightedText';
 import { getIPFSImageUrl } from '../utils/ipfs';
 
 const styles = StyleSheet.create({
+  nameOpImage: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+  },
   subtitle: {
     color: 'colors.foregroundColor',
     fontSize: 13,
@@ -235,7 +240,7 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
           icon: (
             <Image
               source={{ uri: ipfsImageUrl }}
-              style={{ width: 32, height: 32, borderRadius: 16 }}
+              style={styles.nameOpImage}
               onError={() => setImageError(new Error('Failed to load image'))}
             />
           ),
