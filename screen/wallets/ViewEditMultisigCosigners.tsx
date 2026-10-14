@@ -682,9 +682,6 @@ const styles = StyleSheet.create({
   multiLineTextInput: {
     minHeight: 200,
   },
-  contentContainerStyle: {
-    padding: 16,
-  },
   modalContent: {
     padding: 22,
     justifyContent: 'center',
@@ -713,12 +710,6 @@ const styles = StyleSheet.create({
   },
   tipLabelText: {
     fontWeight: '500',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: 16,
-    justifyContent: 'space-between',
   },
 });
 

@@ -14,7 +14,6 @@ import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 import Share from 'react-native-share';
 import { SecondButton } from '../../components/SecondButton';
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
-import Notifications from '../../blue_modules/notifications';
 import { satoshiToBTC } from '../../blue_modules/currency';
 import { isDesktop } from '../../blue_modules/environment';
 import { BlueSpacing20, BlueText } from '../../BlueComponents';
@@ -32,7 +31,6 @@ const SendCreate = () => {
   const { fee, recipients, wallet, memo = '', satoshiPerByte, psbt, showAnimatedQr, tx } = useRoute().params;
 
   const { txMetadata, fetchAndSaveWalletTransactions, isElectrumDisabled } = useStorage();
-  const route = useRoute();
   const transaction = tx ? bitcoin.Transaction.fromHex(tx) : 0;
   const size = tx ? transaction.virtualSize() : 1;
   const { isPrivacyBlurEnabled } = useSettings();
@@ -359,12 +357,6 @@ const styles = StyleSheet.create({
   },
   actionTouch: {
     marginVertical: 24,
-  },
-  actionButton: {
-    marginBottom: 20,
-    color: '#37c0a1',
-    borderColor: '#ebebeb',
-    fontSize: 17,
   },
   actionText: {
     color: '#9aa0aa',

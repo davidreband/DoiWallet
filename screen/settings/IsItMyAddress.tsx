@@ -200,9 +200,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  boldText: {
-    fontWeight: 'bold',
-  },
   resultText: {
     marginVertical: 10,
     textAlign: 'center',

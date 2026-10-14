@@ -100,7 +100,6 @@ async function _restoreSavedPreferredFiatCurrencyFromStorage(): Promise<void> {
   }
 }
   */
-const suppressExchangeRateAlert = false;
 
 async function updateExchangeRate(): Promise<void> {
   if (skipUpdateExchangeRate) return;

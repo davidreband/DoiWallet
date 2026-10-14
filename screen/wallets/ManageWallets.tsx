@@ -184,7 +184,6 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 }
 
 const ManageWallets: React.FC = () => {
-  const sortableList = useRef(null);
   const { colors, closeImage } = useTheme();
   const { wallets: persistedWallets, setWalletsWithNewOrder, txMetadata, handleWalletDeletion } = useStorage();
   const initialWalletsRef = useRef<TWallet[]>(deepCopyWallets(persistedWallets));
@@ -743,9 +742,6 @@ export default React.memo(ManageWallets);
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-  },
-  padding16: {
-    padding: 16,
   },
   button: {
     padding: 16,

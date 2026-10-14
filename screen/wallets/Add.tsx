@@ -538,9 +538,6 @@ const styles = StyleSheet.create({
   advanced: {
     marginHorizontal: 20,
   },
-  advancedText: {
-    fontWeight: '500',
-  },
   lndUri: {
     flexDirection: 'row',
     borderWidth: 1,
