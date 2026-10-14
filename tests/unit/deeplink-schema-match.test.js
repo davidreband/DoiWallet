@@ -8,15 +8,6 @@ jest.mock('../../blue_modules/BlueElectrum', () => {
   };
 });
 
-// helper function that promisifies function with a callback:
-const asyncNavigationRouteFor = async function (event) {
-  return new Promise(function (resolve) {
-    DeeplinkSchemaMatch.navigationRouteFor(event, navValue => {
-      resolve(navValue);
-    });
-  });
-};
-
 describe.each(['', '//'])('unit - DeepLinkSchemaMatch', function (suffix) {
   it('hasSchema', () => {
     assert.ok(DeeplinkSchemaMatch.hasSchema(`doichain:${suffix}12eQ9m4sgAwTSQoNXkRABKhCXCsjm2jdVG`));

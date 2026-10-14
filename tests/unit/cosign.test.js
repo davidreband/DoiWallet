@@ -76,22 +76,11 @@ describe('AbstractHDElectrumWallet.cosign', () => {
     {
       // w1
       const input = w1Utxo[0];
-      const pubkey = w1._getPubkeyByAddress(input.address);
-      const path = w1._getDerivationPathByAddress(input.address);
 
       psbt.addInput({
         hash: input.txid,
         index: input.vout,
         sequence,
-        /*
-        bip32Derivation: [
-          {
-            masterFingerprint: masterFingerprintBuffer,
-            path,
-            pubkey,
-          },
-        ],
-        */
         // non-segwit inputs now require passing the whole previous tx as Buffer
         nonWitnessUtxo: Buffer.from(input.txhex, 'hex'),
       });
@@ -101,7 +90,6 @@ describe('AbstractHDElectrumWallet.cosign', () => {
       // w2
       const input = w2Utxo[0];
       const pubkey = w2._getPubkeyByAddress(input.address);
-      const path = w2._getDerivationPathByAddress(input.address);
       const p2wpkh = bitcoin.payments.p2wpkh({
         pubkey,
         network: DOICHAIN,
@@ -111,15 +99,6 @@ describe('AbstractHDElectrumWallet.cosign', () => {
         hash: input.txid,
         index: input.vout,
         sequence,
-        /*
-        bip32Derivation: [
-          {
-            masterFingerprint: masterFingerprintBuffer,
-            path,
-            pubkey,
-          },
-        ],
-        */
         witnessUtxo: {
           script: p2wpkh.output,
           value: input.value,

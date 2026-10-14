@@ -41,15 +41,6 @@ function onlyUnique(value: any, index: number, self: any[]) {
   return self.indexOf(value) === index;
 }
 
-function arrDiff(a1: any[], a2: any[]) {
-  const ret = [];
-  for (const v of a2) {
-    if (a1.indexOf(v) === -1) {
-      ret.push(v);
-    }
-  }
-  return ret;
-}
 
 const toolTipMenuActions = [
   {
