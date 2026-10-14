@@ -138,8 +138,21 @@ task generateCurrentBranch(type: Exec) {
     outputs.upToDateWhen { false }
 }
 
+// Same reasoning as the branch above: the About screen showed the app's first install time on the
+// device, which said 2024 on a phone the wallet had been on that long, whichever release was
+// running. The build's own time has to be written when the build happens.
+task generateBuildTime(type: Exec) {
+    workingDir rootProject.projectDir.parentFile
+    commandLine 'sh', 'scripts/build-time.sh'
+    doFirst {
+        standardOutput = new FileOutputStream(new File(rootProject.projectDir.parentFile, 'build-time.json'))
+    }
+    outputs.upToDateWhen { false }
+}
+
 preBuild.dependsOn(copyFiatUnits)
 preBuild.dependsOn(generateCurrentBranch)
+preBuild.dependsOn(generateBuildTime)
 
 dependencies {
 		androidTestImplementation('com.wix:detox:+')

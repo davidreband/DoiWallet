@@ -68,6 +68,7 @@ ios/fastlane
 release-notes.json
 release-notes.txt
 current-branch.json
+build-time.json
 
 # Ruby / CocoaPods
 **/Pods/

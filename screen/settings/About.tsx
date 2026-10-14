@@ -8,7 +8,6 @@ import {
   getUniqueIdSync,
   getVersion,
   hasGmsSync,
-  useFirstInstallTime,
 } from 'react-native-device-info';
 import { Icon } from '@rneui/themed';
 import Rate, { AndroidMarket } from 'react-native-rate';
@@ -25,6 +24,8 @@ import { useSettings } from '../../hooks/context/useSettings';
 import SafeAreaScrollView from '../../components/SafeAreaScrollView';
 
 const branch = require('../../current-branch.json');
+// written by the build - see scripts/build-time.sh and the gradle task that runs it
+const buildTime = require('../../build-time.json');
 
 const About: React.FC = () => {
   const { navigate } = useExtendedNavigation();
@@ -94,7 +95,6 @@ const About: React.FC = () => {
       }
     });
   };
-  const firstInstallTime = useFirstInstallTime().result;
 
   return (
     <SafeAreaScrollView testID="AboutScrollView" contentInsetAdjustmentBehavior="automatic" automaticallyAdjustContentInsets>
@@ -150,7 +150,7 @@ const About: React.FC = () => {
       <BlueTextCentered>
         {getApplicationName()} ver {getVersion()} (build {getBuildNumber() + ' ' + branch})
       </BlueTextCentered>
-      <BlueTextCentered>{new Date(firstInstallTime).toString()}</BlueTextCentered>
+      <BlueTextCentered>{new Date(buildTime).toString()}</BlueTextCentered>
       <BlueTextCentered>{getBundleId()}</BlueTextCentered>
       <BlueTextCentered>
         w, h = {width}, {height}
