@@ -15,7 +15,7 @@ import {
 import A from '../../blue_modules/analytics';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { BlueButtonLink, BlueFormLabel, BlueSpacing20, BlueSpacing40, BlueText } from '../../BlueComponents';
-import { BlueApp, HDSegwitBech32Wallet, HDSegwitP2SHWallet, SegwitP2SHWallet } from '../../class';
+import { HDSegwitBech32Wallet, HDSegwitP2SHWallet, SegwitP2SHWallet } from '../../class';
 import presentAlert from '../../components/Alert';
 import Button from '../../components/Button';
 import { useTheme } from '../../components/themes';

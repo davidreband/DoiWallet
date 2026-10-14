@@ -16,8 +16,6 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { usePreventRemove } from '@react-navigation/native';
 import { useTheme } from '../../components/themes';
-import { WalletCarouselItem } from '../../components/WalletsCarousel';
-import { TransactionListItem } from '../../components/TransactionListItem';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import loc from '../../loc';
 import { useStorage } from '../../hooks/context/useStorage';

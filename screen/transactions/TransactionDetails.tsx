@@ -11,7 +11,6 @@ import { Transaction, TWallet } from '../../class/wallets/types';
 import presentAlert from '../../components/Alert';
 import CopyToClipboardButton from '../../components/CopyToClipboardButton';
 
-import { DoichainUnit } from '../../models/doichainUnits';
 
 import HandOffComponent from '../../components/HandOffComponent';
 import { useTheme } from '../../components/themes';

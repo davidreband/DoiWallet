@@ -133,11 +133,6 @@ const OutputList: React.FC<TOutputListProps> = ({
   );
 };
 
-type TOutputModalProps = {
-  item: Utxo;
-  balanceUnit: string;
-  oMemo?: string;
-};
 
 const OutputModal = ({ item: { address, txid, value, vout, confirmations = 0 }, balanceUnit = DoichainUnit.DOI, oMemo }) => {
   const { colors } = useTheme();

@@ -22,7 +22,6 @@ import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import { useStorage } from '../../hooks/context/useStorage';
 import TotalWalletsBalance from '../../components/TotalWalletsBalance';
 import { useSettings } from '../../hooks/context/useSettings';
-import { addExternalTxId } from '../../helpers/transactionsMonitorUtils';
 import useMenuElements from '../../hooks/useMenuElements';
 import SafeAreaSectionList from '../../components/SafeAreaSectionList';
 

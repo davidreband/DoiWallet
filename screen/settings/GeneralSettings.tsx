@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
   },
 });
 
-type NavigationProps = NavigationProp<DetailViewStackParamList, 'GeneralSettings'>;
 
 const GeneralSettings: React.FC = () => {
   const { wallets } = useStorage();
