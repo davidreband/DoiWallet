@@ -98,3 +98,6 @@ notes.txt
 
 # local Doichain Core regtest node (scripts/regtest-node.sh)
 .regtest/
+
+# signed artifacts from Studio's Generate Signed App Bundle / APK wizard
+android/app/release/
