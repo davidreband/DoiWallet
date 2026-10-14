@@ -1610,6 +1610,9 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
         }
       } catch (e) {
         console.log('_______input__e', e);
+        // an input we could not read leaves a hole in the list on purpose; the reader below
+        // expects it and asks with inputs[cc]?.address
+        return undefined;
       }
     });
 
