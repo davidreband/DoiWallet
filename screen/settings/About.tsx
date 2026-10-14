@@ -1,6 +1,6 @@
 import React from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { Alert, Image, Linking, Platform, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { Image, Linking, Platform, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import {
   getApplicationName,
   getBuildNumber,
@@ -13,7 +13,6 @@ import { Icon } from '@rneui/themed';
 import Rate, { AndroidMarket } from 'react-native-rate';
 import A from '../../blue_modules/analytics';
 import { BlueCard, BlueSpacing20, BlueTextCentered } from '../../BlueComponents';
-import { HDSegwitBech32Wallet } from '../../class';
 import presentAlert from '../../components/Alert';
 import Button from '../../components/Button';
 import ListItem from '../../components/ListItem';
@@ -62,18 +61,6 @@ const About: React.FC = () => {
 
   const handleOnLicensingPress = () => {
     navigate('Licensing');
-  };
-
-  const handleOnTwitterPress = () => {
-    Linking.openURL('https://twitter.com/bluewalletio');
-  };
-
-  const handleOnDiscordPress = () => {
-    Linking.openURL('https://discord.gg/btWq2Aby2z');
-  };
-
-  const handleOnTelegramPress = () => {
-    Linking.openURL('https://t.me/bluewallethat');
   };
 
   const handleOnGithubPress = () => {
@@ -143,6 +130,17 @@ const About: React.FC = () => {
         chevron
         onPress={handleOnLicensingPress}
         title={loc.settings.about_license}
+      />
+      <ListItem
+        leftIcon={{
+          name: 'flask',
+          type: 'font-awesome',
+          color: '#FC0D44',
+        }}
+        chevron
+        onPress={handleOnSelfTestPress}
+        testID="RunSelfTestButton"
+        title={loc.settings.about_selftest}
       />
 
       <BlueSpacing20 />

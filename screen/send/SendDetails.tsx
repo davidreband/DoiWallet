@@ -1,5 +1,3 @@
-import { TextDecoder } from 'text-decoding';
-import bs58check from 'bs58check';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
@@ -91,7 +89,6 @@ const SendDetails = () => {
   const selectedDataProcessor = useRef<ToolTipAction | undefined>();
   const setParams = navigation.setParams;
   const route = useRoute<RouteProps>();
-  const name = route.name;
   const feeUnit = route.params?.feeUnit ?? DoichainUnit.DOI;
   const amountUnit = route.params?.amountUnit ?? DoichainUnit.DOI;
   const frozenBalance = route.params?.frozenBalance ?? 0;
@@ -102,7 +99,6 @@ const SendDetails = () => {
   const routeParams = route.params;
   const scrollView = useRef<FlatList<any>>(null);
   const scrollIndex = useRef(0);
-  const beforeRemoveListenerRef = useRef<((e: { preventDefault: () => void; data: { action: any } }) => () => () => void) | null>(null);
   const { colors } = useTheme();
 
   // state
@@ -113,14 +109,12 @@ const SendDetails = () => {
   const { isVisible } = useKeyboard();
 
   const [addresses, setAddresses] = useState<IPaymentDestinations[]>([{ address: '', key: String(Math.random()), unit: amountUnit }]);
-  const [units, setUnits] = useState<DoichainUnit[]>([]);
 
   const [networkTransactionFees, setNetworkTransactionFees] = useState(new NetworkTransactionFee(3, 2, 1));
   const [networkTransactionFeesIsLoading, setNetworkTransactionFeesIsLoading] = useState(false);
   const [customFee, setCustomFee] = useState<string | null>(null);
   const [feePrecalc, setFeePrecalc] = useState<IFee>({ current: null, slowFee: null, mediumFee: null, fastestFee: null });
 
-  const [utxo, setUtxo] = useState<CreateTransactionUtxo[] | null>(null);
 
   const [changeAddress, setChangeAddress] = useState<string | null>(null);
   const [dumb, setDumb] = useState(false);
@@ -191,12 +185,7 @@ const SendDetails = () => {
       }
     } else if (routeParams.uri) {
       try {
-        const { address, amount, memo, payjoinUrl: pjUrl } = DeeplinkSchemaMatch.decodeBitcoinUri(routeParams.uri);
-
-        setUnits(u => {
-          u[scrollIndex.current] = DoichainUnit.DOI; // also resetting current unit to BTC
-          return [...u];
-        });
+        const { address, amount, memo } = DeeplinkSchemaMatch.decodeBitcoinUri(routeParams.uri);
 
         setAddresses(addrs => {
           if (currentAddress) {
@@ -235,10 +224,6 @@ const SendDetails = () => {
       if (routeParams.memo && routeParams.memo?.trim().length > 0) {
         setTransactionMemo(routeParams.memo);
       }
-      setUnits(u => {
-        u[scrollIndex.current] = unit;
-        return [...u];
-      });
     } else if (routeParams.nameOp) {
       const { nameId, nameValue, sendTo } = routeParams.nameOp;
       // A name output always carries the amount locked in the name, and Core refuses anything under
@@ -339,7 +324,6 @@ const SendDetails = () => {
     if (!wallet) return;
 
     // reset other values
-    setUtxo(null);
     setChangeAddress(null);
     setParams({
       utxos: null,
