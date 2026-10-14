@@ -59,7 +59,6 @@
     "potentialFee": "Tasas potenciales: {fee}",
     "refill": "Recarga",
     "refill_create": "Para continuar, crea una billetera Bitcoin para recargar.",
-    "refill_external": "Recarga con billetera externa",
     "refill_lnd_balance": "Recargar el saldo de la billetera Lightning",
     "sameWalletAsInvoiceError": "No puedes pagar una factura con la misma billetera que usaste para crearla.",
     "title": "Manejar fondos"

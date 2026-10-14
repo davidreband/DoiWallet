@@ -48,7 +48,6 @@
     "potentialFee": "Potentiell avgift: {fee}",
     "refill": "Fyll på",
     "refill_create": "För att fortsätta, vänligen skapa en Bitcoin plånbok att fylla på med",
-    "refill_external": "Fyll på från extern plånbok",
     "refill_lnd_balance": "Fyll på Lightning-plånbok",
     "sameWalletAsInvoiceError": "Du kan inte betala en faktura från samma plånbok som användes för att skapa den.",
     "title": "sätt in / ta ut"

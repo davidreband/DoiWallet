@@ -58,7 +58,6 @@
     "potentialFee": "עמלה פוטנציאלית: {fee}",
     "refill": "טעינה",
     "refill_create": "כדי להמשיך, אנא צרו ארנק ביטקוין כדי לטעון באמצעותו.",
-    "refill_external": "טעינה בעזרת ארנק חיצוני",
     "refill_lnd_balance": "מלאו את יתרת ארנק הברק",
     "sameWalletAsInvoiceError": "לא ניתן לשלם חשבונית עם אותו הארנק שיצר אותה.",
     "title": "ניהול כספים"

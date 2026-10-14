@@ -40,7 +40,6 @@
     "payButton": "支付",
     "refill": "增值",
     "refill_create": "爲了繼續進行，請建立一個要增值的比特幣錢包。",
-    "refill_external": "用外部錢包增值",
     "refill_lnd_balance": "給閃電錢包增值",
     "sameWalletAsInvoiceError": "你不能用建立賬單的錢包去支付該賬單",
     "title": "管理資金"

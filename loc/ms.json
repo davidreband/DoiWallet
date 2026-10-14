@@ -40,7 +40,6 @@
     "payButton": "Bayar",
     "refill": "Isi semula",
     "refill_create": "Untuk meneruskan, sila buat dompet Bitcoin untuk diisi semula.",
-    "refill_external": "Isi Semula dengan Dompet Luaran",
     "refill_lnd_balance": "Isi Semula Baki Dompet Lightning",
     "title": "Uruskan Wang"
   },

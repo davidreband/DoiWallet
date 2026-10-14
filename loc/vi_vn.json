@@ -46,7 +46,6 @@
     "placeholder": "Hóa đơn hoặc địa chỉ",
     "refill": "Đổ đầy",
     "refill_create": "Để tiếp tục, vui lòng tạo một ví Bitcoin để nạp tiền. ",
-    "refill_external": "Nạp lại với ví bên ngoài",
     "refill_lnd_balance": "Nạp lại số dư ví Lightning",
     "title": "Quản lý quỹ"
   },

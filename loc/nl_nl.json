@@ -48,7 +48,6 @@
     "potentialFee": "Mogelijke fee: {fee}",
     "refill": "Bijvullen",
     "refill_create": "Om verder te gaan, moet u een Bitcoin-wallet maken om mee te vullen.",
-    "refill_external": "Aanvullen met externe wallet",
     "refill_lnd_balance": "Vul Lightning-walletsaldo bij",
     "sameWalletAsInvoiceError": "U kunt geen factuur betalen met dezelfde wallet die is gebruikt om de factuur te maken.",
     "title": "tegoeden beheren"

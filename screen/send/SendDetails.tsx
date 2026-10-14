@@ -145,7 +145,9 @@ const SendDetails = () => {
       navigation.setParams({ onBarScanned: undefined });
       handlePsbtSign();
     }
-  }, [routeParams?.onBarScanned]);
+    // handlePsbtSign is deliberately not listed - see the note at its definition
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routeParams?.onBarScanned, navigation]);
 
   useEffect(() => {
     // decode route params
@@ -927,6 +929,13 @@ const SendDetails = () => {
     [_importTransactionMultisig],
   );
 
+  // This wants to be a useCallback: as a plain function it is a new reference on every render, so the
+  // effect further down that both calls it and lists it in its dependencies runs on every render too -
+  // which is why that effect carries a hand-written guard commented "Verhindert Endlosschleife".
+  // Memoising it is the fix, but it is 95 lines of the signing path closing over the wallet and the
+  // route params, and a dependency array wrong by one entry signs with stale state. That is a change
+  // to make with a device to test it on, not in a lint sweep.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handlePsbtSign = async (weOwnWallet?: string | undefined | TWallet) => {
     const actWallet = wallet?.type !== undefined ? wallet : weOwnWallet;
     if (!actWallet || typeof actWallet === 'string') return; // Early return if no wallet is available
@@ -1067,6 +1076,7 @@ const SendDetails = () => {
     setParams,
     processAddressData,
     _importTransactionMultisig,
+    navigation,
   ]);
 
   const handleAddRecipient = useCallback(() => {

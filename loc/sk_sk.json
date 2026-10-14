@@ -34,7 +34,6 @@
     "payButton": "Zaplatiť",
     "refill": "Doplniť",
     "refill_create": "Pre pokračovanie, prosím, vytvorte si Bitcoinovú peňaženku",
-    "refill_external": "Doplniť z externej peňaženky",
     "refill_lnd_balance": "Doplniť zostatok na Lightning peňaženke",
     "sameWalletAsInvoiceError": "Faktúra sa nedá uhradiť s rovnakou peňaženkou ako tá, ktorá ju vytvorila.",
     "title": "spravovať zostatok"

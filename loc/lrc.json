@@ -31,7 +31,6 @@
     "placeholder": "سۊرت هساو یا آدرس",
     "potentialFee": "کارمزد ائتمالی: {fee}",
     "refill": "پور کردن",
-    "refill_external": "پور کردن وا کیف پیلٛ خارجی",
     "refill_lnd_balance": "پور کردن مۉجۊدی کیف پیلٛ لایتنینگ"
   },
   "lndViewInvoice": {

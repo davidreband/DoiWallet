@@ -41,7 +41,6 @@
     "payButton": "Plătește",
     "refill": "Reumple",
     "refill_create": "Pentru a continua, creează un portofel Doi cu care să reumpli.",
-    "refill_external": "Reumple cu Portofel Extern",
     "refill_lnd_balance": "Reumple balanța portofelului Lightning",
     "title": "Administrează fondurile"
   },

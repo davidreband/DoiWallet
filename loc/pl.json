@@ -59,7 +59,6 @@
     "potentialFee": "Potencjalna opłata transakcyjna: {fee}",
     "refill": "Doładuj",
     "refill_create": "Aby kontynuować, utwórz portfel Bitcoinowy który potem doładujesz.",
-    "refill_external": "Doładowanie z zewnętrznego portfela",
     "refill_lnd_balance": "Doładowanie stanu portfela Lightning",
     "sameWalletAsInvoiceError": "Nie możesz zapłacić wezwania z tego samego portfela, który stworzyłeś.",
     "title": "Zarządzaj środkami"

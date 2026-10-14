@@ -44,7 +44,6 @@
     "potentialFee": "Taxa provável: {fee}",
     "refill": "Carregar",
     "refill_create": "Para continuar, crie uma carteira Doi para recarregar.",
-    "refill_external": "Recarregar com carteira externa",
     "refill_lnd_balance": "Carregar o saldo da Lightning wallet",
     "sameWalletAsInvoiceError": "Não pode pagar uma factura com a mesma wallet usada para a criar.",
     "title": "Gerir saldo"

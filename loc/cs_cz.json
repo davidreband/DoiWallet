@@ -59,7 +59,6 @@
     "potentialFee": "Potenciální poplatek: {fee}",
     "refill": "Doplnit",
     "refill_create": "Chcete-li pokračovat, vytvořte prosím bitcoinovou peněženku, kterou můžete doplnit.",
-    "refill_external": "Doplnit pomocí externí peněženky",
     "refill_lnd_balance": "Doplnit zůstatek na Lightning peněžence",
     "sameWalletAsInvoiceError": "Fakturu nemůžete zaplatit pomocí stejné peněženky, kterou jste použili k jejímu vytvoření.",
     "title": "Správa prostředků"

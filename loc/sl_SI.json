@@ -42,7 +42,6 @@
     "potentialFee": "Morebitna omrežnina: {fee}",
     "refill": "Napolni",
     "refill_create": "Če želite nadaljevati, ustvarite Bitcoin denarnico, s katero boste napolnili.",
-    "refill_external": "Napolni z zunanjo denarnico",
     "refill_lnd_balance": "Napolni stanje Lightning denarnice",
     "sameWalletAsInvoiceError": "Plačilo računa ni mogoče z denarnico, s katero je bil ustvarjen.",
     "title": "Uredi sredstva"

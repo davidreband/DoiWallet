@@ -59,7 +59,6 @@
     "potentialFee": "手数料推計： {fee}",
     "refill": "送金",
     "refill_create": "先に進むためには、ビットコインウォレットを作成して補充してください。",
-    "refill_external": "外部ウォレットで補充",
     "refill_lnd_balance": "Lightning ウォレットへ送金",
     "sameWalletAsInvoiceError": "インボイスを作成したのと同じウォレットで支払うことはできません。",
     "title": "資金の管理"

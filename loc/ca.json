@@ -46,7 +46,6 @@
     "payment": "Pagament",
     "placeholder": "Factura o adreça",
     "refill": "Recarregar",
-    "refill_external": "Recarregar amb un moneder extern",
     "refill_lnd_balance": "Recarregar el balanç del moneder Lightning",
     "sameWalletAsInvoiceError": "No pots pagar una factura amb el mateix moneder que l'ha creat.",
     "title": "gestionar fons"

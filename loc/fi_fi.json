@@ -51,7 +51,6 @@
     "potentialFee": "Mahdollinen siirtokulu: {fee}",
     "refill": "Täytä",
     "refill_create": "Jatka luomalla Bitcoin-lompakko, jolla voit täyttää sen.",
-    "refill_external": "Täytä ulkoisella lompakolla",
     "refill_lnd_balance": "Täytä Salamalompakon saldoa",
     "sameWalletAsInvoiceError": "Et voi maksaa laskua samalla lompakolla, jolla se on luotu.",
     "title": "hallinnoi varoja"

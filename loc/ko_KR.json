@@ -59,7 +59,6 @@
     "potentialFee": "예상 수수료： {fee}",
     "refill": "재충전",
     "refill_create": "진행을 위해서 재충전할 수있는 비트코인 지갑을 만들어주세요.",
-    "refill_external": "외부 지갑으로 재충전합니다.",
     "refill_lnd_balance": "라이트닝 월렛잔액 재충전하기",
     "title": "자금 관리하기"
   },

@@ -47,7 +47,6 @@
     "potentialFee": "Potensi biaya: {fee}",
     "refill": "Isi ulang",
     "refill_create": "Untuk melanjutkan, buat dompet Bitcoin untuk diisi ulang.",
-    "refill_external": "Isi ulang dengan Dompet Eksternal",
     "refill_lnd_balance": "Isi ulang saldo Lightning",
     "sameWalletAsInvoiceError": "Kamu tidak bisa membayar invoice dengan dompet yang sama yang dipakai untuk membuat invoice.",
     "title": "Atur Dana"

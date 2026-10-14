@@ -41,7 +41,6 @@
     "potentialFee": "Comisión estimada: {fee}",
     "refill": "Recargar",
     "refill_create": "Para continuar, por favor crea una cartera de Bitcoin con la que recargar.",
-    "refill_external": "Recargar con una cartera externa",
     "refill_lnd_balance": "Recargar saldo de la cartera Lightning",
     "sameWalletAsInvoiceError": "No puedes pagar una factura con la misma cartera que usaste para crearla.",
     "title": "Administrar fondos"

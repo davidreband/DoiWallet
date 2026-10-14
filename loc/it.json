@@ -47,7 +47,6 @@
     "potentialFee": "Commissioni potenziali: {fee}",
     "refill": "Ricarica",
     "refill_create": "Per continuare, crea un portafoglio Bitcoin dal quale ricaricare.",
-    "refill_external": "Ricarica con un wallet esterno",
     "refill_lnd_balance": "Ricarica saldo del portafoglio Lightning",
     "sameWalletAsInvoiceError": "Non puoi pagare una fattura con lo stesso portafoglio utilizzato per crearla.",
     "title": "Gestisci fondi"

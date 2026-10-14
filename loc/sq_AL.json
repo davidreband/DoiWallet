@@ -58,7 +58,6 @@
     "potentialFee": "Komisioni potencial: {fee}",
     "refill": "Rimbush",
     "refill_create": "Krijoni në portofol Bitcoin-i për të vazhduar.",
-    "refill_external": "Rimbush nga një portofol tjetër",
     "refill_lnd_balance": "Rimbush ballancën e portofolit Lightning.",
     "sameWalletAsInvoiceError": "Nuk mund të paguash një faturë me të njëjtin portofol që e ka krijuar atë",
     "title": "Menaxho fondet"

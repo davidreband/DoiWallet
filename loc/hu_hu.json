@@ -43,7 +43,6 @@
     "potentialFee": "Várható díj: {fee}",
     "refill": "Feltölt",
     "refill_create": "A folytatáshoz, hozz létre egy Bitcoin tárcát amire feltölthetsz.",
-    "refill_external": "Feltöltés külső tárcáról",
     "refill_lnd_balance": "Lightning egyenleg feltöltése",
     "sameWalletAsInvoiceError": "Számlát nem fizethesz be ugyanarról a tárcáról, mint amellyel létrehoztad.",
     "title": "kezelés"

@@ -40,7 +40,6 @@
     "payButton": "Betal",
     "refill": "Fyll på",
     "refill_create": "For å fortsette må du lage en Bitcoin-lommebok du kan fylle på med.",
-    "refill_external": "Fyll på med Ekstern Lommebok",
     "refill_lnd_balance": "Fyll på Lightning Wallet-balanse",
     "sameWalletAsInvoiceError": "Du kan ikke betale en faktura med samme lommebok som brukes til å lage den.",
     "title": "Administrer Midler"

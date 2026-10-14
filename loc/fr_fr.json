@@ -59,7 +59,6 @@
     "potentialFee": "Frais potentiels : {fee}",
     "refill": "Déposer des fonds",
     "refill_create": "Pour continuer, veuillez créer un portefeuille Bitcoin à partir duquel déposer des fonds.",
-    "refill_external": "Déposer des fonds depuis un portefeuille externe",
     "refill_lnd_balance": "Déposer des fonds dans votre portfeuille Lightning",
     "sameWalletAsInvoiceError": "Vous ne pouvez pas payer une facture avec le même portefeuille utilisé pour la créer.",
     "title": "gérer vos fonds"
