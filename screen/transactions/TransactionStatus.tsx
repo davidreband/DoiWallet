@@ -13,8 +13,6 @@ import HandOffComponent from '../../components/HandOffComponent';
 import TransactionIncomingIcon from '../../components/icons/TransactionIncomingIcon';
 import TransactionOutgoingIcon from '../../components/icons/TransactionOutgoingIcon';
 import TransactionPendingIcon from '../../components/icons/TransactionPendingIcon';
-import ToolTipMenu from '../../components/TooltipMenu';
-import Clipboard from '@react-native-clipboard/clipboard';
 
 import SafeArea from '../../components/SafeArea';
 import { useTheme } from '../../components/themes';
@@ -517,18 +515,6 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
     }
   }
 
-  const actions = [
-    {
-      id: 'copyToClipboard',
-      text: loc.transactions.details_copy,
-      icon: { iconValue: 'doc.on.doc' },
-    },
-  ];
-
-  const onPressMenuItem = (key: string) => {
-    Clipboard.setString(key);
-  };
-
 
 
   const renderNameOps = () => {
@@ -579,12 +565,6 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
                     resizeMode="contain"
                   />
                   <BlueSpacing20 />
-
-                  {/* <ToolTipMenu key={'name'} isButton title={""} actions={actions} onPressMenuItem={onPressMenuItem}>
-                      <Text selectable style={styles.memoText}>
-                        {loc.transactions.nameOps_name}: {output.scriptPubKey.nameOp.name}
-                      </Text>
-                    </ToolTipMenu>             */}
 
                   <Text selectable style={styles.memoText}>
                     {loc.transactions.nameOps_name}: {output.scriptPubKey.nameOp.name}
@@ -918,10 +898,6 @@ const styles = StyleSheet.create({
     fontSize: 36,
     fontWeight: '600',
   },
-  valueSmall: {
-    fontSize: 26,
-    fontWeight: '600',
-  },
   valueUnit: {
     fontSize: 16,
     fontWeight: '600',
@@ -944,15 +920,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 43,
     marginBottom: 53,
-  },
-  iconRootSmall: {
-    width: 60,
-    height: 60,
-    borderRadius: 60,
-    alignSelf: 'center',
-    justifyContent: 'center',
-    marginTop: 25,
-    marginBottom: 25,
   },
   iconWrap: {
     minWidth: 30,
@@ -1010,16 +977,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 300,
     margin: 10,
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    overflow: 'hidden',
   },
   title: {
     fontSize: 16,
