@@ -87,8 +87,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
 
-        versionCode 124
-        versionName "7.1.8"
+        versionCode 126
+        versionName "7.1.9"
 
         testBuildType System.getProperty('testBuildType', 'debug')
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -122,7 +122,37 @@ task copyFiatUnits(type: Copy) {
     into 'src/main/assets'
 }
 
+// The About screen reads current-branch.json, which until now was only written by npm's
+// postinstall hook - so it named whatever branch was checked out the last time dependencies were
+// installed. It said "upstream-sync_7.1.8" while the work had long moved to dev. Writing it on
+// every build is the only way for it to be true.
+task generateCurrentBranch(type: Exec) {
+    workingDir rootProject.projectDir.parentFile
+    commandLine 'sh', 'scripts/current-branch.sh'
+    // opened in doFirst rather than at configuration time, so a build that does not run this task
+    // does not truncate the file on the way past
+    doFirst {
+        standardOutput = new FileOutputStream(new File(rootProject.projectDir.parentFile, 'current-branch.json'))
+    }
+    // the branch can change between builds without any input to this task changing
+    outputs.upToDateWhen { false }
+}
+
+// Same reasoning as the branch above: the About screen showed the app's first install time on the
+// device, which said 2024 on a phone the wallet had been on that long, whichever release was
+// running. The build's own time has to be written when the build happens.
+task generateBuildTime(type: Exec) {
+    workingDir rootProject.projectDir.parentFile
+    commandLine 'sh', 'scripts/build-time.sh'
+    doFirst {
+        standardOutput = new FileOutputStream(new File(rootProject.projectDir.parentFile, 'build-time.json'))
+    }
+    outputs.upToDateWhen { false }
+}
+
 preBuild.dependsOn(copyFiatUnits)
+preBuild.dependsOn(generateCurrentBranch)
+preBuild.dependsOn(generateBuildTime)
 
 dependencies {
 		androidTestImplementation('com.wix:detox:+')

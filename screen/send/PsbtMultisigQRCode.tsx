@@ -1,4 +1,3 @@
-
 import { RouteProp, StackActions, useIsFocused, useRoute } from '@react-navigation/native';
 import * as bitcoin from '@doichain/doichainjs-lib';
 

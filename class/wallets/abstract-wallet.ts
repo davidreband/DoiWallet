@@ -1,6 +1,7 @@
 import b58 from 'bs58check';
 import createHash from 'create-hash';
 import wif from 'wif';
+import { DOICHAIN } from '../../blue_modules/network.js';
 import { DoichainUnit, Chain } from '../../models/doichainUnits';
 import { CreateTransactionResult, CreateTransactionUtxo, Transaction, Utxo } from './types';
 
@@ -217,8 +218,10 @@ export class AbstractWallet {
     if (newSecret.startsWith('S') && newSecret.length >= 22 && /^[1-9A-HJ-NP-Za-km-z]+$/.test(newSecret)) {
       // minikey + ? hashed with SHA256 starts with 0x00 byte
       if (createHash('sha256').update(`${newSecret}?`).digest('hex').startsWith('00')) {
-        // it is a valid minikey
-        newSecret = wif.encode(0x80, createHash('sha256').update(newSecret).digest(), false);
+        // It is a valid minikey. The version byte has to be Doichain's, not Bitcoin's 0x80 - the
+        // WIF written with 0x80 is a Bitcoin key that nothing downstream recognises, so importing
+        // a minikey silently produced no wallet at all.
+        newSecret = wif.encode(DOICHAIN.wif, createHash('sha256').update(newSecret).digest(), false);
       }
     }
 

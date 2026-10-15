@@ -1,41 +1,33 @@
+import { networks } from '@doichain/doichainjs-lib';
+
 export const VERSION = 0x7100;
 
-export const DOICHAIN_MAINNET = {
-  name: 'mainnet',
-  messagePrefix: '\x19Doichain Signed Message:\n',
-  bech32: 'dc',
-  bip32: {
-    public: 0x0488b21e,
-    private: 0x0499ade4,
-  },
-  pubKeyHash: 52, // D=30 d=90 (52=M) https://en.bitcoin.it/wiki/List_of_address_prefixes
-  scriptHash: 13,
-  wif: 180,
-};
+// The chain's fee floor, in satoshi per vByte.
+//
+// Doichain Core's DEFAULT_MIN_RELAY_TX_FEE is COIN/1000 per kvB, which is 100 sat/vByte, and the
+// mining node keeps that default. The relay fee a server advertises is deliberately NOT used
+// instead: the doi.works fleet runs with minrelaytxfee=0.00000001, so it happily relays a
+// transaction that the miner then never includes - it just sits in the mempool and looks sent
+// (Doichain/DoiWallet#39). This is a floor, not a fixed price: a server estimate above it wins.
+export const MIN_RELAY_FEE_SAT_PER_VBYTE = 100;
 
-export const DOICHAIN_TESTNET = {
-  name: 'testnet',
-  messagePrefix: '\x19Doichain-Testnet Signed Message:\n',
-  bech32: 'td',
-  bip32: {
-    public: 0x043587cf,
-    private: 0x04358394,
-  },
-  pubKeyHash: 111, // D=30 d=90 (52=N) (111=m/n) https://en.bitcoin.it/wiki/List_of_address_prefixes
-  scriptHash: 196,
-  wif: 239,
-};
-export const DOICHAIN_REGTEST = {
-  name: 'regtest',
-  messagePrefix: '\x19Doichain-Regtest Signed Message:\n',
-  bech32: 'ncrt',
-  bip32: {
-    public: 0x043587cf,
-    private: 0x04358394,
-  },
-  pubKeyHash: 111,
-  scriptHash: 196,
-  wif: 239,
-};
+// The smallest amount a name output may hold, in satoshi.
+//
+// Doichain Core's MinNameCoinAmount is COIN/100, i.e. 0.01 DOI, and it rejects anything less with
+// "tx-name-greedy" (src/names/main.cpp, src/consensus/params.h of v31.1.6, confirmed on a regtest
+// node). These coins stay locked in the name and can only be moved by the next operation on it, so
+// the fee of a name transfer has to come from a separate input rather than out of the name itself.
+export const MIN_NAME_AMOUNT_SAT = 1000000;
+
+// The prefixes come from doichainjs-lib, which reads them from chainparams.cpp in Doichain Core.
+// Keeping our own copy here had drifted: the mainnet BIP32 private prefix read 0x0499ade4 while
+// Core uses 0x0488ade4, so DoiWallet rejected every standard extended private key on mainnet and
+// silently dropped a cosigner's key when importing an Electrum multisig file
+// (Doichain/DoiWallet#34). Taking them from the library keeps them in step with Core.
+export const DOICHAIN_MAINNET = { name: 'mainnet', ...networks.doichain };
+
+export const DOICHAIN_TESTNET = { name: 'testnet', ...networks.doichainTestnet };
+
+export const DOICHAIN_REGTEST = { name: 'regtest', ...networks.doichainRegtest };
 
 export const DOICHAIN = DOICHAIN_MAINNET;

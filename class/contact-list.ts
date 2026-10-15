@@ -26,7 +26,7 @@ export class ContactList {
 
   isAddressValid(address: string): boolean {
     try {
-      bitcoin.address.toOutputScript(address,DOICHAIN); // throws, no?
+      bitcoin.address.toOutputScript(address, DOICHAIN); // throws, no?
 
       if (!address.toLowerCase().startsWith('bc1')) return true;
       const decoded = bitcoin.address.fromBech32(address);

@@ -1,17 +1,20 @@
 import BigNumber from 'bignumber.js';
 import * as bitcoin from '@doichain/doichainjs-lib';
-import { Alert } from 'react-native';
+import { AlertButton } from 'react-native';
 import DefaultPreference from 'react-native-default-preference';
 import RNFS from 'react-native-fs';
 import Realm from 'realm';
-import { DOICHAIN} from './network.js';
+import { DOICHAIN, MIN_RELAY_FEE_SAT_PER_VBYTE } from './network.js';
 import { LegacyWallet, SegwitBech32Wallet, SegwitP2SHWallet, TaprootWallet } from '../class';
 import presentAlert from '../components/Alert';
 import loc from '../loc';
 import { GROUP_IO_BLUEWALLET } from './currency';
 import { ElectrumServerItem } from '../screen/settings/ElectrumSettings';
 import { triggerWarningHapticFeedback } from './hapticFeedback';
-import { AlertButton } from 'react-native';
+import { NameOperation, NameState, readNameState, sortNameOperations } from '../utils/nameState';
+
+export { readNameState, sortNameOperations };
+export type { NameOperation, NameState };
 
 const ElectrumClient = require('electrum-client');
 const net = require('net');
@@ -52,6 +55,18 @@ type ElectrumTransaction = {
       reqSigs: number;
       type: string;
       addresses: string[];
+      address?: string;
+      /**
+       * What ElectrumX decoded of a name operation, when the output carries one. A name_new only
+       * commits to a hash, so it arrives as {op, hash} with no name and no value - see
+       * class/wallets/types.ts, which says the same about stored transactions.
+       */
+      nameOp?: {
+        op?: string;
+        hash?: string;
+        name: string;
+        value: string;
+      };
     };
   }[];
   blockhash: string;
@@ -87,7 +102,7 @@ const defaultPeer = { host: 'itchy-jellyfish-89.doi.works', ssl: 50002 };
 export const hardcodedPeers: Peer[] = [
   { host: 'itchy-jellyfish-89.doi.works', ssl: 50002 },
   { host: 'big-parrot-60.doi.works', ssl: 50002 },
-  { host: 'ugly-bird-70.doi.works', ssl: 50002 }
+  { host: 'ugly-bird-70.doi.works', ssl: 50002 },
 ];
 
 export const suggestedServers: Peer[] = hardcodedPeers.map(peer => ({
@@ -100,6 +115,8 @@ let wasConnectedAtLeastOnce: boolean = false;
 let serverName: string | false = false;
 let disableBatching: boolean = false;
 let connectionAttempt: number = 0;
+/** The last server that answered but follows the other Doichain chain, so we can name it. */
+let wrongChainPeer: Peer | undefined;
 let currentPeerIndex = Math.floor(Math.random() * hardcodedPeers.length);
 let latestBlock: { height: number; time: number } | { height: undefined; time: undefined } = { height: undefined, time: undefined };
 const txhashHeightCache: Record<string, number> = {};
@@ -275,6 +292,23 @@ export async function connectMain(): Promise<void> {
     if (ver && ver[0]) {
       console.log('connected to ', ver);
       serverName = ver[0];
+
+      // Since 11 September 2026 there are two Doichain chains: the new rules of Core v31 took
+      // effect at block 431,017, the old 0.20 nodes kept mining, and their chain ran thousands of
+      // blocks ahead. A server on that chain answers every request, with balances and confirmations
+      // that mean nothing here, so ask which chain it follows before trusting it. The check is a
+      // single header at block 431,018 - the first block the two chains do not share
+      // (Doichain/DoiWallet#40).
+      const chain = await bitcoin.electrum.verifyChain(
+        { request: (method: string, params?: unknown[]) => mainClient.request(method, params) },
+        DOICHAIN,
+      );
+      if (!chain.ok) {
+        wrongChainPeer = chain.reason === 'wrongChain' ? usingPeer : undefined;
+        throw new Error(`server ${usingPeer.host} does not follow our Doichain chain: ${chain.reason}`);
+      }
+      wrongChainPeer = undefined;
+
       mainConnected = true;
       wasConnectedAtLeastOnce = true;
       if (ver[0].startsWith('ElectrumPersonalServer') || ver[0].startsWith('electrs') || ver[0].startsWith('Fulcrum')) {
@@ -399,11 +433,19 @@ const presentNetworkErrorAlert = async (usingPeer?: Peer) => {
     return;
   }
 
+  // a server that answers but follows the other chain is a different problem than an unreachable
+  // one, and silently retrying it would leave the user with balances that mean nothing (#40)
+  const wrongChain = wrongChainPeer && usingPeer && wrongChainPeer.host === usingPeer.host;
+
   presentAlert({
     allowRepeat: false,
     title: loc.errors.network,
     message: loc.formatString(
-      usingPeer ? loc.settings.electrum_unable_to_connect : loc.settings.electrum_error_connect,
+      wrongChain
+        ? loc.settings.electrum_wrong_chain
+        : usingPeer
+          ? loc.settings.electrum_unable_to_connect
+          : loc.settings.electrum_error_connect,
       usingPeer ? { server: `${usingPeer.host}:${usingPeer.ssl ?? usingPeer.tcp}` } : {},
     ),
     buttons: [
@@ -520,6 +562,60 @@ export const getTransactionsByAddress = async function (address: string): Promis
   }
 
   return history;
+};
+
+/**
+ * Every operation ever carried out on a name, oldest first.
+ *
+ * ElectrumX indexes them all under one script hash per name, so this is a single query by name -
+ * something DoiWallet could not do before: it only ever knew the names in its own transactions, and
+ * could not say who holds a name now, what its value is, when it expires, or whether it is free
+ * (Doichain/DoiWallet#35). The index script and its hash come from the library, which writes the
+ * pushes exactly as ElectrumX does - counting characters instead of bytes yields another hash, and
+ * then a name that is taken looks free.
+ *
+ * @param name - The name. Normalized to NFC, the form names are registered in.
+ */
+export const getNameOperations = async function (name: string): Promise<NameOperation[]> {
+  if (!mainClient) throw new Error('Electrum client is not connected');
+
+  const scriptHash = bitcoin.nameops.nameIndexScriptHash(name.normalize('NFC'));
+  const history = await mainClient.blockchainScripthash_getHistory(scriptHash);
+
+  const operations: NameOperation[] = [];
+  for (const entry of history || []) {
+    if (!entry.tx_hash) continue;
+    txhashHeightCache[entry.tx_hash] = entry.height;
+
+    const tx = await mainClient.blockchainTransaction_get(entry.tx_hash, true);
+    for (const output of tx?.vout || []) {
+      const nameOp = output?.scriptPubKey?.nameOp;
+      if (!nameOp) continue;
+
+      operations.push({
+        txid: entry.tx_hash,
+        vout: output.n,
+        height: entry.height,
+        op: nameOp.op,
+        name: nameOp.name,
+        value: nameOp.value,
+        address: output.scriptPubKey.address ?? output.scriptPubKey.addresses?.[0],
+      });
+    }
+  }
+
+  return sortNameOperations(operations);
+};
+
+/**
+ * Which operation currently holds a name, over the existing connection.
+ *
+ * Null means the name has no operations at all. Whether a name that does have a history is still
+ * held or has expired and become available again is the node's call, not ours - see
+ * utils/nameState.ts.
+ */
+export const nameShow = async function (name: string): Promise<NameState | null> {
+  return readNameState(await getNameOperations(name));
 };
 
 export const getMempoolTransactionsByAddress = async function (address: string): Promise<MempoolTransaction[]> {
@@ -1105,11 +1201,12 @@ export const estimateFees = async function (): Promise<{ fast: number; medium: n
   if (!histogram || histogram?.[0]?.[0] > 1000) return { fast: _fast, medium: _medium, slow: _slow };
 
   // calculating fast fees from mempool:
-  const fast = Math.max(2, calcEstimateFeeFromFeeHistorgam(1, histogram));
+  // the mempool is usually empty here, so the histogram gives 1 sat/vByte - every preset has to
+  // stay at or above the chain's floor to be mineable at all (Doichain/DoiWallet#39)
+  const fast = Math.max(MIN_RELAY_FEE_SAT_PER_VBYTE, calcEstimateFeeFromFeeHistorgam(1, histogram));
   // recalculating medium and slow fees using bitcoincore estimations only like relative weights:
-  // (minimum 1 sat, just for any case)
-  const medium = Math.max(1, Math.round((fast * _medium) / _fast));
-  const slow = Math.max(1, Math.round((fast * _slow) / _fast));
+  const medium = Math.max(MIN_RELAY_FEE_SAT_PER_VBYTE, Math.round((fast * _medium) / _fast));
+  const slow = Math.max(MIN_RELAY_FEE_SAT_PER_VBYTE, Math.round((fast * _slow) / _fast));
   return { fast, medium, slow };
 };
 
@@ -1123,8 +1220,14 @@ export const estimateFee = async function (numberOfBlocks: number): Promise<numb
   if (!mainClient) throw new Error('Electrum client is not connected');
   numberOfBlocks = numberOfBlocks || 1;
   const coinUnitsPerKilobyte = await mainClient.blockchainEstimatefee(numberOfBlocks);
-  if (coinUnitsPerKilobyte === -1) return 1;
-  return Math.round(new BigNumber(coinUnitsPerKilobyte).dividedBy(1024).multipliedBy(100000000).toNumber());
+  // Core's estimator answers -1 on our near-empty chain: it has no fee-paying backlog to learn
+  // from. Falling back to 1 sat/vByte produced fees the miner never accepts (Doichain/DoiWallet#39).
+  if (coinUnitsPerKilobyte === -1) return MIN_RELAY_FEE_SAT_PER_VBYTE;
+  // rounded up, as upstream BlueWallet 8.0.2 does: a fee rounded down can land under the estimate
+  return Math.max(
+    MIN_RELAY_FEE_SAT_PER_VBYTE,
+    Math.ceil(new BigNumber(coinUnitsPerKilobyte).dividedBy(1024).multipliedBy(100000000).toNumber()),
+  );
 };
 
 export const serverFeatures = async function () {
@@ -1147,26 +1250,37 @@ export const broadcastV2 = async function (hex: string): Promise<string> {
   return mainClient.blockchainTransaction_broadcast(hex);
 };
 
+/** Doichain targets ten minutes per block. */
+const BLOCK_INTERVAL_MINUTES = 10;
+
+/**
+ * A real Doichain block, used only to fill the gap before the first header has arrived and
+ * `latestBlock.height` is still unset. These numbers may drift without anything breaking, but they
+ * have to be Doichain's: this code came with Bitcoin's anchors (height 627,179 at 22 April 2020),
+ * which answered roughly 969,000 while the chain stood near 435,000. Everything derived from it was
+ * nonsense for that moment - a transaction's confirmation count and its displayed time
+ * (Doichain/DoiWallet#41).
+ */
+const ANCHOR_HEIGHT = 432000;
+const ANCHOR_TIMESTAMP = 1789612459; // block 432,000, 17 September 2026 02:34:19 UTC
+
 export const estimateCurrentBlockheight = function (): number {
   if (latestBlock.height) {
     const timeDiff = Math.floor(+new Date() / 1000) - latestBlock.time;
-    const extraBlocks = Math.floor(timeDiff / (9.93 * 60));
+    const extraBlocks = Math.floor(timeDiff / (BLOCK_INTERVAL_MINUTES * 60));
     return latestBlock.height + extraBlocks;
   }
 
-  const baseTs = 1587570465609; // uS
-  const baseHeight = 627179;
-  return Math.floor(baseHeight + (+new Date() - baseTs) / 1000 / 60 / 9.93);
+  const secondsSinceAnchor = Math.floor(+new Date() / 1000) - ANCHOR_TIMESTAMP;
+  return Math.floor(ANCHOR_HEIGHT + secondsSinceAnchor / 60 / BLOCK_INTERVAL_MINUTES);
 };
 
 export const calculateBlockTime = function (height: number): number {
   if (latestBlock.height) {
-    return Math.floor(latestBlock.time + (height - latestBlock.height) * 9.93 * 60);
+    return Math.floor(latestBlock.time + (height - latestBlock.height) * BLOCK_INTERVAL_MINUTES * 60);
   }
 
-  const baseTs = 1585837504; // sec
-  const baseHeight = 624083;
-  return Math.floor(baseTs + (height - baseHeight) * 9.93 * 60);
+  return Math.floor(ANCHOR_TIMESTAMP + (height - ANCHOR_HEIGHT) * BLOCK_INTERVAL_MINUTES * 60);
 };
 
 /**

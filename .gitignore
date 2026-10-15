@@ -68,6 +68,7 @@ ios/fastlane
 release-notes.json
 release-notes.txt
 current-branch.json
+build-time.json
 
 # Ruby / CocoaPods
 **/Pods/
@@ -95,3 +96,9 @@ android/app/.project
 notes.txt
 .cursorrules
 .cursor/rules/frontend-dev-rules.mdc
+
+# local Doichain Core regtest node (scripts/regtest-node.sh)
+.regtest/
+
+# signed artifacts from Studio's Generate Signed App Bundle / APK wizard
+android/app/release/

@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, memo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
-import {Image, Linking, View, ViewStyle, StyleSheet } from 'react-native';
+import { Image, Linking, View, ViewStyle, StyleSheet } from 'react-native';
 import Lnurl from '../class/lnurl';
-import {Transaction } from '../class/wallets/types';
-import { NameOpTransaction, NameOpOutput } from '../types/transaction';
+import { Transaction } from '../class/wallets/types';
+import { NameOpTransaction } from '../types/transaction';
 import TransactionExpiredIcon from '../components/icons/TransactionExpiredIcon';
 import TransactionIncomingIcon from '../components/icons/TransactionIncomingIcon';
 import TransactionOffchainIcon from '../components/icons/TransactionOffchainIcon';
@@ -13,7 +13,7 @@ import TransactionOnchainIcon from '../components/icons/TransactionOnchainIcon';
 import TransactionOutgoingIcon from '../components/icons/TransactionOutgoingIcon';
 import TransactionPendingIcon from '../components/icons/TransactionPendingIcon';
 import loc, { formatBalanceWithoutSuffix, transactionTimeToReadable } from '../loc';
-import { DoichainUnit } from "../models/doichainUnits";
+import { DoichainUnit } from '../models/doichainUnits';
 import { useSettings } from '../hooks/context/useSettings';
 import ListItem from './ListItem';
 import { useTheme } from './themes';
@@ -30,6 +30,11 @@ import HighlightedText from './HighlightedText';
 import { getIPFSImageUrl } from '../utils/ipfs';
 
 const styles = StyleSheet.create({
+  nameOpImage: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+  },
   subtitle: {
     color: 'colors.foregroundColor',
     fontSize: 13,
@@ -54,11 +59,8 @@ interface TransactionListItemProps {
 
 type NavigationProps = NativeStackNavigationProp<DetailViewStackParamList>;
 
-
 export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
-
   ({ item, itemPriceUnit = DoichainUnit.DOI, walletID, searchQuery, style, renderHighlightedText, onPress: customOnPress }) => {
-
     const [subtitleNumberOfLines, setSubtitleNumberOfLines] = useState(1);
     const { colors } = useTheme();
     const { navigate } = useExtendedNavigation<NavigationProps>();
@@ -103,14 +105,17 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
       let sub = '';
       // Check for nameOp with IPFS URL
       for (const output of item.outputs || []) {
-        if (output?.scriptPubKey?.nameOp) {
-          sub = `[${output.scriptPubKey.nameOp.name}] `;
+        const nameOp = output?.scriptPubKey?.nameOp;
+        if (nameOp) {
+          // A name_new only commits to a hash and carries no name at all, so printing nameOp.name
+          // unchecked put the literal "undefined" in the transaction list. Name the operation then.
+          sub = `[${nameOp.name ?? nameOp.op}] `;
           break;
         }
       }
       sub += Number(item.confirmations) < 7 ? loc.formatString(loc.transactions.list_conf, { number: item.confirmations }) : '';
       if (sub !== '') sub += ' ';
-      
+
       sub += txMemo;
       if (item.memo) sub += item.memo;
       return sub || undefined;
@@ -119,8 +124,6 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
     const formattedAmount = useMemo(() => {
       return formatBalanceWithoutSuffix(item.value && item.value, itemPriceUnit, true).toString();
     }, [item.value, itemPriceUnit]);
-
-   
 
     const rowTitle = useMemo(() => {
       if (item.type === 'user_invoice' || item.type === 'payment_request') {
@@ -184,7 +187,7 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
     useEffect(() => {
       const fetchIPFSImage = async () => {
         if (!item.outputs) return;
-        
+
         for (const output of item.outputs) {
           const scriptPubKey = output?.scriptPubKey;
           if (scriptPubKey?.nameOp?.value?.startsWith('ipfs://')) {
@@ -237,7 +240,7 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
           icon: (
             <Image
               source={{ uri: ipfsImageUrl }}
-              style={{ width: 32, height: 32, borderRadius: 16 }}
+              style={styles.nameOpImage}
               onError={() => setImageError(new Error('Failed to load image'))}
             />
           ),
@@ -311,7 +314,6 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
       const unitSuffix = itemPriceUnit === DoichainUnit.DOI || itemPriceUnit === DoichainUnit.SWARTZ ? ` ${itemPriceUnit}` : ' ';
       return `${formattedAmount}${unitSuffix}`;
     }, [formattedAmount, itemPriceUnit]);
-
 
     useEffect(() => {
       setSubtitleNumberOfLines(1);

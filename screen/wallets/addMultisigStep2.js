@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import {
   ActivityIndicator,
@@ -9,7 +9,6 @@ import {
   LayoutAnimation,
   Platform,
   StyleSheet,
-  Switch,
   Text,
   TouchableOpacity,
   View,
@@ -30,7 +29,6 @@ import prompt from '../../helpers/prompt';
 import loc from '../../loc';
 import { useStorage } from '../../hooks/context/useStorage';
 import { useSettings } from '../../hooks/context/useSettings';
-import { scanQrHelper } from '../../helpers/scan-qr';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import ToolTipMenu from '../../components/TooltipMenu';
 import { CommonToolTipActions } from '../../typings/CommonToolTipActions';
@@ -485,6 +483,13 @@ const WalletsAddMultisigStep2 = () => {
     setImportText('');
     setAskPassphrase(false);
   }, [askPassphrase, cosigners, importText, tryUsingXpub]);
+
+  // The menu on the mnemonics modal toggles this. Its actions were never defined, so rendering
+  // the modal threw "toolTipActions is not defined"; ViewEditMultisigCosigners builds the same
+  // menu the same way.
+  const toolTipActions = useMemo(() => {
+    return [{ ...CommonToolTipActions.Passphrase, menuState: askPassphrase }];
+  }, [askPassphrase]);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {

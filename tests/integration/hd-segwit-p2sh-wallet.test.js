@@ -179,9 +179,9 @@ it('Segwit HD (BIP49) can fetch balance with many used addresses in hierarchy', 
 
   await hd.fetchUtxo();
   assert.ok(hd._utxo.length === 0);
-  //assert.ok(hd._utxo[0].txid);
-  //assert.ok(hd._utxo[0].vout === 0);
-  //assert.ok(hd._utxo[0].value);
+  // assert.ok(hd._utxo[0].txid);
+  // assert.ok(hd._utxo[0].vout === 0);
+  // assert.ok(hd._utxo[0].value);
 
   await hd.fetchTransactions();
   assert.strictEqual(hd.getTransactions().length, 0);

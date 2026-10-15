@@ -1,4 +1,3 @@
-
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamList';
@@ -21,7 +20,6 @@ const styles = StyleSheet.create({
   },
 });
 
-type NavigationProps = NavigationProp<DetailViewStackParamList, 'GeneralSettings'>;
 
 const GeneralSettings: React.FC = () => {
   const { wallets } = useStorage();

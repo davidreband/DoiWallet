@@ -34,8 +34,7 @@ import { unlockWithBiometrics, useBiometrics } from '../../hooks/useBiometrics';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import loc, { formatBalanceWithoutSuffix } from '../../loc';
 
-import { DoichainUnit, Chain } from "../../models/doichainUnits";
-import { useSettings } from '../../hooks/context/useSettings';
+import { DoichainUnit, Chain } from '../../models/doichainUnits';
 import { useStorage } from '../../hooks/context/useStorage';
 import { useFocusEffect, useRoute, RouteProp, usePreventRemove } from '@react-navigation/native';
 import { LightningTransaction, Transaction, TWallet } from '../../class/wallets/types';
@@ -102,7 +101,7 @@ const WalletDetails: React.FC = () => {
   const presentWalletHasBalanceAlert = useCallback(async () => {
     triggerHapticFeedback(HapticFeedbackTypes.NotificationWarning);
     try {
-      const balance = formatBalanceWithoutSuffix(wallet.getBalance(), DoichainUnit.SWARTZ , true);
+      const balance = formatBalanceWithoutSuffix(wallet.getBalance(), DoichainUnit.SWARTZ, true);
       const walletBalanceConfirmation = await prompt(
         loc.wallets.details_delete_wallet,
         loc.formatString(loc.wallets.details_del_wb_q, { balance }),
@@ -491,8 +490,6 @@ const WalletDetails: React.FC = () => {
                   <BlueText>{wallet.howManySignaturesCanWeMake()}</BlueText>
                 </>
               )}
-
-             
 
               {wallet.type === HDAezeedWallet.type && (
                 <>

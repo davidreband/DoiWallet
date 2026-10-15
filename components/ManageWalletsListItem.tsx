@@ -243,8 +243,8 @@ const ManageWalletsListItem: React.FC<ManageWalletsListItemProps> = ({
     try {
       const w = state.wallets.find(wallet => wallet.getTransactions()?.some((tx: ExtendedTransaction) => tx.hash === item.data.hash));
 
-
-      const walletID = w ? w.getID() : '';DoichainUnit.DOI
+      const walletID = w ? w.getID() : '';
+      DoichainUnit.DOI;
 
       const transactionStyle = {
         borderLeftWidth: 2,
@@ -254,7 +254,6 @@ const ManageWalletsListItem: React.FC<ManageWalletsListItemProps> = ({
       };
 
       return (
-
         <Animated.View
           style={{
             transform: [{ scale: scaleValue }],
@@ -273,13 +272,11 @@ const ManageWalletsListItem: React.FC<ManageWalletsListItemProps> = ({
             style={transactionStyle}
           />
         </Animated.View>
-
       );
     } catch (e) {
       console.warn('Error rendering transaction item:', e);
       return null;
     }
-
   } else if (item.type === ItemType.AddressSection) {
     const wallet = state.wallets.find(w => w.getID() === item.data.walletID);
     if (!wallet) return null;

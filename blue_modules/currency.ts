@@ -100,7 +100,6 @@ async function _restoreSavedPreferredFiatCurrencyFromStorage(): Promise<void> {
   }
 }
   */
-let suppressExchangeRateAlert = false;
 
 async function updateExchangeRate(): Promise<void> {
   if (skipUpdateExchangeRate) return;
@@ -118,7 +117,7 @@ async function updateExchangeRate(): Promise<void> {
   console.log('updating exchange rate...');
 
   try {
-    const rate = await getFiatRate(preferredFiatCurrency.endPointKey);     
+    const rate = await getFiatRate(preferredFiatCurrency.endPointKey);
     exchangeRates[LAST_UPDATED] = Date.now();
     exchangeRates[BTC_PREFIX + preferredFiatCurrency.endPointKey] = rate;
     exchangeRates.LAST_UPDATED_ERROR = false;

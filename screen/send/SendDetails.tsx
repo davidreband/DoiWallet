@@ -1,6 +1,3 @@
-
-import { TextDecoder } from 'text-decoding';
-import bs58check from 'bs58check';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
@@ -9,11 +6,11 @@ import { Icon } from '@rneui/themed';
 import assert from 'assert';
 import BigNumber from 'bignumber.js';
 import { TOptions } from 'bip21';
-import * as bitcoin from "@doichain/doichainjs-lib";
+import * as bitcoin from '@doichain/doichainjs-lib';
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { VERSION } from '../../blue_modules/network.js';
-//import * as Progress from 'react-native-progress';
+import { DOICHAIN, MIN_NAME_AMOUNT_SAT, VERSION } from '../../blue_modules/network.js';
+// import * as Progress from 'react-native-progress';
 import {
   ActivityIndicator,
   Alert,
@@ -61,12 +58,12 @@ import { useStorage } from '../../hooks/context/useStorage';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import { useKeyboard } from '../../hooks/useKeyboard';
 import loc, { formatBalance, formatBalanceWithoutSuffix } from '../../loc';
-import { DoichainUnit, Chain } from "../../models/doichainUnits";
+import { DoichainUnit, Chain } from '../../models/doichainUnits';
 import { TTXMetadata } from '../../class/blue-app';
-import { DOICHAIN } from '../../blue_modules/network.js';
 import NetworkTransactionFees, { NetworkTransactionFee } from '../../models/networkTransactionFees';
 import { SendDetailsStackParamList } from '../../navigation/SendDetailsStackParamList';
 import { CommonToolTipActions, ToolTipAction } from '../../typings/CommonToolTipActions';
+import { decodeNameBytes } from '../../utils/getNameOPStackScript';
 import ActionSheet from '../ActionSheet';
 
 interface IPaymentDestinations {
@@ -92,7 +89,6 @@ const SendDetails = () => {
   const selectedDataProcessor = useRef<ToolTipAction | undefined>();
   const setParams = navigation.setParams;
   const route = useRoute<RouteProps>();
-  const name = route.name;
   const feeUnit = route.params?.feeUnit ?? DoichainUnit.DOI;
   const amountUnit = route.params?.amountUnit ?? DoichainUnit.DOI;
   const frozenBalance = route.params?.frozenBalance ?? 0;
@@ -103,7 +99,6 @@ const SendDetails = () => {
   const routeParams = route.params;
   const scrollView = useRef<FlatList<any>>(null);
   const scrollIndex = useRef(0);
-  const beforeRemoveListenerRef = useRef<((e: { preventDefault: () => void; data: { action: any } }) => () => () => void) | null>(null);
   const { colors } = useTheme();
 
   // state
@@ -114,16 +109,13 @@ const SendDetails = () => {
   const { isVisible } = useKeyboard();
 
   const [addresses, setAddresses] = useState<IPaymentDestinations[]>([{ address: '', key: String(Math.random()), unit: amountUnit }]);
-  const [units, setUnits] = useState<DoichainUnit[]>([]);
 
   const [networkTransactionFees, setNetworkTransactionFees] = useState(new NetworkTransactionFee(3, 2, 1));
   const [networkTransactionFeesIsLoading, setNetworkTransactionFeesIsLoading] = useState(false);
   const [customFee, setCustomFee] = useState<string | null>(null);
   const [feePrecalc, setFeePrecalc] = useState<IFee>({ current: null, slowFee: null, mediumFee: null, fastestFee: null });
-  
-  const [utxo, setUtxo] = useState<CreateTransactionUtxo[] | null>(null);
-  
-  
+
+
   const [changeAddress, setChangeAddress] = useState<string | null>(null);
   const [dumb, setDumb] = useState(false);
   const { isEditable } = routeParams;
@@ -147,19 +139,20 @@ const SendDetails = () => {
     return initialFee;
   }, [customFee, feePrecalc, networkTransactionFees]);
 
-
   useEffect(() => {
     const data = routeParams?.onBarScanned;
     if (data && !data.toLowerCase().startsWith('doichain:')) {
       navigation.setParams({ onBarScanned: undefined });
       handlePsbtSign();
     }
-  }, [routeParams?.onBarScanned]);
-  
+    // handlePsbtSign is deliberately not listed - see the note at its definition
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routeParams?.onBarScanned, navigation]);
+
   useEffect(() => {
     // decode route params
     const currentAddress = addresses[scrollIndex.current];
-    
+
     if (routeParams.uri && DeeplinkSchemaMatch.isPsbtNameOpTransactions(routeParams.uri)) {
       try {
         const psbt = bitcoin.Psbt.fromBase64(routeParams.uri, { network: DOICHAIN });
@@ -175,32 +168,26 @@ const SendDetails = () => {
             return {
               address: bitcoin.address.fromOutputScript(txout.script, DOICHAIN),
               value: txout.value,
-              index: index,
+              index,
             };
           } else {
-            throw new Error("Could not get input of #" + index);
+            throw new Error('Could not get input of #' + index);
           }
         });
-        let inputAddress = inputs[0].address;
+        const inputAddress = inputs[0].address;
         const weOwnWallet = wallets.find(w => w.weOwnAddress(inputAddress));
 
         if (weOwnWallet) {
           handlePsbtSign(weOwnWallet);
         } else {
-          throw new Error("No matching wallet found for the provided PSBT input.");
+          throw new Error('No matching wallet found for the provided PSBT input.');
         }
       } catch (error) {
-        console.error("Failed to process PSBT:", error);
+        console.error('Failed to process PSBT:', error);
       }
-
     } else if (routeParams.uri) {
       try {
-        const { address, amount, memo, payjoinUrl: pjUrl } = DeeplinkSchemaMatch.decodeBitcoinUri(routeParams.uri);
-
-        setUnits(u => {
-          u[scrollIndex.current] = DoichainUnit.DOI; // also resetting current unit to BTC
-          return [...u];
-        });
+        const { address, amount, memo } = DeeplinkSchemaMatch.decodeBitcoinUri(routeParams.uri);
 
         setAddresses(addrs => {
           if (currentAddress) {
@@ -239,14 +226,20 @@ const SendDetails = () => {
       if (routeParams.memo && routeParams.memo?.trim().length > 0) {
         setTransactionMemo(routeParams.memo);
       }
-      setUnits(u => {
-        u[scrollIndex.current] = unit;
-        return [...u];
-      });
     } else if (routeParams.nameOp) {
-      
       const { nameId, nameValue, sendTo } = routeParams.nameOp;
-      setAddresses([{ address: sendTo, key: String(Math.random()) } as IPaymentDestinations]);
+      // A name output always carries the amount locked in the name, and Core refuses anything under
+      // it, so there is nothing for the user to choose here - prefill it instead of leaving the
+      // field empty and letting the transaction fail with "tx-name-greedy" (Doichain/DoiWallet#36).
+      setAddresses([
+        {
+          address: sendTo,
+          amount: String(MIN_NAME_AMOUNT_SAT / 100000000),
+          amountSats: MIN_NAME_AMOUNT_SAT,
+          unit: DoichainUnit.DOI,
+          key: String(Math.random()),
+        } as IPaymentDestinations,
+      ]);
       // Store nameOp data in txMetadata for use in transaction creation
       // Store nameOp data for transaction creation
       const tempTxId = `nameOp-${Date.now()}`;
@@ -255,8 +248,8 @@ const SendDetails = () => {
           memo: transactionMemo,
           nameOp: {
             nameId,
-            nameValue
-          }
+            nameValue,
+          },
         };
         txMetadata[tempTxId] = metadata;
       }
@@ -286,7 +279,6 @@ const SendDetails = () => {
     // this effect only to run once when screen is mounted or params change
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routeParams.uri, routeParams.address, routeParams.addRecipientParams, routeParams.nameOp]);
-  
 
   useEffect(() => {
     // check if we have a suitable wallet
@@ -334,7 +326,6 @@ const SendDetails = () => {
     if (!wallet) return;
 
     // reset other values
-    setUtxo(null);
     setChangeAddress(null);
     setParams({
       utxos: null,
@@ -404,7 +395,6 @@ const SendDetails = () => {
       }
     });
 
-
     for (const opt of options) {
       let flag = false;
       while (true) {
@@ -427,10 +417,10 @@ const SendDetails = () => {
     if (JSON.stringify(feePrecalc) !== JSON.stringify(newFeePrecalc)) {
       setFeePrecalc(newFeePrecalc);
     }
-  
-   if (frozenBalance !== undefined) {
-    setParams({ frozenBalance: frozen  });
-  }
+
+    if (frozenBalance !== undefined) {
+      setParams({ frozenBalance: frozen });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet, networkTransactionFees, utxos, addresses, feeRate, dumb]);
 
@@ -459,7 +449,7 @@ const SendDetails = () => {
       // otherwise, lets call widely-used getChangeAddressAsync()
       try {
         change = await Promise.race([sleep(2000), wallet?.getChangeAddressAsync()]);
-      } catch (_) { }
+      } catch (_) {}
 
       if (!change) {
         // either sleep expired or getChangeAddressAsync threw an exception
@@ -500,14 +490,13 @@ const SendDetails = () => {
 
       const dataWithoutSchema = data.replace('doichain:', '').replace('DOICHAIN:', '');
       if (wallet.isAddressValid(dataWithoutSchema) || cl.isPaymentCodeValid(dataWithoutSchema)) {
-        
         setAddresses(addrs => {
           addrs[scrollIndex.current].address = dataWithoutSchema;
           return [...addrs];
         });
         setIsLoading(false);
         setTimeout(() => scrollView.current?.scrollToIndex({ index: currentIndex, animated: false }), 50);
-        
+
         return;
       }
 
@@ -714,17 +703,17 @@ const SendDetails = () => {
     }
 
     assert(tx, 'createTRansaction failed');
-    
-      // Store transaction metadata including nameOp if it exists
-      const metadata: TTXMetadata[string] = {
-        memo: transactionMemo,
-      };
-      // If this is a nameOp transaction, include the nameOp data
-      if(routeParams.nameOp) {
+
+    // Store transaction metadata including nameOp if it exists
+    const metadata: TTXMetadata[string] = {
+      memo: transactionMemo,
+    };
+    // If this is a nameOp transaction, include the nameOp data
+    if (routeParams.nameOp) {
       const { nameId, nameValue } = routeParams.nameOp;
       metadata.nameOp = {
         nameId,
-        nameValue
+        nameValue,
       };
     }
 
@@ -738,8 +727,8 @@ const SendDetails = () => {
       // (ez can be the case for single-address wallet when doing self-payment for consolidation)
       recipients = outputs;
     }
-    
-     navigation.navigate('Confirm', {
+
+    navigation.navigate('Confirm', {
       fee: new BigNumber(fee).dividedBy(100000000).toNumber(),
       memo: transactionMemo,
       walletID: wallet.getID(),
@@ -749,7 +738,7 @@ const SendDetails = () => {
       satoshiPerByte: requestedSatPerByte,
       payjoinUrl,
       psbt,
-    }); 
+    });
     setIsLoading(false);
   };
 
@@ -940,13 +929,20 @@ const SendDetails = () => {
     [_importTransactionMultisig],
   );
 
+  // This wants to be a useCallback: as a plain function it is a new reference on every render, so the
+  // effect further down that both calls it and lists it in its dependencies runs on every render too -
+  // which is why that effect carries a hand-written guard commented "Verhindert Endlosschleife".
+  // Memoising it is the fix, but it is 95 lines of the signing path closing over the wallet and the
+  // route params, and a dependency array wrong by one entry signs with stale state. That is a change
+  // to make with a device to test it on, not in a lint sweep.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handlePsbtSign = async (weOwnWallet?: string | undefined | TWallet) => {
     const actWallet = wallet?.type !== undefined ? wallet : weOwnWallet;
     if (!actWallet || typeof actWallet === 'string') return; // Early return if no wallet is available
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 100)); // sleep for animations     
+    await new Promise(resolve => setTimeout(resolve, 100)); // sleep for animations
 
-    const scannedData = routeParams.uri || routeParams.onBarScanned;  
+    const scannedData = routeParams.uri || routeParams.onBarScanned;
     if (!scannedData) return setIsLoading(false);
 
     let tx;
@@ -954,69 +950,74 @@ const SendDetails = () => {
     let updatedTxOutputs;
     // we need to remove change address from recipients, so that Confirm screen show more accurate info
     const changeAddresses: string[] = [];
-    // @ts-ignore hacky    
+    // @ts-ignore hacky
     for (let c = 0; c < actWallet.next_free_address_index + actWallet.gap_limit; c++) {
-      // @ts-ignore hacky 
+      // @ts-ignore hacky
       changeAddresses.push(actWallet._getInternalAddressByIndex(c));
     }
 
     // Liste für die externen Adressen (falls relevant)
     const externalAddresses: string[] = [];
     // Externe Adressen generieren (optional)
-    // @ts-ignore hacky 
+    // @ts-ignore hacky
     for (let c = 0; c < actWallet.next_free_address_index + actWallet.gap_limit; c++) {
-      // @ts-ignore hacky 
+      // @ts-ignore hacky
       externalAddresses.push(actWallet._getExternalAddressByIndex(c));
     }
 
     try {
       psbt = bitcoin.Psbt.fromBase64(scannedData, { network: DOICHAIN });
-      console.log("_____psbt.inputs", psbt.data.inputs);
+      console.log('_____psbt.inputs', psbt.data.inputs);
+      let hasNameOutput = false;
       updatedTxOutputs = psbt.txOutputs.map((output, index) => {
         const chunks = bitcoin.script.decompile(output.script);
-        let address = output.address; //TODO check if this is segwit if so make an error message
-        if (chunks && chunks[0] === 90) { //make this const and support also name_new, name_update, name_firstupdate
-          psbt.setVersion(VERSION);
+        const address = output.address; // TODO check if this is segwit if so make an error message
+        if (chunks && chunks[0] === 90) {
+          // make this const and support also name_new, name_update, name_firstupdate
+          hasNameOutput = true;
           try {
-            let isIncluded = changeAddresses.includes(String(address)) || externalAddresses.includes(String(address)) ? true : false;
-            const utf16Decoder = new TextDecoder('ascii');
-            //const utf16Decoder = new TextDecoder('utf-8');
-            const nameId = utf16Decoder.decode(chunks[1]);
-            //const nameId = utf16Decoder.decode(Buffer.from(chunks[1].toString(), 'hex'));
-            //const nameValue = utf16Decoder.decode(Buffer.from(chunks[2].toString(), 'hex'));
-            const nameValue = utf16Decoder.decode(chunks[2]);
-           
+            const isIncluded = !!(changeAddresses.includes(String(address)) || externalAddresses.includes(String(address)));
+            // Names are UTF-8 on the chain. Decoding them as ASCII garbled every non-ASCII name on
+            // the very screen where the user confirms what they are signing (Doichain/DoiWallet#36).
+            const nameId = decodeNameBytes(chunks[1]);
+            const nameValue = decodeNameBytes(chunks[2]);
+
             return { ...output, nameId, nameValue, isIncluded };
           } catch (e) {
             console.log('error during decode', e);
             return output; // Return the original output if decoding fails
           }
         }
-        let isIncluded = changeAddresses.includes(String(address)) || externalAddresses.includes(String(address)) ? true : false;
-        return { ...output, isIncluded };// Return the original output if address is already set
+        const isIncluded = !!(changeAddresses.includes(String(address)) || externalAddresses.includes(String(address)));
+        return { ...output, isIncluded }; // Return the original output if address is already set
       });
 
-      console.log("_updatedTxOutputs", updatedTxOutputs)
-      const retval = (actWallet as MultisigHDWallet).cosignPsbt(psbt)
-      tx = retval.tx
-      psbt = retval.psbt
+      console.log('_updatedTxOutputs', updatedTxOutputs);
+      // A name transaction must already carry version 0x7100 when it reaches us. Setting it here
+      // would invalidate the buyer's signature on a names-on-chain purchase, and doichainjs-lib
+      // refuses to change a transaction that already has signatures (Doichain/DoiWallet#38).
+      if (hasNameOutput && psbt.version !== VERSION) {
+        throw new Error(`A name transaction needs version 0x${VERSION.toString(16)}, this one has 0x${psbt.version.toString(16)}`);
+      }
+      const retval = (actWallet as MultisigHDWallet).cosignPsbt(psbt);
+      tx = retval.tx;
+      psbt = retval.psbt;
     } catch (e: any) {
-      console.log("___message__3", e.message)
+      console.log('___message__3', e.message);
       presentAlert({ title: loc.errors.error, message: e.message });
       return;
     } finally {
-      //setIsLoading(false);
+      // setIsLoading(false);
     }
 
     // if ((!tx && !psbt )|| !actWallet) return setIsLoading(false);
-    //if a nameOp is stored to a changeAddress our recipient is not shown!
+    // if a nameOp is stored to a changeAddress our recipient is not shown!
     // let recipients = psbt.txOutputs.filter(({ address }) => !changeAddresses.includes(String(address)));
-    let recipients = updatedTxOutputs.filter(({ address }) => true);
+    const recipients = updatedTxOutputs.filter(({ address }) => true);
 
-
-    //setProgress(false);
+    // setProgress(false);
     try {
-      //console.log("____psbt__", psbt.getFee())
+      // console.log("____psbt__", psbt.getFee())
       navigation.navigate('CreateTransaction', {
         fee: tx ? new BigNumber(psbt.getFee()).dividedBy(100000000).toNumber() : 0,
         feeSatoshi: tx ? psbt.getFee() : 0,
@@ -1028,7 +1029,7 @@ const SendDetails = () => {
         psbt,
       });
     } catch (e: any) {
-      console.log("___message__2", e.message)
+      console.log('___message__2', e.message);
     }
   };
 
@@ -1062,12 +1063,11 @@ const SendDetails = () => {
       }
     }
     selectedDataProcessor.current = undefined;
-   
-   // Verhindert Endlosschleife
-   if (routeParams.onBarScanned) {
+
+    // Verhindert Endlosschleife
+    if (routeParams.onBarScanned) {
       navigation.setParams({ onBarScanned: undefined });
     }
-   
   }, [
     handlePsbtSign,
     importQrTransactionOnBarScanned,
@@ -1076,6 +1076,7 @@ const SendDetails = () => {
     setParams,
     processAddressData,
     _importTransactionMultisig,
+    navigation,
   ]);
 
   const handleAddRecipient = useCallback(() => {
@@ -1110,7 +1111,7 @@ const SendDetails = () => {
     Alert.alert(loc.send.details_recipients_title, loc.send.details_add_recc_rem_all_alert_description, [
       {
         text: loc._.cancel,
-        onPress: () => { },
+        onPress: () => {},
         style: 'cancel',
       },
       {
@@ -1390,9 +1391,9 @@ const SendDetails = () => {
         {isLoading ? (
           <ActivityIndicator />
         ) : (
-            <View style={styles.buttonPsbt} >
-              <Button onPress={navigateToQRCodeScanner} disabled={isDisabled} title={loc.send.psbt_sign} testID="PSBT" />
-            </View>
+          <View style={styles.buttonPsbt}>
+            <Button onPress={navigateToQRCodeScanner} disabled={isDisabled} title={loc.send.psbt_sign} testID="PSBT" />
+          </View>
         )}
       </View>
     );
@@ -1448,7 +1449,6 @@ const SendDetails = () => {
   const renderBitcoinTransactionInfoFields = (params: { item: IPaymentDestinations; index: number }) => {
     const { item, index } = params;
     return (
-
       <View style={[styles.transactionItemContainer, { width: dimensions.width }]} testID={'Transaction' + index}>
         <View style={styles.amountInputContainer}>
           <AmountInput.AmountInput
@@ -1504,7 +1504,6 @@ const SendDetails = () => {
             inputAccessoryViewID={InputAccessoryAllFundsAccessoryViewID}
           />
         </View>
-
 
         {frozenBalance > 0 && (
           <TouchableOpacity accessibilityRole="button" style={styles.frozenContainer} onPress={handleCoinControl}>
@@ -1653,7 +1652,7 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     minHeight: 44,
   },
-  buttonPsbt: {   
+  buttonPsbt: {
     marginTop: 20,
   },
   select: {

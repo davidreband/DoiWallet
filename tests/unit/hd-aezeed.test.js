@@ -61,15 +61,15 @@ describe('HDAezeedWallet', () => {
     );
 
     let address = aezeed._getExternalAddressByIndex(0);
-    assert.strictEqual(address, "dc1qdjj7lhj9lnjye7xq3dzv3r4z0cta294xncuuxx");
+    assert.strictEqual(address, 'dc1qdjj7lhj9lnjye7xq3dzv3r4z0cta294xncuuxx');
     assert.ok(aezeed.getAllExternalAddresses().includes('dc1qdjj7lhj9lnjye7xq3dzv3r4z0cta294xncuuxx'));
 
     address = aezeed._getExternalAddressByIndex(1);
-    assert.strictEqual(address, "dc1qswr3s4fylskqn9vemef8l28qukshuags9y2epv");
+    assert.strictEqual(address, 'dc1qswr3s4fylskqn9vemef8l28qukshuags9y2epv');
     assert.ok(aezeed.getAllExternalAddresses().includes('dc1qdjj7lhj9lnjye7xq3dzv3r4z0cta294xncuuxx'));
 
     address = aezeed._getInternalAddressByIndex(0);
-    assert.strictEqual(address, "dc1qzyjq8sjj56n8v9fgw5klsc8sq8yuy0jxchv4z5");
+    assert.strictEqual(address, 'dc1qzyjq8sjj56n8v9fgw5klsc8sq8yuy0jxchv4z5');
 
     let wif = aezeed._getExternalWIFByIndex(0);
     assert.strictEqual(wif, 'Tf3YRDb4bWqmMu7beAQUhqJEMmGcQB5EKtZh3LEwW8akQm6yk2FW');
@@ -112,7 +112,7 @@ describe('HDAezeedWallet', () => {
     );
 
     const address = aezeed._getExternalAddressByIndex(0);
-    assert.strictEqual(address, "dc1qdjj7lhj9lnjye7xq3dzv3r4z0cta294xncuuxx");
+    assert.strictEqual(address, 'dc1qdjj7lhj9lnjye7xq3dzv3r4z0cta294xncuuxx');
     assert.ok(aezeed.getAllExternalAddresses().includes('dc1qdjj7lhj9lnjye7xq3dzv3r4z0cta294xncuuxx'));
 
     const watchOnly = new WatchOnlyWallet();

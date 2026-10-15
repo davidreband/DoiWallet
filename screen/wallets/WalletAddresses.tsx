@@ -11,10 +11,9 @@ import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import SegmentedControl from '../../components/SegmentControl';
 import loc from '../../loc';
 
-import { DoichainUnit} from '../../models/doichainUnits';
+import { DoichainUnit } from '../../models/doichainUnits';
 import { useSettings } from '../../hooks/context/useSettings';
 import { disableScreenProtect, enableScreenProtect } from '../../helpers/screenProtect';
-
 
 export const TABS = {
   EXTERNAL: 'receive',

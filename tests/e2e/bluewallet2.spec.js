@@ -5,7 +5,6 @@ import {
   extractTextFromElementById,
   getSwitchValue,
   hashIt,
-  helperImportWallet,
   sleep,
   waitForText,
   tapAndTapAgainIfElementIsNotVisible,

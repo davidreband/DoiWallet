@@ -15,8 +15,8 @@ describe('Watch only wallet', () => {
       w.setSecret(secret);
       assert.ok(w.valid());
       assert.deepStrictEqual(
-        w.getAllExternalAddresses().map((elem) => elem.toUpperCase()),
-        [secret.toUpperCase()]
+        w.getAllExternalAddresses().map(elem => elem.toUpperCase()),
+        [secret.toUpperCase()],
       );
       assert.strictEqual(w.isHd(), false);
       assert.ok(!w.useWithHardwareWalletEnabled());
@@ -85,7 +85,7 @@ describe('Watch only wallet', () => {
 
     assert.strictEqual(
       psbt.toBase64(),
-      'cHNidP8BAFICAAAAAZaLfDcOPs2Jk1UefwZZOzPCdTJF+ugLOsYZYagnIEPQAQAAAAAAAACAASgDAAAAAAAAFgAUR8BR1OIHfj61MvsaAvcEO5M6KV4AAAAAAAEBH+gDAAAAAAAAFgAUR8BR1OIHfj61MvsaAvcEO5M6KV4iBgMu6FAS11Wjae/YYBZmzRBne+nTi20rKsXzzLGKFJ33cBgAAAAAVAAAgAAAAIAAAACAAAAAAAAAAAAAAA==',
+      'cHNidP8BAFICAAAAAZaLfDcOPs2Jk1UefwZZOzPCdTJF+ugLOsYZYagnIEPQAQAAAAAAAACAAXgDAAAAAAAAFgAUR8BR1OIHfj61MvsaAvcEO5M6KV4AAAAAAAEBH+gDAAAAAAAAFgAUR8BR1OIHfj61MvsaAvcEO5M6KV4iBgMu6FAS11Wjae/YYBZmzRBne+nTi20rKsXzzLGKFJ33cBgAAAAAVAAAgAAAAIAAAACAAAAAAAAAAAAAAA==',
     );
   });
 
@@ -110,7 +110,7 @@ describe('Watch only wallet', () => {
 
     assert.strictEqual(
       psbt.toBase64(),
-      'cHNidP8BAFICAAAAAfTUAYKfU/lPbuIV0AsoBIURL2tAz7iaObvEMcXQBW94AAAAAAAAAACAAdDPAwAAAAAAFgAUkWKMzciJD1FK9KPE6TEi3cs8Yu4AAAAAAAEBH5DQAwAAAAAAFgAUkWKMzciJD1FK9KPE6TEi3cs8Yu4iBgL+6Gy4EBoVN8VZhGeU9G4fRGBIPaV9yvUC+JH8R0qeqBgAAAAAVAAAgAAAAIAAAACAAQAAAAAAAAAAAA==',
+      'cHNidP8BAFICAAAAAfTUAYKfU/lPbuIV0AsoBIURL2tAz7iaObvEMcXQBW94AAAAAAAAAACAASDQAwAAAAAAFgAUkWKMzciJD1FK9KPE6TEi3cs8Yu4AAAAAAAEBH5DQAwAAAAAAFgAUkWKMzciJD1FK9KPE6TEi3cs8Yu4iBgL+6Gy4EBoVN8VZhGeU9G4fRGBIPaV9yvUC+JH8R0qeqBgAAAAAVAAAgAAAAIAAAACAAQAAAAAAAAAAAA==',
     );
   });
 
@@ -133,10 +133,10 @@ describe('Watch only wallet', () => {
     // hardcoding utxo so we wont have to call w.fetchUtxo() and w.getUtxo()
 
     const { psbt } = w.createTransaction(utxos, [{ address: 'dc1qj93genwg3y84zjh550zwjvfzmh9ncchww8fmxm', value: 5000 }], 1, changeAddress);
-  
+
     assert.strictEqual(
       psbt.toBase64(),
-      'cHNidP8BAHECAAAAAYBbjCRXw4r66Ly1aI/SCvis+CDQsCdQej1BhCoDnjt/AAAAAAAAAACAAogTAAAAAAAAFgAUkWKMzciJD1FK9KPE6TEi3cs8Yu62OQAAAAAAABYAFJFijM3IiQ9RSvSjxOkxIt3LPGLuAAAAAAABAR8gTgAAAAAAABYAFJFijM3IiQ9RSvSjxOkxIt3LPGLuIgYC/uhsuBAaFTfFWYRnlPRuH0RgSD2lfcr1AviR/EdKnqgYAAAAAFQAAIAAAACAAAAAgAEAAAAAAAAAAAAiAgL+6Gy4EBoVN8VZhGeU9G4fRGBIPaV9yvUC+JH8R0qeqBgAAAAAVAAAgAAAAIAAAACAAQAAAAAAAAAA',
+      'cHNidP8BAHECAAAAAYBbjCRXw4r66Ly1aI/SCvis+CDQsCdQej1BhCoDnjt/AAAAAAAAAACAAogTAAAAAAAAFgAUkWKMzciJD1FK9KPE6TEi3cs8Yu4GOgAAAAAAABYAFJFijM3IiQ9RSvSjxOkxIt3LPGLuAAAAAAABAR8gTgAAAAAAABYAFJFijM3IiQ9RSvSjxOkxIt3LPGLuIgYC/uhsuBAaFTfFWYRnlPRuH0RgSD2lfcr1AviR/EdKnqgYAAAAAFQAAIAAAACAAAAAgAEAAAAAAAAAAAAiAgL+6Gy4EBoVN8VZhGeU9G4fRGBIPaV9yvUC+JH8R0qeqBgAAAAAVAAAgAAAAIAAAACAAQAAAAAAAAAA',
     );
   });
 

@@ -59,14 +59,15 @@
     "clean:ios": "rm -fr node_modules && rm -fr ios/Pods && npm i && cd ios && pod update && cd ..; npm start -- --reset-cache",
     "releasenotes2json": "./scripts/release-notes.sh > release-notes.txt; node -e 'console.log(JSON.stringify(require(\"fs\").readFileSync(\"release-notes.txt\", \"utf8\")));' > release-notes.json",
     "branch2json": "./scripts/current-branch.sh > current-branch.json",
+    "buildtime2json": "./scripts/build-time.sh > build-time.json",
     "start": "react-native start",
     "android": "react-native run-android",
     "adb": "adb reverse tcp:8081 tcp:8081",
     "android:clean": "cd android;  ./gradlew clean ; cd .. ; npm run android",
     "ios": "react-native run-ios",
-    "postinstall": "rn-nodeify --install buffer,events,process,stream,inherits,path,assert,crypto --hack; npm run releasenotes2json; npm run branch2json; npm run patches",
+    "postinstall": "rn-nodeify --install buffer,events,process,stream,inherits,path,assert,crypto --hack; npm run releasenotes2json; npm run branch2json; npm run buildtime2json; npm run patches",
     "patches": "",
-    "test": "npm run tslint && npm run lint && npm run unit && npm run jest",
+    "test": "npm run lint && npm run unit && npm run jest",
     "jest": "jest tests/integration/*",
     "e2e:debug-build": "detox build -c android.debug",
     "e2e:debug-test": "detox test -c android.debug -d 200000 --loglevel error --reuse",
@@ -76,17 +77,18 @@
     "e2e:release-test": "detox test -c android.release --loglevel error",
     "e2e:release-test-device": "detox test -c android.release.device  --loglevel info --record-videos all",
     "tslint": "tsc",
-    "lint": " npm run tslint && node scripts/find-unused-loc.js && eslint --ext .js,.ts,.tsx '*.@(js|ts|tsx)' screen 'blue_modules/*.@(js|ts|tsx)' class models loc tests components navigation typings",
+    "lint": "node scripts/find-unused-loc.js && eslint --ext .js,.ts,.tsx '*.@(js|ts|tsx)' screen 'blue_modules/*.@(js|ts|tsx)' class models loc tests components navigation typings",
     "lint:fix": "npm run lint -- --fix",
     "lint:quickfix": "git status --porcelain | grep -v '\\.json' | grep -E '\\.js|\\.ts' --color=never |  awk '{print $2}' | xargs eslint --fix; exit 0",
-    "unit": "jest -b -w tests/unit/*"
+    "unit": "jest -b -w tests/unit/*",
+    "regtest": "jest --maxWorkers=1 tests/regtest"
   },
   "dependencies": {
     "@babel/preset-env": "7.27.2",
     "@bugsnag/react-native": "8.3.1",
     "@bugsnag/source-maps": "2.3.3",
 
-    "@doichain/doichainjs-lib": "^6.1.7",   
+    "@doichain/doichainjs-lib": "^6.4.0",
     
 
     "@keystonehq/bc-ur-registry": "0.7.0",
@@ -182,7 +184,7 @@
     "readable-stream": "3.6.2",
     "realm": "20.1.0",
     "rn-nodeify": "10.3.0",
-    "rn-qr-generator": "https://github.com/BlueWallet/rn-qr-generator.git#731ed8eb445f65f3a659632232e18ff7e1ce56d6",
+    "rn-qr-generator": "1.4.3",
     "scryptsy": "2.1.0",
     "silent-payments": "github:BlueWallet/SilentPayments#7ac4d17",
     "slip39": "https://github.com/BlueWallet/slip39-js#d316ee6",

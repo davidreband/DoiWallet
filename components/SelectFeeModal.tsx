@@ -1,11 +1,12 @@
 import React, { useState, useRef, forwardRef, useImperativeHandle, useMemo, useCallback } from 'react';
 import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import BottomModal, { BottomModalHandle } from './BottomModal';
+import presentAlert from './Alert';
 import { useTheme } from './themes';
 import loc, { formatBalance } from '../loc';
-import { DoichainUnit} from '../models/doichainUnits';
+import { MIN_RELAY_FEE_SAT_PER_VBYTE } from '../blue_modules/network.js';
+import { DoichainUnit } from '../models/doichainUnits';
 import { IFee } from '../screen/send/SendDetails';
-
 
 interface NetworkTransactionFees {
   fastestFee: number;
@@ -18,7 +19,7 @@ interface SelectFeeModalProps {
   feePrecalc: IFee;
   feeRate: string;
   setCustomFee: (fee: string) => void;
-  
+
   feeUnit: DoichainUnit;
 }
 
@@ -115,7 +116,6 @@ const CustomFeeInput = React.memo<CustomFeeInputProps>(
 );
 
 const SelectFeeModal = forwardRef<BottomModalHandle, SelectFeeModalProps>(
-
   ({ networkTransactionFees, feePrecalc, feeRate, setCustomFee, setFeePrecalc, feeUnit = DoichainUnit.DOI }, ref) => {
     const [customFeeValue, setCustomFeeValue] = useState<string>('');
     const [isCustomFeeFocused, setIsCustomFeeFocused] = useState(false);
@@ -234,10 +234,18 @@ const SelectFeeModal = forwardRef<BottomModalHandle, SelectFeeModalProps>(
 
     const handleCustomFeeSubmit = useCallback(async () => {
       const numericValue = customFeeValue.replace(',', '.');
-      if (numericValue && Number(numericValue) > 0) {
-        setCustomFee(numericValue);
-        await feeModalRef.current?.dismiss();
+      if (!numericValue || Number(numericValue) <= 0) return;
+      // Anything under the chain's floor builds a transaction that relays but is never mined, with
+      // nothing on screen to say so - so refuse it here instead (Doichain/DoiWallet#39).
+      if (Number(numericValue) < MIN_RELAY_FEE_SAT_PER_VBYTE) {
+        presentAlert({
+          title: loc.send.create_fee,
+          message: loc.formatString(loc.send.fee_replace_minvb, { min: MIN_RELAY_FEE_SAT_PER_VBYTE }) as string,
+        });
+        return;
       }
+      setCustomFee(numericValue);
+      await feeModalRef.current?.dismiss();
     }, [customFeeValue, setCustomFee]);
 
     const options = useMemo(
@@ -272,7 +280,9 @@ const SelectFeeModal = forwardRef<BottomModalHandle, SelectFeeModalProps>(
     const handleCustomFeeBlur = () => {
       setIsCustomFeeFocused(false);
       const numericValue = Number(customFeeValue.replace(',', '.'));
-      if (!customFeeValue || numericValue < 1) {
+      // Below the chain's floor the entry is dropped and the fast preset takes over, which is at
+      // or above the floor itself (Doichain/DoiWallet#39).
+      if (!customFeeValue || numericValue < MIN_RELAY_FEE_SAT_PER_VBYTE) {
         setCustomFeeValue('');
         setCustomFee(networkTransactionFees.fastestFee.toString());
       }

@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { I18nManager, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {MultisigHDWallet } from '../class';
+import { MultisigHDWallet } from '../class';
 import WalletGradient from '../class/wallet-gradient';
 import { TWallet } from '../class/wallets/types';
 import loc, { formatBalance, formatBalanceWithoutSuffix } from '../loc';
@@ -29,16 +29,7 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
   unit = DoichainUnit.DOI,
 }) => {
   const { hideBalance } = wallet;
-  const [allowOnchainAddress, setAllowOnchainAddress] = useState(false);
   const { preferredFiatCurrency } = useSettings();
-
-  const verifyIfWalletAllowsOnchainAddress = useCallback(() => {
-    
-  }, [wallet]);
-
-  useEffect(() => {
-    verifyIfWalletAllowsOnchainAddress();
-  }, [wallet, verifyIfWalletAllowsOnchainAddress]);
 
   const handleCopyPress = useCallback(() => {
     const value = formatBalance(wallet.getBalance(), unit);
@@ -85,21 +76,6 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
     [handleBalanceVisibility, handleCopyPress],
   );
 
-  const toolTipActions = useMemo(() => {
-    return [
-      {
-        id: actionKeys.Refill,
-        text: loc.lnd.refill,
-        icon: actionIcons.Refill,
-      },
-      {
-        id: actionKeys.RefillWithExternalWallet,
-        text: loc.lnd.refill_external,
-        icon: actionIcons.RefillWithExternalWallet,
-      },
-    ];
-  }, []);
-
   const currentBalance = wallet ? wallet.getBalance() : 0;
   const formattedBalance = useMemo(() => {
     return unit === DoichainUnit.LOCAL_CURRENCY
@@ -139,7 +115,7 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
   }, [hideBalance]);
 
   const imageSource = useMemo(() => {
-    switch (wallet.type) {     
+    switch (wallet.type) {
       case MultisigHDWallet.type:
         return I18nManager.isRTL ? require('../img/vault-shape-rtl.png') : require('../img/vault-shape.png');
       default:
@@ -197,7 +173,7 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
           </Text>
         </TouchableOpacity>
       </View>
-      
+
       {wallet.type === MultisigHDWallet.type && (
         <TouchableOpacity style={styles.manageFundsButton} accessibilityRole="button" onPress={() => handleManageFundsPressed()}>
           <Text style={styles.manageFundsButtonText}>{loc.multisig.manage_keys}</Text>

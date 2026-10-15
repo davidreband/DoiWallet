@@ -130,14 +130,11 @@ const LNDCreateInvoice = () => {
           case DoichainUnit.SWARTZ:
             // nop
             break;
-          case DoichainUnit.DOI: 
+          case DoichainUnit.DOI:
             newAmount = satoshiToBTC(newAmount);
             break;
           case DoichainUnit.LOCAL_CURRENCY:
-            newAmount = formatBalancePlain(
-              newAmount,
-              DoichainUnit.LOCAL_CURRENCY
-            );
+            newAmount = formatBalancePlain(newAmount, DoichainUnit.LOCAL_CURRENCY);
             AmountInput.setCachedSatoshis(newAmount, sats);
             break;
         }
@@ -243,9 +240,7 @@ const LNDCreateInvoice = () => {
           break;
         case DoichainUnit.LOCAL_CURRENCY:
           // trying to fetch cached sat equivalent for this fiat amount
-          invoiceAmount =
-            AmountInput.getCachedSatoshis(invoiceAmount) ||
-            btcToSatoshi(fiatToBTC(invoiceAmount));
+          invoiceAmount = AmountInput.getCachedSatoshis(invoiceAmount) || btcToSatoshi(fiatToBTC(invoiceAmount));
           break;
       }
 

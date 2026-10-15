@@ -5,7 +5,7 @@ import { PayjoinClient } from 'payjoin-client';
 import BigNumber from 'bignumber.js';
 import * as bitcoin from '@doichain/doichainjs-lib';
 import { BlueText, BlueCard } from '../../BlueComponents';
-import { DoichainUnit} from '../../models/doichainUnits';
+import { DoichainUnit } from '../../models/doichainUnits';
 import loc, { formatBalance, formatBalanceWithoutSuffix } from '../../loc';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import presentAlert from '../../components/Alert';

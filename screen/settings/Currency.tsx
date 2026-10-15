@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
-import React, {useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { NativeSyntheticEvent, StyleSheet, View, LayoutAnimation, UIManager, Platform, Keyboard } from 'react-native';
 
 import {
@@ -58,7 +58,7 @@ const Currency: React.FC = () => {
   const fetchCurrency = useCallback(async () => {
     let preferredCurrency;
     try {
-      preferredCurrency = await getPreferredCurrency();      
+      preferredCurrency = await getPreferredCurrency();
       if (preferredCurrency === null) {
         throw Error();
       }
@@ -66,7 +66,7 @@ const Currency: React.FC = () => {
     } catch (_error) {
       setSelectedCurrency(FiatUnit.USD);
     }
-    const mostRecentFetchedRateValue = await mostRecentFetchedRate();    
+    const mostRecentFetchedRateValue = await mostRecentFetchedRate();
     setCurrencyRate(mostRecentFetchedRateValue);
   }, []);
 

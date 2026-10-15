@@ -1,6 +1,6 @@
 import Clipboard from '@react-native-clipboard/clipboard';
 import { StackActions, useIsFocused, useRoute } from '@react-navigation/native';
-import * as bitcoin from "@doichain/doichainjs-lib";
+import * as bitcoin from '@doichain/doichainjs-lib';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Linking, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
@@ -16,7 +16,7 @@ import { SecondButton } from '../../components/SecondButton';
 import { useTheme } from '../../components/themes';
 import { useBiometrics, unlockWithBiometrics } from '../../hooks/useBiometrics';
 import loc from '../../loc';
-import { DOICHAIN } from '../../blue_modules/network'
+import { DOICHAIN } from '../../blue_modules/network';
 
 import { useStorage } from '../../hooks/context/useStorage';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';

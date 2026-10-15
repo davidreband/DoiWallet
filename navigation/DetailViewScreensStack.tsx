@@ -311,7 +311,6 @@ const DetailViewStackScreensStack = () => {
         options={navigationStyle({ title: loc.settings.privacy })(theme)}
       />
 
-     
       <DetailViewStack.Screen
         name="ManageWallets"
         component={ManageWallets}

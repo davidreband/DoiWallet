@@ -34,7 +34,6 @@
     "payButton": "Zaplatiť",
     "refill": "Doplniť",
     "refill_create": "Pre pokračovanie, prosím, vytvorte si Bitcoinovú peňaženku",
-    "refill_external": "Doplniť z externej peňaženky",
     "refill_lnd_balance": "Doplniť zostatok na Lightning peňaženke",
     "sameWalletAsInvoiceError": "Faktúra sa nedá uhradiť s rovnakou peňaženkou ako tá, ktorá ju vytvorila.",
     "title": "spravovať zostatok"
@@ -131,7 +130,6 @@
     "general": "Všeobecné",
     "header": "Nastavenia",
     "language": "Jazyk",
-    "lightning_saved": "Vaše zmeny boli úspešne uložené.",
     "lightning_settings": "Lightning nastavenia",
     "network": "Sieť",
     "network_electrum": "Electrum server",
@@ -180,7 +178,6 @@
     "details_address": "Adresa",
     "details_advanced": "Rozšírené",
     "details_are_you_sure": "Ste si istý?",
-    "details_connected_to": "Napojené na",
     "details_delete": "Zmazaž",
     "details_delete_wallet": "Zmazať peňaženku",
     "details_export_backup": "Exportovať / zálohovať",

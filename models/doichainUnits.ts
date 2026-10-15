@@ -4,7 +4,7 @@ export const DoichainUnit = {
   LOCAL_CURRENCY: 'local_currency',
   MAX: 'MAX',
 } as const;
-export type DoichainUnit = typeof DoichainUnit[keyof typeof DoichainUnit];
+export type DoichainUnit = (typeof DoichainUnit)[keyof typeof DoichainUnit];
 
 export const Chain = {
   ONCHAIN: 'ONCHAIN',

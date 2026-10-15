@@ -3,7 +3,7 @@ import assert from 'assert';
 import { _setExchangeRate, _setPreferredFiatCurrency, _setSkipUpdateExchangeRate } from '../../blue_modules/currency';
 import { _leaveNumbersAndDots, formatBalance, formatBalancePlain, formatBalanceWithoutSuffix } from '../../loc';
 
-import { DoichainUnit } from "../../models/doichainUnits";
+import { DoichainUnit } from '../../models/doichainUnits';
 import { FiatUnit } from '../../models/fiatUnit';
 
 describe('Localization', () => {
@@ -46,51 +46,41 @@ describe('Localization', () => {
   });
 
   it.each([
-    [123000000, DoichainUnit.SWARTZ, false, "123000000", false],
-    [123000000, DoichainUnit.SWARTZ, true, "123.000.000", false],    
-    [123456000, DoichainUnit.DOI, true, "1.23456", false], // can handle strings
-    [100000000, DoichainUnit.DOI, true, "1", false],
-    [10000000, DoichainUnit.DOI, true, "0.1", false],
-    [1, DoichainUnit.DOI, true, "0.00000001", false],
-    [10000000, DoichainUnit.LOCAL_CURRENCY, true, "...", true], // means unknown since we did not receive exchange rate
+    [123000000, DoichainUnit.SWARTZ, false, '123000000', false],
+    [123000000, DoichainUnit.SWARTZ, true, '123.000.000', false],
+    [123456000, DoichainUnit.DOI, true, '1.23456', false], // can handle strings
+    [100000000, DoichainUnit.DOI, true, '1', false],
+    [10000000, DoichainUnit.DOI, true, '0.1', false],
+    [1, DoichainUnit.DOI, true, '0.00000001', false],
+    [10000000, DoichainUnit.LOCAL_CURRENCY, true, '...', true], // means unknown since we did not receive exchange rate
   ])(
-    "can formatBalanceWithoutSuffix",
-    async (
-      balance,
-      toUnit,
-      withFormatting,
-      expectedResult,
-      shouldResetRate
-    ) => {
-      _setExchangeRate("BTC_USD", 1);
+    'can formatBalanceWithoutSuffix',
+    async (balance, toUnit, withFormatting, expectedResult, shouldResetRate) => {
+      _setExchangeRate('BTC_USD', 1);
       _setPreferredFiatCurrency(FiatUnit.USD);
       if (shouldResetRate) {
-        _setExchangeRate("BTC_USD", false);
+        _setExchangeRate('BTC_USD', false);
         _setSkipUpdateExchangeRate();
       }
-      const actualResult = formatBalanceWithoutSuffix(
-        balance,
-        toUnit,
-        withFormatting
-      );
+      const actualResult = formatBalanceWithoutSuffix(balance, toUnit, withFormatting);
 
       assert.strictEqual(actualResult, expectedResult);
     },
-    240000
+    240000,
   );
 
   it.each([
-    [123000000, DoichainUnit.SWARTZ, false, "123000000 swartz"],
-    [123000000, DoichainUnit.DOI, false, "1.23 DOI"],
-    [123000000, DoichainUnit.LOCAL_CURRENCY, false, "$1.23"],
+    [123000000, DoichainUnit.SWARTZ, false, '123000000 swartz'],
+    [123000000, DoichainUnit.DOI, false, '1.23 DOI'],
+    [123000000, DoichainUnit.LOCAL_CURRENCY, false, '$1.23'],
   ])(
-    "can formatBalance",
+    'can formatBalance',
     async (balance, toUnit, withFormatting, expectedResult) => {
-      _setExchangeRate("BTC_USD", 1);
+      _setExchangeRate('BTC_USD', 1);
       _setPreferredFiatCurrency(FiatUnit.USD);
       const actualResult = formatBalance(balance, toUnit, withFormatting);
       assert.strictEqual(actualResult, expectedResult);
     },
-    240000
+    240000,
   );
 });

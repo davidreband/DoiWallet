@@ -5,6 +5,17 @@ import { WatchOnlyWallet } from '../../class';
 
 jest.setTimeout(500 * 1000);
 
+/**
+ * Counts and balances recorded when these tests were written have all been overtaken by the chain:
+ * ZPUB went from 6 transactions to 11, ZPUB_HD from 9 to 17 and its balance from 195691153 to a
+ * different number again by the time you read this. The assertions now cover what the watch-only
+ * wallet is responsible for - deriving its addresses from the key, and adding its transactions up -
+ * neither of which depends on how much has happened on the chain since.
+ */
+const ZPUB = 'zpub6r6B6XiuwEubH2cC5X7cgAVuVgNdD7X5LAhpq7HbNnN4qrJ5DKy6hy6HRmLy8o1GqUksTkGERwii1hnY5q3zbGgrg3svPdSrjTB4NdNwR32';
+const ZPUB_HD = 'zpub6rLXmt9RCjYTbb4VLV7ZwVf1NSAXPWjuiDY1Q1QgvfjkbB9UHR38hjCc7jxbLYPhBSEoDGtKd3NHwAi4EVKy7D2ZYHUWbu7GTU7e792gFez';
+const ADDRESS = 'dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk';
+
 afterAll(async () => {
   // after all tests we close socket so the test suite can actually terminate
   BlueElectrum.forceDisconnect();
@@ -25,54 +36,47 @@ describe('Watch only wallet', () => {
   });
 
   it('can fetch tx', async () => {
-    let w = new WatchOnlyWallet();
-    w.setSecret('zpub6r6B6XiuwEubH2cC5X7cgAVuVgNdD7X5LAhpq7HbNnN4qrJ5DKy6hy6HRmLy8o1GqUksTkGERwii1hnY5q3zbGgrg3svPdSrjTB4NdNwR32');
-    await w.fetchTransactions();
-    assert.ok(w.getTransactions().length >= 6, w.getTransactions().length);
-    // should be 233 but electrum server cant return huge transactions >.<
-
-    w = new WatchOnlyWallet();
-    w.setSecret('zpub6r6B6XiuwEubH2cC5X7cgAVuVgNdD7X5LAhpq7HbNnN4qrJ5DKy6hy6HRmLy8o1GqUksTkGERwii1hnY5q3zbGgrg3svPdSrjTB4NdNwR32');
-    await w.fetchTransactions();
-    assert.strictEqual(w.getTransactions().length, 6);
-
-    // fetch again and make sure no duplicates
-   // await w.fetchTransactions();
-   // assert.strictEqual(w.getTransactions().length, 6);
-  });
-
-  // eslint-disable-next-line jest/no-disabled-tests
-  it('can fetch tx from huge wallet', async () => {
     const w = new WatchOnlyWallet();
-    w.setSecret('zpub6r6B6XiuwEubH2cC5X7cgAVuVgNdD7X5LAhpq7HbNnN4qrJ5DKy6hy6HRmLy8o1GqUksTkGERwii1hnY5q3zbGgrg3svPdSrjTB4NdNwR32'); // binance wallet
+    w.setSecret(ZPUB);
     await w.fetchTransactions();
-    assert.ok(w.getTransactions().length === 6, w.getTransactions().length); // not yet kek but at least we dont crash
+    const txs = w.getTransactions();
+    assert.ok(txs.length > 0, 'no transactions at all');
+
+    // this used to assert exactly 6, which the wallet grew past; fetching twice must not double
+    // them up, which is the bug the count was there to catch and was left commented out
+    await w.fetchTransactions();
+    assert.strictEqual(w.getTransactions().length, txs.length, 'fetching twice duplicated transactions');
+    assert.strictEqual(new Set(w.getTransactions().map(tx => tx.txid)).size, txs.length, 'the list has duplicates');
   });
 
   it('can fetch TXs with values', async () => {
     const w = new WatchOnlyWallet();
-    for (const sec of [
-      'dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk',
-      'dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk',
+    w.setSecret(ADDRESS);
+    assert.strictEqual(w.getAddress(), ADDRESS);
+    assert.strictEqual(await w.getAddressAsync(), ADDRESS);
+    assert.ok(w.weOwnAddress(ADDRESS));
+    assert.ok(!w.weOwnAddress('garbage'));
+    assert.ok(!w.weOwnAddress(false));
+    await w.fetchTransactions();
+    assert.ok(w.getTransactions().length > 0, `${ADDRESS} has no history, pick another address`);
 
-    ]) {
-      w.setSecret(sec);
-      assert.strictEqual(w.getAddress(), 'dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk');
-      assert.strictEqual(await w.getAddressAsync(), 'dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk');
-      assert.ok(w.weOwnAddress('dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk'));
-      assert.ok(!w.weOwnAddress('garbage'));
-      assert.ok(!w.weOwnAddress(false));
-      await w.fetchTransactions();
+    for (const tx of w.getTransactions()) {
+      assert.ok(tx.hash);
+      assert.ok(tx.received);
+      assert.ok(tx.confirmations > 1);
 
-      for (const tx of w.getTransactions()) {
-        assert.ok(tx.hash);
-        assert.ok(tx.value);
-        assert.ok(tx.received);
-        assert.ok(tx.confirmations > 1);
+      // the amount shown next to a transaction is what we gained minus what we spent, in satoshi.
+      // The single pinned value this used to check, -93692735, is still in this wallet but no
+      // longer the second entry, and it never said whether the sum itself was right.
+      let gained = 0;
+      for (const output of tx.outputs) {
+        if (output.scriptPubKey.addresses?.[0] === ADDRESS) gained += Math.round(output.value * 100000000);
       }
-
-     // assert.strictEqual(w.getTransactions()[0].value, 100000000);
-      assert.strictEqual(w.getTransactions()[1].value, -93692735);
+      let spent = 0;
+      for (const input of tx.inputs) {
+        if (input.addresses?.[0] === ADDRESS) spent += Math.round((input.value ?? 0) * 100000000);
+      }
+      assert.strictEqual(tx.value, gained - spent, `${tx.txid} does not add up`);
     }
   });
 
@@ -87,23 +91,39 @@ describe('Watch only wallet', () => {
 
   it('can fetch balance & transactions from zpub HD', async () => {
     const w = new WatchOnlyWallet();
-    w.setSecret('zpub6rLXmt9RCjYTbb4VLV7ZwVf1NSAXPWjuiDY1Q1QgvfjkbB9UHR38hjCc7jxbLYPhBSEoDGtKd3NHwAi4EVKy7D2ZYHUWbu7GTU7e792gFez');
+    w.setSecret(ZPUB_HD);
+    w.init();
+
+    // derivation is the wallet's own arithmetic and the one thing here that is fixed for good: the
+    // same key always yields the same addresses, however much it is used afterwards
+    assert.strictEqual(w._getExternalAddressByIndex(0), ADDRESS);
+    assert.strictEqual(w._getExternalAddressByIndex(1), 'dc1qlghhgmr4hrjgqfvncy3hmxkcgrphh3kukuref4');
+    assert.strictEqual(w._getInternalAddressByIndex(0), 'dc1qj93genwg3y84zjh550zwjvfzmh9ncchww8fmxm');
+
     await w.fetchBalance();
-    assert.strictEqual(w.getBalance(), 195691153);
+    assert.ok(w.getBalance() > 0, 'this key was spent empty, pick another one');
     await w.fetchTransactions();
-    assert.strictEqual(w.getTransactions().length, 9);
+    assert.ok(w.getTransactions().length > 0, 'no transactions at all');
+
+    // the next address to hand out is the first unused one, so it has to be past every address the
+    // scan found a transaction on and must not be one of them
     const nextAddress = await w.getAddressAsync();
-
-    assert.strictEqual(w.getNextFreeAddressIndex(), 1);
-    assert.strictEqual(nextAddress, 'dc1qlghhgmr4hrjgqfvncy3hmxkcgrphh3kukuref4');
     assert.strictEqual(nextAddress, w._getExternalAddressByIndex(w.getNextFreeAddressIndex()));
-
     const nextChangeAddress = await w.getChangeAddressAsync();
-    assert.strictEqual(nextChangeAddress, 'dc1qan7tqkv8yug5ua42dvmqjqyqkj2m9yxcmp9jh8');
+    assert.strictEqual(nextChangeAddress, w._getInternalAddressByIndex(w.getNextFreeChangeAddressIndex()));
+
+    const used = new Set();
+    for (const tx of w.getTransactions()) {
+      for (const output of tx.outputs) {
+        if (output.scriptPubKey.addresses?.[0]) used.add(output.scriptPubKey.addresses[0]);
+      }
+    }
+    assert.ok(!used.has(nextAddress), `${nextAddress} has been used already`);
+    assert.ok(!used.has(nextChangeAddress), `${nextChangeAddress} has been used already`);
   });
 
   // skipped because its generally rare case
-  // eslint-disable-next-line jest/no-disabled-tests
+
   it('can fetch txs for address funded by genesis txs', async () => {
     const w = new WatchOnlyWallet();
     w.setSecret('N5ac3ywbkm11zVrtUfBFkRPhcjAygsc3SP');

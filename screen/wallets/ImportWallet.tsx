@@ -47,13 +47,6 @@ const ImportWallet = () => {
       marginHorizontal: 16,
       backgroundColor: colors.elevated,
     },
-    row: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginHorizontal: 16,
-      marginTop: 10,
-      justifyContent: 'space-between',
-    },
     button: {
       padding: 10,
     },
@@ -196,7 +189,7 @@ const ImportWallet = () => {
   }, [colors, navigation, toolTipActions, HeaderRight, styles.button, closeImage]);
 
   const renderOptionsAndImportButton = (
-    <>  
+    <>
       <BlueSpacing20 />
       <View style={styles.center}>
         <>

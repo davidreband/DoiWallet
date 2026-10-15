@@ -155,7 +155,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     // turn on notifications if available
     // console.warn('waitForId');
     // await sleep(300000);
-    if(await expectToBeVisible('NotificationSettings')) {
+    if (await expectToBeVisible('NotificationSettings')) {
       await element(by.id('NotificationSettings')).tap();
       await element(by.id('NotificationsSwitch')).tap();
       await sleep(3_000);
@@ -555,6 +555,9 @@ describe('BlueWallet UI Tests - no wallets', () => {
 
     await device.pressBack();
     await helperDeleteWallet('Multisig Vault');
+    // helperSwitchAdvancedMode has never existed in this repository; these tests are
+    // it.skip'd, so the call stays as the record of what un-skipping them would need
+    // eslint-disable-next-line no-undef
     await helperSwitchAdvancedMode(); // turn off advanced mode
     process.env.TRAVIS && require('fs').writeFileSync(lockFile, '1');
   });
@@ -703,6 +706,9 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await waitForId('WalletsList');
 
     // enable AdvancedMode to see derivation path in wallet details
+    // helperSwitchAdvancedMode has never existed in this repository; these tests are
+    // it.skip'd, so the call stays as the record of what un-skipping them would need
+    // eslint-disable-next-line no-undef
     await helperSwitchAdvancedMode();
 
     await element(by.id('WalletsList')).swipe('left', 'fast', 1); // in case emu screen is small and it doesnt fit
@@ -753,6 +759,9 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await device.pressBack();
     await device.pressBack();
     await helperDeleteWallet('Imported HD Legacy (BIP44 P2PKH)');
+    // helperSwitchAdvancedMode has never existed in this repository; these tests are
+    // it.skip'd, so the call stays as the record of what un-skipping them would need
+    // eslint-disable-next-line no-undef
     await helperSwitchAdvancedMode();
 
     process.env.TRAVIS && require('fs').writeFileSync(lockFile, '1');

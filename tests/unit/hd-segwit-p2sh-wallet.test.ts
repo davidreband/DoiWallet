@@ -4,8 +4,7 @@ import { HDLegacyP2PKHWallet, HDSegwitP2SHWallet, LegacyWallet, SegwitBech32Wall
 
 describe('P2SH Segwit HD (BIP49)', () => {
   it('can create a wallet', async () => {
-    const mnemonic =
-      'coil earn raccoon party result public shrug corn scrap field security devote'
+    const mnemonic = 'coil earn raccoon party result public shrug corn scrap field security devote';
     const hd = new HDSegwitP2SHWallet();
     hd.setSecret(mnemonic);
     assert.strictEqual('6Fs7zrS4PxbWBHyvQ5LVDJ7k6Aw4WMRVo3', hd._getExternalAddressByIndex(0));
@@ -75,7 +74,7 @@ describe('P2SH Segwit HD (BIP49)', () => {
   it('Segwit HD (BIP49) can generate addressess only via ypub', function () {
     const ypub = 'ypub6WhHmKBmHNjcrUVNCa3sXduH9yxutMipDcwiKW31vWjcMbfhQHjXdyx4rqXbEtVgzdbhFJ5mZJWmfWwnP4Vjzx97admTUYKQt6b9D7jjSCp';
     const hd = new HDSegwitP2SHWallet();
-    console.log("____", hd._getInternalAddressByIndex(0))
+    console.log('____', hd._getInternalAddressByIndex(0));
     hd._xpub = ypub;
     assert.strictEqual('6VK9EzDRN1cZg7QfsXMqjvZs82d92oPakR', hd._getExternalAddressByIndex(0));
     assert.strictEqual('6JWuDoaTuZUHa5zZKATXH1gCU3oEDA63fh', hd._getExternalAddressByIndex(1));

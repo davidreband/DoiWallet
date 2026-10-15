@@ -13,8 +13,6 @@ import HandOffComponent from '../../components/HandOffComponent';
 import TransactionIncomingIcon from '../../components/icons/TransactionIncomingIcon';
 import TransactionOutgoingIcon from '../../components/icons/TransactionOutgoingIcon';
 import TransactionPendingIcon from '../../components/icons/TransactionPendingIcon';
-import ToolTipMenu from '../../components/TooltipMenu';
-import Clipboard from '@react-native-clipboard/clipboard';
 
 import SafeArea from '../../components/SafeArea';
 import { useTheme } from '../../components/themes';
@@ -26,6 +24,7 @@ import HeaderRightButton from '../../components/HeaderRightButton';
 import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamList';
 import { useSettings } from '../../hooks/context/useSettings';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
+import { NameState, describeNameOutput } from '../../utils/nameState';
 
 enum ButtonStatus {
   Possible,
@@ -118,7 +117,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
   const { colors } = useTheme();
   const { selectedBlockExplorer } = useSettings();
   const fetchTxInterval = useRef<NodeJS.Timeout>();
-  
+
   const stylesHook = StyleSheet.create({
     value: {
       color: colors.alternativeTextColor2,
@@ -188,30 +187,81 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
   const [image, setImage] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [sendToDoiAddress, setSendToDoiAddress] = useState<string>('');
-  const [hasNameOpInputs, setHasNameOpInputs] = useState(false);
 
- // const [nameOpAddress, setNameOpAddress] = useState<string>('');
+  /**
+   * What the chain says about the name on this screen. `loading` until the answer is in; `state`
+   * stays null when there is no connection or the index knows nothing, and then nothing is claimed
+   * about the output either way (Doichain/DoiWallet#35).
+   */
+  const [nameChain, setNameChain] = useState<{ loading: boolean; state: NameState | null }>({ loading: true, state: null });
 
-  const handleNameOpSendPress = useCallback((recipientAddress: string, nameOpData: { name: string; value: string; }, nameOpAddress: string) => {
-    if (!recipientAddress) {
-      Alert.alert(loc.errors.error, 'Please enter a DoiAddress');
+  /** The name output of the transaction being looked at, if it has one. */
+  const nameOutputOnScreen = useMemo(() => {
+    const output = tx?.outputs?.find((o: any) => o?.scriptPubKey?.nameOp);
+    if (!output) return undefined;
+    return { output, outpoint: { txid: tx.txid ?? hash, vout: output.n } };
+  }, [tx, hash]);
+
+  useEffect(() => {
+    const name = nameOutputOnScreen?.output?.scriptPubKey?.nameOp?.name;
+    if (!name) {
+      setNameChain({ loading: false, state: null });
       return;
     }
 
-    navigate('SendDetailsRoot', {
-      screen: 'SendDetails',
-      params: {
-        nameOp: {
-          nameId: nameOpData.name,
-          nameValue: nameOpData.value,
-          sendTo: recipientAddress,
-          nameOpAddress: nameOpAddress
+    let cancelled = false;
+    setNameChain({ loading: true, state: null });
+    BlueElectrum.nameShow(name)
+      .then(state => {
+        if (!cancelled) setNameChain({ loading: false, state });
+      })
+      .catch(() => {
+        if (!cancelled) setNameChain({ loading: false, state: null });
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [nameOutputOnScreen]);
+
+  const handleNameOpSendPress = useCallback(
+    async (recipientAddress: string, nameOpData: { name: string; value: string }) => {
+      if (!recipientAddress) {
+        Alert.alert(loc.errors.error, 'Please enter a DoiAddress');
+        return;
+      }
+
+      // Ask the chain which output holds the name instead of taking the holder address off the
+      // transaction being looked at. That transaction may be old: the name could have moved on
+      // since, and one address can hold several names at once (Doichain/DoiWallet#35).
+      let heldBy;
+      try {
+        heldBy = await BlueElectrum.nameShow(nameOpData.name);
+      } catch (e: any) {
+        Alert.alert(loc.errors.error, e.message);
+        return;
+      }
+      if (!heldBy) {
+        Alert.alert(loc.errors.error, `No operation on "${nameOpData.name}" found on the chain`);
+        return;
+      }
+
+      navigate('SendDetailsRoot', {
+        screen: 'SendDetails',
+        params: {
+          nameOp: {
+            nameId: heldBy.operation.name,
+            // the value the name carries now, not the one in the transaction on screen
+            nameValue: heldBy.operation.value,
+            sendTo: recipientAddress,
+            nameOutpoint: { txid: heldBy.operation.txid, vout: heldBy.operation.vout },
+          },
+          walletID,
         },
-        walletID: walletID,
-      },
-    });
-  }, [navigate]);
- 
+      });
+    },
+    [navigate, walletID],
+  );
 
   useEffect(() => {
     setOptions({
@@ -457,7 +507,6 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
       const response = await fetch(url);
       if (!response.ok) {
         console.error('FetchJson error:', response.status);
-
       }
       const data = await response.json();
       return data;
@@ -466,135 +515,111 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
     }
   }
 
-  const actions = [
-    {
-      id: 'copyToClipboard',
-      text: loc.transactions.details_copy,
-      icon: { iconValue: 'doc.on.doc' }, 
-    }
-  ];
 
-  const onPressMenuItem = (key: string) => {    
-    Clipboard.setString(key);        
-  };
-
-  const isTransactionInputHasNameOp = async (txid: string, name: string, wallet) => {
-    try {
-      const transactions = wallet.getTransactions();
-      const fetchedTx = transactions.find((tx: Transaction) => tx.txid === txid);
-      for (const output of fetchedTx.outputs) {
-        if (output.scriptPubKey?.nameOp?.name === name) {
-          return true;
-        }else{
-          return false;
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching transaction:', error);
-    }
-  };
-
-  useEffect(() => {
-    const checkInputs = async () => {      
-      try {
-
-        if (!tx || typeof tx.value !== 'number' || !Array.isArray(tx.inputs) || !Array.isArray(tx.outputs)) {
-          return;
-        }
-
-        if (tx.value < 0 && tx.inputs) {
-          for (const output of tx.outputs) {            
-            if (output?.scriptPubKey?.nameOp) {
-              for (const input of tx.inputs) {
-                if (input.txid) {
-                  const hasName = await isTransactionInputHasNameOp(input.txid, output.scriptPubKey.nameOp.name, wallet);
-                  if (hasName) {
-                    setHasNameOpInputs(true);
-                    break;
-                  }
-                }
-              }
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error in checkInputs:', error);
-      } finally {
-        
-      }
-    };
-
-    checkInputs();
-  }, [tx, wallet]);
 
   const renderNameOps = () => {
     if (tx.outputs && tx.confirmations > 0) {
-        for (const output of tx.outputs) {
-          if (output?.scriptPubKey?.nameOp) {
-            if (tx.value < 0 && hasNameOpInputs) {
-              return null;             
-            }
+      for (const output of tx.outputs) {
+        if (output?.scriptPubKey?.nameOp) {
+          // Whether this output still holds its name is the chain's answer, not something to work
+          // out from the transaction on screen - which may be years old. And holding the name is
+          // only half of it: the transfer form may only be offered for an output this wallet can
+          // sign for (Doichain/DoiWallet#35).
+          const held = nameChain.loading
+            ? undefined
+            : describeNameOutput({ txid: tx.txid ?? hash, vout: output.n }, nameChain.state, address => !!wallet?.weOwnAddress(address));
 
-            const nameOpValue = output.scriptPubKey.nameOp.value;
-            // setNameOpAddress(output.scriptPubKey.addresses)
-            //const nameOpValue = 'ipfs://bafkreiewupt5xwng6jjn3xpewq2q6tta32zohkvad3rqnhiatlklhv3gha';
-            //const nameOpValue = 'ipfs://bafkreidjj5xgyvlxcmuuaqphnsyiu4gnlyddfwmufazlea4xf6uckyr6qy';
-            const urlPattern = /(ipfs?:\/\/[^\s]+)/g;
-            const containsUrl = urlPattern.test(nameOpValue);
-            if (containsUrl) {
-              const ipfsGateway = 'https://ipfs.le-space.de/ipfs/';
-              const jsonUrl = nameOpValue.replace('ipfs://', ipfsGateway);
-              fetchJson(jsonUrl).then(data => {
-                if(data){
-                  const imageUrl = data.image.replace('ipfs://', ipfsGateway);
-                  checkUrlAccessibility(imageUrl);
-                  setDescription(data.description)
-                  setImage(imageUrl)
-                  setName(data.name)
-                }                
-              });
-            }
-            return (
-              <View style={styles.memo}>
+          const nameOpValue = output.scriptPubKey.nameOp.value;
+          // setNameOpAddress(output.scriptPubKey.addresses)
+          // const nameOpValue = 'ipfs://bafkreiewupt5xwng6jjn3xpewq2q6tta32zohkvad3rqnhiatlklhv3gha';
+          // const nameOpValue = 'ipfs://bafkreidjj5xgyvlxcmuuaqphnsyiu4gnlyddfwmufazlea4xf6uckyr6qy';
+          const urlPattern = /(ipfs?:\/\/[^\s]+)/g;
+          const containsUrl = urlPattern.test(nameOpValue);
+          if (containsUrl) {
+            const ipfsGateway = 'https://ipfs.le-space.de/ipfs/';
+            const jsonUrl = nameOpValue.replace('ipfs://', ipfsGateway);
+            fetchJson(jsonUrl).then(data => {
+              if (data) {
+                const imageUrl = data.image.replace('ipfs://', ipfsGateway);
+                checkUrlAccessibility(imageUrl);
+                setDescription(data.description);
+                setImage(imageUrl);
+                setName(data.name);
+              }
+            });
+          }
+          return (
+            <View style={styles.memo}>
+              {isUrlAccessible ? (
+                <>
+                  <Text selectable style={styles.title}>
+                    {name}
+                  </Text>
+                  <Text selectable style={styles.description}>
+                    {description}
+                  </Text>
+                  <Image
+                    // source={{ uri: 'https://ipfs.le-space.de/ipfs/bafkreihvhtwrjc3kpl273q7nwk2peiuhr7zr4vugzam4x3guoht66udjf4' }}
+                    source={{ uri: image }}
+                    style={styles.image}
+                    resizeMode="contain"
+                  />
+                  <BlueSpacing20 />
 
-                {isUrlAccessible ? (
-                  <>  
-                    <Text selectable style={styles.title}>{name}</Text>
-                    <Text selectable style={styles.description}>{description}</Text>
-                    <Image  
-                      //source={{ uri: 'https://ipfs.le-space.de/ipfs/bafkreihvhtwrjc3kpl273q7nwk2peiuhr7zr4vugzam4x3guoht66udjf4' }}
-                      source={{ uri: image }}
-                      style={styles.image}
-                      resizeMode="contain"                      
-                    />   
-                    <BlueSpacing20 />
+                  <Text selectable style={styles.memoText}>
+                    {loc.transactions.nameOps_name}: {output.scriptPubKey.nameOp.name}
+                  </Text>
 
-                    {/* <ToolTipMenu key={'name'} isButton title={""} actions={actions} onPressMenuItem={onPressMenuItem}>
-                      <Text selectable style={styles.memoText}>
-                        {loc.transactions.nameOps_name}: {output.scriptPubKey.nameOp.name}
-                      </Text>
-                    </ToolTipMenu>             */}
+                  <Text selectable style={styles.memoText}>
+                    {loc.transactions.nameOps_value}: {output.scriptPubKey.nameOp.value}
+                  </Text>
+                  <BlueSpacing20 />
+                </>
+              ) : (
+                <>
+                  <Text selectable style={styles.memoText}>
+                    {loc.transactions.nameOps_name}: {output.scriptPubKey.nameOp.name}
+                  </Text>
+                  <Text selectable style={styles.memoText}>
+                    {loc.transactions.nameOps_value}: {output.scriptPubKey.nameOp.value}
+                  </Text>
+                  <BlueSpacing20 />
+                </>
+              )}
+              {nameChain.state && (
+                <>
+                  <Text selectable style={styles.memoText}>
+                    {loc.transactions.nameOps_current_value}: {nameChain.state.operation.value}
+                  </Text>
+                  <Text selectable style={styles.memoText}>
+                    {loc.formatString(loc.transactions.nameOps_last_changed, { height: nameChain.state.operation.height })}
+                  </Text>
+                  <BlueSpacing20 />
+                </>
+              )}
 
-                    <Text selectable style={styles.memoText}>
-                      {loc.transactions.nameOps_name}: {output.scriptPubKey.nameOp.name}
-                    </Text>
+              {held === undefined && (
+                <View style={styles.sendContainer}>
+                  <ActivityIndicator />
+                  <Text style={styles.memoText}>{loc.transactions.nameOps_checking}</Text>
+                </View>
+              )}
 
-                    <Text selectable style={styles.memoText}>
-                      {loc.transactions.nameOps_value}: {output.scriptPubKey.nameOp.value}
-                    </Text>
-                    <BlueSpacing20 />
-                  </>
-                ) : (
-                  <>
-                      <Text selectable style={styles.memoText}>
-                        {loc.transactions.nameOps_name}: {output.scriptPubKey.nameOp.name}
-                      </Text>
-                      <Text selectable style={styles.memoText}>
-                        {loc.transactions.nameOps_value}: {output.scriptPubKey.nameOp.value}
-                      </Text>
-                      <BlueSpacing20 />
-                  </>
-                )}
+              {held?.status === 'superseded' && (
+                <Text selectable style={styles.memoText}>
+                  {loc.formatString(loc.transactions.nameOps_moved, { address: held.heldBy.address })}
+                </Text>
+              )}
+
+              {held?.status === 'notOurs' && (
+                <Text selectable style={styles.memoText}>
+                  {loc.formatString(loc.transactions.nameOps_not_ours, { address: held.heldBy.address })}
+                </Text>
+              )}
+
+              {held?.status === 'unknown' && <Text style={styles.memoText}>{loc.transactions.nameOps_unchecked}</Text>}
+
+              {held?.status === 'holds' && (
                 <View style={styles.sendContainer}>
                   <TextInput
                     placeholder={loc.transactions.send_to_doi_address}
@@ -606,15 +631,16 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
                   <BlueSpacing10 />
                   <Button
                     title={loc.transactions.send}
-                    onPress={() => handleNameOpSendPress(sendToDoiAddress, output.scriptPubKey.nameOp, output.scriptPubKey.addresses[0])}
+                    onPress={() => handleNameOpSendPress(sendToDoiAddress, output.scriptPubKey.nameOp)}
                     disabled={!sendToDoiAddress}
                   />
                 </View>
-              </View>
-            );
-          }
+              )}
+            </View>
+          );
         }
       }
+    }
     return null;
   };
 
@@ -779,7 +805,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
 
           <View style={styles.container}>
             <BlueCard>
-            {renderNameOps()}
+              {renderNameOps()}
               <View style={styles.center}>
                 <Text style={[styles.value, stylesHook.value]} selectable>
                   {wallet && formatBalanceWithoutSuffix(tx.value, wallet.preferredBalanceUnit, true)}
@@ -872,10 +898,6 @@ const styles = StyleSheet.create({
     fontSize: 36,
     fontWeight: '600',
   },
-  valueSmall:{
-    fontSize: 26,
-    fontWeight: '600',
-  },
   valueUnit: {
     fontSize: 16,
     fontWeight: '600',
@@ -898,15 +920,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 43,
     marginBottom: 53,
-  },
-  iconRootSmall: {
-    width: 60,
-    height: 60,
-    borderRadius: 60,
-    alignSelf: 'center',
-    justifyContent: 'center',
-    marginTop: 25,
-    marginBottom: 25,
   },
   iconWrap: {
     minWidth: 30,
@@ -961,20 +974,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   image: {
-    width: '100%', 
+    width: '100%',
     height: 300,
-    margin:10,
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    elevation: 4, 
-    shadowColor: '#000', 
-    shadowOffset: { width: 0, height: 4 }, 
-    shadowOpacity: 0.1, 
-    shadowRadius: 8,
-    overflow: 'hidden',
-
+    margin: 10,
   },
   title: {
     fontSize: 16,
@@ -982,7 +984,7 @@ const styles = StyleSheet.create({
     color: '#9aa0aa',
     marginBottom: 5,
   },
-  description:{
+  description: {
     color: '#9aa0aa',
     fontSize: 14,
     alignSelf: 'center',
@@ -1001,5 +1003,5 @@ const styles = StyleSheet.create({
   sendContainer: {
     paddingHorizontal: 20,
     width: '100%',
-  }
+  },
 });

@@ -14,8 +14,7 @@ import { decodeUR } from '../../blue_modules/ur';
 import { AbstractHDElectrumWallet } from './abstract-hd-electrum-wallet';
 
 import { CreateTransactionResult, CreateTransactionTarget, CreateTransactionUtxo } from './types';
-import { DOICHAIN } from "../../blue_modules/network";
-
+import { DOICHAIN } from '../../blue_modules/network';
 
 const ECPair = ECPairFactory(ecc);
 const bip32 = BIP32Factory(ecc);
@@ -298,7 +297,6 @@ export class MultisigHDWallet extends AbstractHDElectrumWallet {
       let _node;
 
       if (!this._nodes[nodeIndex][cosignerIndex]) {
-
         const xpub = this._getXpubFromCosignerIndex(cosignerIndex);
         const hdNode = bip32.fromBase58(xpub, DOICHAIN);
 
@@ -315,7 +313,7 @@ export class MultisigHDWallet extends AbstractHDElectrumWallet {
       const { address } = bitcoin.payments.p2sh({
         redeem: bitcoin.payments.p2wsh({
           redeem: bitcoin.payments.p2ms({ m: this._m, pubkeys: MultisigHDWallet.sortBuffers(pubkeys), network: DOICHAIN }),
-          network: DOICHAIN
+          network: DOICHAIN,
         }),
         network: DOICHAIN,
       });
@@ -325,7 +323,7 @@ export class MultisigHDWallet extends AbstractHDElectrumWallet {
       return address;
     } else if (this.isNativeSegwit()) {
       const { address } = bitcoin.payments.p2wsh({
-        redeem: bitcoin.payments.p2ms({ m: this._m, pubkeys: MultisigHDWallet.sortBuffers(pubkeys),network: DOICHAIN }),
+        redeem: bitcoin.payments.p2ms({ m: this._m, pubkeys: MultisigHDWallet.sortBuffers(pubkeys), network: DOICHAIN }),
         network: DOICHAIN,
       });
       if (!address) {
@@ -752,7 +750,6 @@ export class MultisigHDWallet extends AbstractHDElectrumWallet {
         throw new Error('Could not find derivation path for address ' + input.address);
       }
 
-
       const xpub = this._getXpubFromCosignerIndex(cosignerIndex);
       const hdNode0 = bip32.fromBase58(xpub, DOICHAIN);
 
@@ -831,7 +828,7 @@ export class MultisigHDWallet extends AbstractHDElectrumWallet {
     } else if (this.isLegacy()) {
       const p2sh = bitcoin.payments.p2sh({
         redeem: bitcoin.payments.p2ms({ m: this._m, pubkeys: MultisigHDWallet.sortBuffers(pubkeys), network: DOICHAIN }),
-        network: DOICHAIN, 
+        network: DOICHAIN,
       });
       if (!p2sh?.redeem?.output) {
         throw new Error('Could not create p2sh output');
@@ -898,9 +895,9 @@ export class MultisigHDWallet extends AbstractHDElectrumWallet {
       const p2shP2wsh = bitcoin.payments.p2sh({
         redeem: bitcoin.payments.p2wsh({
           redeem: bitcoin.payments.p2ms({ m: this._m, pubkeys: MultisigHDWallet.sortBuffers(pubkeys), network: DOICHAIN }),
-          network: DOICHAIN, 
+          network: DOICHAIN,
         }),
-        network: DOICHAIN, 
+        network: DOICHAIN,
       });
       const witnessScript = p2shP2wsh?.redeem?.redeem?.output;
       const redeemScript = p2shP2wsh?.redeem?.output;
@@ -1171,7 +1168,7 @@ export class MultisigHDWallet extends AbstractHDElectrumWallet {
    * Tries to signs passed psbt object (by reference). If there are enough signatures - tries to finalize psbt
    * and returns Transaction (ready to extract hex)
    */
-  cosignPsbt(psbt: Psbt): { tx: Transaction | false, psbt: Psbt } {
+  cosignPsbt(psbt: Psbt): { tx: Transaction | false; psbt: Psbt } {
     for (let cc = 0; cc < psbt.inputCount; cc++) {
       for (const [cosignerIndex, cosigner] of this._cosigners.entries()) {
         if (MultisigHDWallet.isXpubString(cosigner)) continue;

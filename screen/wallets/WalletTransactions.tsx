@@ -30,7 +30,7 @@ import TransactionsNavigationHeader, { actionKeys } from '../../components/Trans
 import { unlockWithBiometrics, useBiometrics } from '../../hooks/useBiometrics';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import loc, { formatBalance } from '../../loc';
-import { Chain } from  '../../models/doichainUnits';
+import { Chain } from '../../models/doichainUnits';
 import ActionSheet from '../ActionSheet';
 import { useStorage } from '../../hooks/context/useStorage';
 import WatchOnlyWarning from '../../components/WatchOnlyWarning';
@@ -46,7 +46,6 @@ import { useSettings } from '../../hooks/context/useSettings';
 import { getClipboardContent } from '../../blue_modules/clipboard';
 import HandOffComponent from '../../components/HandOffComponent';
 import { HandOffActivityType } from '../../components/types';
-
 
 const buttonFontSize =
   PixelRatio.roundToNearestPixel(Dimensions.get('window').width / 26) > 22
@@ -307,6 +306,9 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
   });
 
   const renderItem = useCallback(
+    // item is the row being rendered, not a component prop; the rule reads this destructured
+    // callback parameter as one
+    // eslint-disable-next-line react/no-unused-prop-types
     ({ item }: { item: Transaction }) => {
       return <TransactionListItem item={item} itemPriceUnit={wallet?.preferredBalanceUnit} walletID={walletID} />;
     },

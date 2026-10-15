@@ -65,7 +65,11 @@ export default class Lnurl {
     return [baseURI, path];
   }
 
-  async fetchGet(url: string): Promise<any> {
+  /**
+   * @param {string} url
+   * @returns {Promise<any>}
+   */
+  async fetchGet(url) {
     const resp = await fetch(url, { method: 'GET' });
     if (resp.status >= 300) {
       throw new Error('Bad response from server');

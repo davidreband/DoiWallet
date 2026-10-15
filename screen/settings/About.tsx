@@ -1,12 +1,18 @@
 import React from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { Alert, Image, Linking, Platform, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import { getApplicationName, getBuildNumber, getBundleId, getUniqueIdSync, getVersion, hasGmsSync, useFirstInstallTime} from 'react-native-device-info';
+import { Image, Linking, Platform, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import {
+  getApplicationName,
+  getBuildNumber,
+  getBundleId,
+  getUniqueIdSync,
+  getVersion,
+  hasGmsSync,
+} from 'react-native-device-info';
 import { Icon } from '@rneui/themed';
 import Rate, { AndroidMarket } from 'react-native-rate';
 import A from '../../blue_modules/analytics';
 import { BlueCard, BlueSpacing20, BlueTextCentered } from '../../BlueComponents';
-import { HDSegwitBech32Wallet } from '../../class';
 import presentAlert from '../../components/Alert';
 import Button from '../../components/Button';
 import ListItem from '../../components/ListItem';
@@ -17,6 +23,8 @@ import { useSettings } from '../../hooks/context/useSettings';
 import SafeAreaScrollView from '../../components/SafeAreaScrollView';
 
 const branch = require('../../current-branch.json');
+// written by the build - see scripts/build-time.sh and the gradle task that runs it
+const buildTime = require('../../build-time.json');
 
 const About: React.FC = () => {
   const { navigate } = useExtendedNavigation();
@@ -55,30 +63,18 @@ const About: React.FC = () => {
     navigate('Licensing');
   };
 
-  const handleOnTwitterPress = () => {
-    Linking.openURL('https://twitter.com/bluewalletio');
-  };
-
-  const handleOnDiscordPress = () => {
-    Linking.openURL('https://discord.gg/btWq2Aby2z');
-  };
-
-  const handleOnTelegramPress = () => {
-    Linking.openURL('https://t.me/bluewallethat');
-  };
-
   const handleOnGithubPress = () => {
-    Linking.openURL("https://github.com/Doichain/DoiWallet");
+    Linking.openURL('https://github.com/Doichain/DoiWallet');
   };
 
   const handleOnRatePress = () => {
     const options = {
-      AppleAppID: "1376878040",
-      GooglePackageName: "org.doichain.doiwallet",
+      AppleAppID: '1376878040',
+      GooglePackageName: 'org.doichain.doiwallet',
       preferredAndroidMarket: AndroidMarket.Google,
-      preferInApp: Platform.OS !== "android",
+      preferInApp: Platform.OS !== 'android',
       openAppStoreIfInAppFails: true,
-      fallbackPlatformURL: "https://www.doichain.org",
+      fallbackPlatformURL: 'https://www.doichain.org',
     };
     Rate.rate(options, success => {
       if (success) {
@@ -86,13 +82,12 @@ const About: React.FC = () => {
       }
     });
   };
-  const firstInstallTime = useFirstInstallTime().result; 
 
   return (
     <SafeAreaScrollView testID="AboutScrollView" contentInsetAdjustmentBehavior="automatic" automaticallyAdjustContentInsets>
       <BlueCard>
         <View style={styles.center}>
-          <Image style={styles.logo} source={require('../../img/bluebeast.png')} />
+          <Image style={styles.logo} source={require('../../img/icon.png')} />
           <Text style={styles.textFree}>{loc.settings.about_free}</Text>
           <Text style={[styles.textBackup, stylesHook.textBackup]}>{formatStringAddTwoWhiteSpaces(loc.settings.about_backup)}</Text>
           {((Platform.OS === 'android' && hasGmsSync()) || Platform.OS !== 'android') && (
@@ -136,13 +131,24 @@ const About: React.FC = () => {
         onPress={handleOnLicensingPress}
         title={loc.settings.about_license}
       />
-     
+      <ListItem
+        leftIcon={{
+          name: 'flask',
+          type: 'font-awesome',
+          color: '#FC0D44',
+        }}
+        chevron
+        onPress={handleOnSelfTestPress}
+        testID="RunSelfTestButton"
+        title={loc.settings.about_selftest}
+      />
+
       <BlueSpacing20 />
       <BlueSpacing20 />
       <BlueTextCentered>
         {getApplicationName()} ver {getVersion()} (build {getBuildNumber() + ' ' + branch})
       </BlueTextCentered>
-      <BlueTextCentered>{new Date(firstInstallTime).toString()   }</BlueTextCentered>
+      <BlueTextCentered>{new Date(buildTime).toString()}</BlueTextCentered>
       <BlueTextCentered>{getBundleId()}</BlueTextCentered>
       <BlueTextCentered>
         w, h = {width}, {height}
@@ -184,8 +190,10 @@ const styles = StyleSheet.create({
     marginTop: 54,
   },
   logo: {
+    // square, because the Doichain mark is - the 102x124 here was the proportion of the
+    // BlueWallet mascot this used to show, and would stretch it
     width: 102,
-    height: 124,
+    height: 102,
   },
   textFree: {
     maxWidth: 260,

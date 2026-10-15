@@ -1,5 +1,4 @@
-
-import { RouteProp, StackActions, useFocusEffect, useIsFocused, useRoute } from '@react-navigation/native';
+import { RouteProp, StackActions, useIsFocused, useRoute } from '@react-navigation/native';
 import * as bitcoin from '@doichain/doichainjs-lib';
 
 import createHash from 'create-hash';
@@ -89,7 +88,7 @@ const ScanQRCode = () => {
   });
 
   useEffect(() => {
-    console.log('ScanQRCode!')
+    console.log('ScanQRCode!');
     isCameraAuthorizationStatusGranted().then(setCameraStatusGranted);
   }, []);
 

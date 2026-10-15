@@ -7,7 +7,6 @@ import {
   Linking,
   Platform,
   StyleSheet,
-  Text,
   TextInput,
   useColorScheme,
   View,
@@ -16,10 +15,9 @@ import {
 import A from '../../blue_modules/analytics';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { BlueButtonLink, BlueFormLabel, BlueSpacing20, BlueSpacing40, BlueText } from '../../BlueComponents';
-import { BlueApp, HDSegwitBech32Wallet, HDSegwitP2SHWallet, SegwitP2SHWallet } from '../../class';
+import { HDSegwitBech32Wallet, HDSegwitP2SHWallet, SegwitP2SHWallet } from '../../class';
 import presentAlert from '../../components/Alert';
 import Button from '../../components/Button';
-import ListItem from '../../components/ListItem';
 import { useTheme } from '../../components/themes';
 import WalletButton from '../../components/WalletButton';
 import loc from '../../loc';
@@ -106,7 +104,7 @@ const WalletsAdd: React.FC = () => {
   const label = state.label;
   const selectedWalletType = state.selectedWalletType;
   const colorScheme = useColorScheme();
-  
+
   const { addWallet, saveToDisk } = useStorage();
   const { entropy: entropyHex, words } = useRoute<RouteProps>().params || {};
   const entropy = entropyHex ? Buffer.from(entropyHex, 'hex') : undefined;
@@ -192,7 +190,6 @@ const WalletsAdd: React.FC = () => {
         subtitle: 'p2sh/non-HD',
         menuState: selectedIndex === 2 && selectedWalletType === ButtonSelected.ONCHAIN,
       },
-      
     ];
 
     const walletAction: Action = {
@@ -253,7 +250,7 @@ const WalletsAdd: React.FC = () => {
         actions={toolTipActions}
       />
     ),
-    [handleOnLightningButtonPressed, toolTipActions, entropy, confirmResetEntropy, navigate],
+    [toolTipActions, entropy, confirmResetEntropy, navigate],
   );
 
   useEffect(() => {
@@ -540,9 +537,6 @@ const styles = StyleSheet.create({
   },
   advanced: {
     marginHorizontal: 20,
-  },
-  advancedText: {
-    fontWeight: '500',
   },
   lndUri: {
     flexDirection: 'row',

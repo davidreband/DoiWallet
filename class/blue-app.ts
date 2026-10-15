@@ -24,7 +24,6 @@ import { SegwitP2SHWallet } from './wallets/segwit-p2sh-wallet';
 import { SLIP39LegacyP2PKHWallet, SLIP39SegwitBech32Wallet, SLIP39SegwitP2SHWallet } from './wallets/slip39-wallets';
 import { ExtendedTransaction, Transaction, TWallet } from './wallets/types';
 import { WatchOnlyWallet } from './wallets/watch-only-wallet';
-import { getLNDHub } from '../helpers/lndHub';
 
 let usedBucketNum: boolean | number = false;
 let savingInProgress = 0; // its both a flag and a counter of attempts to write to disk
@@ -113,7 +112,7 @@ export class BlueApp {
           await AsyncStorage.setItem(key, value);
           await RNSecureKeyStore.remove(key);
         }
-      } catch (_) { }
+      } catch (_) {}
     }
   }
 
@@ -440,8 +439,8 @@ export class BlueApp {
             break;
           case SLIP39SegwitBech32Wallet.type:
             unserializedWallet = SLIP39SegwitBech32Wallet.fromJson(key) as unknown as SLIP39SegwitBech32Wallet;
-            break;         
-          
+            break;
+
           case LegacyWallet.type:
           default:
             unserializedWallet = LegacyWallet.fromJson(key) as unknown as LegacyWallet;
@@ -753,8 +752,8 @@ export class BlueApp {
           await wallet.fetchTransactions();
 
           if ('fetchPendingTransactions' in wallet) {
-            //await wallet.fetchPendingTransactions();
-            //await wallet.fetchUserInvoices();
+            // await wallet.fetchPendingTransactions();
+            // await wallet.fetchUserInvoices();
           }
         }
       }
@@ -762,8 +761,8 @@ export class BlueApp {
       for (const wallet of this.wallets) {
         await wallet.fetchTransactions();
         if ('fetchPendingTransactions' in wallet) {
-         // await wallet.fetchPendingTransactions();
-         // await wallet.fetchUserInvoices();
+          // await wallet.fetchPendingTransactions();
+          // await wallet.fetchUserInvoices();
         }
       }
     }
@@ -867,7 +866,7 @@ export class BlueApp {
   isAdvancedModeEnabled = async (): Promise<boolean> => {
     try {
       return !!(await AsyncStorage.getItem(BlueApp.ADVANCED_MODE_ENABLED));
-    } catch (_) { }
+    } catch (_) {}
     return false;
   };
 
@@ -878,7 +877,7 @@ export class BlueApp {
   isHandoffEnabled = async (): Promise<boolean> => {
     try {
       return !!(await AsyncStorage.getItem(BlueApp.HANDOFF_STORAGE_KEY));
-    } catch (_) { }
+    } catch (_) {}
     return false;
   };
 
@@ -898,7 +897,7 @@ export class BlueApp {
           return Boolean(await DefaultPreference.get(BlueApp.DO_NOT_TRACK));
         }
       }
-    } catch (_) { }
+    } catch (_) {}
     const doNotTrackValue = await DefaultPreference.get(BlueApp.DO_NOT_TRACK);
     return doNotTrackValue === '1' || false;
   };

@@ -60,7 +60,7 @@ export class LegacyWallet extends AbstractWallet {
 
   async generate(): Promise<void> {
     const buf = await randomBytes(32);
-    this.secret = ECPair.makeRandom({ rng: () => buf,  network: DOICHAIN, }).toWIF();
+    this.secret = ECPair.makeRandom({ rng: () => buf, network: DOICHAIN }).toWIF();
   }
 
   async generateFromEntropy(user: Buffer): Promise<void> {
@@ -175,8 +175,69 @@ export class LegacyWallet extends AbstractWallet {
 
     if (!respectFrozen) {
       ret = ret.filter(({ txid, vout }) => !txid || !this.getUTXOMetadata(txid, vout).frozen);
+      // Name outputs are kept out of coin selection the same way frozen ones are. A caller that
+      // wants to show every output (coin control) passes respectFrozen and still sees them. The
+      // set is built once for the whole list, not once per output - see nameOutpoints().
+      const nameOutpoints = this.nameOutpoints();
+      ret = ret.filter(({ txid, vout }) => !nameOutpoints.has(`${txid}:${vout}`));
     }
     return ret;
+  }
+
+  /**
+   * Whether one of our outputs carries a name operation.
+   *
+   * ElectrumX lists a name output under its holder's address right next to that address's coins, so
+   * coin selection would pick it like any other. A payment that spends one is a non-name
+   * transaction with a name input, and Doichain Core rejects it with "Non-name transaction has name
+   * input" - the more names a wallet holds, the likelier a payment fails, and the error says nothing
+   * about why (Doichain/DoiWallet#37). A name output may only be spent by a name transaction, as its
+   * single name input.
+   *
+   * This lives here rather than on the HD wallet because every wallet type descends from this one,
+   * and a single-address wallet is the worst case: one imported WIF holding seven names, which is
+   * what the test address in the integration suite looks like, has nothing but name outputs to
+   * choose from.
+   */
+  isNameOutput(txid: string, vout: number): boolean {
+    return this.nameOutpoints().has(`${txid}:${vout}`);
+  }
+
+  /**
+   * Every output of ours that carries a name, as "txid:vout".
+   *
+   * Built in one pass over the transactions. Asking per output instead - which is what getUtxo()
+   * did at first - walks the whole transaction list again for every single output, and
+   * getTransactions() is not cheap: it concatenates every address's transactions and derives the
+   * wallet's addresses to build its owned-address map. On a wallet with 60 outputs and 200
+   * transactions that turned getUtxo() from no measurable time at all into 37 ms, and it is called
+   * whenever a balance, the send screen or coin control is drawn.
+   */
+  nameOutpoints(): Set<string> {
+    const outpoints = new Set<string>();
+
+    for (const tx of this.getTransactions()) {
+      for (const output of tx.outputs ?? []) {
+        const scriptPubKey = output.scriptPubKey;
+        if (!scriptPubKey) continue;
+
+        if (scriptPubKey.nameOp) {
+          outpoints.add(`${tx.txid}:${output.n}`);
+          continue;
+        }
+
+        // The server does not always decode the name for us, so read it off the script. A name
+        // script opens with OP_NAME_NEW, OP_NAME_FIRSTUPDATE, OP_NAME_UPDATE or OP_NAME_DOI, so
+        // one byte tells plain payments apart without parsing them.
+        const hex = scriptPubKey.hex;
+        if (!hex || !['51', '52', '53', '5a'].includes(hex.slice(0, 2))) continue;
+        if (bitcoin.nameops.nameScriptOwner(Buffer.from(hex, 'hex')) !== undefined) {
+          outpoints.add(`${tx.txid}:${output.n}`);
+        }
+      }
+    }
+
+    return outpoints;
   }
 
   getDerivedUtxoFromOurTransaction(returnSpentUtxoAsWell = false): Utxo[] {
@@ -316,7 +377,6 @@ export class LegacyWallet extends AbstractWallet {
             ...txRest,
             inputs: [...vin2],
             outputs: [...vout],
-           
           };
 
           _txsByExternalIndex.push(clonedTx);
@@ -330,7 +390,6 @@ export class LegacyWallet extends AbstractWallet {
             ...txRest,
             inputs: [...vin],
             outputs: [...vout2],
-           
           };
 
           _txsByExternalIndex.push(clonedTx);
@@ -396,9 +455,16 @@ export class LegacyWallet extends AbstractWallet {
     }
 
     for (const t of _targets) {
-      if (t.address?.startsWith('bc1')) {
-        // in case address is non-typical and takes more bytes than coinselect library anticipates by default
-        t.script = { length: bitcoin.address.toOutputScript(t.address).length + 3 };
+      // a caller that already knows the output script's length wins - a name output, for one, is
+      // longer than the holder's address suggests
+      if (!t.script?.length && t.address?.startsWith(`${DOICHAIN.bech32}1`)) {
+        // in case address is non-typical and takes more bytes than coinselect library anticipates by
+        // default. This used to look for 'bc1', which no Doichain address ever starts with, so the
+        // correction never ran: coinselect assumed 34 bytes per output while a taproot (dc1p…) or a
+        // multisig (dc1q…, 32-byte program) output really costs 43, and every such send underpaid
+        // the fee by 9 bytes' worth. The network has to be passed as well, or decoding a dc1…
+        // address throws.
+        t.script = { length: bitcoin.address.toOutputScript(t.address, DOICHAIN).length + 3 };
       }
 
       if (t.script?.hex) {
@@ -411,10 +477,25 @@ export class LegacyWallet extends AbstractWallet {
 
     // .inputs and .outputs will be undefined if no solution was found
     if (!inputs || !outputs) {
-     // throw new Error('Not enough balance. Try sending smaller amount or decrease the fee.');
+      // throw new Error('Not enough balance. Try sending smaller amount or decrease the fee.');
     }
 
     return { inputs, outputs, fee };
+  }
+
+  /**
+   * How many vbytes one input of ours adds to a transaction, counted the way coinselect counts it.
+   *
+   * Its TX_INPUT_BASE is 41 bytes - txid 32, index 4, the script's length byte, sequence 4 - and
+   * then the script itself, for which the overrides in coinselect() above are the same numbers:
+   * 27 for p2wpkh, 50 for p2sh(p2wpkh), and the library's own 107 for a bare pubkey hash.
+   *
+   * Needed because a name transfer adds its input after coin selection has run, so the cost of
+   * that input has to be worked out separately - see createTransaction().
+   */
+  inputVbytes(): number {
+    const scriptLength = this.segwitType === 'p2wpkh' ? 27 : this.segwitType === 'p2sh(p2wpkh)' ? 50 : 107;
+    return 41 + scriptLength;
   }
 
   /**

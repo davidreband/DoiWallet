@@ -39,7 +39,6 @@
     "potentialFee": "ค่าธรรมเนียมโดยประมาณ: {fee}",
     "refill": "เติม",
     "refill_create": "กรุณาสร้างกระเป๋าสตางค์บิตคอยน์ เพื่อดำเนินการต่อ",
-    "refill_external": "เติมด้วยกระเป๋าสตางค์ภายนอก",
     "refill_lnd_balance": "เติมกระเป๋าสตางค์ไลท์นิง",
     "sameWalletAsInvoiceError": "คุณไม่สามารถจ่ายใบแจ้งหนี้นี้ด้วยกระเป๋าสตางค์อันเดียวกันกับที่ใช้สร้างมัน.",
     "title": "จัดการเงิน"
@@ -163,7 +162,6 @@
     "general_continuity": "ความต่อเนื่อง",
     "header": "ตั้งค่า",
     "language": "ภาษา",
-    "lightning_saved": "บันทึกสำเร็จ",
     "lightning_settings": "การตั้งค่าไลท์นิง",
     "network": "เน็ตเวิร์ค",
     "network_broadcast": "บอร์ดคาสต์ธุรกรรม",
@@ -218,7 +216,6 @@
     "details_address": "แอดเดรส",
     "details_advanced": "ขั้นสูง",
     "details_are_you_sure": "คุณแน่ใจหรือไม่?",
-    "details_connected_to": "เชื่อมไปที่",
     "details_delete": "ลบ",
     "details_delete_wallet": "ลบกระเป๋าสตางค์",
     "details_export_backup": "ส่งออก / สำรอง",

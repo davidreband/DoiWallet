@@ -8,8 +8,7 @@ import { Linking, ScrollView, StyleSheet, View } from 'react-native';
 // @ts-ignore theres no type declaration for this
 import BlueCrypto from 'react-native-blue-crypto';
 import wif from 'wif';
-import { DOICHAIN } from "../../blue_modules/network.js";
-
+import { DOICHAIN } from '../../blue_modules/network.js';
 
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import * as encryption from '../../blue_modules/encryption';
@@ -102,11 +101,14 @@ export default class SelfTest extends Component {
         await BlueElectrum.waitTillConnected();
         const addr4elect = 'NJWoTYFUepniDXffwg1WYvRH86JhMqTfTP';
         const electrumBalance = await BlueElectrum.getBalanceByAddress(addr4elect);
-        if (electrumBalance.confirmed !== 51432)
+        // The balance was 51432 when this was written and is whatever the chain says now. Pinning
+        // it meant the self test reported a failure every time somebody moved those coins, which
+        // says nothing about whether the wallet works.
+        if (!(electrumBalance.confirmed > 0))
           throw new Error('BlueElectrum getBalanceByAddress failure, got ' + JSON.stringify(electrumBalance));
 
         const electrumTxs = await BlueElectrum.getTransactionsByAddress(addr4elect);
-        if (electrumTxs.length !== 1) throw new Error('BlueElectrum getTransactionsByAddress failure, got ' + JSON.stringify(electrumTxs));
+        if (electrumTxs.length === 0) throw new Error('BlueElectrum getTransactionsByAddress failure, got ' + JSON.stringify(electrumTxs));
       } else {
         // skipping RN-specific test'
       }
@@ -117,14 +119,14 @@ export default class SelfTest extends Component {
           'abstract rhythm weird food attract treat mosquito sight royal actor surround ride strike remove guilt catch filter summer mushroom protect poverty cruel chaos pattern',
         );
         assertStrictEqual(await aezeed.validateMnemonicAsync(), true, 'Aezeed failed');
-        assertStrictEqual(aezeed._getExternalAddressByIndex(0), 'bc1qdjj7lhj9lnjye7xq3dzv3r4z0cta294xy78txn', 'Aezeed failed');
+        assertStrictEqual(aezeed._getExternalAddressByIndex(0), 'dc1qdjj7lhj9lnjye7xq3dzv3r4z0cta294xncuuxx', 'Aezeed failed');
       } else {
         // skipping RN-specific test
       }
 
       let l: LegacyWallet | SegwitP2SHWallet | TaprootWallet = new LegacyWallet();
-      l.setSecret('L4ccWrPMmFDZw4kzAKFqJNxgHANjdy6b7YKNXMwB4xac4FLF3Tov');
-      assertStrictEqual(l.getAddress(), '14YZ6iymQtBVQJk6gKnLCk49UScJK7SH4M');
+      l.setSecret('TkmQFF88sEribySvvFnGhRt1Dkpf3jCPaWi9cyx6bqmchTgVzehX');
+      assertStrictEqual(l.getAddress(), 'Mz7vJNUkLGH3vqzbx96uRGD4Cg1MKz6jkw');
       let utxos: CreateTransactionUtxo[] = [
         {
           txid: 'cc44e933a094296d9fe424ad7306f16916253a3d154d52e4f1a757c18242cec4',
@@ -137,7 +139,7 @@ export default class SelfTest extends Component {
 
       let txNew = l.createTransaction(
         utxos,
-        [{ value: 90000, address: '1GX36PGBUrF8XahZEGQqHqnJGW2vCZteoB' }],
+        [{ value: 90000, address: 'NC6QJ2mAQELh47x4W5jQWMwCzjRy7YkLmE' }],
         1,
         String(l.getAddress()),
         0xffffffff,
@@ -151,22 +153,22 @@ export default class SelfTest extends Component {
       );
       assertStrictEqual(txBitcoin.ins.length, 1);
       assertStrictEqual(txBitcoin.outs.length, 2);
-      assertStrictEqual('1GX36PGBUrF8XahZEGQqHqnJGW2vCZteoB', bitcoin.address.fromOutputScript(txBitcoin.outs[0].script)); // to address
-      assertStrictEqual(l.getAddress(), bitcoin.address.fromOutputScript(txBitcoin.outs[1].script)); // change address
+      assertStrictEqual('NC6QJ2mAQELh47x4W5jQWMwCzjRy7YkLmE', bitcoin.address.fromOutputScript(txBitcoin.outs[0].script, DOICHAIN)); // to address
+      assertStrictEqual(l.getAddress(), bitcoin.address.fromOutputScript(txBitcoin.outs[1].script, DOICHAIN)); // change address
 
       //
 
       l = new SegwitP2SHWallet();
-      l.setSecret('Kxr9tQED9H44gCmp6HAdmemAzU3n84H3dGkuWTKvE23JgHMW8gct');
-      if (l.getAddress() !== '34AgLJhwXrvmkZS1o5TrcdeevMt22Nar53') {
+      l.setSecret('TezwcnxzFGhDM7TkrDh5AhgVw4VhXpNr6F9gc5LqkuEKKVnNE9oH');
+      if (l.getAddress() !== '6GsWDB6FDJdnJ2YhzS8QVdpwxPwZhJymxm') {
         throw new Error('failed to generate segwit P2SH address from WIF');
       }
 
       //
 
       const wallet = new SegwitP2SHWallet();
-      wallet.setSecret('Ky1vhqYGCiCbPd8nmbUeGfwLdXB1h5aGwxHwpXrzYRfY5cTZPDo4');
-      assertStrictEqual(wallet.getAddress(), '3CKN8HTCews4rYJYsyub5hjAVm5g5VFdQJ');
+      wallet.setSecret('TfAiSEH3Jhqk4XpjXY15firfa7cw6qg5Qvgiv9sv5JrYiprFKJKE');
+      assertStrictEqual(wallet.getAddress(), '6R2C19qWLPa5Q1RF5La8xhuTXo9DmWaiC6');
 
       utxos = [
         {
@@ -178,7 +180,7 @@ export default class SelfTest extends Component {
 
       txNew = wallet.createTransaction(
         utxos,
-        [{ value: 90000, address: '1GX36PGBUrF8XahZEGQqHqnJGW2vCZteoB' }],
+        [{ value: 90000, address: 'NC6QJ2mAQELh47x4W5jQWMwCzjRy7YkLmE' }],
         1,
         String(wallet.getAddress()),
         0xffffffff,
@@ -192,14 +194,14 @@ export default class SelfTest extends Component {
       );
       assertStrictEqual(tx.ins.length, 1);
       assertStrictEqual(tx.outs.length, 2);
-      assertStrictEqual('1GX36PGBUrF8XahZEGQqHqnJGW2vCZteoB', bitcoin.address.fromOutputScript(tx.outs[0].script)); // to address
-      assertStrictEqual(bitcoin.address.fromOutputScript(tx.outs[1].script), wallet.getAddress()); // change address
+      assertStrictEqual('NC6QJ2mAQELh47x4W5jQWMwCzjRy7YkLmE', bitcoin.address.fromOutputScript(tx.outs[0].script, DOICHAIN)); // to address
+      assertStrictEqual(bitcoin.address.fromOutputScript(tx.outs[1].script, DOICHAIN), wallet.getAddress()); // change address
 
       //
 
       l = new TaprootWallet();
-      l.setSecret('L4PKRVk1Peaar5WuH5LiKfkTygWtFfGrFeH2g2t3YVVqiwpJjMoF');
-      if (l.getAddress() !== 'bc1payhxedzyjtu8w7ven7au9925pmhc5gl59m77ht9vqq0l5xq8fsgqtwg8vf') {
+      l.setSecret('TkY79tUnVeDjWzCr31s9iifnvGxofRNeicfomety5NgrNA92jacx');
+      if (l.getAddress() !== 'dc1payhxedzyjtu8w7ven7au9925pmhc5gl59m77ht9vqq0l5xq8fsgqdh0pr7') {
         throw new Error('failed to generate Taproot address from WIF');
       }
 
@@ -229,7 +231,7 @@ export default class SelfTest extends Component {
         network: DOICHAIN,
       }).address;
 
-      if (address !== '3GcKN7q7gZuZ8eHygAhHrvPa5zZbG5Q1rK') {
+      if (address !== '6VK9EzDRN1cZg7QfsXMqjvZs82d92oPakR') {
         throw new Error('bip49 is not ok');
       }
 
@@ -257,12 +259,16 @@ export default class SelfTest extends Component {
 
         //
 
+        // A key that has been used on Doichain. The one here before was a Bitcoin zpub with no
+        // history on this chain, so the two checks below could never pass on a device, and their
+        // expected balance of 200000 and 4 transactions would have gone stale anyway.
         const hd4 = new HDSegwitBech32Wallet();
-        hd4._xpub = 'zpub6r7jhKKm7BAVx3b3nSnuadY1WnshZYkhK8gKFoRLwK9rF3Mzv28BrGcCGA3ugGtawi1WLb2vyjQAX9ZTDGU5gNk2bLdTc3iEXr6tzR1ipNP';
+        hd4._xpub = 'zpub6rLXmt9RCjYTbb4VLV7ZwVf1NSAXPWjuiDY1Q1QgvfjkbB9UHR38hjCc7jxbLYPhBSEoDGtKd3NHwAi4EVKy7D2ZYHUWbu7GTU7e792gFez';
+        assertStrictEqual(hd4._getExternalAddressByIndex(0), 'dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk', 'HD Bech32 derivation failed');
         await hd4.fetchBalance();
-        if (hd4.getBalance() !== 200000) throw new Error('Could not fetch HD Bech32 balance');
+        if (!(hd4.getBalance() > 0)) throw new Error('Could not fetch HD Bech32 balance');
         await hd4.fetchTransactions();
-        if (hd4.getTransactions().length !== 4) throw new Error('Could not fetch HD Bech32 transactions');
+        if (hd4.getTransactions().length === 0) throw new Error('Could not fetch HD Bech32 transactions');
       } else {
         // skipping RN-specific test
       }
@@ -283,8 +289,8 @@ export default class SelfTest extends Component {
           () => (callbackWasCalled = true),
         );
         assertStrictEqual(
-          wif.encode(0x80, decryptedKey.privateKey, decryptedKey.compressed),
-          'KxqRtpd9vFju297ACPKHrGkgXuberTveZPXbRDiQ3MXZycSQYtjc',
+          wif.encode(DOICHAIN.wif, decryptedKey.privateKey, decryptedKey.compressed),
+          'TezDdDMw2FP3h3o6xKqjFKg1UW3aGE2T2MvNWqjKaEiacpiZzFPH',
           'bip38 failed',
         );
         // bip38 with BlueCrypto doesn't support progress callback
@@ -298,7 +304,7 @@ export default class SelfTest extends Component {
           'shadow pistol academic always adequate wildlife fancy gross oasis cylinder mustang wrist rescue view short owner flip making coding armed\n' +
             'shadow pistol academic acid actress prayer class unknown daughter sweater depict flip twice unkind craft early superior advocate guest smoking',
         );
-        assertStrictEqual(w._getExternalAddressByIndex(0), '18pvMjy7AJbCDtv4TLYbGPbR7SzGzjqUpj', 'SLIP39 failed');
+        assertStrictEqual(w._getExternalAddressByIndex(0), 'N4QHZPU65ggkkSAZj9sAUukKqgPKsizmwy', 'SLIP39 failed');
       }
 
       //

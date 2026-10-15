@@ -1,0 +1,24 @@
+{
+  "note": "Purchase PSBTs from doichainjs-lib test/fixtures/nameops.json. Built with names-on-chain and signed by the buyer; Doichain Core accepted both on regtest after the seller signed. Kept here for Doichain/DoiWallet#38.",
+  "network": {
+    "messagePrefix": "\u0019Doichain-Regtest Signed Message:\n",
+    "bech32": "ncrt",
+    "bip32": {
+      "public": 70617039,
+      "private": 70615956
+    },
+    "pubKeyHash": 111,
+    "scriptHash": 196,
+    "wif": 239
+  },
+  "purchases": [
+    {
+      "description": "name held by a P2PKH address, bought with P2WPKH coins",
+      "psbt": "cHNidP8BAM8AcQAAAkxMp494VzW3C9iWEBNZVaYYBFcNeWqO68kLOdHx7YdGAAAAAAD/////KV1RuNz66nJ/nGG4IN3pynQC/gwFInJb7sRifkUHtUcAAAAAAP////8DgPD6AgAAAAAZdqkUaYWlT/h3QupFXLerd+yTA7UqYR+IrEBCDwAAAAAAKVoObm9jLWxpYi1sZWdhY3kAbXUAFFOdt+LsqcV3gxF0Wtun3iV5jRMkhCzmDgAAAAAWABRTnbfi7KnFd4MRdFrbp94leY0TJAAAAAAAAQDeAQAAAAFIqLnPr0QUVLFZy3T5jCUS8arR+jFfgzPPiuK14QbPaAEAAABqRzBEAiBMjGFlMk3wckD6U+NM9WarVdfsOi+Ux2iBiyM45xSJfQIgJ5BKh5jkDcwV4ACGALLYb0+NBgV6isbOtqJKZOgFXYoBIQNuY1REzxV2jCL3SI/zXHcLC+U6urxLFo5cN7U3U4C0S/3///8CAKPhEQAAAAAWABRTnbfi7KnFd4MRdFrbp94leY0TJGTeNwwBAAAAGXapFPY7Hq18pNYUFoM3Tjotp8D7/4STiKxnAAAAAQEfAKPhEQAAAAAWABRTnbfi7KnFd4MRdFrbp94leY0TJCICAnwJ9jzzdlHfb5L2I7LlbrOsnLtgC8epjCIcVHnIV4WiSDBFAiEAw/ygNaGWSjhW2dRAvx3oG5AZPamUDJnclNxHDBBg1yMCIE0nyvoBFyoDzwYVjwcPVE2/uuQ4DJaLkpn6iArIS8XRAQABAPQAcQAAAUiouc+vRBRUsVnLdPmMJRLxqtH6MV+DM8+K4rXhBs9oAAAAAGpHMEQCIB7Ce/AWn1ZpIIYj73SSd4wwDKf/PnUgNcp41RfrZ6SaAiB0jP4Wg0j6Ry+aLQTQjBitMltF1J/tuGwdNFTTvTdkLQEhA7YBbKlIzdaWZEtRfhsVFnoDD0K+fVSqDLAnxnJrShVQ/////wJAQg8AAAAAACxaDm5vYy1saWItbGVnYWN5AG11dqkUaYWlT/h3QupFXLerd+yTA7UqYR+IrKgf3AsAAAAAGXapFGmFpU/4d0LqRVy3q3fskwO1KmEfiKwAAAAAAAAAAA=="
+    },
+    {
+      "description": "name held by a P2WPKH address, bought with P2PKH coins",
+      "psbt": "cHNidP8BANMAcQAAAvfO7OI2II2IPSG6U+nziPVIpOSO8wvy+miv57DjY5M1AAAAAAD/////5PGhma2xqAlt+48XpOpAQyH6GWACoESU+j9hm9DGuwEAAAAAAP////8DgPD6AgAAAAAWABQ1jmBE/ZaWqRUQfstrwJ97tu0h/EBCDwAAAAAALVoPbm9jLWxpYi13aXRuZXNzAG11dqkUhNpu2bGzhw5AogTTRKIY+vGPoBuIrPQq5g4AAAAAGXapFITabtmxs4cOQKIE00SiGPrxj6AbiKwAAAAAAAEA4QEAAAABe0Xxvqu9pxt25bkqp1IM91UrPOc5Tv5NYuLFMPrsu/MAAAAAakcwRAIgPEGd/E1M3Hi54VCstHbRET8NZOGTUtyhqRqIGhbqvv4CIHpamfHRatGtG79lIFpggp5g0iogJRHo4DTMGVwuZ/cQASED1YYFPWnjB7QeBbgyKEjncJ/rHRu5IusXCB6F/twcVPb9////AgCj4REAAAAAGXapFITabtmxs4cOQKIE00SiGPrxj6AbiKwQk3PoAAAAABl2qRRNDKcTO8t2H5D0p4iGcANpw6HhEIisbQAAACICAnuf7fFQOKqEW096MRw6uiTupEVukpWRz6oPX3mqJSZQRzBEAiBHumoRuVUx2pdrkWOoNQdz7Bc1UZPzk5Dm2qR8+xkbQgIgBK7oNJ0Q8op0bx4U9UetP9DF3bXEHoCB51tMvHlrHlYBAAEA8gBxAAAAAQF7RfG+q72nG3bluSqnUgz3VSs85zlO/k1i4sUw+uy78wEAAAAA/////wJAQg8AAAAAACpaD25vYy1saWItd2l0bmVzcwBtdQAUNY5gRP2WlqkVEH7La8Cfe7btIfzcQNwLAAAAABYAFDWOYET9lpapFRB+y2vAn3u27SH8AkcwRAIgZTUPCGyrbkZN4VdZppO1ud8ka0UuBiXBvWR8szdbgP4CIDiYJoWObSYKVg3ldwW9z6deZcZz4InRC6aPmjR1BMb+ASEDeSgy49+FKEguJ0/QILo1VnsQNHubUdCrSLfYdhcPU4oAAAAAAQEzQEIPAAAAAAAqWg9ub2MtbGliLXdpdG5lc3MAbXUAFDWOYET9lpapFRB+y2vAn3u27SH8AAAAAA=="
+    }
+  ]
+}

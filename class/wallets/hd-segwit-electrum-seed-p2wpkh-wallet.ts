@@ -48,7 +48,7 @@ export class HDSegwitElectrumSeedP2WPKHWallet extends HDSegwitBech32Wallet {
     }
     const args: SeedOpts = { prefix: PREFIX };
     if (this.passphrase) args.passphrase = this.passphrase;
-    const root = bip32.fromSeed(mn.mnemonicToSeedSync(this.secret, args),DOICHAIN);
+    const root = bip32.fromSeed(mn.mnemonicToSeedSync(this.secret, args), DOICHAIN);
     const xpub = root.derivePath("m/0'").neutered().toBase58();
 
     // bitcoinjs does not support zpub yet, so we just convert it from xpub
@@ -82,7 +82,7 @@ export class HDSegwitElectrumSeedP2WPKHWallet extends HDSegwitBech32Wallet {
     if (this.external_addresses_cache[index]) return this.external_addresses_cache[index]; // cache hit
 
     const xpub = this._zpubToXpub(this.getXpub());
-    const node = bip32.fromBase58(xpub,DOICHAIN);
+    const node = bip32.fromBase58(xpub, DOICHAIN);
     const address = bitcoin.payments.p2wpkh({
       pubkey: node.derive(0).derive(index).publicKey,
       network: DOICHAIN,
@@ -98,7 +98,7 @@ export class HDSegwitElectrumSeedP2WPKHWallet extends HDSegwitBech32Wallet {
     if (!this.secret) return false;
     const args: SeedOpts = { prefix: PREFIX };
     if (this.passphrase) args.passphrase = this.passphrase;
-    const root = bip32.fromSeed(mn.mnemonicToSeedSync(this.secret, args),DOICHAIN);
+    const root = bip32.fromSeed(mn.mnemonicToSeedSync(this.secret, args), DOICHAIN);
     const path = `m/0'/${internal ? 1 : 0}/${index}`;
     const child = root.derivePath(path);
 
@@ -110,13 +110,13 @@ export class HDSegwitElectrumSeedP2WPKHWallet extends HDSegwitBech32Wallet {
 
     if (node === 0 && !this._node0) {
       const xpub = this._zpubToXpub(this.getXpub());
-      const hdNode = bip32.fromBase58(xpub,DOICHAIN);
+      const hdNode = bip32.fromBase58(xpub, DOICHAIN);
       this._node0 = hdNode.derive(node);
     }
 
     if (node === 1 && !this._node1) {
       const xpub = this._zpubToXpub(this.getXpub());
-      const hdNode = bip32.fromBase58(xpub,DOICHAIN);
+      const hdNode = bip32.fromBase58(xpub, DOICHAIN);
       this._node1 = hdNode.derive(node);
     }
 

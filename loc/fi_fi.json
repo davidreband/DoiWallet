@@ -51,7 +51,6 @@
     "potentialFee": "Mahdollinen siirtokulu: {fee}",
     "refill": "Täytä",
     "refill_create": "Jatka luomalla Bitcoin-lompakko, jolla voit täyttää sen.",
-    "refill_external": "Täytä ulkoisella lompakolla",
     "refill_lnd_balance": "Täytä Salamalompakon saldoa",
     "sameWalletAsInvoiceError": "Et voi maksaa laskua samalla lompakolla, jolla se on luotu.",
     "title": "hallinnoi varoja"
@@ -63,7 +62,6 @@
     "open_direct_channel": "Avaa suora kanava tällä solmulla:",
     "please_pay_between_and": "Maksa vähintään {min} ja enintään {max}",
     "please_pay": "Ole hyvä ja maksa",
-    "preimage": "Alkukuva",
     "sats": "sattia",
     "wasnt_paid_and_expired": "Tätä laskua ei maksettu, ja se on vanhentunut."
   },
@@ -187,8 +185,6 @@
     "about_license": "MIT-lisenssi",
     "about_release_notes": "Julkaisutiedot",
     "about_review": "Jätä meille arvostelu",
-    "performance_score": "Suorituskykypisteet: {num}",
-    "run_performance_test": "Testin suorituskyky",
     "about_selftest": "Suorita itsetestaus",
     "about_selftest_electrum_disabled": "Electrum Self-Test toimintoa ei ole mahdollista käyttää offline-tilassa. Siirry pois offline-tilasta ja yritä uudelleen",
     "about_selftest_ok": "Kaikki sisäiset testit on läpäisty onnistuneesti. Lompakko toimii hyvin. ",
@@ -209,7 +205,6 @@
     "electrum_connected": "Yhdistetty",
     "electrum_connected_not": "Ei yhteyttä",
     "electrum_error_connect": "Ei voida yhdistää tarjottuun Electrum-palvelimeen",
-    "lndhub_uri": "esim, {example}",
     "electrum_host": "esim, {example}",
     "electrum_offline_mode": "Offline-tila",
     "electrum_offline_description": "Jos tämä on valittuna, niin Doi-lompakkojen saldoja ja tapahtumia ei yritetä hakea.",
@@ -238,7 +233,6 @@
 
     "language_isRTL": "DoiWallet on käynnistettävä uudelleen, jotta kielisuuntaus tulee voimaan.",
     "license": "Lisenssi",
-    "lightning_saved": "Muutoksesi on tallennettu onnistuneesti",
     "lightning_settings": "Salama-asetukset",
     "network": "Verkko",
     "network_broadcast": "Lähetä siirtotapahtuma",
@@ -338,7 +332,6 @@
     "details_address": "Osoite",
     "details_advanced": "Edistynyt",
     "details_are_you_sure": "Oletko varma?",
-    "details_connected_to": "Yhdistetty",
     "details_del_wb_err": "Annettu saldo ei vastaa tämän lompakon saldoa. Yritä uudelleen.",
     "details_del_wb_q": "Lompakossa on varoja. Ennenkuin jatkat, ymmärrä että tarvitset lompakon palautukseen tulevaisuudeessa palautuslauseen. Varmistaaksemme ettet tuhoa lompakkoa vahingossa, tulee sinun syöttää saldosi {balance} satosheina.",
     "details_delete": "Poista",

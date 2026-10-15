@@ -45,7 +45,7 @@ const AddressInput = ({
   style,
 }: AddressInputProps) => {
   const { colors } = useTheme();
- 
+
   const stylesHook = StyleSheet.create({
     root: {
       borderColor: colors.formBorder,

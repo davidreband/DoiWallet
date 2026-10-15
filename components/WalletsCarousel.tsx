@@ -306,7 +306,7 @@ export const WalletCarouselItem: React.FC<WalletCarouselItemProps> = React.memo(
     }, [isExiting, animationsEnabled, translateYValue, opacityValue]);
 
     let image;
-    switch (item.type) {      
+    switch (item.type) {
       case MultisigHDWallet.type:
         image = I18nManager.isRTL ? require('../img/vault-shape-rtl.png') : require('../img/vault-shape.png');
         break;
@@ -383,14 +383,14 @@ export const WalletCarouselItem: React.FC<WalletCarouselItemProps> = React.memo(
                       </Text>
                     )}
                   </View>
-              <Text style={iStyles.br} />
-              <Text numberOfLines={1} style={[iStyles.latestTx, { color: colors.inverseForegroundColor }]}>
-                {loc.wallets.list_latest_transaction}
-              </Text>
-              <Text numberOfLines={1} style={[iStyles.latestTxTime, { color: colors.inverseForegroundColor }]}>
-                {latestTransactionText}
-              </Text>
-              </>
+                  <Text style={iStyles.br} />
+                  <Text numberOfLines={1} style={[iStyles.latestTx, { color: colors.inverseForegroundColor }]}>
+                    {loc.wallets.list_latest_transaction}
+                  </Text>
+                  <Text numberOfLines={1} style={[iStyles.latestTxTime, { color: colors.inverseForegroundColor }]}>
+                    {latestTransactionText}
+                  </Text>
+                </>
               )}
             </LinearGradient>
           </View>

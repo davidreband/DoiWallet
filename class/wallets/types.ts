@@ -1,7 +1,7 @@
 import bitcoin from '@doichain/doichainjs-lib';
 import { CoinSelectOutput, CoinSelectReturnInput, CoinSelectUtxo } from 'coinselect';
 
-import { DoichainUnit} from '../../models/doichainUnits';
+import { DoichainUnit } from '../../models/doichainUnits';
 import { HDAezeedWallet } from './hd-aezeed-wallet';
 import { HDLegacyBreadwalletWallet } from './hd-legacy-breadwallet-wallet';
 import { HDLegacyElectrumSeedP2PKHWallet } from './hd-legacy-electrum-seed-p2pkh-wallet';
@@ -94,6 +94,14 @@ export type TransactionOutput = {
     type: string;
     addresses: string[];
     nameOp?: {
+      /**
+       * What ElectrumX decoded of the name operation. A name_new only commits to a hash, so it
+       * comes back as {op, hash} with no name and no value - confirmed against a regtest node.
+       * name and value are left required here because relaxing them cascades into the
+       * Transaction/NameOpTransaction typing, which needs sorting out on its own.
+       */
+      op?: string;
+      hash?: string;
       name: string;
       value: string;
     };

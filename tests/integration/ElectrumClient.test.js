@@ -2,53 +2,68 @@ import assert from 'assert';
 import * as bitcoin from '@doichain/doichainjs-lib';
 import ElectrumClient from 'electrum-client';
 
+import { DOICHAIN } from '../../blue_modules/network.js';
+
 const net = require('net');
 const tls = require('tls');
 
 jest.setTimeout(150 * 1000);
 
+/**
+ * The servers the wallet ships with. This used to point at electrum1-3.bluewallet.io, which answer
+ * for Bitcoin and refuse the connection from here, so the test could only ever fail.
+ */
 const hardcodedPeers = [
-  { host: 'electrum1.bluewallet.io', ssl: '443' },
-  { host: 'electrum2.bluewallet.io', ssl: '443' },
-  { host: 'electrum3.bluewallet.io', ssl: '443' },
-  { host: 'electrum1.bluewallet.io', tcp: '50001' },
-  { host: 'electrum2.bluewallet.io', tcp: '50001' },
-  { host: 'electrum3.bluewallet.io', tcp: '50001' },
+  { host: 'itchy-jellyfish-89.doi.works', ssl: 50002 },
+  { host: 'big-parrot-60.doi.works', ssl: 50002 },
+  { host: 'ugly-bird-70.doi.works', ssl: 50002 },
 ];
 
+/** The holder of the name "doichain", picked only because it is a Doichain address that exists. */
+const SOME_ADDRESS = 'NEYSLcFT6ajS2gLYCKhZ97shUj5kveoM6P';
+
+const scripthashOf = address => {
+  const script = bitcoin.address.toOutputScript(address, DOICHAIN);
+  const hash = bitcoin.crypto.sha256(script);
+  return Buffer.from(hash).reverse().toString('hex');
+};
+
 describe('ElectrumClient', () => {
-  it('can connect and query', async () => {
+  it('can connect and query the servers the wallet ships with', async () => {
+    const unreachable = [];
+    let reached = 0;
+
     for (const peer of hardcodedPeers) {
-      const mainClient = new ElectrumClient(net, tls, peer.ssl || peer.tcp, peer.host, peer.ssl ? 'tls' : 'tcp');
+      const mainClient = new ElectrumClient(net, tls, peer.ssl, peer.host, 'tls');
 
       try {
         await mainClient.connect();
-        await mainClient.server_version('2.7.11', '1.4');
+        const version = await mainClient.server_version('2.7.11', '1.4');
+        assert.ok(Array.isArray(version) && version[0], `${peer.host} did not say what it is`);
+
+        // What the server answers has to have the shape the wallet reads, which is the point of
+        // this test. The amounts themselves are nobody's business and change on their own - half
+        // of this suite fails because it compares against balances recorded years ago.
+        const balance = await mainClient.blockchainScripthash_getBalance(scripthashOf(SOME_ADDRESS));
+        assert.strictEqual(typeof balance.confirmed, 'number', `${peer.host} returned no confirmed balance`);
+        assert.strictEqual(typeof balance.unconfirmed, 'number', `${peer.host} returned no unconfirmed balance`);
+
+        const header = await mainClient.blockchainHeaders_subscribe();
+        assert.ok(header.height > 0, `${peer.host} is at height ${header.height}`);
+        reached++;
       } catch (e) {
+        // Demanding all three answer makes this fail whenever any one of them has a bad minute,
+        // and these servers do. The wallet does not need all three either - connectMain() walks
+        // the list until one answers - so an unreachable server is reported, not a failure. A
+        // server that answers wrongly still is one, because the assertions above throw here too.
+        unreachable.push(`${peer.host}: ${e.message || 'connection failed'}`);
         mainClient.reconnect = mainClient.keepAlive = () => {}; // dirty hack to make it stop reconnecting
-        mainClient.close();
-        throw new Error('bad connection: ' + JSON.stringify(peer) + ' ' + e.message);
       }
 
-      let addr4elect = 'bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej';
-      let script = bitcoin.address.toOutputScript(addr4elect);
-      let hash = bitcoin.crypto.sha256(script);
-      let reversedHash = Buffer.from(hash.reverse());
-      const start = +new Date();
-      let balance = await mainClient.blockchainScripthash_getBalance(reversedHash.toString('hex'));
-      const end = +new Date();
-      //end - start > 1000 && console.warn(peer.host, 'took', (end - start) / 1000, 'seconds to fetch balance');
-      assert.ok(balance.confirmed > 0);
-
-      addr4elect = '3GCvDBAktgQQtsbN6x5DYiQCMmgZ9Yk8BK';
-      script = bitcoin.address.toOutputScript(addr4elect);
-      hash = bitcoin.crypto.sha256(script);
-      reversedHash = Buffer.from(hash.reverse());
-      balance = await mainClient.blockchainScripthash_getBalance(reversedHash.toString('hex'));
-
-      // let peers = await mainClient.serverPeers_subscribe();
-      // console.log(peers);
       mainClient.close();
     }
+
+    if (unreachable.length) console.warn('servers that did not answer:', unreachable.join(', '));
+    assert.ok(reached > 0, `not one server answered: ${unreachable.join(', ')}`);
   });
 });

@@ -1,3 +1,12 @@
+/**
+ * The rate sources, against the real APIs.
+ *
+ * One assertion per source and per currency, so a single dead third party cannot hide whether the
+ * others answer. The sources are somebody else's servers: Exir is an Iranian exchange that answers
+ * 403 to everyone outside Iran, which the old single test asserted a rate from and therefore could
+ * never pass. What matters there is not the rate but that the wallet survives losing a source, so
+ * that is what is asserted instead.
+ */
 import DefaultPreference from 'react-native-default-preference';
 import assert from 'assert';
 
@@ -14,6 +23,8 @@ import { FiatUnit } from '../../models/fiatUnit';
 
 jest.setTimeout(90 * 1000);
 
+const storedRates = async () => JSON.parse((await DefaultPreference.get(EXCHANGE_RATES_STORAGE_KEY)) || '{}');
+
 describe('currency', () => {
   beforeAll(async () => {
     await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
@@ -23,49 +34,67 @@ describe('currency', () => {
     await DefaultPreference.clearAll();
   });
 
-  it('fetches exchange rate and saves to DefaultPreference', async () => {
+  it('fetches a rate and saves it to DefaultPreference', async () => {
     await initCurrencyDaemon();
-    let curString = await DefaultPreference.get(EXCHANGE_RATES_STORAGE_KEY);
-    let cur = JSON.parse(curString || '{}');
-    assert.ok(Number.isInteger(cur[LAST_UPDATED]));
-    assert.ok(cur[LAST_UPDATED] > 0);
-    assert.ok(cur.BTC_USD > 0);
+    const rates = await storedRates();
 
-    // now, setting other currency as default
+    assert.ok(Number.isInteger(rates[LAST_UPDATED]), 'the daemon did not record when it ran');
+    assert.ok(rates[LAST_UPDATED] > 0);
+    assert.ok(rates.BTC_USD > 0, 'no USD rate');
+  });
+
+  it('switches currency when the preference is written directly', async () => {
     await DefaultPreference.set(PREFERRED_CURRENCY_STORAGE_KEY, FiatUnit.JPY.endPointKey);
     await initCurrencyDaemon(true);
-    curString = await DefaultPreference.get(EXCHANGE_RATES_STORAGE_KEY);
-    cur = JSON.parse(curString || '{}');
-    assert.ok(cur.BTC_JPY > 0);
 
-    // now setting with a proper setter
+    assert.ok((await storedRates()).BTC_JPY > 0, 'no JPY rate');
+  });
+
+  it('switches currency through the setter', async () => {
     await setPreferredCurrency(FiatUnit.EUR);
     await initCurrencyDaemon(true);
-    const preferred = await getPreferredCurrency();
-    assert.strictEqual(preferred.endPointKey, 'EUR');
-    curString = await DefaultPreference.get(EXCHANGE_RATES_STORAGE_KEY);
-    cur = JSON.parse(curString || '{}');
-    assert.ok(cur.BTC_EUR > 0);
 
-    // test Yadio rate source
-    await setPreferredCurrency(FiatUnit.ARS);
+    assert.strictEqual((await getPreferredCurrency()).endPointKey, 'EUR');
+    assert.ok((await storedRates()).BTC_EUR > 0, 'no EUR rate');
+  });
+
+  // one currency per rate source, so it is visible which API is the one that stopped answering
+  for (const [unit, source] of [
+    [FiatUnit.USD, 'Coinpaprika'],
+    [FiatUnit.JPY, 'CoinGecko'],
+    [FiatUnit.ARS, 'Yadio'],
+    [FiatUnit.LBP, 'YadioConvert'],
+    [FiatUnit.INR, 'coinpaprika'],
+  ]) {
+    it(`fetches ${unit.endPointKey} from ${source}`, async () => {
+      assert.strictEqual(unit.source, source, `${unit.endPointKey} no longer comes from ${source}`);
+
+      await setPreferredCurrency(unit);
+      await initCurrencyDaemon(true);
+
+      const rates = await storedRates();
+      assert.ok(rates['BTC_' + unit.endPointKey] > 0, `${source} returned no rate for ${unit.endPointKey}`);
+      assert.strictEqual(rates.LAST_UPDATED_ERROR, false);
+    });
+  }
+
+  it('keeps the rate it already had when a source stops answering', async () => {
+    // Exir serves only Iran and answers 403 here, which makes it a real unreachable source rather
+    // than a mocked one. Losing a source has to leave the last known rate in place - the amounts on
+    // the wallet screen are read from it - and has to be flagged, which is what turns the rate stale
+    // in the UI.
+    assert.strictEqual(FiatUnit.IRT.source, 'Exir', 'IRT no longer comes from Exir');
+
+    await setPreferredCurrency(FiatUnit.USD);
     await initCurrencyDaemon(true);
-    curString = await DefaultPreference.get(EXCHANGE_RATES_STORAGE_KEY);
-    cur = JSON.parse(curString || '{}');
-    assert.ok(cur.BTC_ARS > 0);
+    const before = await storedRates();
+    assert.ok(before.BTC_USD > 0, 'no USD rate to begin with');
 
-    // test YadioConvert rate source
-    await setPreferredCurrency(FiatUnit.LBP);
-    await initCurrencyDaemon(true);
-    curString = await DefaultPreference.get(EXCHANGE_RATES_STORAGE_KEY);
-    cur = JSON.parse(curString || '{}');
-    assert.ok(cur.BTC_LBP > 0);
-
-    // test Exir rate source
     await setPreferredCurrency(FiatUnit.IRT);
     await initCurrencyDaemon(true);
-    curString = await DefaultPreference.get(EXCHANGE_RATES_STORAGE_KEY);
-    cur = JSON.parse(curString || '{}');
-    assert.ok(cur.BTC_IRT > 0);
+
+    const after = await storedRates();
+    assert.strictEqual(after.BTC_USD, before.BTC_USD, 'the known rate was lost');
+    assert.strictEqual(after.LAST_UPDATED_ERROR, true, 'the failure was not flagged');
   });
 });

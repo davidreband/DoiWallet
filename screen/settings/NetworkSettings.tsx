@@ -12,10 +12,6 @@ const NetworkSettings: React.FC = () => {
     navigation.navigate('ElectrumSettings');
   };
 
-  const navigateToLightningSettings = () => {
-    navigation.navigate('LightningSettings');
-  };
-
   const navigateToBlockExplorerSettings = () => {
     navigation.navigate('SettingsBlockExplorer');
   };
@@ -24,7 +20,7 @@ const NetworkSettings: React.FC = () => {
     <SafeAreaScrollView contentInsetAdjustmentBehavior="automatic" automaticallyAdjustContentInsets>
       <ListItem title={loc.settings.block_explorer} onPress={navigateToBlockExplorerSettings} testID="BlockExplorerSettings" chevron />
       <ListItem title={loc.settings.network_electrum} onPress={navigateToElectrumSettings} testID="ElectrumSettings" chevron />
-      
+
       {isNotificationsCapable && (
         <ListItem
           title={loc.settings.notifications}

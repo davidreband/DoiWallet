@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useRoute } from '@react-navigation/native';
 import BigNumber from 'bignumber.js';
 import * as bitcoin from '@doichain/doichainjs-lib';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View, LayoutAnimation} from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View, LayoutAnimation } from 'react-native';
 import { Icon } from '@rneui/themed';
 
 import { satoshiToBTC, satoshiToLocalCurrency } from '../../blue_modules/currency';
 import { BlueCard, BlueText } from '../../BlueComponents';
 
-import { DoichainUnit } from "../../models/doichainUnits";
+import { DoichainUnit } from '../../models/doichainUnits';
 import { DOICHAIN } from '../../blue_modules/network.js';
 import presentAlert from '../../components/Alert';
 import Button from '../../components/Button';
@@ -29,7 +29,6 @@ const PsbtMultisig = () => {
   /** @type MultisigHDWallet */
   const wallet = wallets.find(w => w.getID() === walletID);
 
-
   const [psbt, setPsbt] = useState(() => {
     try {
       const initial = bitcoin.Psbt.fromBase64(psbtBase64, { network: DOICHAIN });
@@ -47,7 +46,6 @@ const PsbtMultisig = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [receivedPSBTBase64]);
-
 
   const data = new Array(wallet.getM());
 

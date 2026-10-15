@@ -33,7 +33,6 @@ describe('Bech32 Segwit HD (BIP84)', () => {
       hd.getXpub(),
     );
 
-
     assert.strictEqual(hd._getExternalAddressByIndex(0), 'dc1qvtztrf6zpxffxgfeewd9aq2ytzuny5yjepecen');
     assert.strictEqual(hd._getExternalAddressByIndex(1), 'dc1qcxz3hc7uj3d74524qah3p3ce3qkj55k8m6329g');
     assert.strictEqual(hd._getInternalAddressByIndex(0), 'dc1q03unpflnvrsxyl7r35qsfevhdlqhmkh6ux2uy9');
@@ -52,8 +51,8 @@ describe('Bech32 Segwit HD (BIP84)', () => {
 
     await hd.fetchBalance();
     assert.strictEqual(hd.getBalance(), 0);
-    //assert.strictEqual(await hd.getAddressAsync(), hd._getExternalAddressByIndex(2));
-    //assert.strictEqual(await hd.getChangeAddressAsync(), hd._getInternalAddressByIndex(2));
+    // assert.strictEqual(await hd.getAddressAsync(), hd._getExternalAddressByIndex(2));
+    // assert.strictEqual(await hd.getChangeAddressAsync(), hd._getInternalAddressByIndex(2));
     assert.strictEqual(hd.next_free_address_index, 0);
     assert.strictEqual(hd.getNextFreeAddressIndex(), 0);
     assert.strictEqual(hd.next_free_change_address_index, 0);
@@ -72,18 +71,18 @@ describe('Bech32 Segwit HD (BIP84)', () => {
       assert.ok(tx.confirmations > 1);
     }
 
-  //  assert.ok(hd.weOwnTransaction('8ceed4a08ca6e855a7a1c1d63a484b7b91b08c760ff0418b54d3fbe598062d1b'));
-  //  assert.ok(hd.weOwnTransaction('7b81fabc289b914afc0c5784c93588daedb30e7713477935dd5ba52027b64745'));
-  //  assert.ok(!hd.weOwnTransaction('8732248ddf80183424f91be5580baa69eeeaecf13d6e41225c0d3837f977bc9e'));
+    //  assert.ok(hd.weOwnTransaction('8ceed4a08ca6e855a7a1c1d63a484b7b91b08c760ff0418b54d3fbe598062d1b'));
+    //  assert.ok(hd.weOwnTransaction('7b81fabc289b914afc0c5784c93588daedb30e7713477935dd5ba52027b64745'));
+    //  assert.ok(!hd.weOwnTransaction('8732248ddf80183424f91be5580baa69eeeaecf13d6e41225c0d3837f977bc9e'));
 
     // now fetch UTXO
     await hd.fetchUtxo();
     const utxo = hd.getUtxo();
     assert.strictEqual(utxo.length, 0);
-  //  assert.ok(utxo[0].txid);
-   // assert.ok(utxo[0].vout === 0 || utxo[0].vout === 1);
-   // assert.ok(utxo[0].value);
-   // assert.ok(utxo[0].address);
+    //  assert.ok(utxo[0].txid);
+    // assert.ok(utxo[0].vout === 0 || utxo[0].vout === 1);
+    // assert.ok(utxo[0].value);
+    // assert.ok(utxo[0].address);
 
     // now, reset HD wallet, and find free addresses from scratch:
     hd = new HDSegwitBech32Wallet();
@@ -169,7 +168,7 @@ describe('Bech32 Segwit HD (BIP84)', () => {
     let end = +new Date();
     end - start > 5000 && console.warn('fetchBalance took', (end - start) / 1000, 'sec');
 
-    assert.ok(hd.next_free_change_address_index === 0);    
+    assert.ok(hd.next_free_change_address_index === 0);
     assert.ok(hd.next_free_address_index === 0);
     assert.ok(hd.getNextFreeAddressIndex() === 0);
 

@@ -1,4 +1,6 @@
-import * as bitcoin from 'bitcoinjs-lib';
+import * as bitcoin from '@doichain/doichainjs-lib';
+
+import { DOICHAIN } from '../blue_modules/network.js';
 
 /**
  * Combines two PSBTs and returns the combined PSBT.
@@ -13,11 +15,11 @@ interface CombinePSBTsParams {
 
 export const combinePSBTs = ({ psbtBase64, newPSBTBase64 }: CombinePSBTsParams): bitcoin.Psbt => {
   if (psbtBase64 === newPSBTBase64) {
-    return bitcoin.Psbt.fromBase64(psbtBase64);
+    return bitcoin.Psbt.fromBase64(psbtBase64, { network: DOICHAIN });
   }
   try {
-    const psbt = bitcoin.Psbt.fromBase64(psbtBase64);
-    const newPsbt = bitcoin.Psbt.fromBase64(newPSBTBase64);
+    const psbt = bitcoin.Psbt.fromBase64(psbtBase64, { network: DOICHAIN });
+    const newPsbt = bitcoin.Psbt.fromBase64(newPSBTBase64, { network: DOICHAIN });
     psbt.combine(newPsbt);
     return psbt;
   } catch (err) {

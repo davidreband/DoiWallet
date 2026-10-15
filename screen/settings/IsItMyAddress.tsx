@@ -1,5 +1,5 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Keyboard, StyleSheet, TextInput, View, ScrollView, TouchableOpacity, Text } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { Keyboard, StyleSheet, TextInput, View, ScrollView, TouchableOpacity } from 'react-native';
 import { BlueButtonLink, BlueCard, BlueSpacing10, BlueSpacing20, BlueSpacing40, BlueText } from '../../BlueComponents';
 import Button from '../../components/Button';
 import { useTheme } from '../../components/themes';
@@ -199,9 +199,6 @@ const styles = StyleSheet.create({
     padding: 8,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  boldText: {
-    fontWeight: 'bold',
   },
   resultText: {
     marginVertical: 10,

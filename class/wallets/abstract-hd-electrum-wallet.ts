@@ -5,9 +5,8 @@ import BigNumber from 'bignumber.js';
 import BIP32Factory, { BIP32Interface } from 'bip32';
 import * as bip39 from 'bip39';
 import * as bitcoin from '@doichain/doichainjs-lib';
-import { Psbt,  Transaction as BTransaction } from '@doichain/doichainjs-lib';
-//import { getNameOPStackScript } from '@doichain/doichainjs-lib';
-import { getNameOPStackScript } from '../../tests/unit/getNameOPStackScript';
+import { Psbt, Transaction as BTransaction } from '@doichain/doichainjs-lib';
+import { getNameOPStackScript } from '../../utils/getNameOPStackScript';
 import b58 from 'bs58check';
 import { CoinSelectOutput, CoinSelectReturnInput } from 'coinselect';
 import { ECPairFactory } from 'ecpair';
@@ -18,9 +17,16 @@ import { ElectrumHistory } from '../../blue_modules/BlueElectrum';
 import ecc from '../../blue_modules/noble_ecc';
 import { randomBytes } from '../rng';
 import { AbstractHDWallet } from './abstract-hd-wallet';
-import { CreateTransactionResult, CreateTransactionTarget, CreateTransactionUtxo, ExtendedCoinSelectOutput, Transaction, Utxo } from './types';
+import {
+  CreateTransactionResult,
+  CreateTransactionTarget,
+  CreateTransactionUtxo,
+  ExtendedCoinSelectOutput,
+  Transaction,
+  Utxo,
+} from './types';
 import { SilentPayment, UTXOType as SPUTXOType, UTXO as SPUTXO } from 'silent-payments';
-import { DOICHAIN, VERSION } from '../../blue_modules/network.js';
+import { DOICHAIN, MIN_NAME_AMOUNT_SAT, VERSION } from '../../blue_modules/network.js';
 const ECPair = ECPairFactory(ecc);
 const bip32 = BIP32Factory(ecc);
 const bip47 = BIP47Factory(ecc);
@@ -30,11 +36,12 @@ type BalanceByIndex = {
   u: number;
 };
 
-interface NameOpInput {  
-    nameId: string;
-    nameValue: string;
-    sendTo: string;
-    nameOpAddress: string;
+interface NameOpInput {
+  nameId: string;
+  nameValue: string;
+  sendTo: string;
+  /** the output the chain says holds the name; absent for a first registration */
+  nameOutpoint?: { txid: string; vout: number };
 }
 
 /**
@@ -329,7 +336,10 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
       this._txs_by_external_index[c] = this._txs_by_external_index[c] || [];
       for (const tx of this._txs_by_external_index[c]) hasUnconfirmed = hasUnconfirmed || !tx.confirmations || tx.confirmations < 7;
 
-      if (hasUnconfirmed || this._txs_by_external_index[c].length === 0 || this._balances_by_external_index[c].u !== 0) {
+      // the balance may not have been fetched yet - fetchWalletTransactions() in blue-app.ts asks
+      // for transactions on their own - and an address with no balance recorded has nothing
+      // unconfirmed to go and look for, so treat it as zero rather than throwing on undefined
+      if (hasUnconfirmed || this._txs_by_external_index[c].length === 0 || this._balances_by_external_index[c]?.u) {
         addresses2fetch.push(this._getExternalAddressByIndex(c));
       }
     }
@@ -340,7 +350,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
       this._txs_by_internal_index[c] = this._txs_by_internal_index[c] || [];
       for (const tx of this._txs_by_internal_index[c]) hasUnconfirmed = hasUnconfirmed || !tx.confirmations || tx.confirmations < 7;
 
-      if (hasUnconfirmed || this._txs_by_internal_index[c].length === 0 || this._balances_by_internal_index[c].u !== 0) {
+      if (hasUnconfirmed || this._txs_by_internal_index[c].length === 0 || this._balances_by_internal_index[c]?.u) {
         addresses2fetch.push(this._getInternalAddressByIndex(c));
       }
     }
@@ -424,7 +434,6 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
             this._txs_by_external_index[c] = this._txs_by_external_index[c] || [];
             const { vin: txVin, vout: txVout, ...txRest } = tx;
             const clonedTx = { ...txRest, inputs: txVin.slice(0), outputs: txVout.slice(0) };
-           
 
             // trying to replace tx if it exists already (because it has lower confirmations, for example)
             let replaced = false;
@@ -443,7 +452,6 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
             this._txs_by_external_index[c] = this._txs_by_external_index[c] || [];
             const { vin: txVin, vout: txVout, ...txRest } = tx;
             const clonedTx = { ...txRest, inputs: txVin.slice(0), outputs: txVout.slice(0) };
-                   
 
             // trying to replace tx if it exists already (because it has lower confirmations, for example)
             let replaced = false;
@@ -467,7 +475,6 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
             this._txs_by_internal_index[c] = this._txs_by_internal_index[c] || [];
             const { vin: txVin, vout: txVout, ...txRest } = tx;
             const clonedTx = { ...txRest, inputs: txVin.slice(0), outputs: txVout.slice(0) };
-         
 
             // trying to replace tx if it exists already (because it has lower confirmations, for example)
             let replaced = false;
@@ -486,7 +493,6 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
             this._txs_by_internal_index[c] = this._txs_by_internal_index[c] || [];
             const { vin: txVin, vout: txVout, ...txRest } = tx;
             const clonedTx = { ...txRest, inputs: txVin.slice(0), outputs: txVout.slice(0) };
-         
 
             // trying to replace tx if it exists already (because it has lower confirmations, for example)
             let replaced = false;
@@ -513,7 +519,6 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
               this._txs_by_payment_code_index[pc][c] = this._txs_by_payment_code_index[pc][c] || [];
               const { vin: txVin, vout: txVout, ...txRest } = tx;
               const clonedTx = { ...txRest, inputs: txVin.slice(0), outputs: txVout.slice(0) };
-           
 
               // trying to replace tx if it exists already (because it has lower confirmations, for example)
               let replaced = false;
@@ -991,6 +996,11 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
     }
     if (!respectFrozen) {
       ret = ret.filter(({ txid, vout }) => !this.getUTXOMetadata(txid, vout).frozen);
+      // Name outputs are kept out of coin selection the same way frozen ones are. A caller that
+      // wants to show every output (coin control) passes respectFrozen and still sees them. The
+      // set is built once for the whole list, not once per output - see nameOutpoints().
+      const nameOutpoints = this.nameOutpoints();
+      ret = ret.filter(({ txid, vout }) => !nameOutpoints.has(`${txid}:${vout}`));
     }
     return ret;
   }
@@ -1158,18 +1168,65 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
     sequence: number = AbstractHDElectrumWallet.defaultRBFSequence,
     skipSigning = false,
     masterFingerprint: number = 0,
-    nameOpAsInput?: NameOpInput | undefined,    
+    nameOpAsInput?: NameOpInput | undefined,
   ): CreateTransactionResult {
     if (targets.length === 0) throw new Error('No destination provided');
 
-    let { inputs, outputs, fee } = this.coinselect(utxos, targets, feeRate);
-    const result = utxos.find(item => item.address === nameOpAsInput?.nameOpAddress);
-
-    if (result) {
-      inputs.push.apply(inputs, [result]);  
-      
+    let selectionTargets = targets;
+    if (nameOpAsInput?.nameId) {
+      // Coin selection sizes an output from its address, but a name output carries the name and its
+      // value on top of the holder's script - some twenty bytes more. Sized as a plain payment it
+      // underpays, and a node that enforces its relay minimum answers "min relay fee not met", so
+      // tell coin selection how long the output really is. Same +3 as the other script override
+      // below in coinselect(): the output's own length prefix and value field.
+      const { nameId, nameValue, sendTo } = nameOpAsInput;
+      const length = getNameOPStackScript(nameId, nameValue, sendTo, DOICHAIN).length + 3;
+      // the first output that is not change becomes the name output, see further down
+      const index = Math.max(
+        0,
+        targets.findIndex(t => t.address === sendTo),
+      );
+      selectionTargets = targets.map((t, i) => (i === index ? { ...t, script: { length } } : t));
     }
-    
+
+    let { inputs, outputs, fee } = this.coinselect(utxos, selectionTargets, feeRate);
+
+    if (nameOpAsInput?.nameOutpoint) {
+      // Spend exactly the output the chain named, nothing else. The caller reads it from the
+      // ElectrumX name index, so it is the operation that holds the name right now; picking by
+      // holder address instead was wrong, because a wallet reuses addresses and one address can
+      // hold several names at once (Doichain/DoiWallet#35).
+      //
+      // The name output is deliberately kept out of coin selection (Doichain/DoiWallet#37), so the
+      // list handed to us no longer contains it - look in the wallet's full set. Not finding it
+      // there is also the answer to "is this name ours": if it moved on, or never was, it is not
+      // among our outputs. Core would otherwise reject the transfer with "NAME_DOI on an existing
+      // name must spend its previous output".
+      const { txid, vout } = nameOpAsInput.nameOutpoint;
+      const nameInput = this.getUtxo(true).find(item => item.txid === txid && item.vout === vout);
+      if (!nameInput) {
+        throw new Error(`This wallet does not hold the name output ${txid}:${vout}`);
+      }
+      inputs.push(nameInput);
+
+      // Coin selection never saw this input, so none of its value was assigned to an output and
+      // all of it would go to the miner. The first real transfer paid 1,018,055 satoshi where
+      // about 25,000 was due: the extra 1,000,000 is what the name output carries, which this
+      // input brings in and the new name output hands straight back. Give that value to the
+      // change output, less what one more input costs at the rate the user asked for.
+      const extraFee = Math.ceil(feeRate * this.inputVbytes());
+      fee += extraFee;
+
+      const refund = nameInput.value - extraFee;
+      // the change output is the one coin selection left without an address, same test as below
+      const changeOutput = outputs.find(output => !output.address && !(output as ExtendedCoinSelectOutput).script?.hex);
+      if (changeOutput) {
+        changeOutput.value = (changeOutput.value ?? 0) + refund;
+      } else if (refund > 0) {
+        outputs.push({ value: refund } as CoinSelectOutput);
+      }
+    }
+
     const hasSilentPaymentOutput: boolean = !!outputs.find(o => o.address?.startsWith('sp1'));
     if (hasSilentPaymentOutput) {
       if (!this.allowSilentPaymentSend()) {
@@ -1253,7 +1310,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
 
       // this is not correct fingerprint, as we dont know realfingerprint - we got zpub with 84/0, but fingerpting
       // should be from root. basically, fingerprint should be provided from outside  by user when importing zpub
-      
+
       if (output.address?.startsWith('PM')) {
         // ok its BIP47 payment code, so we need to unwrap a joint address for the receiver and use it instead:
         output.address = this._getNextFreePaymentCodeAddressSend(output.address);
@@ -1264,29 +1321,34 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
       let outputScript;
       const extendedOutput = output as ExtendedCoinSelectOutput;
 
-      if (!change && nameOpAsInput && nameOpAsInput.nameId ) {
+      if (!change && nameOpAsInput && nameOpAsInput.nameId) {
         // Create NameOp script using the utility function
         const { nameId, nameValue, sendTo } = nameOpAsInput;
-        
-        outputScript = getNameOPStackScript(nameId, nameValue, sendTo, DOICHAIN.name);
-        
+
+        // Core rejects a name output under MinNameCoinAmount with "tx-name-greedy", which says
+        // nothing a user could act on - so refuse it here, where we can name the real limit.
+        if (output.value < MIN_NAME_AMOUNT_SAT) {
+          throw new Error(`A name output must hold at least ${MIN_NAME_AMOUNT_SAT / 100000000} DOI, not ${output.value / 100000000}`);
+        }
+
+        outputScript = getNameOPStackScript(nameId, nameValue, sendTo, DOICHAIN);
+
         psbt.setVersion(VERSION);
-        
+
         psbt.addOutput({
           script: outputScript,
           value: output.value,
           bip32Derivation:
             change && path && pubkey
               ? [
-                {
-                  masterFingerprint: masterFingerprintBuffer,
-                  path,
-                  pubkey,
-                },
-              ]
+                  {
+                    masterFingerprint: masterFingerprintBuffer,
+                    path,
+                    pubkey,
+                  },
+                ]
               : [],
         });
-
       } else {
         outputScript = extendedOutput.script?.hex ? Buffer.from(extendedOutput.script.hex, 'hex') : undefined;
         psbt.addOutput({
@@ -1297,19 +1359,19 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
           bip32Derivation:
             change && path && pubkey
               ? [
-                {
-                  masterFingerprint: masterFingerprintBuffer,
-                  path,
-                  pubkey,
-                },
-              ]
+                  {
+                    masterFingerprint: masterFingerprintBuffer,
+                    path,
+                    pubkey,
+                  },
+                ]
               : [],
         });
-      }      
+      }
     });
-    //console.log("__count", count)
-    //console.log("__outputs", outputs)
-    //console.log("__inputs", inputs)
+    // console.log("__count", count)
+    // console.log("__outputs", outputs)
+    // console.log("__inputs", inputs)
 
     if (!skipSigning) {
       // skiping signing related stuff
@@ -1320,9 +1382,8 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
 
     let tx;
     if (!skipSigning) {
-    
       tx = psbt.finalizeAllInputs().extractTransaction();
-    }   
+    }
     return { tx, inputs, outputs, fee, psbt };
   }
 
@@ -1335,7 +1396,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
     if (!pubkey || !path) {
       throw new Error('Internal error: pubkey or path are invalid');
     }
-    const p2wpkh = bitcoin.payments.p2wpkh({ pubkey:pubkey, network: DOICHAIN,});
+    const p2wpkh = bitcoin.payments.p2wpkh({ pubkey, network: DOICHAIN });
     if (!p2wpkh.output) {
       throw new Error('Internal error: could not create p2wpkh output during _addPsbtInput');
     }
@@ -1418,7 +1479,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
    */
   _nodeToP2shSegwitAddress(hdNode: BIP32Interface): string {
     const { address } = bitcoin.payments.p2sh({
-      redeem: bitcoin.payments.p2wpkh({ pubkey: hdNode.publicKey, network: DOICHAIN, }),
+      redeem: bitcoin.payments.p2wpkh({ pubkey: hdNode.publicKey, network: DOICHAIN }),
     });
 
     if (!address) {
@@ -1511,7 +1572,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
   calculateHowManySignaturesWeHaveFromPsbt(psbt: Psbt) {
     let sigsHave = 0;
     for (const inp of psbt.data.inputs) {
-      console.log("___inp___", inp)
+      console.log('___inp___', inp);
       if (inp.finalScriptSig || inp.finalScriptWitness || inp.partialSig) sigsHave++;
     }
     return sigsHave;
@@ -1529,32 +1590,38 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
     const hdRoot = bip32.fromSeed(seed, DOICHAIN);
 
     const inputs = psbt.data.inputs.map((input, index) => {
-      console.log("____input", input);
+      console.log('____input', input);
       try {
-        if (input.witnessUtxo){
-            return {
-                address: bitcoin.address.fromOutputScript(input.witnessUtxo.script, DOICHAIN),
-                value: input.witnessUtxo.value,
-            }
+        if (input.witnessUtxo) {
+          return {
+            address: bitcoin.address.fromOutputScript(input.witnessUtxo.script, DOICHAIN),
+            value: input.witnessUtxo.value,
+          };
         } else if (input.nonWitnessUtxo) {
-            const txin = psbt.txInputs[index];
-            const txout = bitcoin.Transaction.fromBuffer(input.nonWitnessUtxo).outs[txin.index];
-            console.log("____input_adress", bitcoin.address.fromOutputScript(txout.script, DOICHAIN))
-            return {
-                address: bitcoin.address.fromOutputScript(txout.script, DOICHAIN),
-                value: txout.value,
-            }
+          const txin = psbt.txInputs[index];
+          const txout = bitcoin.Transaction.fromBuffer(input.nonWitnessUtxo).outs[txin.index];
+          console.log('____input_adress', bitcoin.address.fromOutputScript(txout.script, DOICHAIN));
+          return {
+            address: bitcoin.address.fromOutputScript(txout.script, DOICHAIN),
+            value: txout.value,
+          };
         } else {
-            throw new Error('Could not get input of #' + index);
+          throw new Error('Could not get input of #' + index);
         }
-      } catch (e) { console.log("_______input__e", e)}
-  });
-
+      } catch (e) {
+        console.log('_______input__e', e);
+        // an input we could not read leaves a hole in the list on purpose; the reader below
+        // expects it and asks with inputs[cc]?.address
+        return undefined;
+      }
+    });
 
     for (let cc = 0; cc < psbt.inputCount; cc++) {
       try {
         psbt.signInputHD(cc, hdRoot);
-      } catch (e) { console.log("___signInputHD_1", e); } // protects agains duplicate cosignings
+      } catch (e) {
+        console.log('___signInputHD_1', e);
+      } // protects agains duplicate cosignings
 
       if (!psbt.inputHasHDKey(cc, hdRoot)) {
         for (const derivation of psbt.data.inputs[cc].bip32Derivation || []) {
@@ -1568,7 +1635,9 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
           const keyPair = ECPair.fromWIF(wif, DOICHAIN);
           try {
             psbt.signInput(cc, keyPair);
-          } catch (e) { console.log('___signInput__2', e) } // protects agains duplicate cosignings or if this output can't be signed with current wallet
+          } catch (e) {
+            console.log('___signInput__2', e);
+          } // protects agains duplicate cosignings or if this output can't be signed with current wallet
         }
       }
       console.log('_____cc', cc);
@@ -1595,12 +1664,12 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
 
         const keyPair = ECPair.fromWIF(wif, DOICHAIN);
         try {
-         // console.log('____psbt.data.inputs', psbt.data.inputs);
-         // console.log('____keyPair', keyPair);
-         // console.log('____cc_3', cc);
+          // console.log('____psbt.data.inputs', psbt.data.inputs);
+          // console.log('____keyPair', keyPair);
+          // console.log('____cc_3', cc);
 
           psbt.signInput(cc, keyPair);
-        //  console.log('____psbt.data.inputs_2', psbt.data.inputs); 
+          //  console.log('____psbt.data.inputs_2', psbt.data.inputs);
         } catch (e) {
           console.log('___signInput__3', e);
           throw new Error(String(e));
@@ -1658,7 +1727,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
 
   getBIP47FromSeed(): BIP47Interface {
     if (!this._bip47_instance || !this._bip47_instance.getNotificationAddress) {
-      this._bip47_instance = bip47.fromBip39Seed(this.secret, {network: DOICHAIN, coin: 'DOICHAIN'}, this.passphrase);
+      this._bip47_instance = bip47.fromBip39Seed(this.secret, { network: DOICHAIN, coin: 'DOICHAIN' }, this.passphrase);
     }
 
     return this._bip47_instance;
@@ -1834,7 +1903,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
 
         // final check if PC is even valid (could've been constructed by a buggy code, and our code would crash with that):
         try {
-          bip47.fromPaymentCode(paymentCode, {network: DOICHAIN, coin: 'DOICHAIN'});
+          bip47.fromPaymentCode(paymentCode, { network: DOICHAIN, coin: 'DOICHAIN' });
         } catch (_) {
           continue;
         }

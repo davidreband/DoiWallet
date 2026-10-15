@@ -211,8 +211,8 @@ const RateExtractors = {
       return undefined as never;
     }
   },
-  Coinpaprika: async (ticker: string): Promise<number> => {    
-/*
+  Coinpaprika: async (ticker: string): Promise<number> => {
+    /*
     const api = new Frisbee({ baseURI: 'https://api.coinpaprika.com' });
     const res = await api.get(`/v1/coins/doi-doicoin/ohlcv/latest`);
     console.log('\n Result of COINPAPRIKA Api is: ', res) 
@@ -225,16 +225,15 @@ const RateExtractors = {
     return rate;
 */
     let json;
-    
+
     try {
       const res = await fetch(`https://api.coinpaprika.com/v1/tickers/doi-doicoin?quotes=${ticker}`);
       json = await res.json();
-      
     } catch (e: any) {
       throw new Error(`Could not update rate  ${e.message}`);
     }
-    let rate = json.quotes[ticker]?.price
-   
+    let rate = json.quotes[ticker]?.price;
+
     if (!rate) throw new Error(`Could not update rate for ${ticker}: data is wrong`);
 
     rate = Number(rate);

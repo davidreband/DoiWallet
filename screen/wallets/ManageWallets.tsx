@@ -16,14 +16,11 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { usePreventRemove } from '@react-navigation/native';
 import { useTheme } from '../../components/themes';
-import { WalletCarouselItem } from '../../components/WalletsCarousel';
-import { TransactionListItem } from '../../components/TransactionListItem';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import loc from '../../loc';
 import { useStorage } from '../../hooks/context/useStorage';
 import { TTXMetadata } from '../../class';
 import { ExtendedTransaction, LightningTransaction, Transaction, TWallet } from '../../class/wallets/types';
-import { DoichainUnit} from '../../models/doichainUnits';
 import useBounceAnimation from '../../hooks/useBounceAnimation';
 import HeaderRightButton from '../../components/HeaderRightButton';
 import DragList, { DragListRenderItemInfo } from 'react-native-draglist';
@@ -185,7 +182,6 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 }
 
 const ManageWallets: React.FC = () => {
-  const sortableList = useRef(null);
   const { colors, closeImage } = useTheme();
   const { wallets: persistedWallets, setWalletsWithNewOrder, txMetadata, handleWalletDeletion } = useStorage();
   const initialWalletsRef = useRef<TWallet[]>(deepCopyWallets(persistedWallets));
@@ -196,7 +192,7 @@ const ManageWallets: React.FC = () => {
   const stylesHook = {
     root: {
       backgroundColor: colors.elevated,
-    },    
+    },
     noResultsText: {
       color: colors.foregroundColor,
     },
@@ -744,9 +740,6 @@ export default React.memo(ManageWallets);
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-  },
-  padding16: {
-    padding: 16,
   },
   button: {
     padding: 16,

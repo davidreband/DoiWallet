@@ -40,7 +40,6 @@
     "payButton": "支付",
     "refill": "增值",
     "refill_create": "爲了繼續進行，請建立一個要增值的比特幣錢包。",
-    "refill_external": "用外部錢包增值",
     "refill_lnd_balance": "給閃電錢包增值",
     "sameWalletAsInvoiceError": "你不能用建立賬單的錢包去支付該賬單",
     "title": "管理資金"
@@ -185,7 +184,6 @@
     "groundcontrol_explanation": "GroundControl是一款免費的開源推送通知服務器，用於比特幣錢包。 您可以安裝自己的GroundControl伺服器並將其URL放在此處，而不依賴BlueWallet的基礎結構。 保留空白以使用GroundControl的預設伺服器。",
     "header": "設定",
     "language": "語言",
-    "lightning_saved": "您的更變已成功儲存。",
     "lightning_settings": "閃電網路設定",
     "network": "網絡",
     "network_broadcast": "廣播交易",
@@ -263,7 +261,6 @@
     "details_address": "地址",
     "details_advanced": "進階的",
     "details_are_you_sure": "你確定嗎?",
-    "details_connected_to": "連接到",
     "details_delete": "移除",
     "details_delete_wallet": "移除錢包",
     "details_derivation_path": "推導路徑",

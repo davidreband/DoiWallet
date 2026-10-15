@@ -7,7 +7,7 @@ import { enableScreenProtect, disableScreenProtect } from '../../helpers/screenP
 import { validateMnemonic } from '../../blue_modules/bip39';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { BlueText } from '../../BlueComponents';
-import {  WatchOnlyWallet } from '../../class';
+import { WatchOnlyWallet } from '../../class';
 
 import HandOffComponent from '../../components/HandOffComponent';
 import QRCodeComponent from '../../components/QRCodeComponent';
@@ -190,7 +190,6 @@ const WalletExport: React.FC = () => {
         </>
       ) : (
         <>
-          
           <CopyBox text={secret} onPress={handleCopy} />
         </>
       )}
