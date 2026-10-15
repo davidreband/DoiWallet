@@ -95,7 +95,10 @@ class BitcoinPriceWidget : AppWidgetProvider() {
         super.onDisabled(context)
         Log.d(TAG, "onDisabled called")
         clearCache(context)
-        WorkManager.getInstance(context).cancelUniqueWork(WidgetUpdateWorker.WORK_NAME)
+        WorkManager.getInstance(context).apply {
+            cancelUniqueWork(WidgetUpdateWorker.WORK_NAME)
+            cancelUniqueWork(WidgetUpdateWorker.IMMEDIATE_WORK_NAME)
+        }
     }
 
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {
