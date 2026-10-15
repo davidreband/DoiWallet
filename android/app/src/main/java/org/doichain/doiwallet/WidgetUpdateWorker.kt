@@ -173,7 +173,14 @@ class WidgetUpdateWorker(context: Context, workerParams: WorkerParameters) : Wor
         val currencyFormatVolume = NumberFormat.getCurrencyInstance(Locale.forLanguageTag(preferredCurrencyLocale!!)).apply {
             maximumFractionDigits = 0
         }
-        
+        // The API reports the change with as many digits as it likes - 32.0099 among them - so it
+        // needs the same rounding the price and the volume already get.
+        val percentFormat = NumberFormat.getNumberInstance(Locale.forLanguageTag(preferredCurrencyLocale!!)).apply {
+            minimumFractionDigits = 2
+            maximumFractionDigits = 2
+        }
+        val percentValue = percent.toDoubleOrNull()
+
         views.apply {
             setViewVisibility(R.id.loading_indicator, View.GONE)
             setTextViewText(R.id.price_value, currencyFormat.format(currentPrice))
@@ -189,15 +196,15 @@ class WidgetUpdateWorker(context: Context, workerParams: WorkerParameters) : Wor
             setTextViewText(R.id.volume, currencyFormatVolume.format(currentVolume))
             setViewVisibility(R.id.percent_container, View.VISIBLE)
             
-            if (percent != null) {
-                setTextViewText(R.id.percent, percent + "%")
+            if (percentValue != null) {
+                setTextViewText(R.id.percent, percentFormat.format(percentValue) + "%")
                 setTextViewText(
-                    R.id.percent_arrow, 
-                    if (percent.toDouble() > 0) "↑" else "↓"
+                    R.id.percent_arrow,
+                    if (percentValue > 0) "↑" else "↓"
                 )
                 setTextColor(
                     R.id.percent_arrow,
-                    if (percent.toDouble() > 0) android.graphics.Color.GREEN else android.graphics.Color.RED
+                    if (percentValue > 0) android.graphics.Color.GREEN else android.graphics.Color.RED
                 )
             }else {
                 setViewVisibility(R.id.percent_container, View.GONE)
