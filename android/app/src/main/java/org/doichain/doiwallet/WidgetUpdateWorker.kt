@@ -94,18 +94,64 @@ class WidgetUpdateWorker(context: Context, workerParams: WorkerParameters) : Wor
                 showLoadingError(views)
             } else {
                 Log.d(TAG, "Using cached price from ${Date(lastUpdateTime)}")
-                displayCachedPrice(views, previousPrice, currentTime, preferredCurrencyLocale, volume!!, percent!!)
+                displayCachedPrice(views, previousPrice, currentTime, preferredCurrencyLocale, volume, percent)
             }
         } else {
             Log.d(TAG, "Successfully updated price: $fetchedPrice")
             displayFetchedPrice(
-                views, fetchedPrice!!, previousPrice, currentTime, preferredCurrencyLocale, volume!!, percent!!
+                views, fetchedPrice!!, previousPrice, currentTime, preferredCurrencyLocale, volume, percent
             )
             savePrice(sharedPref, fetchedPrice)
             sharedPref.edit().putLong("last_successful_update", currentTimeMillis).apply()
         }
 
         appWidgetManager.updateAppWidget(appWidgetIds, views)
+    }
+
+    /**
+     * Renders the 24h change, or hides the block when there is no usable reading. The API reports
+     * the change with as many digits as it likes - 32.0099 among them - so it needs the same
+     * rounding the price and the volume already get.
+     */
+    private fun renderPercentChange(views: RemoteViews, percent: String?, preferredCurrencyLocale: String?) {
+        val value = percent?.toDoubleOrNull()
+        if (value == null) {
+            views.setViewVisibility(R.id.percent_container, View.GONE)
+            return
+        }
+
+        val format = NumberFormat.getNumberInstance(Locale.forLanguageTag(preferredCurrencyLocale ?: "en-US")).apply {
+            minimumFractionDigits = 2
+            maximumFractionDigits = 2
+        }
+        // The arrow follows the rounded figure rather than the raw one, so a change that reads as
+        // 0.00% is not dressed up as a fall.
+        val rounded = Math.round(value * 100) / 100.0
+
+        views.apply {
+            setViewVisibility(R.id.percent_container, View.VISIBLE)
+            setTextViewText(R.id.percent, format.format(rounded) + "%")
+            setTextViewText(R.id.percent_arrow, if (rounded > 0) "↑" else if (rounded < 0) "↓" else "")
+            setTextColor(
+                R.id.percent_arrow,
+                if (rounded > 0) android.graphics.Color.GREEN else android.graphics.Color.RED
+            )
+        }
+    }
+
+    /** Renders the 24h volume, or "N/A" when there is no usable reading. */
+    private fun renderVolume(views: RemoteViews, volume: String?, preferredCurrencyLocale: String?) {
+        val value = volume?.toDoubleOrNull()
+        val format = NumberFormat.getCurrencyInstance(Locale.forLanguageTag(preferredCurrencyLocale ?: "en-US")).apply {
+            maximumFractionDigits = 0
+        }
+
+        views.apply {
+            setViewVisibility(R.id.volume, View.VISIBLE)
+            // Formatted as a Double rather than an Int: converting pins any volume above roughly
+            // 2.1 billion to Int.MAX_VALUE, so a larger one would be reported as that same figure.
+            setTextViewText(R.id.volume, if (value == null) "N/A" else format.format(value))
+        }
     }
 
     private fun showLoadingError(views: RemoteViews) {
@@ -117,7 +163,7 @@ class WidgetUpdateWorker(context: Context, workerParams: WorkerParameters) : Wor
             setViewVisibility(R.id.last_updated_time, View.VISIBLE)
             setTextViewText(R.id.last_updated_label, "Error")
             setTextViewText(R.id.last_updated_time, "Price unavailable")
-           // setViewVisibility(R.id.percent_container, View.GONE)
+            setViewVisibility(R.id.percent_container, View.GONE)
             setTextViewText(R.id.coin_name, "DOI:")
             setTextViewText(R.id.volume_title, "Volume 24h: ")
             setTextViewText(R.id.change_title, "Change 24h: ")
@@ -145,13 +191,12 @@ class WidgetUpdateWorker(context: Context, workerParams: WorkerParameters) : Wor
             setViewVisibility(R.id.price_value, View.VISIBLE)
             setViewVisibility(R.id.last_updated_label, View.VISIBLE)
             setViewVisibility(R.id.last_updated_time, View.VISIBLE)
-            //setViewVisibility(R.id.percent_container, View.VISIBLE)
             setTextViewText(R.id.coin_name, "DOI:")
             setTextViewText(R.id.volume_title, "Volume 24h: ")
             setTextViewText(R.id.change_title, "Change 24h: ")
-            setViewVisibility(R.id.volume, View.VISIBLE)
-            setTextViewText(R.id.volume, "volume")
         }
+        renderVolume(views, volume, preferredCurrencyLocale)
+        renderPercentChange(views, percent, preferredCurrencyLocale)
     }
 
     private fun displayFetchedPrice(
@@ -160,26 +205,15 @@ class WidgetUpdateWorker(context: Context, workerParams: WorkerParameters) : Wor
         previousPrice: String?,
         currentTime: String,
         preferredCurrencyLocale: String?,
-        volume: String,
-        percent: String
-    ) {        
-        val currentPrice =  fetchedPrice.toDouble() // Remove cents  
-        val currentVolume =  volume.toDouble().let { it.toInt() }
-        Log.d(TAG, "Current price: $currentPrice")       
-        
+        volume: String?,
+        percent: String?
+    ) {
+        val currentPrice = fetchedPrice.toDouble()
+        Log.d(TAG, "Current price: $currentPrice")
+
         val currencyFormat = NumberFormat.getCurrencyInstance(Locale.forLanguageTag(preferredCurrencyLocale!!)).apply {
             maximumFractionDigits = 3
-        }      
-        val currencyFormatVolume = NumberFormat.getCurrencyInstance(Locale.forLanguageTag(preferredCurrencyLocale!!)).apply {
-            maximumFractionDigits = 0
         }
-        // The API reports the change with as many digits as it likes - 32.0099 among them - so it
-        // needs the same rounding the price and the volume already get.
-        val percentFormat = NumberFormat.getNumberInstance(Locale.forLanguageTag(preferredCurrencyLocale!!)).apply {
-            minimumFractionDigits = 2
-            maximumFractionDigits = 2
-        }
-        val percentValue = percent.toDoubleOrNull()
 
         views.apply {
             setViewVisibility(R.id.loading_indicator, View.GONE)
@@ -191,25 +225,9 @@ class WidgetUpdateWorker(context: Context, workerParams: WorkerParameters) : Wor
             setTextViewText(R.id.coin_name, "DOI:")
             setTextViewText(R.id.volume_title, "Volume 24h: ")
             setTextViewText(R.id.change_title, "Change 24h: ")
-            
-            setViewVisibility(R.id.volume, View.VISIBLE)
-            setTextViewText(R.id.volume, currencyFormatVolume.format(currentVolume))
-            setViewVisibility(R.id.percent_container, View.VISIBLE)
-            
-            if (percentValue != null) {
-                setTextViewText(R.id.percent, percentFormat.format(percentValue) + "%")
-                setTextViewText(
-                    R.id.percent_arrow,
-                    if (percentValue > 0) "↑" else "↓"
-                )
-                setTextColor(
-                    R.id.percent_arrow,
-                    if (percentValue > 0) android.graphics.Color.GREEN else android.graphics.Color.RED
-                )
-            }else {
-                setViewVisibility(R.id.percent_container, View.GONE)
-            }
         }
+        renderVolume(views, volume, preferredCurrencyLocale)
+        renderPercentChange(views, percent, preferredCurrencyLocale)
     }
 
     private fun fetchPrice(currency: String?, callback: (String?, String?) -> Unit) {
