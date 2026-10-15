@@ -37,12 +37,9 @@
   },
   "lnd": {
     "expired": "Utløpt",
-    "payButton": "Betal",
     "refill": "Fyll på",
     "refill_create": "For å fortsette må du lage en Bitcoin-lommebok du kan fylle på med.",
-    "refill_lnd_balance": "Fyll på Lightning Wallet-balanse",
-    "sameWalletAsInvoiceError": "Du kan ikke betale en faktura med samme lommebok som brukes til å lage den.",
-    "title": "Administrer Midler"
+    "refill_lnd_balance": "Fyll på Lightning Wallet-balanse"
   },
   "lndViewInvoice": {
     "additional_info": "Tilleggsinformasjon",
@@ -72,11 +69,7 @@
     "details_create": "Oprett",
     "details_label": "Beskrivelse",
     "details_setAmount": "Motta med beløp",
-    "header": "Motta",
-    "maxSats": "Maksimalt beløp er {max} sats",
-    "maxSatsFull": "Maksimalt beløp er {max} sats eller {currency}",
-    "minSats": "Minimumsbeløpet er {min} sats",
-    "minSatsFull": "Minimumsbeløpet er {min} sats eller {currency}"
+    "header": "Motta"
   },
   "send": {
     "provided_address_is_invoice": "Denne adressen ser ut til å være for en Lightning-faktura. Vennligst gå til Lightning-lommeboken din for å foreta en betaling for denne fakturaen.",
@@ -110,7 +103,6 @@
     "details_adv_import_qr": "Importer Transaksjon (QR)",
     "details_amount_field_is_not_valid": "Beløpet er ikke gyldig.",
     "details_amount_field_is_less_than_minimum_amount_sat": "Det angitte beløpet er for lite. Vennligst skriv inn et beløp som er større enn 500 sats.",
-    "details_create": "Opprett Faktura",
     "details_error_decode": "Kan ikke dekode Doi-adressen",
     "details_fee_field_is_not_valid": "Avgiftsfeltet er ikke gyldig",
     "details_next": "Neste",
@@ -169,9 +161,6 @@
     "about_selftest_electrum_disabled": "Selvtesting er ikke tilgjengelig med Electrum Offline Mode. Deaktiver offline-modus og prøv igjen.",
     "about_selftest_ok": "Alle interne tester har bestått. Lommeboken fungerer bra.",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Discord Server",
-    "about_sm_telegram": "Telegram-kanal",
-    "about_sm_twitter": "Følg oss på Twitter",
     "biometrics": "Biometrics",
     "biom_10times": "Du har forsøkt å skrive inn passordet ditt 10 ganger. Vil du tilbakestille lagringen din? Dette vil fjerne alle lommebøker og dekryptere lagringen din.",
     "biom_conf_identity": "Vennligst bekreft din identitet.",
@@ -348,7 +337,6 @@
     "list_long_scan": "Skann QR-kode",
     "list_title": "Lommebøker",
     "list_tryagain": "Prøv igjen",
-    "no_ln_wallet_error": "Før du betaler en Lightning-faktura, må du først legge til en Lightning-lommebok.",
     "looks_like_bip38": "Dette ser ut som en passordbeskyttet privat nøkkel (BIP38).",
     "please_continue_scanning": "Vennligst fortsett å skanne.",
     "select_no_bitcoin": "Det er for øyeblikket ingen tilgjengelige Doi-lommebøker.",
@@ -453,7 +441,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "sign_title": "Signer/Bekreft Melding",

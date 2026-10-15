@@ -38,14 +38,10 @@
   },
   "lnd": {
     "expired": "Lejárt",
-    "payButton": "Fizess",
     "placeholder": "Számla",
-    "potentialFee": "Várható díj: {fee}",
     "refill": "Feltölt",
     "refill_create": "A folytatáshoz, hozz létre egy Bitcoin tárcát amire feltölthetsz.",
-    "refill_lnd_balance": "Lightning egyenleg feltöltése",
-    "sameWalletAsInvoiceError": "Számlát nem fizethesz be ugyanarról a tárcáról, mint amellyel létrehoztad.",
-    "title": "kezelés"
+    "refill_lnd_balance": "Lightning egyenleg feltöltése"
   },
   "lndViewInvoice": {
     "additional_info": "További információk",
@@ -113,7 +109,6 @@
     "details_adv_import_qr": "Tranzakció Importálása (QR)",
     "details_amount_field_is_not_valid": "Érvénytelen összeg",
     "details_amount_field_is_less_than_minimum_amount_sat": "A megadott összeg túl kevés. Kérlek adj meg egy 500sat-nál nagyobb összeget.",
-    "details_create": "Készíts számlát",
     "details_error_decode": "Nem lehet dekódolni a Doi címet",
     "details_fee_field_is_not_valid": "Èrvénytelen tranzakciós díj",
     "details_frozen": "{amount} BTC fagyasztva áll.",
@@ -174,9 +169,6 @@
     "about_selftest_electrum_disabled": "Az öntesztelés nem elérhető az Electrum Offline móddal. Kérjük, kapcsolja ki az offline módot, és próbálkozzon újra.",
     "about_selftest_ok": "Minden belső teszt sikeres. A tárca megfelelően működik.",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Discord Szerver",
-    "about_sm_telegram": "Telegram csevegés",
-    "about_sm_twitter": "Kövess minket Twitteren",
     "biometrics": "Biometrikus azonosító",
     "biom_10times": "10-szer próbálta meg megadni a jelszavát. Vissza szeretné állítani a tárhelyet? Ezzel eltávolítja az összes pénztárcát és visszafejti a titkosítást a  tárhelyről.",
     "biom_conf_identity": "Kérem azonosítsa magát.",
@@ -364,7 +356,6 @@
     "list_long_scan": "QR kód szkennelése",
     "list_title": "tárcák",
     "list_tryagain": "Próbáld újra",
-    "no_ln_wallet_error": "Mielőtt tudnál fizetni a villámhálózaton, először egy Lightning tárcát kell létrehoznod vagy betöltened.",
     "looks_like_bip38": "Ez egy jelszó védett privát kulcsnak (BIP38) tűnik",
     "please_continue_scanning": "Kérem szkenneljen folyamatosan.",
     "select_no_bitcoin": "Jelenleg nincs elérhető Doi tárca.",
@@ -477,7 +468,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "sign_title": "Aláíró/Hitelesíŧő üzenet",

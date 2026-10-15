@@ -42,14 +42,10 @@
   },
   "lnd": {
     "expired": "Scaduto",
-    "payButton": "Paga",
     "placeholder": "Fattura o indirizzo",
-    "potentialFee": "Commissioni potenziali: {fee}",
     "refill": "Ricarica",
     "refill_create": "Per continuare, crea un portafoglio Bitcoin dal quale ricaricare.",
-    "refill_lnd_balance": "Ricarica saldo del portafoglio Lightning",
-    "sameWalletAsInvoiceError": "Non puoi pagare una fattura con lo stesso portafoglio utilizzato per crearla.",
-    "title": "Gestisci fondi"
+    "refill_lnd_balance": "Ricarica saldo del portafoglio Lightning"
   },
   "lndViewInvoice": {
     "additional_info": "Ulteriori Informazioni",
@@ -80,11 +76,7 @@
     "details_create": "Crea",
     "details_label": "Descrizione",
     "details_setAmount": "Ricevi con importo",
-    "header": "Ricevi",
-    "maxSats": "L'importo massimo è {max} sats",
-    "maxSatsFull": "L'importo massimo è {max} sats o {currency}",
-    "minSats": "L'importo minimo è {min} sats",
-    "minSatsFull": "L'importo minimo è {min} sats o {currency}"
+    "header": "Ricevi"
   },
   "send": {
     "provided_address_is_invoice": "Questo indirizzo sembra essere associato ad una fattura Lightning. Apri il tuo portafoglio Lightning per effettuare il pagamento di questa fattura.",
@@ -118,7 +110,6 @@
     "details_adv_import_qr": "Importa Transazione (QR)",
     "details_amount_field_is_not_valid": "L'importo non è valido.",
     "details_amount_field_is_less_than_minimum_amount_sat": "L'importo specificato è troppo piccolo. Per favore inserisci un importo superiore a 500 sats.",
-    "details_create": "Crea Fattura",
     "details_error_decode": "Impossibile decodificare l'indirizzo Doi",
     "details_fee_field_is_not_valid": "La commissione non è valida.",
     "details_next": "Avanti",
@@ -177,9 +168,6 @@
     "about_selftest_electrum_disabled": "Il self-test non è disponibile con la Modalità Offline di Electrum. Per favore disattiva la modalità offline e riprova.",
     "about_selftest_ok": "Tutti i test interni sono stati superati con successo. Il portafoglio funziona correttamente.",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Server Discord",
-    "about_sm_telegram": "Canale Telegram",
-    "about_sm_twitter": "Seguici su Twitter",
     "biometrics": "Dati biometrici",
     "biom_10times": "Hai cercato di inserire la tua password 10 volte. Vuoi resettare il tuo archivio? Questo rimuoverà tutti i portafogli e decripterà lo spazio di archiviazione.",
     "biom_conf_identity": "Per favore conferma la tua identità.",
@@ -358,7 +346,6 @@
     "list_long_scan": "Scansiona un codice QR",
     "list_title": "Portafogli",
     "list_tryagain": "Riprova",
-    "no_ln_wallet_error": "Prima di pagare una fattura Lightning, devi aggiungere un portafoglio Lightning.",
     "looks_like_bip38": "Questa sembra essere una chiave privata protetta da password (BIP38).",
     "please_continue_scanning": "Per favore continua ad effettuare la scansione.",
     "select_no_bitcoin": "Non è disponibile alcun portafoglio Doi.",
@@ -452,18 +439,14 @@
     "freezeLabel": "Congela",
     "freezeLabel_un": "Scongela",
     "header": "Coin Control",
-
     "use_coin": "Usa Doi",
     "use_coins": "Usa Doi",
     "tip": "Questa funzione ti consente di vedere, etichettare, congelare o selezionare bitcoin per una migliore gestione del portafoglio. Puoi selezionare più bitcoin toccando i cerchi colorati.",
     "sort_label": "Etichetta",
     "sort_status": "Stato"
-
   },
   "units": {
-    "BTC": "BTC",
     "MAX": "Max",
-    "sat_vbyte": "sat/vByte",
     "sats": "sat"
   },
   "addresses": {

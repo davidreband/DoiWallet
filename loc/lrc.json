@@ -26,10 +26,8 @@
   },
   "lnd": {
     "expired": "مونقزی بیه",
-    "payButton": "پرداخت",
     "payment": "پرداخت",
     "placeholder": "سۊرت هساو یا آدرس",
-    "potentialFee": "کارمزد ائتمالی: {fee}",
     "refill": "پور کردن",
     "refill_lnd_balance": "پور کردن مۉجۊدی کیف پیلٛ لایتنینگ"
   },
@@ -80,8 +78,6 @@
     "about_selftest": "ره ونن خوش آزمایی",
     "about_selftest_electrum_disabled": "خوش آزمایی د هالت آفلاین د دسرس نؽ. هالت آفلاینن قیر فعال بکو ۉ دۏورته تفره بکو.",
     "about_sm_github": "گیت هاب",
-    "about_sm_discord": "سرور دیسکورد",
-    "about_sm_telegram": "تورگه تلگرام",
     "biometrics": "بیومتریک",
     "biom_conf_identity": "هوویت خوتونه تایید بکؽت.",
     "currency": "واهد پیلٛ",

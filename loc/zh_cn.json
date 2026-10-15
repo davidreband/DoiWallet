@@ -54,16 +54,11 @@
   "lnd": {
     "errorInvoiceExpired": "发票已过期。",
     "expired": "已过期",
-    "expiresIn": "在 {time} 分钟内过期",
-    "payButton": "支付",
     "payment": "付款",
     "placeholder": "发票或地址",
-    "potentialFee": "潜在费用： {fee}",
     "refill": "充值",
     "refill_create": "为了继续进行，请创建一个要充值的比特币钱包。",
-    "refill_lnd_balance": "给闪电钱包充值余额",
-    "sameWalletAsInvoiceError": "你不能用创建账单的钱包去支付该账单",
-    "title": "管理资金"
+    "refill_lnd_balance": "给闪电钱包充值余额"
   },
   "lndViewInvoice": {
     "additional_info": "附加信息",
@@ -99,12 +94,9 @@
     "details_label": "描述",
     "details_setAmount": "收款金额",
     "details_share": "分享...",
+    "address_not_found": "无法生成接收地址。",
     "header": "收款",
     "reset": "重置",
-    "maxSats": "最大金额为 {max} 聪",
-    "maxSatsFull": "最大金额为 {max} 聪，或 {currency}",
-    "minSats": "最小金额为 {min} 聪",
-    "minSatsFull": "最小金额为 {min} 聪，或 {currency}",
     "qrcode_for_the_address": "该地址的二维码",
     "bip47_explanation": "支付代码是一种通用的地址，可以避免泄露您的钱包地址。并非所有服务都支持它们。"
   },
@@ -147,7 +139,6 @@
     "details_adv_import_qr": "导入交易 (二维码)",
     "details_amount_field_is_not_valid": "金额无效",
     "details_amount_field_is_less_than_minimum_amount_sat": "指定的金额太小，请输入大于500聪 的金额。",
-    "details_create": "创建",
     "details_error_decode": "错误：无法解密比特币地址",
     "details_fee_field_is_not_valid": "费用无效",
     "details_frozen": "{amount} 的比特币已被冻结。",
@@ -198,12 +189,17 @@
     "reset_amount": "重置金额",
     "reset_amount_confirm": "您想重置金额吗？",
     "success_done": "完成",
-    "txSaved": "交易文件（{filepath}）已被保存。",
+    "txSaved": "交易文件（{filePath}）已被保存。",
     "file_saved_at_path": "文件 ({filePath}) 已被保存。",
     "cant_send_to_silentpayment_adress": "该钱包无法向 SilentPayment 地址发送",
     "cant_send_to_bip47": "该钱包无法发送至 BIP47 付款代码",
     "cant_find_bip47_notification": "先将此付款代码添加到联系人",
-    "problem_with_psbt": "PSBT的问题"
+    "problem_with_psbt": "PSBT的问题",
+    "name": "名称",
+    "broadcast": "立即广播",
+    "broadcast_value": "金额",
+    "input_index": "索引",
+    "foreign_address": "外部地址"
   },
   "settings": {
     "about": "关于",
@@ -218,9 +214,6 @@
     "about_selftest_electrum_disabled": "在 Electrum 离线模式下，自我检测不可用。请禁用离线模式并重试。",
     "about_selftest_ok": "所有内部测试均已成功通过，钱包运作良好。",
     "about_sm_github": "Github",
-    "about_sm_discord": "Discord 服务器",
-    "about_sm_telegram": "电报频道",
-    "about_sm_twitter": "在推特上关注我们",
     "privacy_temporary_screenshots": "允许截屏",
     "privacy_temporary_screenshots_instructions": "屏幕截图保护将在此会话中关闭，允许你截屏。关闭并重新打开应用后，保护将自动开启。",
     "biometrics": "生物识别",
@@ -311,7 +304,13 @@
     "total_balance": "总余额",
     "total_balance_explanation": "在主屏幕小工具上显示您所有钱包的总余额。",
     "widgets": "小工具",
-    "tools": "工具"
+    "tools": "工具",
+    "electrum_wrong_chain": "{server} 所在的 Doichain 链与本钱包不同，其余额和确认数在此不适用。该服务器已被移除。",
+    "enable_receive_bitcoin_intent_desc": "快速以二维码形式显示您的比特币接收地址。",
+    "no_wallet_available": "没有可用的钱包。请创建或导入一个钱包。",
+    "no_wallet_selected": "未选择钱包",
+    "push_notifications": "推送通知",
+    "receive_bitcoin_intent": "“接收比特币”快捷方式"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "您想在收到款项时得到通知吗？",
@@ -374,7 +373,17 @@
     "to": "到：{counterparty}",
     "updating": "正在更新...",
     "watchOnlyWarningTitle": "安全警告",
-    "watchOnlyWarningDescription": "小心诈骗份子，他们经常使用 “仅供观察 ”钱包来欺骗用户。这些钱包不允许您控制或发送资金，只允许您查看余额。"
+    "watchOnlyWarningDescription": "小心诈骗份子，他们经常使用 “仅供观察 ”钱包来欺骗用户。这些钱包不允许您控制或发送资金，只允许您查看余额。",
+    "nameOps_name": "名称",
+    "nameOps_value": "值",
+    "nameOps_checking": "正在查询该名称的持有者…",
+    "nameOps_moved": "自这笔交易之后，该名称已易手，现由 {address} 持有。",
+    "nameOps_not_ours": "该名称由 {address} 持有，该地址不属于本钱包，因此无法从这里发送。",
+    "nameOps_unchecked": "无法查询该名称的持有者。请连接服务器后重新打开此页面。",
+    "nameOps_current_value": "当前值",
+    "nameOps_last_changed": "最后一次变更在区块 {height}",
+    "send_to_doi_address": "发送到 DoiAddress",
+    "send": "发送"
   },
   "wallets": {
     "add_bitcoin": "比特币",
@@ -465,7 +474,6 @@
     "list_long_scan": "扫描二维码",
     "list_title": "钱包",
     "list_tryagain": "再试一次",
-    "no_ln_wallet_error": "在支付闪电账单之前，必须先添加一个闪电钱包。",
     "looks_like_bip38": "这看起来像是受密码保护的私钥（BIP38）。",
     "manage_title": "管理钱包",
     "no_results_found": "未能找到任何结果。",
@@ -610,10 +618,11 @@
     "sort_by": "排序方式"
   },
   "units": {
-    "BTC": "比特幣",
+    "DOI": "DOI",
     "MAX": "最大",
-    "sat_vbyte": "聪 / vByte",
-    "sats": "聪"
+    "sat_byte": "swartz/字节",
+    "sats": "聪",
+    "swartz": "swartz"
   },
   "addresses": {
     "copy_private_key": "复制私钥",

@@ -42,13 +42,10 @@
   },
   "lnd": {
     "expired": "Caducat",
-    "payButton": "Pagar",
     "payment": "Pagament",
     "placeholder": "Factura o adreça",
     "refill": "Recarregar",
-    "refill_lnd_balance": "Recarregar el balanç del moneder Lightning",
-    "sameWalletAsInvoiceError": "No pots pagar una factura amb el mateix moneder que l'ha creat.",
-    "title": "gestionar fons"
+    "refill_lnd_balance": "Recarregar el balanç del moneder Lightning"
   },
   "lndViewInvoice": {
     "additional_info": "Informació addicional",
@@ -110,7 +107,6 @@
     "details_adv_import_qr": "Importar transacció (QR)",
     "details_amount_field_is_not_valid": "Quantitat invalida",
     "details_amount_field_is_less_than_minimum_amount_sat": "La quantitat especificada és massa petita. Introduïu una quantitat superior a 500 sats.",
-    "details_create": "Crear",
     "details_fee_field_is_not_valid": "Comissió invalida",
     "details_next": "Següent",
     "details_note_placeholder": "comentari (útil per tu)",
@@ -152,9 +148,6 @@
     "about_review": "Deixa'ns una ressenya",
     "about_selftest": "Executa l'autotest",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Servidor Discord",
-    "about_sm_telegram": "Canal de Telegram",
-    "about_sm_twitter": "Segueix-nos a Twitter",
     "biometrics": "Biometria",
     "biom_conf_identity": "Si us plau, confirmeu la vostra identitat.",
     "currency": "Moneda",
@@ -283,7 +276,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "sign_placeholder_address": "Adreça",

@@ -52,16 +52,13 @@
     "network": "Chyba sítě"
   },
   "lnd": {
+    "errorInvoiceExpired": "Platnost faktury vypršela.",
     "expired": "Expirováno",
-    "payButton": "Zaplatit",
     "payment": "Platba",
     "placeholder": "Faktura nebo adresa",
-    "potentialFee": "Potenciální poplatek: {fee}",
     "refill": "Doplnit",
     "refill_create": "Chcete-li pokračovat, vytvořte prosím bitcoinovou peněženku, kterou můžete doplnit.",
-    "refill_lnd_balance": "Doplnit zůstatek na Lightning peněžence",
-    "sameWalletAsInvoiceError": "Fakturu nemůžete zaplatit pomocí stejné peněženky, kterou jste použili k jejímu vytvoření.",
-    "title": "Správa prostředků"
+    "refill_lnd_balance": "Doplnit zůstatek na Lightning peněžence"
   },
   "lndViewInvoice": {
     "additional_info": "Dodatečné informace",
@@ -97,12 +94,9 @@
     "details_label": "Popis",
     "details_setAmount": "Přijmout částku...",
     "details_share": "Sdílet…",
+    "address_not_found": "Nepodařilo se vytvořit adresu pro příjem.",
     "header": "Přijmout",
     "reset": "Obnovit",
-    "maxSats": "Maximální množství je {max} sats",
-    "maxSatsFull": "Maximální částka je {max} sats nebo {currency} ",
-    "minSats": "Minimální množství je {min} sats",
-    "minSatsFull": "Minimální částka je {min} sats nebo {currency} ",
     "qrcode_for_the_address": "QR kód pro adresu",
     "bip47_explanation": "Platební kódy jsou univerzální adresy, které zabraňují prozrazení adres vaší peněženky. Ne všechny služby je však podporují."
   },
@@ -145,7 +139,6 @@
     "details_adv_import_qr": "Importovat transakci (QR)",
     "details_amount_field_is_not_valid": "Částka není správně vyplněna.",
     "details_amount_field_is_less_than_minimum_amount_sat": "Zadaná částka je příliš malá. Zadejte částku vyšší než 500 sat.",
-    "details_create": "Vytvořit fakturu",
     "details_error_decode": "Bitcoinovou adresu nelze dekódovat",
     "details_fee_field_is_not_valid": "Poplatek není správně vyplněn.",
     "details_frozen": "{amount} BTC je zmrazeno.",
@@ -201,7 +194,12 @@
     "cant_send_to_silentpayment_adress": "Tato peněženka nedokáže odesílat prostředky na SilentPayment adresy",
     "cant_send_to_bip47": "Tato peněženka nedokáže odesílat prostředky na platební kódy BIP47",
     "cant_find_bip47_notification": "Nejdříve teno platební kód přidejte mezi kontakty",
-    "problem_with_psbt": "Problém s PSBT (částečně podepsanou bitcoinovou transakcí)"
+    "problem_with_psbt": "Problém s PSBT (částečně podepsanou bitcoinovou transakcí)",
+    "name": "Název",
+    "broadcast": "Odeslat do sítě nyní",
+    "broadcast_value": "Částka",
+    "input_index": "Index",
+    "foreign_address": "Cizí adresa"
   },
   "settings": {
     "about": "O DoiWallet",
@@ -216,9 +214,6 @@
     "about_selftest_electrum_disabled": "Autotest není v offline režimu serveru Electrum k dispozici. Vypněte prosím offline režim a zkuste to znovu.",
     "about_selftest_ok": "Všechny interní testy úspěšně prošly. Peněženka funguje správně.",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Discord server",
-    "about_sm_telegram": "Telegram kanál",
-    "about_sm_twitter": "Sledujte nás na Twitteru",
     "privacy_temporary_screenshots": "Povolit snímky obrazovky ",
     "privacy_temporary_screenshots_instructions": "Ochrana proti pořízení snímku obrazovky bude pro tuto relaci vypnuta, což vám umožní pořizovat snímky obrazovky. Poté co za zavřete a znovu otevřete aplikaci, ochrana bude automaticky znovu zapnuta.",
     "biometrics": "Biometrie",
@@ -309,7 +304,13 @@
     "total_balance": "Celkový zůstatek",
     "total_balance_explanation": "Zobrazte celkový zůstatek všech vašich peněženek na widgetech na domovské obrazovce.",
     "widgets": "Widgety",
-    "tools": "Nástroje"
+    "tools": "Nástroje",
+    "electrum_wrong_chain": "{server} sleduje jiný řetězec Doichain než tato peněženka, jeho zůstatky a potvrzení zde tedy neplatí. Server byl odebrán.",
+    "enable_receive_bitcoin_intent_desc": "Rychle zobrazí vaši bitcoinovou adresu pro příjem jako QR kód.",
+    "no_wallet_available": "Nejsou dostupné žádné peněženky. Vytvořte nebo importujte peněženku.",
+    "no_wallet_selected": "Není vybrána žádná peněženka",
+    "push_notifications": "Push oznámení",
+    "receive_bitcoin_intent": "Zkratka „Přijmout Bitcoin“"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "Chcete dostávat oznámení o příchozích platbách?",
@@ -372,7 +373,17 @@
     "to": "Pro: {counterparty}",
     "updating": "Aktualizování…",
     "watchOnlyWarningTitle": "Bezpečnostní upozornění",
-    "watchOnlyWarningDescription": "Dávejte si pozor na podvodníky, kteří často používají peněženky „pouze pro sledování“ ke klamání uživatelů. Tyto peněženky vám neumožňují kontrolovat nebo odesílat prostředky; umožňují vám pouze zobrazit zůstatek."
+    "watchOnlyWarningDescription": "Dávejte si pozor na podvodníky, kteří často používají peněženky „pouze pro sledování“ ke klamání uživatelů. Tyto peněženky vám neumožňují kontrolovat nebo odesílat prostředky; umožňují vám pouze zobrazit zůstatek.",
+    "nameOps_name": "Název",
+    "nameOps_value": "Hodnota",
+    "nameOps_checking": "Zjišťuje se, kdo tento název drží…",
+    "nameOps_moved": "Od této transakce název změnil majitele. Nyní jej drží {address}.",
+    "nameOps_not_ours": "Tento název drží {address}, což není adresa této peněženky, a proto jej odsud nelze odeslat.",
+    "nameOps_unchecked": "Nepodařilo se zjistit, kdo tento název drží. Připojte se k serveru a otevřete tuto obrazovku znovu.",
+    "nameOps_current_value": "Aktuální hodnota",
+    "nameOps_last_changed": "Naposledy změněno v bloku {height}",
+    "send_to_doi_address": "Odeslat na DoiAddress",
+    "send": "Odeslat"
   },
   "wallets": {
     "add_bitcoin": "Doi",
@@ -463,7 +474,6 @@
     "list_long_scan": "Naskenovat QR kód",
     "list_title": "Peněženky",
     "list_tryagain": "Zkuste to znovu",
-    "no_ln_wallet_error": "Před zaplacením Lightning faktury musíte nejdříve přidat Lightning peněženku.",
     "looks_like_bip38": "Tohle vypadá jako soukromý klíč chráněný heslem (BIP38).",
     "manage_title": "Spravovat peněženky",
     "no_results_found": "Nebyly nalezeny žádné výsledky.",
@@ -612,7 +622,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "copy_private_key": "Zkopírovat soukromý klíč",

@@ -52,17 +52,13 @@
     "network": "Erro na rede"
   },
   "lnd": {
+    "errorInvoiceExpired": "Fatura expirada.",
     "expired": "Expirada",
-    "expiresIn": "Expira em {time} minutos",
-    "payButton": "Pagar",
     "payment": "Pagamento",
     "placeholder": "Fatura ou endereço",
-    "potentialFee": "Taxa potencial: {fee}",
     "refill": "Recarregar",
     "refill_create": "Para continuar, por favor, crie uma carteira Bitcoin para recarregar.",
-    "refill_lnd_balance": "Recarregar a carteira Lightning",
-    "sameWalletAsInvoiceError": "Você não pode pagar um boleto com a mesma carteira que o criou.",
-    "title": "Administrar fundos"
+    "refill_lnd_balance": "Recarregar a carteira Lightning"
   },
   "lndViewInvoice": {
     "additional_info": "Informação adicional",
@@ -98,12 +94,9 @@
     "details_label": "Descrição",
     "details_setAmount": "Quantia a receber",
     "details_share": "Compartilhar...",
+    "address_not_found": "Não foi possível gerar o endereço de recebimento.",
     "header": "Receber",
     "reset": "Resetar",
-    "maxSats": "O Valor máximo é de {max} sats",
-    "maxSatsFull": "O valor máximo é de {max} sats ou {currency}",
-    "minSats": "O valor mínimo é de {min} sats",
-    "minSatsFull": "O valor mínimo é de {min} sats ou {currency}",
     "qrcode_for_the_address": "QR Code para o Endereço",
     "bip47_explanation": "Os Payment Codes são um tipo de endereço universal que evita a divulgação dos endereços da sua carteira. Nem todos os serviços irão suportar envio."
   },
@@ -133,6 +126,9 @@
     "details_add_recc_rem_all_alert_description": "Você tem certeza que deseja remover estes destinatários?",
     "details_add_rec_rem_all": "Remover todos os destinatários",
     "details_recipients_title": "Destinatários",
+    "details_recipient_title": "Destinatário #{number} de #{total}",
+    "please_complete_recipient_title": "Destinatário incompleto",
+    "please_complete_recipient_details": "Preencha os dados do destinatário #{number} antes de adicionar um novo destinatário.",
     "details_address": "Endereço",
     "details_address_field_is_not_valid": "O endereço não é válido.",
     "details_adv_fee_bump": "Permitir aumento de taxa",
@@ -143,7 +139,6 @@
     "details_adv_import_qr": "Importar Transação (QR)",
     "details_amount_field_is_not_valid": "O valor não é válido.",
     "details_amount_field_is_less_than_minimum_amount_sat": "O valor especificado é muito baixo. Por favor, insira um valor acima de 500 sats.",
-    "details_create": "Criar fatura",
     "details_error_decode": "Não foi possível decodificar o endereço Doi",
     "details_fee_field_is_not_valid": "A taxa não é válida.",
     "details_frozen": "{amount} BTC está congelado.",
@@ -179,6 +174,7 @@
     "input_total": "Total:",
     "permission_camera_message": "Precisamos de permissão para usar a câmera.",
     "psbt_sign": "Assinar uma transação",
+    "invalid_psbt": "PSBT inválido.",
     "open_settings": "Abrir Configurações",
     "permission_storage_denied_message": "BlueWallet não pode salvar este arquivo. Por favor abra as configurações do seu dispositivo e habilite as permissões de armazenamento.",
     "permission_storage_title": "Permissão de acesso ao armazenamento",
@@ -198,7 +194,12 @@
     "cant_send_to_silentpayment_adress": "Esta carteira não pode enviar para endereços SilentPayment",
     "cant_send_to_bip47": "Esta carteira não pode enviar para Payment Codes BIP47",
     "cant_find_bip47_notification": "Adicione este Payment Code aos contatos primeiro",
-    "problem_with_psbt": "Problema com a PSBT"
+    "problem_with_psbt": "Problema com a PSBT",
+    "name": "Nome",
+    "broadcast": "Transmitir agora",
+    "broadcast_value": "Valor",
+    "input_index": "Índice",
+    "foreign_address": "Endereço externo"
   },
   "settings": {
     "about": "Sobre",
@@ -213,9 +214,6 @@
     "about_selftest_electrum_disabled": "Autoteste indisponível no modo Offline da Electrum. Desative o modo Offline e tente novamente.",
     "about_selftest_ok": "Todos os testes internos passaram com sucesso. A carteira funciona bem.",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Servidor Discord",
-    "about_sm_telegram": "Chat do Telegram",
-    "about_sm_twitter": "Siga-nos no Twitter",
     "privacy_temporary_screenshots": "Permitir Screenshots",
     "privacy_temporary_screenshots_instructions": "A proteção de captura de tela será desligada para esta sesão, permitindo que você tire Screenshots. Uma vez que você fechar e reabrir a aplicação, a proteção estará ligada automáticamente.",
     "biometrics": "Biometria",
@@ -305,7 +303,14 @@
     "total_balance": "Saldo total",
     "total_balance_explanation": "Exibir o saldo total de todas suas carteiras nos seus widgets da tela inicial.",
     "widgets": "Widgets",
-    "tools": "Ferramentas"
+    "tools": "Ferramentas",
+    "electrum_error_connect_tor": "Não foi possível conectar ao servidor Electrum informado. Verifique se o app Orbot está conectado e tente novamente.",
+    "electrum_wrong_chain": "O {server} segue uma cadeia Doichain diferente da desta carteira, portanto seus saldos e confirmações não se aplicam aqui. O servidor foi removido.",
+    "enable_receive_bitcoin_intent_desc": "Mostra rapidamente seu endereço de recebimento de Bitcoin como um código QR.",
+    "no_wallet_available": "Nenhuma carteira disponível. Crie ou importe uma carteira.",
+    "no_wallet_selected": "Nenhuma carteira selecionada",
+    "push_notifications": "Notificações push",
+    "receive_bitcoin_intent": "Atalho \"Receber Bitcoin\""
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "Gostaria de receber notificações quando receber pagamentos?",
@@ -368,7 +373,17 @@
     "to": "Para:{counterparty}",
     "updating": "Atualizando...",
     "watchOnlyWarningTitle": "Alerta de segurança",
-    "watchOnlyWarningDescription": "Tenha cuidado com golpistas que costumam usar carteiras “watch-only (somente para assistir)” para enganar os usuários. Essas carteiras não permitem controlar ou enviar fundos; eles apenas permitem que você visualize o saldo."
+    "watchOnlyWarningDescription": "Tenha cuidado com golpistas que costumam usar carteiras “watch-only (somente para assistir)” para enganar os usuários. Essas carteiras não permitem controlar ou enviar fundos; eles apenas permitem que você visualize o saldo.",
+    "nameOps_name": "Nome",
+    "nameOps_value": "Valor",
+    "nameOps_checking": "Verificando quem detém este nome…",
+    "nameOps_moved": "Este nome mudou de mãos desde esta transação. Agora pertence a {address}.",
+    "nameOps_not_ours": "Este nome pertence a {address}, que não é um endereço desta carteira, portanto não pode ser enviado daqui.",
+    "nameOps_unchecked": "Não foi possível verificar quem detém este nome. Conecte-se a um servidor e abra esta tela novamente.",
+    "nameOps_current_value": "Valor atual",
+    "nameOps_last_changed": "Alterado pela última vez no bloco {height}",
+    "send_to_doi_address": "Enviar para DoiAddress",
+    "send": "Enviar"
   },
   "wallets": {
     "add_bitcoin": "Doi",
@@ -459,7 +474,6 @@
     "list_long_scan": "Leia o código QR",
     "list_title": "Carteiras",
     "list_tryagain": "Tente novamente",
-    "no_ln_wallet_error": "Antes de pagar uma fatura Lightning, você deve primeiro adicionar uma carteira Lightning.",
     "looks_like_bip38": "Parece que esta é uma chave privada protegida por senha (BIP38)",
     "manage_title": "Gerenciamento de Carteiras",
     "no_results_found": "Nenhum resultado encontrado.",
@@ -608,7 +622,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "copy_private_key": "Copiar chave privada",

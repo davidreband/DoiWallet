@@ -27,6 +27,11 @@ jobs:
     - name: Install node_modules
       run: npm ci
 
+    # Reports only. A translation that has not caught up with en.json should be visible, but it
+    # should not stop a branch from merging.
+    - name: Report translation coverage
+      run: npm run check-locales
+
     - name: Run tests
       run: npm test || npm test || npm test || npm test
       env:

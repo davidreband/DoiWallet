@@ -52,16 +52,13 @@
     "network": "Erreur réseau"
   },
   "lnd": {
+    "errorInvoiceExpired": "Facture expirée.",
     "expired": "Expiré",
-    "payButton": "Payer",
     "payment": "Paiement",
     "placeholder": "Facture ou adresse",
-    "potentialFee": "Frais potentiels : {fee}",
     "refill": "Déposer des fonds",
     "refill_create": "Pour continuer, veuillez créer un portefeuille Bitcoin à partir duquel déposer des fonds.",
-    "refill_lnd_balance": "Déposer des fonds dans votre portfeuille Lightning",
-    "sameWalletAsInvoiceError": "Vous ne pouvez pas payer une facture avec le même portefeuille utilisé pour la créer.",
-    "title": "gérer vos fonds"
+    "refill_lnd_balance": "Déposer des fonds dans votre portfeuille Lightning"
   },
   "lndViewInvoice": {
     "additional_info": "Informations complémentaires",
@@ -97,12 +94,9 @@
     "details_label": "Description",
     "details_setAmount": "Recevoir avec un montant spécifique",
     "details_share": "partager",
+    "address_not_found": "Impossible de générer une adresse de réception.",
     "header": "Recevoir",
     "reset": "Réinitialiser",
-    "maxSats": "Le montant maximal est de {max} sats",
-    "maxSatsFull": "Le montant maximal est de {max} sats ou {currency}",
-    "minSats": "Le montant minimalest de {min} sats",
-    "minSatsFull": "Le montant minimal est de {min} sats ou {currency}",
     "qrcode_for_the_address": "Code QR pour l'adresse",
     "bip47_explanation": "Les codes de paiement sont une adresse universelle qui évite de divulguer vos adresses de portefeuille. Tous les services ne les prennent pas en charge."
   },
@@ -132,7 +126,7 @@
     "details_add_recc_rem_all_alert_description": "Êtes-vous sûr de vouloir supprimer tous les destinataires ?",
     "details_add_rec_rem_all": "Efface tous les destinataires",
     "details_recipients_title": "Destinataires",
-    "details_recipient_title": "Destinataire n° {nombre} sur {total}",
+    "details_recipient_title": "Destinataire n° {number} sur {total}",
     "please_complete_recipient_title": "Destinataire incomplet",
     "please_complete_recipient_details": "Veuillez compléter les détails du destinataire #{number} avant d'ajouter un nouveau destinataire.",
     "details_address": "adresse",
@@ -145,7 +139,6 @@
     "details_adv_import_qr": "Importer Transaction (QR)",
     "details_amount_field_is_not_valid": "Champ montant invalide",
     "details_amount_field_is_less_than_minimum_amount_sat": "Le montant spécifié est trop petit. Veuillez entrer un montant supérieur à 500 sats.",
-    "details_create": "Créer la requête",
     "details_error_decode": "Impossible de décoder l'adresse Doi",
     "details_fee_field_is_not_valid": "Champ frais invalide",
     "details_frozen": "{amount} BTC est gelé.",
@@ -201,7 +194,12 @@
     "cant_send_to_silentpayment_adress": "Ce portefeuille ne peut pas envoyer a des adresses SilentPayment",
     "cant_send_to_bip47": "Ce portefeuille ne peut pas envoyer a des codes de paiement BIP47",
     "cant_find_bip47_notification": "Ajoutez ce Code paiement au contact d'abord",
-    "problem_with_psbt": "Problème avec PSBT"
+    "problem_with_psbt": "Problème avec PSBT",
+    "name": "Nom",
+    "broadcast": "Diffuser maintenant",
+    "broadcast_value": "Montant",
+    "input_index": "Index",
+    "foreign_address": "Adresse externe"
   },
   "settings": {
     "about": "À propos",
@@ -216,9 +214,6 @@
     "about_selftest_electrum_disabled": "L'auto-test n'est pas disponible avec le mode hors ligne Electrum. Veuillez désactiver le mode hors connexion et réessayer.",
     "about_selftest_ok": "Tous les tests internes ont été passés avec succès. Le portefeuille fonctionne parfaitement. ",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Serveur discord",
-    "about_sm_telegram": "Chaîne Telegram",
-    "about_sm_twitter": "Nous suivre sur Twitter",
     "privacy_temporary_screenshots": "Autorise copie écran",
     "privacy_temporary_screenshots_instructions": "La protection contre la capture d'écran sera désactivée pour cette session, ce qui vous permettra de prendre des captures d'écran. Une fois l'application fermée et rouverte, la protection sera automatiquement réactivée.",
     "biometrics": "Biométrie",
@@ -309,7 +304,13 @@
     "total_balance": "Solde total",
     "total_balance_explanation": "Afficher le solde total de tous vos portefeuilles sur l'écran d'accueil.",
     "widgets": "Widgets",
-    "tools": "Outils"
+    "tools": "Outils",
+    "electrum_wrong_chain": "{server} suit une chaîne Doichain différente de celle de ce portefeuille ; ses soldes et confirmations ne s’appliquent pas ici. Le serveur a été retiré.",
+    "enable_receive_bitcoin_intent_desc": "Affiche rapidement votre adresse de réception Bitcoin sous forme de QR code.",
+    "no_wallet_available": "Aucun portefeuille disponible. Veuillez créer ou importer un portefeuille.",
+    "no_wallet_selected": "Aucun portefeuille sélectionné",
+    "push_notifications": "Notifications push",
+    "receive_bitcoin_intent": "Raccourci « Recevoir des bitcoins »"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "Voulez vous recevoir les notifications quand vous recevez des paiements entrants ?",
@@ -372,7 +373,17 @@
     "to": "A: {counterparty}",
     "updating": "Chargement...",
     "watchOnlyWarningTitle": "Avertissement de sécurité",
-    "watchOnlyWarningDescription": "Méfiez-vous des fraudeurs qui utilisent souvent des portefeuilles « lecture seul» pour tromper les utilisateurs. Ces portefeuilles ne vous permettent pas de contrôler ou d’envoyer des fonds ; ils vous permettent uniquement de consulter le solde."
+    "watchOnlyWarningDescription": "Méfiez-vous des fraudeurs qui utilisent souvent des portefeuilles « lecture seul» pour tromper les utilisateurs. Ces portefeuilles ne vous permettent pas de contrôler ou d’envoyer des fonds ; ils vous permettent uniquement de consulter le solde.",
+    "nameOps_name": "Nom",
+    "nameOps_value": "Valeur",
+    "nameOps_checking": "Vérification du détenteur de ce nom…",
+    "nameOps_moved": "Ce nom a changé de mains depuis cette transaction. Il est désormais détenu par {address}.",
+    "nameOps_not_ours": "Ce nom est détenu par {address}, qui n’est pas une adresse de ce portefeuille ; il ne peut donc pas être envoyé d’ici.",
+    "nameOps_unchecked": "Impossible de vérifier le détenteur de ce nom. Connectez-vous à un serveur et rouvrez cet écran.",
+    "nameOps_current_value": "Valeur actuelle",
+    "nameOps_last_changed": "Dernière modification au bloc {height}",
+    "send_to_doi_address": "Envoyer vers une DoiAddress",
+    "send": "Envoyer"
   },
   "wallets": {
     "add_bitcoin": "Doi",
@@ -382,7 +393,7 @@
     "add_entropy_reset_title": "Réinitialiser l'entropie",
     "add_entropy_reset_message": "Changer le type de portefeuille réinitialisera l’entropie actuelle. Voulez-vous continuer ?",
     "add_entropy": "Entropie",
-    "add_entropy_bytes": "{octets} octets d'entropie",
+    "add_entropy_bytes": "{bytes} octets d'entropie",
     "add_entropy_generated": "{gen} octets d'entropie générée",
     "add_entropy_provide": "Créer de l'entropie par des jets de dé",
     "add_entropy_remain": "{gen} octets d'entropie générée. Les {rem} octets restants seront obtenus auprès du générateur de nombres aléatoires du système.",
@@ -463,7 +474,6 @@
     "list_long_scan": "Scanner le QR Code",
     "list_title": "Portefeuilles",
     "list_tryagain": "Réessayer",
-    "no_ln_wallet_error": "Avant de payer une facture Ligthning, vous devez créer un portefeuille Ligthning.",
     "looks_like_bip38": "Ceci ressemble a une clé privée protégée par un mot de passe (BIP38)",
     "manage_title": "Gérer les portefeuilles",
     "no_results_found": "Pas de résultats trouvés.",
@@ -612,7 +622,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "copy_private_key": "Copier clé privée",
@@ -666,7 +676,7 @@
     "notification_tx_unconfirmed": "La transaction de notification n'est pas encore confirmée, veuillez patienter",
     "failed_create_notif_tx": "Échec de la création d'une transaction on-chain",
     "onchain_tx_needed": "Transaction on-chain nécessaire",
-    "notif_tx_sent" : "Transaction de notification envoyée. Veuillez attendre qu'elle soit confirmée",
+    "notif_tx_sent": "Transaction de notification envoyée. Veuillez attendre qu'elle soit confirmée",
     "notif_tx": "Transaction de notification ",
     "not_found": "Code de paiement introuvable"
   }

@@ -41,16 +41,11 @@
   },
   "lnd": {
     "expired": "Förfallen",
-    "expiresIn": "Går ut om {time} minuter",
-    "payButton": "Betala",
     "payment": "Betalning",
     "placeholder": "Faktura eller adress",
-    "potentialFee": "Potentiell avgift: {fee}",
     "refill": "Fyll på",
     "refill_create": "För att fortsätta, vänligen skapa en Bitcoin plånbok att fylla på med",
-    "refill_lnd_balance": "Fyll på Lightning-plånbok",
-    "sameWalletAsInvoiceError": "Du kan inte betala en faktura från samma plånbok som användes för att skapa den.",
-    "title": "sätt in / ta ut"
+    "refill_lnd_balance": "Fyll på Lightning-plånbok"
   },
   "lndViewInvoice": {
     "additional_info": "Ytterligare information",
@@ -81,11 +76,7 @@
     "details_create": "Skapa",
     "details_label": "Beskrivning",
     "details_setAmount": "Ta emot med belopp",
-    "header": "Ta emot",
-    "maxSats": "Maximalt belopp är {max} sats",
-    "maxSatsFull": "Maximalt belopp är {max} sats eller {currency}",
-    "minSats": "Minsta belopp är {min} sats",
-    "minSatsFull": "Minsta belopp är {min} sats eller {currency}"
+    "header": "Ta emot"
   },
   "send": {
     "provided_address_is_invoice": "Den här adressen verkar vara för en Lightning-faktura. Vänligen gå till din Lightning-plånbok för att göra en betalning för denna faktura.",
@@ -119,7 +110,6 @@
     "details_adv_import_qr": "Importera Transaction (QR)",
     "details_amount_field_is_not_valid": "Angivet belopp är inte giltigt",
     "details_amount_field_is_less_than_minimum_amount_sat": "Det angivna beloppet är för litet. Vänligen ange ett belopp som är större än 500 sats.",
-    "details_create": "Skapa",
     "details_error_decode": "Det går inte att avkoda Doi-adress",
     "details_fee_field_is_not_valid": "Angiven avgift är inte giltig",
     "details_next": "Nästa",
@@ -178,9 +168,6 @@
     "about_selftest_electrum_disabled": "Självtest är inte tillgänglig med Electrum Offline Mode. Inaktivera offlineläget och försök igen.",
     "about_selftest_ok": "Alla interna tester har godkänts. Plånboken fungerar bra.",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Discord-server",
-    "about_sm_telegram": "Telegramkanal",
-    "about_sm_twitter": "Följ oss på Twitter",
     "biometrics": "Biometri",
     "biom_10times": "Du har försökt ange ditt lösenord 10 gånger. Vill du återställa din lagring? Detta tar bort alla plånböcker och dekrypterar din lagring.",
     "biom_conf_identity": "Vänligen bekräfta din identitet.",
@@ -362,7 +349,6 @@
     "list_long_scan": "Skanna QR kod",
     "list_title": "Plånböcker",
     "list_tryagain": "Försök igen",
-    "no_ln_wallet_error": "Innan du betalar en Lightning-faktura måste du först lägga till en Lightning-plånbok.",
     "looks_like_bip38": "Detta ser ut som en lösenordsskyddad privat nyckel (BIP38).",
     "please_continue_scanning": "Fortsätt att skanna.",
     "select_no_bitcoin": "Det finns för närvarande inga tillgängliga Doi-plånböcker.",
@@ -467,7 +453,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "sign_title": "Signera/verifiera meddelande",

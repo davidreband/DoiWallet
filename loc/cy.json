@@ -29,12 +29,9 @@
   },
   "lnd": {
     "expired": "Gorffen",
-    "payButton": "Talu",
     "refill": "Ail-lenwi",
     "refill_create": "Er mwyn parhau, ffurfia waled Doi i'w ail-lenwi. ",
-    "refill_lnd_balance": "Ail-lenwi balans waled Mellten",
-    "sameWalletAsInvoiceError": "Does dim modd talu anfoneb efo'r un waled ddefnyddwyd i'w greu.",
-    "title": "Rheoli Cyllid"
+    "refill_lnd_balance": "Ail-lenwi balans waled Mellten"
   },
   "lndViewInvoice": {
     "additional_info": "Gwybodaeth Ychwanegol",
@@ -80,7 +77,6 @@
     "details_adv_full_sure": "Wyt ti'n sicr dy fod eisiau defnyddio balans llawn dy walet ar gyfer y trafodyn hwn?",
     "details_adv_import": "Mewnforio Trafodyn",
     "details_amount_field_is_not_valid": "Dydi'r swm ddim yn ddilys.",
-    "details_create": "Creu Anfoneb",
     "details_next": "Nesaf",
     "details_note_placeholder": "Hunan Nodyn",
     "details_scan": "Sganio",
@@ -201,7 +197,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "sign_sign": "Arwyddo",

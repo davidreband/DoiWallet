@@ -37,14 +37,9 @@
   },
   "lnd": {
     "expired": "Potekel",
-    "expiresIn": "Poteče čez {time} min",
-    "payButton": "Plačaj",
-    "potentialFee": "Morebitna omrežnina: {fee}",
     "refill": "Napolni",
     "refill_create": "Če želite nadaljevati, ustvarite Bitcoin denarnico, s katero boste napolnili.",
-    "refill_lnd_balance": "Napolni stanje Lightning denarnice",
-    "sameWalletAsInvoiceError": "Plačilo računa ni mogoče z denarnico, s katero je bil ustvarjen.",
-    "title": "Uredi sredstva"
+    "refill_lnd_balance": "Napolni stanje Lightning denarnice"
   },
   "lndViewInvoice": {
     "additional_info": "Dodatne Informacije",
@@ -76,11 +71,7 @@
     "details_create": "Ustvari",
     "details_label": "Opis",
     "details_setAmount": "Prejmi znesek",
-    "header": "Prejmi",
-    "maxSats": "Največji znesek je {max} sats",
-    "maxSatsFull": "Največji znesek je {max} sats ali {currency}",
-    "minSats": "Najmanjši znesek je {min} sats",
-    "minSatsFull": "Najmanjši znesek je {min} sats ali {currency}"
+    "header": "Prejmi"
   },
   "send": {
     "provided_address_is_invoice": "Zdi se, da je ta naslov za Lightning račun. Za izvedbo plačila pojdite v svojo Lightning denarnico.",
@@ -114,7 +105,6 @@
     "details_adv_import_qr": "Uvozi transakcijo (QR)",
     "details_amount_field_is_not_valid": "Znesek ni veljaven",
     "details_amount_field_is_less_than_minimum_amount_sat": "Znesek je premajhen. Vnesite znesek večji od 500 satošijev.",
-    "details_create": "Ustvari Račun",
     "details_error_decode": "Ni mogoče dekodirati Doi naslova",
     "details_fee_field_is_not_valid": "Omrežnina ni veljavna",
     "details_next": "Naprej",
@@ -174,9 +164,6 @@
     "about_selftest_electrum_disabled": "Samotestiranje ni na voljo v Electrum načinu brez povezave. Onemogočite način brez povezave in poskusite ponovno.",
     "about_selftest_ok": "Vsi opravljeni testi so bili uspešni. Denarnica deluje brez napak.",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Discord Strežnik",
-    "about_sm_telegram": "Telegram kanal",
-    "about_sm_twitter": "Sledite nam na Twitterju",
     "biometrics": "Biometrija",
     "biom_10times": "Geslo ste poskušali vnesti 10-krat. Ali želite ponastaviti shrambo? S tem bodo odstranjene vse denarnice.",
     "biom_conf_identity": "Prosimo, potrdite svojo identiteto.",
@@ -354,7 +341,6 @@
     "list_long_scan": "Skeniraj QR kodo",
     "list_title": "Denarnice",
     "list_tryagain": "Poskusi ponovno",
-    "no_ln_wallet_error": "Za plačilo Lightning računa, morate najprej dodati Lightning denarnico.",
     "looks_like_bip38": "Zasebni ključ je verjetno zaščiten z geslom (BIP38)",
     "please_continue_scanning": "Nadaljujte s skeniranjem",
     "select_no_bitcoin": "Trenutno ni na voljo nobena Doi denarnica.",
@@ -458,7 +444,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "sign_title": "Podpiši / Preveri sporočilo",

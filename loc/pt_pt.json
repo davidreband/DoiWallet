@@ -38,15 +38,10 @@
   },
   "lnd": {
     "expired": "Expirado",
-    "expiresIn": "Expira em {time} minutos",
-    "payButton": "Paga",
     "placeholder": "Fatura ou endereço",
-    "potentialFee": "Taxa provável: {fee}",
     "refill": "Carregar",
     "refill_create": "Para continuar, crie uma carteira Doi para recarregar.",
-    "refill_lnd_balance": "Carregar o saldo da Lightning wallet",
-    "sameWalletAsInvoiceError": "Não pode pagar uma factura com a mesma wallet usada para a criar.",
-    "title": "Gerir saldo"
+    "refill_lnd_balance": "Carregar o saldo da Lightning wallet"
   },
   "lndViewInvoice": {
     "additional_info": "Informação adicional",
@@ -106,7 +101,6 @@
     "details_adv_import": "Importar transação",
     "details_amount_field_is_not_valid": "Campo de quantia não é válido",
     "details_amount_field_is_less_than_minimum_amount_sat": "A quantidade indicada é muito pequena. Por favor, indique uma quantidade superior a 500 sats.",
-    "details_create": "Criar",
     "details_fee_field_is_not_valid": "Campo de taxa não é válido",
     "details_next": "Próximo",
     "details_no_signed_tx": "O ficheiro seleccionado não contém uma transacção que possa ser importada.",
@@ -156,9 +150,6 @@
     "about_review": "Deixa-nos uma review",
     "about_selftest": "Run self test",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Servidor Discord",
-    "about_sm_telegram": "Chat Telegram",
-    "about_sm_twitter": "Segue-nos no Twitter",
     "biom_10times": "Você tentou digitar sua senha 10 vezes. Você gostaria de resetar seu armazenamento? Isso irá remover todas suas carteiras e descriptografar seu armazenamento.",
     "biom_conf_identity": "Por favor, confirme sua identidade.",
     "biom_remove_decrypt": "Todas suas carteiras serão removidas e seu armazenamento será descriptografado. Tem certeza que deseja proceder?",
@@ -332,7 +323,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "sign_placeholder_address": "Endereço",

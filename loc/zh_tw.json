@@ -37,12 +37,9 @@
   },
   "lnd": {
     "expired": "已過期",
-    "payButton": "支付",
     "refill": "增值",
     "refill_create": "爲了繼續進行，請建立一個要增值的比特幣錢包。",
-    "refill_lnd_balance": "給閃電錢包增值",
-    "sameWalletAsInvoiceError": "你不能用建立賬單的錢包去支付該賬單",
-    "title": "管理資金"
+    "refill_lnd_balance": "給閃電錢包增值"
   },
   "lndViewInvoice": {
     "additional_info": "附加信息",
@@ -102,7 +99,6 @@
     "details_adv_import": "匯入交易",
     "details_amount_field_is_not_valid": "金額無效",
     "details_amount_field_is_less_than_minimum_amount_sat": "指定的金額太小，請輸入大于500聰 的金額。",
-    "details_create": "建立",
     "details_error_decode": "錯誤：無法解密比特幣地址",
     "details_fee_field_is_not_valid": "費用無效",
     "details_next": "下一個",
@@ -152,9 +148,6 @@
     "about_selftest": "運行自我檢查",
     "about_selftest_ok": "所有內部測試均已成功通過，錢包運作良好。",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Discord 伺服器",
-    "about_sm_telegram": "電報(Telegram)頻道",
-    "about_sm_twitter": "在推特上追蹤我們",
     "biometrics": "生物識別",
     "biom_10times": "您已嘗試輸入密碼10次。 您想重設儲存空間嗎？ 這將刪除所有錢包並解密您的儲存。",
     "biom_conf_identity": "請確認您的身份。",
@@ -297,7 +290,6 @@
     "list_long_scan": "掃描二維碼",
     "list_title": "錢包",
     "list_tryagain": "再試一次",
-    "no_ln_wallet_error": "在繳付閃電賬單之前，必須先添加一個閃電錢包。",
     "looks_like_bip38": "這看起來像是受密碼保護的私鑰（BIP38）。",
     "please_continue_scanning": "請繼續掃描。",
     "select_no_bitcoin": "當前沒有可用的比特幣錢包。",
@@ -399,7 +391,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "sign_sign": "簽署",
