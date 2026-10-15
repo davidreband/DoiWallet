@@ -19,18 +19,31 @@ class WidgetUpdateWorker(context: Context, workerParams: WorkerParameters) : Wor
     companion object {
         const val TAG = "WidgetUpdateWorker"
         const val WORK_NAME = "widget_update_work"
+        const val IMMEDIATE_WORK_NAME = "widget_update_now"
         const val REPEAT_INTERVAL_MINUTES = 15L
 
         fun scheduleWork(context: Context) {
-            val workRequest = PeriodicWorkRequestBuilder<WidgetUpdateWorker>(
-                REPEAT_INTERVAL_MINUTES, TimeUnit.MINUTES
-            ).build()
-            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-                WORK_NAME,
-                ExistingPeriodicWorkPolicy.REPLACE,
-                workRequest
+            val workManager = WorkManager.getInstance(context)
+
+            // A periodic request does not run when it is enqueued - its first execution falls
+            // somewhere inside the first interval. refreshWidget calls this on every onUpdate and
+            // on every resize, and REPLACE restarted that interval each time, so a widget the
+            // launcher refreshes more often than the interval never reached its first reading and
+            // sat on the loading state. This one-off request covers the wait, and KEEP leaves a
+            // schedule that is already running alone.
+            workManager.enqueueUniqueWork(
+                IMMEDIATE_WORK_NAME,
+                ExistingWorkPolicy.REPLACE,
+                OneTimeWorkRequestBuilder<WidgetUpdateWorker>().build()
             )
-            Log.d(TAG, "Scheduling work for widget updates, will run every $REPEAT_INTERVAL_MINUTES minutes")
+            workManager.enqueueUniquePeriodicWork(
+                WORK_NAME,
+                ExistingPeriodicWorkPolicy.KEEP,
+                PeriodicWorkRequestBuilder<WidgetUpdateWorker>(
+                    REPEAT_INTERVAL_MINUTES, TimeUnit.MINUTES
+                ).build()
+            )
+            Log.d(TAG, "Widget update requested now, and every $REPEAT_INTERVAL_MINUTES minutes thereafter")
         }
     }
 
