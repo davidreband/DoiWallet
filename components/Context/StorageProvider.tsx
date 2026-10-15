@@ -323,17 +323,10 @@ export const StorageProvider = ({ children }: { children: React.ReactNode }) => 
       console.debug('[refreshAllWalletTransactions] Starting refresh');
       refreshingRef.current = true;
 
-      await new Promise<void>(resolve => InteractionManager.runAfterInteractions(() => resolve()));
-
       const TIMEOUT_DURATION = 60000;
-      let refreshTimeout;
-      const timeoutPromise = new Promise<never>(
-        (_resolve, reject) =>
-          (refreshTimeout = setTimeout(() => {
-            console.debug('[refreshAllWalletTransactions] Timeout reached');
-            reject(new Error('Timeout reached'));
-          }, TIMEOUT_DURATION)),
-      );
+      const TIMEOUT_MESSAGE = 'Timeout reached';
+
+      await new Promise<void>(resolve => InteractionManager.runAfterInteractions(() => resolve()));
 
       try {
         if (showUpdateStatusIndicator) {
@@ -363,6 +356,17 @@ export const StorageProvider = ({ children }: { children: React.ReactNode }) => 
           console.warn('[refreshAllWalletTransactions] fetchSenderPaymentCodes is not available');
         }
 
+        // Armed here rather than at the top of the refresh: the sixty seconds are meant for the
+        // fetch, and starting the clock before waitTillConnected spends them on the connection.
+        // One refresh measured on a slow server used 6.3 of them before a request was sent.
+        let refreshTimeout;
+        const timeoutPromise = new Promise<never>(
+          (_resolve, reject) =>
+            (refreshTimeout = setTimeout(() => {
+              reject(new Error(TIMEOUT_MESSAGE));
+            }, TIMEOUT_DURATION)),
+        );
+
         console.debug('[refreshAllWalletTransactions] Fetching wallet balances and transactions');
         await Promise.race([
           (async () => {
@@ -385,7 +389,12 @@ export const StorageProvider = ({ children }: { children: React.ReactNode }) => 
         ]);
         console.debug('[refreshAllWalletTransactions] Refresh completed successfully');
       } catch (error) {
-        console.error('[refreshAllWalletTransactions] Error:', error);
+        if (error instanceof Error && error.message === TIMEOUT_MESSAGE) {
+          // the fetch is not cancelled by losing the race - it carries on and saves when it is done
+          console.debug('[refreshAllWalletTransactions] Still running after', TIMEOUT_DURATION / 1000, 'sec; it will finish on its own');
+        } else {
+          console.error('[refreshAllWalletTransactions] Error:', error);
+        }
       } finally {
         console.debug('[refreshAllWalletTransactions] Resetting wallet transaction status and refresh lock');
         setWalletTransactionUpdateStatus(WalletTransactionsStatus.NONE);

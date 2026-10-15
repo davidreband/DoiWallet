@@ -23,7 +23,11 @@ platform :android do
   lane :prepare_keystore do
     Dir.chdir(project_root) do
       keystore_file_hex = ENV['KEYSTORE_FILE_HEX']
-      UI.user_error!("KEYSTORE_FILE_HEX environment variable is missing") if keystore_file_hex.nil?
+      # An unset GitHub secret arrives as an empty string, not as nil, so checking for nil alone
+      # lets the lane write a zero-byte keystore and report success. The build then runs for ten
+      # minutes before apksigner fails with "Tag number over 30 is not supported", which says
+      # nothing about the real cause.
+      UI.user_error!("KEYSTORE_FILE_HEX environment variable is missing or empty") if keystore_file_hex.nil? || keystore_file_hex.empty?
 
       UI.message("Creating keystore from HEX...")
       File.write("bluewallet-release-key.keystore.hex", keystore_file_hex)
@@ -41,7 +45,12 @@ platform :android do
   lane :update_version_build_and_sign_apk do
     Dir.chdir(project_root) do
       build_number = ENV['BUILD_NUMBER']
-      UI.user_error!("BUILD_NUMBER environment variable is missing") if build_number.nil?
+      UI.user_error!("BUILD_NUMBER environment variable is missing") if build_number.nil? || build_number.empty?
+
+      # Checked here rather than next to the apksigner call so that a missing password is reported
+      # before the ten-minute gradle build rather than after it.
+      keystore_password = ENV['KEYSTORE_PASSWORD']
+      UI.user_error!("KEYSTORE_PASSWORD environment variable is missing or empty") if keystore_password.nil? || keystore_password.empty?
  
       # Extract versionName from build.gradle
       version_name = sh("grep versionName android/app/build.gradle | awk '{print $2}' | tr -d '\"'").strip
@@ -87,7 +96,7 @@ platform :android do
       UI.message("Signing APK with apksigner...")
       apksigner_path = Dir.glob("#{ENV['ANDROID_HOME']}/build-tools/*/apksigner").sort.last
       UI.user_error!("apksigner not found in Android build-tools") if apksigner_path.nil? || apksigner_path.empty?
-      sh("#{apksigner_path} sign --ks #{project_root}/bluewallet-release-key.keystore --ks-pass=pass:#{ENV['KEYSTORE_PASSWORD']} #{signed_apk_path}")
+      sh("#{apksigner_path} sign --ks #{project_root}/bluewallet-release-key.keystore --ks-pass=pass:#{keystore_password} #{signed_apk_path}")
       UI.message("APK signed successfully: #{signed_apk_path}")
     end
   end
