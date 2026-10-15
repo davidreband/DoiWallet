@@ -8,7 +8,7 @@
     "discard_changes_explain": "Ju keni ndryshime të pashpëtuara. Jeni i sigurtë që nuk doni ti ruani dhe te dilni?",
     "enter_password": "Fusni fjalëkalimin",
     "never": "Kurrë",
-    "of": "{numri} nga {totali}",
+    "of": "{number} nga {total}",
     "ok": "OK",
     "enter_url": "Fusni URL",
     "storage_is_encrypted": "Memoria është e kriptuar. Duhet të fusni fjalkalimin për të pasur vizibilitet.",
@@ -51,16 +51,11 @@
   "lnd": {
     "errorInvoiceExpired": "Fatura ka skaduar.",
     "expired": "Skaduar",
-    "expiresIn": "Skadon në {time} minuta",
-    "payButton": "Paguaj",
     "payment": "Pagesa",
     "placeholder": "Fatura ose adresa",
-    "potentialFee": "Komisioni potencial: {fee}",
     "refill": "Rimbush",
     "refill_create": "Krijoni në portofol Bitcoin-i për të vazhduar.",
-    "refill_lnd_balance": "Rimbush ballancën e portofolit Lightning.",
-    "sameWalletAsInvoiceError": "Nuk mund të paguash një faturë me të njëjtin portofol që e ka krijuar atë",
-    "title": "Menaxho fondet"
+    "refill_lnd_balance": "Rimbush ballancën e portofolit Lightning."
   },
   "lndViewInvoice": {
     "additional_info": "Informacione të tjera",
@@ -97,10 +92,6 @@
     "details_share": "Shpërndaj",
     "header": "Merr",
     "reset": "Rezeto",
-    "maxSats": "Sasia maksimale është {max} sats",
-    "maxSatsFull": "Sasia maksimale është {max} sats ose {currency}",
-    "minSats": "Sasia minimale është {min} sats",
-    "minSatsFull": "Sasia maksimale është {min} sats ose {currency}",
     "qrcode_for_the_address": "QR kodi për adresën"
   },
   "send": {
@@ -137,7 +128,6 @@
     "details_adv_import_qr": "Imprto nje Transferte (QR)",
     "details_amount_field_is_not_valid": "Sasia e perdorur nuk eshte e vlefshme",
     "details_amount_field_is_less_than_minimum_amount_sat": "Sasia e percaktuar eshte shume e vogel. Ju lutem fusni nje sasi me te madhe se 500 sats.",
-    "details_create": "Krijo një Faturë",
     "details_error_decode": "E pamundur me de-koduar adresen e Bitcoin-it",
     "details_fee_field_is_not_valid": "Komisioni nuk eshte i vlefshem",
     "details_frozen": "{amount} BTC jane te ngrira.",
@@ -179,9 +169,6 @@
     "about_license": "Licenca e tipit MIT",
     "about_review": "Na leni një review",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Serveri Discord",
-    "about_sm_telegram": "Knali Telegram",
-    "about_sm_twitter": "Na ndiq ne X",
     "biometrics": "Te dhenat Biometrike",
     "biom_conf_identity": "Ju lutem konfirmoni identitetin",
     "currency": "Valuta",
@@ -308,9 +295,7 @@
     "sort_by": "Radhiti sipas"
   },
   "units": {
-    "BTC": "BTC",
     "MAX": "Max",
-    "sat_vbyte": "sat/vByte",
     "sats": "sats"
   },
   "addresses": {

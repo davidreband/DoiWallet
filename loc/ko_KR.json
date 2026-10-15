@@ -53,14 +53,11 @@
   "lnd": {
     "errorInvoiceExpired": "인보이스가 만료되었습니다.",
     "expired": "만료되었습니다",
-    "payButton": "지불하기",
     "payment": "결제수단",
     "placeholder": "인보이스 또는 주소",
-    "potentialFee": "예상 수수료： {fee}",
     "refill": "재충전",
     "refill_create": "진행을 위해서 재충전할 수있는 비트코인 지갑을 만들어주세요.",
-    "refill_lnd_balance": "라이트닝 월렛잔액 재충전하기",
-    "title": "자금 관리하기"
+    "refill_lnd_balance": "라이트닝 월렛잔액 재충전하기"
   },
   "lndViewInvoice": {
     "additional_info": "추가적인 정보",
@@ -98,10 +95,6 @@
     "details_share": "공유하기...",
     "header": "받기",
     "reset": "초기화",
-    "maxSats": "최대금액은 {max} 사토시 입니다",
-    "maxSatsFull": "최대금액은 {max} 사토시 또는 {currency} 입니다",
-    "minSats": "최소금액은 {min} 사토시 입니다",
-    "minSatsFull": "최소금액은 {min} 사토시 또는 {currency} 입니다",
     "qrcode_for_the_address": "QR코드 주소"
   },
   "send": {
@@ -141,7 +134,6 @@
     "details_adv_import_qr": "거래(QR)내역 들여오기",
     "details_amount_field_is_not_valid": "금액이 유효하지 않습니다",
     "details_amount_field_is_less_than_minimum_amount_sat": "지정된 수량이 너무 적습니다. 500 sats 이상 으로 입력해주세요.",
-    "details_create": "청구서 만들기",
     "details_error_decode": "비트코인 주소를 해석할 수 없습니다",
     "details_fee_field_is_not_valid": "유효한 수수료가 아닙니다",
     "details_frozen": "{amount} BTC가 동결되어 있습니다.",
@@ -203,9 +195,6 @@
     "about_selftest_electrum_disabled": "일렉트럼 오프라인 모드에서는 자가 테스트 기능이 없습니다. 오프라인 모드가 작동하지 않도록 하고 다시 시도해 보세요.",
     "about_selftest_ok": "모든 내부 테스트를 성공적으로 마쳤습니다. 월렛은 정상적으로 기능합니다.",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "디스코드 서버",
-    "about_sm_telegram": "텔레그램 채널",
-    "about_sm_twitter": "트위터에서 팔로우해주세요.",
     "privacy_temporary_screenshots": "스크린샷 허용",
     "privacy_temporary_screenshots_instructions": "이 세션 동안 스크린샷 방지 기능이 비활성화됩니다. 앱을 종료한 후 다시 열면 스크린샷 방지 기능이 자동으로 활성화됩니다.",
     "biometrics": "바이오메트릭",
@@ -388,7 +377,6 @@
     "list_long_scan": "QR 코드 스캔",
     "list_title": "지갑",
     "list_tryagain": "다시 시도하기",
-    "no_ln_wallet_error": "라이트닝 청구서를 지불하기 전 먼저 라이트닝 지갑을 추가해야 합니다.",
     "looks_like_bip38": "이것은 패스워드 보호된 비밀키(BIP38)로 보입니다.",
     "manage_title": "지갑 관리",
     "please_continue_scanning": "계속 스캔하세요.",
@@ -503,7 +491,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "sign_title": "메시지 사인/검증",

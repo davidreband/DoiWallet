@@ -37,12 +37,9 @@
   },
   "lnd": {
     "expired": "Expirat",
-    "expiresIn": "Expiră în {time} minute",
-    "payButton": "Plătește",
     "refill": "Reumple",
     "refill_create": "Pentru a continua, creează un portofel Doi cu care să reumpli.",
-    "refill_lnd_balance": "Reumple balanța portofelului Lightning",
-    "title": "Administrează fondurile"
+    "refill_lnd_balance": "Reumple balanța portofelului Lightning"
   },
   "lndViewInvoice": {
     "additional_info": "Informații suplimentare",
@@ -107,7 +104,6 @@
     "details_adv_import_qr": "Importă tranzacție (QR)",
     "details_amount_field_is_not_valid": "Suma nu este validă.",
     "details_amount_field_is_less_than_minimum_amount_sat": "Suma specificată este prea mică. Introdu o sumă mai mare de 500 sats.",
-    "details_create": "Creează factură",
     "details_error_decode": "Nu s-a putut decoda adresa Doi",
     "details_fee_field_is_not_valid": "Comisionul nu este valid.",
     "details_next": "Înainte",
@@ -162,9 +158,6 @@
     "about_selftest": "Rulează auto-test",
     "about_selftest_ok": "Toate testele interne au trecut cu succes. Portofelul funcționează bine.",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Server Discord",
-    "about_sm_telegram": "Canal Telegram",
-    "about_sm_twitter": "Urmărește-ne pe Twitter",
     "biometrics": "Biometrici",
     "biom_10times": "Ai încercat să introduci parola de 10 ori. Ai vrea să resetezi spațiul de stocare? Acest lucru va înlătura toate portofelele și va decripta spațiul de stocare.",
     "biom_conf_identity": "Confirmă-ți identitatea.",
@@ -328,7 +321,6 @@
     "list_long_scan": "Scaneză cod QR",
     "list_title": "Portofele",
     "list_tryagain": "Încearcă din nou",
-    "no_ln_wallet_error": "Înainte de a plăti o factură Lightning, trebuie mai întîi să adaugi un portofel Lightning.",
     "looks_like_bip38": "Aceasta arată ca o cheie privată protejată de o parolă (BIP38).",
     "please_continue_scanning": "Continuă scanarea.",
     "select_no_bitcoin": "Nu e niciun portofel Doi disponibil.",
@@ -430,7 +422,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "sign_title": "Semnează/Verifică mesaj",

@@ -43,14 +43,10 @@
   },
   "lnd": {
     "expired": "منتهية الصلاحية",
-    "payButton": "دفع",
     "placeholder": "عنوان أو برقية",
-    "potentialFee": "الرسوم المحتملة: {fee}",
     "refill": "إعادة التعبئة",
     "refill_create": "للمتابعة، يُرجى إنشاء محفظة بتكوين لإعادة التعبئة باستخدامها.",
-    "refill_lnd_balance": "إعادة تعبئة رصيد محفظة البرق (Lightning)",
-    "sameWalletAsInvoiceError": "لا يمكنك دفع فاتورة بنفس المحفظة المستخدمة لإنشائها.",
-    "title": "إدارة الأموال"
+    "refill_lnd_balance": "إعادة تعبئة رصيد محفظة البرق (Lightning)"
   },
   "lndViewInvoice": {
     "additional_info": "معلومة إضافية",
@@ -82,11 +78,7 @@
     "details_create": "إنشاء",
     "details_label": "الوصف",
     "details_setAmount": "استلام مبلغ محدد",
-    "header": "استلام",
-    "maxSats": "الحد الأقصى للمبلغ هو {max} ساتوشي",
-    "maxSatsFull": "الحد الأقصى للمبلغ هو {max} ساتوشي أو {currency}",
-    "minSats": "الحد الأدنى للمبلغ هو {min} ساتوشي",
-    "minSatsFull": "الحد الأدنى للمبلغ هو {min} ساتوشي أو {currency}"
+    "header": "استلام"
   },
   "send": {
     "provided_address_is_invoice": "يبدو أن هذا عنوان برقية. من فضلك انتقل إلى محفظة البرق الخاصة بك لدفع هذه الفاتورة.",
@@ -120,7 +112,6 @@
     "details_adv_import_qr": "استيراد معاملة (QR)",
     "details_amount_field_is_not_valid": "المبلغ غير صالح",
     "details_amount_field_is_less_than_minimum_amount_sat": "المبلغ المحدد صغير جدًا. الرجاء إدخال مبلغ أكبر من 500 ساتوشي.",
-    "details_create": "إنشاء برقية",
     "details_error_decode": "يتعذَّر تجزئة وتحليل عنوان البتكوين",
     "details_fee_field_is_not_valid": "حقل الرسوم غير صالح",
     "details_next": "التالي",
@@ -180,9 +171,6 @@
     "about_selftest_electrum_disabled": "لا يتوفر الاختبار الذاتي مع وضع Electrum الغير متصل بالانترنت. يرجى تعطيل وضع عدم اتصال الشبكة والمحاولة مرة أخرى.",
     "about_selftest_ok": "تم اجتياز جميع الاختبارات الداخلية بنجاح. المحفظة تعمل بشكل جيد.",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "سيرفر Discord",
-    "about_sm_telegram": "قناة تيليجرام",
-    "about_sm_twitter": "تابعنا على تويتر",
     "biometrics": "القياسات الحيوية",
     "biom_10times": "لقد حاولت إدخال كلمة المرور الخاصة بك 10 مرات. هل ترغب في إعادة تعيين التخزين الخاص بك؟ سيؤدي هذا إلى إزالة جميع المحافظ وفك تشفير التخزين الخاص بك.",
     "biom_conf_identity": "الرجاء تأكيد هويتك.",
@@ -363,7 +351,6 @@
     "list_long_scan": "مسح رمز الاستجابة (QR) ضوئيًا",
     "list_title": "المحافظ",
     "list_tryagain": "إعادة المحاولة",
-    "no_ln_wallet_error": "قبل دفع البرقية، يجب عليك أولاً إضافة محفظة برق.",
     "looks_like_bip38": "يبدوا ان هذا مفتاح خاص محمي بكلمة مرور (BIP38).",
     "please_continue_scanning": "الرجاء متابعة الفحص.",
     "select_no_bitcoin": "لا توجد محافظ بتكوين متاحة حاليًا.",
@@ -467,7 +454,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "sign_title": "التوقيع/التحقق من الرسالة",

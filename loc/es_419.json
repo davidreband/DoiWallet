@@ -52,16 +52,13 @@
     "network": "Error de red"
   },
   "lnd": {
+    "errorInvoiceExpired": "La factura expiró.",
     "expired": "Expirado",
-    "payButton": "Pagar",
     "payment": "Pago",
     "placeholder": "Factura o dirección",
-    "potentialFee": "Tasas potenciales: {fee}",
     "refill": "Recarga",
     "refill_create": "Para continuar, crea una billetera Bitcoin para recargar.",
-    "refill_lnd_balance": "Recargar el saldo de la billetera Lightning",
-    "sameWalletAsInvoiceError": "No puedes pagar una factura con la misma billetera que usaste para crearla.",
-    "title": "Manejar fondos"
+    "refill_lnd_balance": "Recargar el saldo de la billetera Lightning"
   },
   "lndViewInvoice": {
     "additional_info": "Información adicional",
@@ -100,10 +97,6 @@
     "address_not_found": "No es posible generar la dirección de recepción.",
     "header": "Recibir",
     "reset": "Reiniciar",
-    "maxSats": "La cantidad máxima es {max} sats",
-    "maxSatsFull": "La cantidad máxima es {max} sats o {currency}",
-    "minSats": "La cantidad mínima es {min} sats",
-    "minSatsFull": "La cantidad mínima es {min} sats o {currency}",
     "qrcode_for_the_address": "Código QR para la dirección",
     "bip47_explanation": "Los códigos de pago son una dirección universal que evita revelar la dirección de tu billetera. No todos los servicios los admiten."
   },
@@ -146,7 +139,6 @@
     "details_adv_import_qr": "Importar transacción (QR)",
     "details_amount_field_is_not_valid": "La cantidad no es válida",
     "details_amount_field_is_less_than_minimum_amount_sat": "La cantidad especificada es demasiado pequeña. Introduce una cantidad superior a 500 sats.",
-    "details_create": "Crear Factura",
     "details_error_decode": "No se puede decodificar la dirección de Doi",
     "details_fee_field_is_not_valid": "La tasa no es válida.",
     "details_frozen": "{amount} BTC está congelado.",
@@ -198,11 +190,16 @@
     "reset_amount_confirm": "¿Te gustaría restablecer la cantidad?",
     "success_done": "Hecho",
     "txSaved": "El archivo ({filePath}) se ha guardado en tu carpeta de Descargas.",
-    "file_saved_at_path": "El archivo ({fileName}) se ha guardado en tu carpeta Descargas.",
+    "file_saved_at_path": "El archivo ({filePath}) se ha guardado en tu carpeta Descargas.",
     "cant_send_to_silentpayment_adress": "Esta billetera no puede enviar a direcciones de SilentPayment",
     "cant_send_to_bip47": "Esta billetera no puede enviar códigos de pago BIP47",
     "cant_find_bip47_notification": "Agrega este código de pago primero a tus contactos ",
-    "problem_with_psbt": "Problema con PSBT"
+    "problem_with_psbt": "Problema con PSBT",
+    "name": "Nombre",
+    "broadcast": "Transmitir ahora",
+    "broadcast_value": "Valor",
+    "input_index": "Índice",
+    "foreign_address": "Dirección externa"
   },
   "settings": {
     "about": "Acerca de",
@@ -217,9 +214,6 @@
     "about_selftest_electrum_disabled": "La autocomprobación no está disponible con el modo sin conexión de Electrum. Desactiva el modo sin conexión y vuelve a intentarlo. ",
     "about_selftest_ok": "Todas las pruebas internas han pasado satisfactoriamente. La billetera funciona bien.",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Servidor Discord",
-    "about_sm_telegram": "Chat de Telegram ",
-    "about_sm_twitter": "Siguenos en Twitter",
     "privacy_temporary_screenshots": "Permitir capturas de pantalla",
     "privacy_temporary_screenshots_instructions": "La protección contra capturas de pantalla se desactivará para esta sesión, permitiéndote hacer capturas de pantalla. Cuando cierres y vuelvas a abrir la aplicación, la protección volverá a activarse automáticamente.",
     "biometrics": "Biometría",
@@ -249,15 +243,11 @@
     "electrum_settings_server": "Servidor Electrum",
     "electrum_status": "Estado",
     "electrum_preferred_server": "Servidor preferido",
-    "electrum_preferred_server_description": "Introduce el servidor que deseas que tu billetera utilice para todas las actividades de Bitcoin. Una vez configurado, tu billetera utilizará exclusivamente este servidor para comprobar saldos, enviar transacciones y obtener datos de la red. Asegúrate de que confías en este servidor antes de configurarlo.",    "electrum_clear_alert_title": "¿Borrar historial?",
-    "electrum_clear_alert_message": "¿Quieres borrar el historial de los servidores de Electrum?",
-    "electrum_clear_alert_cancel": "Cancelar",
-    "only_use_preferred": "Conectarse únicamente al servidor preferido",
+    "electrum_preferred_server_description": "Introduce el servidor que deseas que tu billetera utilice para todas las actividades de Bitcoin. Una vez configurado, tu billetera utilizará exclusivamente este servidor para comprobar saldos, enviar transacciones y obtener datos de la red. Asegúrate de que confías en este servidor antes de configurarlo.",
     "electrum_unable_to_connect": "No se puede conectar al {server}.",
     "electrum_history": "Historial",
     "electrum_reset_to_default": "Esto permitirá que BlueWallet elija aleatoriamente un servidor de la lista de servidores.",
     "electrum_reset": "Restablecer a predeterminado",
-    "electrum_clear": "Borrar historial",
     "electrum_reset_to_default_and_clear_history": "Restablecer valores predeterminados y borrar historial",
     "encrypt_decrypt": "Descifrar Almacenamiento",
     "encrypt_decrypt_q": "¿Estás seguro de que deseas descifrar tu almacenamiento? Esto permitirá acceder a tus billeteras sin una contraseña.",
@@ -314,7 +304,13 @@
     "total_balance": "Balance Total",
     "total_balance_explanation": "Muestra el saldo total de todas tus billeteras en los widgets de tu pantalla de inicio.",
     "widgets": "Widgets",
-    "tools": "Herramientas"
+    "tools": "Herramientas",
+    "electrum_wrong_chain": "{server} sigue una cadena Doichain distinta a la de esta billetera, por lo que sus saldos y confirmaciones no se aplican aquí. Se quitó el servidor.",
+    "enable_receive_bitcoin_intent_desc": "Muestra rápidamente tu dirección de recepción de Bitcoin como código QR.",
+    "no_wallet_available": "No hay billeteras disponibles. Crea o importa una billetera.",
+    "no_wallet_selected": "Ninguna billetera seleccionada",
+    "push_notifications": "Notificaciones push",
+    "receive_bitcoin_intent": "Atajo \"Recibir Bitcoin\""
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "¿Te gustaría recibir notificaciones cuando recibas pagos entrantes?",
@@ -377,7 +373,17 @@
     "to": "A: {counterparty}",
     "updating": "Actualizando...",
     "watchOnlyWarningTitle": "Advertencia de seguridad",
-    "watchOnlyWarningDescription": "Ten cuidado con los estafadores que suelen utilizar billeteras de \"sólo ver\" para engañar a los usuarios. Estas billeteras no permiten controlar ni enviar fondos; solo permiten ver el saldo."
+    "watchOnlyWarningDescription": "Ten cuidado con los estafadores que suelen utilizar billeteras de \"sólo ver\" para engañar a los usuarios. Estas billeteras no permiten controlar ni enviar fondos; solo permiten ver el saldo.",
+    "nameOps_name": "Nombre",
+    "nameOps_value": "Valor",
+    "nameOps_checking": "Comprobando quién posee este nombre…",
+    "nameOps_moved": "Este nombre cambió de manos desde esta transacción. Ahora lo posee {address}.",
+    "nameOps_not_ours": "Este nombre lo posee {address}, que no es una dirección de esta billetera, por lo que no se puede enviar desde aquí.",
+    "nameOps_unchecked": "No se pudo comprobar quién posee este nombre. Conéctate a un servidor y abre esta pantalla de nuevo.",
+    "nameOps_current_value": "Valor actual",
+    "nameOps_last_changed": "Modificado por última vez en el bloque {height}",
+    "send_to_doi_address": "Enviar a DoiAddress",
+    "send": "Enviar"
   },
   "wallets": {
     "add_bitcoin": "Doi",
@@ -420,7 +426,6 @@
     "details_export_history": "Exportar historial a CSV",
     "details_master_fingerprint": "Huella Digital Maestra",
     "details_multisig_type": "multifirma",
-    "details_no_cancel": "No, cancelar",
     "details_show_xpub": "Mostrar el XPUB de la Billetera",
     "details_show_addresses": "Mostrar direcciones",
     "details_title": "Billetera",
@@ -469,7 +474,6 @@
     "list_long_scan": "Escanear Código QR",
     "list_title": "Billeteras",
     "list_tryagain": "Intenta otra vez",
-    "no_ln_wallet_error": "Antes de pagar una factura Lightning, primero debes agregar una billetera Lightning.",
     "looks_like_bip38": "Esto parece una clave privada protegida por contraseña (BIP38).",
     "manage_title": "Administrar billeteras",
     "no_results_found": "No se han encontrado resultados.",
@@ -506,6 +510,10 @@
     "default_label": "Bóveda Multifirma",
     "multisig_vault_explain": "La mejor seguridad para grandes cantidades",
     "provide_signature": "Proporcionar firma",
+    "provide_signature_details": "Usa el dispositivo y la billetera donde está la clave para firmar esta transacción",
+    "provide_signature_details_bluewallet": "En BlueWallet, abre el menú de la pantalla de envío y selecciona ",
+    "provide_signature_next_steps": "Escanear o importar transacción firmada",
+    "provide_signature_next_steps_details": "Una vez que tu billetera haya firmado la transacción, escanea el código QR proporcionado o importa el archivo correspondiente y revisa todos los detalles antes de transmitirla.",
     "vault_key": "Clave de la Bóveda {number}",
     "required_keys_out_of_total": "Llaves requeridas del total",
     "fee": "Tarifa: {number}",
@@ -614,7 +622,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "copy_private_key": "Copiar clave privada",
@@ -668,7 +676,7 @@
     "notification_tx_unconfirmed": "La transacción de notificación aún no está confirmada, espera",
     "failed_create_notif_tx": "No se pudo crear una transacción en cadena",
     "onchain_tx_needed": "Se necesita transacción en cadena",
-    "notif_tx_sent" : "Transacción de notificación enviada. Espera a que se confirme",
+    "notif_tx_sent": "Transacción de notificación enviada. Espera a que se confirme",
     "notif_tx": "Transacción de notificación",
     "not_found": "Código de pago no encontrado"
   }

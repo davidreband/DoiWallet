@@ -16,8 +16,7 @@
   },
   "lnd": {
     "refill": "Genopfyld",
-    "refill_lnd_balance": "Genopfyld Lightning wallet",
-    "title": "Administration"
+    "refill_lnd_balance": "Genopfyld Lightning wallet"
   },
   "plausibledeniability": {
     "create_fake_storage": "Opret falsk kryopteret lager",
@@ -49,7 +48,6 @@
     "details_address": "adresse",
     "details_address_field_is_not_valid": "Adresse felt er ikke gyldigt",
     "details_amount_field_is_not_valid": "Beløbsfeltet er ikke gyldigt",
-    "details_create": "Opret",
     "details_fee_field_is_not_valid": "Gebyr feltet er ikke gyldigt",
     "details_note_placeholder": "Notat til eget brug",
     "details_total_exceeds_balance": "Beløbet du prøver at sende er større end din kontosaldo.",

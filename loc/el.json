@@ -33,13 +33,10 @@
   },
   "lnd": {
     "expired": "Έληξε",
-    "payButton": "Πληρωμή",
     "payment": "Πληρωμή",
     "placeholder": "Τιμολόγιο ή διεύθυνση",
     "refill": "Γέμισμα πορτοφολιού",
-    "refill_lnd_balance": "Γέμισε το πορτοφόλι Lightning",
-    "sameWalletAsInvoiceError": "Δεν μπορείς να εξοφλήσεις ένα τιμολόγιο από το ίδιο πορτοφόλι με το οποίο δημιουργήθηκε.",
-    "title": "Διαχείριση χρημάτων"
+    "refill_lnd_balance": "Γέμισε το πορτοφόλι Lightning"
   },
   "lndViewInvoice": {
     "additional_info": "Επιπρόσθετη πληροφορία",
@@ -70,11 +67,7 @@
     "details_create": "Δημιουργία",
     "details_label": "Περιγραφή",
     "details_setAmount": "Λήψη με ποσό",
-    "header": "Λήψη",
-    "maxSats": "Το μέγιστο ποσό είναι {max} sats",
-    "maxSatsFull": "Το μέγιστο ποσό είναι {max} sats ή {currency}",
-    "minSats": "Το ελάχιστο ποσό είναι {min} sats",
-    "minSatsFull": "Το ελάχιστο ποσό είναι {min} sats ή {currency}"
+    "header": "Λήψη"
   },
   "send": {
     "broadcastButton": "Μετάδοση",
@@ -103,7 +96,6 @@
     "details_adv_import_qr": "Εισαγωγή συναλλαγής (QR)",
     "details_amount_field_is_not_valid": "Το ποσό δεν είναι σωστό",
     "details_amount_field_is_less_than_minimum_amount_sat": "Το προσδιορισμένο ποσό είναι πολύ μικρό. Παρακαλώ εισάγετε ποσό μεγαλύτερο από 500 sats.",
-    "details_create": "Δημιουργία τιμολογίου",
     "details_error_decode": "Αδυναμία αποκωδικοποίησης της διεύθυνσης Doi",
     "details_fee_field_is_not_valid": "Τα έξοδα συναλλαγής δεν είναι σωστά",
     "details_next": "Επόμενο",
@@ -147,9 +139,6 @@
     "about_review": "Γράψτε μια κριτική",
     "about_selftest": "Εκτέλεση διαγνωστικού ελέγχου",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Διακομιστής Discord",
-    "about_sm_telegram": "Κανάλι Telegram",
-    "about_sm_twitter": "Ακολουθήστε μας στο Twitter",
     "biometrics": "Βιομετρικά",
     "biom_conf_identity": "Παρακαλώ επιβεβαιώστε την ταυτότητα σας.",
     "currency": "Νόμισμα",
@@ -302,9 +291,7 @@
     "sort_status": "Κατάσταση"
   },
   "units": {
-    "BTC": "BTC",
     "MAX": "Μέγιστο",
-    "sat_vbyte": "sat/vByte",
     "sats": "sats"
   },
   "addresses": {

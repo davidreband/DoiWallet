@@ -37,13 +37,9 @@
   },
   "lnd": {
     "expired": "Expirado",
-    "payButton": "Pagar",
-    "potentialFee": "Comisión estimada: {fee}",
     "refill": "Recargar",
     "refill_create": "Para continuar, por favor crea una cartera de Bitcoin con la que recargar.",
-    "refill_lnd_balance": "Recargar saldo de la cartera Lightning",
-    "sameWalletAsInvoiceError": "No puedes pagar una factura con la misma cartera que usaste para crearla.",
-    "title": "Administrar fondos"
+    "refill_lnd_balance": "Recargar saldo de la cartera Lightning"
   },
   "lndViewInvoice": {
     "additional_info": "Información adicional",
@@ -75,11 +71,7 @@
     "details_create": "Crear",
     "details_label": "Descripción",
     "details_setAmount": "Recibir con monto",
-    "header": "Recibir",
-    "maxSats": "La cantidad máxima es {max} sats",
-    "maxSatsFull": "La cantidad máxima es {max} sats o {currency}",
-    "minSats": "La cantidad mínima es {min} sats",
-    "minSatsFull": "La cantidad mínima es {min} sats o {currency}"
+    "header": "Recibir"
   },
   "send": {
     "provided_address_is_invoice": "Esta dirección parece ser para una factura Lightning. Por favor, ve a tu cartera Lightning para realizar el pago de esta factura.",
@@ -113,7 +105,6 @@
     "details_adv_import_qr": "Importar transacción (QR)",
     "details_amount_field_is_not_valid": "La cantidad no es válida",
     "details_amount_field_is_less_than_minimum_amount_sat": "La cantidad especificada es muy pequeña. Por favor, introduzca una cantidad mayor a 500 sats. ",
-    "details_create": "Crear factura",
     "details_error_decode": "No se ha podido decodificar la dirección de Doi",
     "details_fee_field_is_not_valid": "La comisión introducida no es válida",
     "details_next": "Siguiente",
@@ -173,9 +164,6 @@
     "about_selftest_electrum_disabled": "La autocomprobación no está disponible en el modo sin conexión de Electrum. Desactiva el modo sin conexión y vuelve a intentarlo. ",
     "about_selftest_ok": "Todas las pruebas internas han concluido satisfactoriamente. La billetera funciona bien. ",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Servidor de Discord",
-    "about_sm_telegram": "Canal de Telegram",
-    "about_sm_twitter": "Síguenos en Twitter",
     "biometrics": "Biometría",
     "biom_10times": "Has intentado introducir tu contraseña 10 veces. ¿Te gustaría reestablecer tu almacenamiento? Esta acción eliminará todas las carteras y desencriptará tu almacenamiento.",
     "biom_conf_identity": "Por favor confirma tu identidad.",
@@ -354,7 +342,6 @@
     "list_long_scan": "Escanear código QR",
     "list_title": "Carteras",
     "list_tryagain": "Inténtalo otra vez",
-    "no_ln_wallet_error": "Antes de pagar una factura Lightning, primero debe agregar una cartera Lightning.",
     "looks_like_bip38": "Parece que esto es una llave privada protegida con contraseña (BIP38).",
     "please_continue_scanning": "Por favor, continúa escaneando.",
     "select_no_bitcoin": "No hay carteras de Doi disponibles.",
@@ -459,7 +446,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "sign_title": "Firmar/Verificar mensaje",

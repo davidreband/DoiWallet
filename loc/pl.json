@@ -52,16 +52,13 @@
     "network": "Błąd sieciowy"
   },
   "lnd": {
+    "errorInvoiceExpired": "Faktura wygasła.",
     "expired": "Przeterminowana",
-    "payButton": "Zapłać",
     "payment": "Płatność",
     "placeholder": "Faktura lub adres",
-    "potentialFee": "Potencjalna opłata transakcyjna: {fee}",
     "refill": "Doładuj",
     "refill_create": "Aby kontynuować, utwórz portfel Bitcoinowy który potem doładujesz.",
-    "refill_lnd_balance": "Doładowanie stanu portfela Lightning",
-    "sameWalletAsInvoiceError": "Nie możesz zapłacić wezwania z tego samego portfela, który stworzyłeś.",
-    "title": "Zarządzaj środkami"
+    "refill_lnd_balance": "Doładowanie stanu portfela Lightning"
   },
   "lndViewInvoice": {
     "additional_info": "Dodatkowe informacje",
@@ -100,10 +97,6 @@
     "address_not_found": "Nie można wygenerować adresu do odbioru.",
     "header": "Otrzymaj",
     "reset": "Reset",
-    "maxSats": "Kwota maksymalna to {max} satoshi",
-    "maxSatsFull": "Maksymalna kwota to {max} satoshi lub {currency}",
-    "minSats": "Kwota minimalna to {min} satoshi",
-    "minSatsFull": "Kwota minimalna to {min} satoshi lub {currency}",
     "qrcode_for_the_address": "Kod QR dla adresu",
     "bip47_explanation": "Kody płatności to uniwersalne adresy, które chronią prywatność Twojego portfela. Nie wszystkie usługi je obsługują."
   },
@@ -146,7 +139,6 @@
     "details_adv_import_qr": "Importuj transakcję (QR)",
     "details_amount_field_is_not_valid": "Kwota w polu jest niepoprawna",
     "details_amount_field_is_less_than_minimum_amount_sat": "Podana ilość jest za mała. Proszę podaj ilość większą niż 500 sat.",
-    "details_create": "Stwórz fakturę",
     "details_error_decode": "Nie można zdekodować adresu Bitcoin",
     "details_fee_field_is_not_valid": "Opłata jest nieprawidłowa.",
     "details_frozen": "{amount} BTC zamrożono.",
@@ -202,7 +194,12 @@
     "cant_send_to_silentpayment_adress": "Ten portfel nie może wysyłać na adresy SilentPayment",
     "cant_send_to_bip47": "Ten portfel nie może wysyłać na kody płatności BIP47",
     "cant_find_bip47_notification": "Najpierw dodaj ten kod płatności do kontaktów",
-    "problem_with_psbt": "Problem z PSBT"
+    "problem_with_psbt": "Problem z PSBT",
+    "name": "Nazwa",
+    "broadcast": "Rozgłoś teraz",
+    "broadcast_value": "Kwota",
+    "input_index": "Indeks",
+    "foreign_address": "Obcy adres"
   },
   "settings": {
     "about": "O programie",
@@ -217,9 +214,6 @@
     "about_selftest_electrum_disabled": "Autotest nie jest dostępny z Electrum w trybie Offline. Wyłącz tryb offline i spróbuj ponownie.",
     "about_selftest_ok": "Wszystkie testy wewnętrzne przebiegły pomyślnie. Portfel działa dobrze.",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Serwer Discord",
-    "about_sm_telegram": "Chat na Telegramie",
-    "about_sm_twitter": "Obserwuj nas na Twitterze",
     "privacy_temporary_screenshots": "Zezwól na zrzuty ekranu",
     "privacy_temporary_screenshots_instructions": "Ochrona przed przechwytywaniem ekranu zostanie wyłączona na tę sesję, co pozwoli na robienie zrzutów ekranu. Po zamknięciu i ponownym otwarciu aplikacji, ochrona zostanie automatycznie włączona ponownie.",
     "biometrics": "Biometria",
@@ -310,7 +304,13 @@
     "total_balance": "Saldo całkowite",
     "total_balance_explanation": "Wyświetlaj saldo całkowite wszystkich Twoich portfeli wśród widżetów na ekranie domowym",
     "widgets": "Widżety",
-    "tools": "Narzędzia"
+    "tools": "Narzędzia",
+    "electrum_wrong_chain": "{server} śledzi inny łańcuch Doichain niż ten portfel, więc jego salda i potwierdzenia tutaj nie obowiązują. Serwer został usunięty.",
+    "enable_receive_bitcoin_intent_desc": "Szybko pokazuje twój adres odbiorczy Bitcoin w postaci kodu QR.",
+    "no_wallet_available": "Brak dostępnych portfeli. Utwórz lub zaimportuj portfel.",
+    "no_wallet_selected": "Nie wybrano portfela",
+    "push_notifications": "Powiadomienia push",
+    "receive_bitcoin_intent": "Skrót „Odbierz Bitcoin”"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "Czy chcesz otrzymywać powiadomienia o nadchodzących płatnościach?",
@@ -373,7 +373,17 @@
     "to": "Do: {counterparty}",
     "updating": "Aktualizuję...",
     "watchOnlyWarningTitle": "Ostrzeżenie bezpieczeństwa",
-    "watchOnlyWarningDescription": "Zachowaj ostrożność wobec oszustów, którzy często używają portfeli „tylko do odczytu” do wprowadzania użytkowników w błąd. Te portfele nie pozwalają na kontrolowanie ani wysyłanie środków; umożliwiają jedynie przeglądanie salda."
+    "watchOnlyWarningDescription": "Zachowaj ostrożność wobec oszustów, którzy często używają portfeli „tylko do odczytu” do wprowadzania użytkowników w błąd. Te portfele nie pozwalają na kontrolowanie ani wysyłanie środków; umożliwiają jedynie przeglądanie salda.",
+    "nameOps_name": "Nazwa",
+    "nameOps_value": "Wartość",
+    "nameOps_checking": "Sprawdzanie, kto posiada tę nazwę…",
+    "nameOps_moved": "Od tej transakcji nazwa zmieniła właściciela. Obecnie należy do {address}.",
+    "nameOps_not_ours": "Tę nazwę posiada {address}, który nie jest adresem tego portfela, więc nie można jej stąd wysłać.",
+    "nameOps_unchecked": "Nie udało się sprawdzić, kto posiada tę nazwę. Połącz się z serwerem i otwórz ten ekran ponownie.",
+    "nameOps_current_value": "Bieżąca wartość",
+    "nameOps_last_changed": "Ostatnia zmiana w bloku {height}",
+    "send_to_doi_address": "Wyślij na DoiAddress",
+    "send": "Wyślij"
   },
   "wallets": {
     "add_bitcoin": "Doi",
@@ -464,7 +474,6 @@
     "list_long_scan": "Zeskanuj kod QR",
     "list_title": "Portfele",
     "list_tryagain": "Spróbuj ponownie",
-    "no_ln_wallet_error": "Musisz najpierw dodać portfel Lightning, zanim zapłacisz fakturę.",
     "looks_like_bip38": "To wygląda na klucz prywatny chroniony hasłem (BIP38).",
     "manage_title": "Zarządzaj portfelami",
     "no_results_found": "Nie znaleziono wyników.",
@@ -613,7 +622,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "copy_private_key": "Kopiuj klucz prywatny",
@@ -667,7 +676,7 @@
     "notification_tx_unconfirmed": "Transakcja powiadomienia nie została jeszcze potwierdzona, proszę czekać",
     "failed_create_notif_tx": "Nie udało się utworzyć transakcji on-chain",
     "onchain_tx_needed": "Wymagana transakcja on-chain",
-    "notif_tx_sent" : "Transakcja powiadomienia wysłana. Proszę czekać na jej potwierdzenie",
+    "notif_tx_sent": "Transakcja powiadomienia wysłana. Proszę czekać na jej potwierdzenie",
     "notif_tx": "Transakcja powiadomienia",
     "not_found": "Kod płatności nie znaleziony"
   }

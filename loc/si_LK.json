@@ -37,12 +37,9 @@
   },
   "lnd": {
     "expired": "කල් ඉකුත් වී ඇත",
-    "expiresIn": "මිනිත්තුවලින් {time} කල් ඉකුත් වේ",
-    "payButton": "ගෙවන්න",
     "refill": "නැවත පුරවන්න",
     "refill_create": "ඉදිරියට යාමට, කරුණාකර නැවත පිරවීම සඳහා බිට්කොයින් පසුම්බියක් සාදන්න.",
-    "refill_lnd_balance": "ලයිට්නින් පසුම්බියේ ශේෂය නැවත පුරවන්න",
-    "title": "අරමුදල් කළමනාකරණය කරන්න"
+    "refill_lnd_balance": "ලයිට්නින් පසුම්බියේ ශේෂය නැවත පුරවන්න"
   },
   "lndViewInvoice": {
     "additional_info": "අමතර තොරතුරු",
@@ -72,11 +69,7 @@
     "details_create": "නිර්මාණය කරන්න",
     "details_label": "විස්තර",
     "details_setAmount": "මුදල සමග ලබා ගන්න",
-    "header": "ලබා ගන්න",
-    "maxSats": "උපරිම මුදල සැට් {max} වේ",
-    "maxSatsFull": "උපරිම මුදල {max} sats හෝ {currency} වේ",
-    "minSats": "අවම මුදල sats {min} වේ",
-    "minSatsFull": "අවම මුදල {min} සැට් හෝ {currency} වේ"
+    "header": "ලබා ගන්න"
   },
   "send": {
     "provided_address_is_invoice": "මෙම ලිපිනය ලයිට්නින් ඉන්වොයිසියක් සඳහා බව පෙනේ. කරුණාකර, මෙම ඉන්වොයිසිය සඳහා ගෙවීමක් කිරීමට ඔබේ ලයිට්නින් පසුම්බිය  වෙත යන්න.",
@@ -109,7 +102,6 @@
     "details_adv_import_qr": "ගනුදෙනුව ආනයනය කරන්න. (QR)",
     "details_amount_field_is_not_valid": "මුදල වලංගු නොවේ.",
     "details_amount_field_is_less_than_minimum_amount_sat": "නියම කළ මුදල ඉතා කුඩා ය. කරුණාකර සැට් 500 ට වඩා වැඩි මුදලක් ඇතුළත් කරන්න.",
-    "details_create": "ඉන්වොයිසියක් සාදන්න",
     "details_error_decode": "බිට්කොයින් ලිපිනය විකේතනය කළ නොහැක",
     "details_fee_field_is_not_valid": "ගාස්තුව වලංගු නොවේ.",
     "details_next": "ඊළඟ",
@@ -167,9 +159,6 @@
     "about_selftest_electrum_disabled": "ඉලෙක්ට්‍රෝම් නොබැඳි මාදිලිය සමඟ ස්වයං පරීක්‍ෂා කිරීම නොමැත. කරුණාකර නොබැඳි ප්‍රකාරය අක්‍රිය කර නැවත උත්සාහ කරන්න.",
     "about_selftest_ok": "සියලුම අභ්‍යන්තර පරීක්‍ෂණ සාර්ථකව සමත් වී ඇත. පසුම්බිය හොඳින් ක්‍රියා කරයි.",
     "about_sm_github": "ගිට්හබ්",
-    "about_sm_discord": "විසංයෝජන සේවාදායකය",
-    "about_sm_telegram": "ටෙලිග්‍රෑම් නාලිකාව",
-    "about_sm_twitter": "ට්විටර් හි අපව අනුගමනය කරන්න",
     "biometrics": "ජෛවමිතික",
     "biom_10times": "ඔබ ඔබේ මුරපදය 10 වරක් ඇතුළත් කිරීමට උත්සාහ කර ඇත. ඔබේ ගබඩාව නැවත සැකසීමට ඔබ කැමතිද? මෙය සියලුම පසුම්බි ඉවත් කර ඔබේ ආචයනය විකේතනය කරයි.",
     "biom_conf_identity": "කරුණාකර ඔබේ අනන්‍යතාවය තහවුරු කරන්න.",
@@ -345,7 +334,6 @@
     "list_long_scan": "QR කේතය පරිලෝකනය කරන්න",
     "list_title": "පසුම්බි",
     "list_tryagain": "නැවත උත්සාහ කරන්න",
-    "no_ln_wallet_error": "අකුණු ඉන්වොයිසියක් ගෙවීමට පෙර, ඔබ මුලින්ම අකුණු පසුම්බියක් එකතු කළ යුතුය.",
     "looks_like_bip38": "මෙය මුරපදයකින් ආරක්‍ෂිත පුද්ගලික යතුරක් ලෙස පෙනේ (BIP38).",
     "please_continue_scanning": "කරුණාකර ස්කෑන් කිරීම දිගටම කරගෙන යන්න.",
     "select_no_bitcoin": "දැනට බිට්කොයින් පසුම්බි නොමැත.",
@@ -449,7 +437,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "sign_title": "පණිවිඩය අත්සන් කරන්න/තහවුරු කරන්න",

@@ -52,16 +52,13 @@
     "network": "ネットワークエラー"
   },
   "lnd": {
+    "errorInvoiceExpired": "請求書の有効期限が切れました。",
     "expired": "失効",
-    "payButton": "支払う",
     "payment": "支払い",
     "placeholder": "インボイスまたはアドレス",
-    "potentialFee": "手数料推計： {fee}",
     "refill": "送金",
     "refill_create": "先に進むためには、ビットコインウォレットを作成して補充してください。",
-    "refill_lnd_balance": "Lightning ウォレットへ送金",
-    "sameWalletAsInvoiceError": "インボイスを作成したのと同じウォレットで支払うことはできません。",
-    "title": "資金の管理"
+    "refill_lnd_balance": "Lightning ウォレットへ送金"
   },
   "lndViewInvoice": {
     "additional_info": "追加情報",
@@ -97,12 +94,9 @@
     "details_label": "概要",
     "details_setAmount": "入金額",
     "details_share": "共有...",
+    "address_not_found": "受取アドレスを生成できませんでした。",
     "header": "入金",
     "reset": "リセット",
-    "maxSats": "最大額は{max}satsです",
-    "maxSatsFull": "最大額は{max}sats（{currency}）です",
-    "minSats": "最小額は{min}satsです",
-    "minSatsFull": "最小額は{min}sats（{currency}）です",
     "qrcode_for_the_address": "アドレスのQRコード",
     "bip47_explanation": "支払いコードは、ウォレットアドレスを開示せずに済む汎用のアドレスです。すべてのサービスがサポートしているわけではありません。"
   },
@@ -145,7 +139,6 @@
     "details_adv_import_qr": "取引の読み込み(QR)",
     "details_amount_field_is_not_valid": "金額欄が正しくありません",
     "details_amount_field_is_less_than_minimum_amount_sat": "指定した金額が少なすぎます。500sats以上の金額を入力してください。",
-    "details_create": "作成",
     "details_error_decode": "ビットコインアドレスを復号できません",
     "details_fee_field_is_not_valid": "手数料欄が正しくありません",
     "details_frozen": "{amount}BTCがフリーズされています",
@@ -201,7 +194,12 @@
     "cant_send_to_silentpayment_adress": "このウォレットからはSilentPaymentアドレスに送金できません",
     "cant_send_to_bip47": "このウォレットからはBIP47支払いコードに送金できません",
     "cant_find_bip47_notification": "先にこの支払いコードを連絡先に追加してください",
-    "problem_with_psbt": "PSBTに問題"
+    "problem_with_psbt": "PSBTに問題",
+    "name": "名前",
+    "broadcast": "今すぐ送信",
+    "broadcast_value": "金額",
+    "input_index": "インデックス",
+    "foreign_address": "外部アドレス"
   },
   "settings": {
     "about": "DoiWallet について",
@@ -216,9 +214,6 @@
     "about_selftest_electrum_disabled": "Electrumオフラインモードではセルフテストができません。オフラインモードを無効にしてもう一度やり直してください。",
     "about_selftest_ok": "全ての内部テストが成功しました。ウォレットは正しく機能しています。",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Discord サーバー",
-    "about_sm_telegram": "テレグラムチャット",
-    "about_sm_twitter": "Twitterでフォロー",
     "privacy_temporary_screenshots": "スクリーンショットを許可",
     "privacy_temporary_screenshots_instructions": "このセッション中、スクリーンショット防止をオフにします。アプリを閉じて再度開くと、自動的に防止がオンに戻ります。",
     "biometrics": "生体認証",
@@ -309,7 +304,13 @@
     "total_balance": "合計残高",
     "total_balance_explanation": "すべてのウォレットの合計残高をホーム画面のウィジェットに表示",
     "widgets": "ウィジェット",
-    "tools": "ツール"
+    "tools": "ツール",
+    "electrum_wrong_chain": "{server} はこのウォレットとは異なる Doichain チェーンに従っているため、その残高と承認数はここでは適用されません。このサーバーは削除されました。",
+    "enable_receive_bitcoin_intent_desc": "ビットコインの受取アドレスを QR コードですばやく表示します。",
+    "no_wallet_available": "利用できるウォレットがありません。ウォレットを作成またはインポートしてください。",
+    "no_wallet_selected": "ウォレットが選択されていません",
+    "push_notifications": "プッシュ通知",
+    "receive_bitcoin_intent": "「ビットコインを受け取る」ショートカット"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "支払いを受けた際に通知を受け取りますか？",
@@ -372,7 +373,17 @@
     "to": "To: {counterparty}",
     "updating": "更新中…",
     "watchOnlyWarningTitle": "セキュリティ警告",
-    "watchOnlyWarningDescription": "「閲覧専用」ウォレットを使ってユーザーを騙す詐欺師に注意してください。このウォレットは資金の管理や送金ができず、残高を見ることだけができます。"
+    "watchOnlyWarningDescription": "「閲覧専用」ウォレットを使ってユーザーを騙す詐欺師に注意してください。このウォレットは資金の管理や送金ができず、残高を見ることだけができます。",
+    "nameOps_name": "名前",
+    "nameOps_value": "値",
+    "nameOps_checking": "この名前の保有者を確認しています…",
+    "nameOps_moved": "この取引のあと、この名前は移転しました。現在は {address} が保有しています。",
+    "nameOps_not_ours": "この名前は {address} が保有しており、これはこのウォレットのアドレスではないため、ここから送ることはできません。",
+    "nameOps_unchecked": "この名前の保有者を確認できませんでした。サーバーに接続してから、この画面をもう一度開いてください。",
+    "nameOps_current_value": "現在の値",
+    "nameOps_last_changed": "最終更新はブロック {height}",
+    "send_to_doi_address": "DoiAddress へ送金",
+    "send": "送金"
   },
   "wallets": {
     "add_bitcoin": "ビットコイン",
@@ -463,7 +474,6 @@
     "list_long_scan": "QRコードをスキャン",
     "list_title": "ウォレット",
     "list_tryagain": "再度試す",
-    "no_ln_wallet_error": "ライトニングインボイスの支払いを行う前に、ライトニングウォレットを追加する必要があります。",
     "looks_like_bip38": "パスワード保護された秘密鍵(BIP38)のようです。",
     "manage_title": "ウォレット管理",
     "no_results_found": "結果は見つかりませんでした。",
@@ -612,7 +622,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "copy_private_key": "秘密鍵をコピー",

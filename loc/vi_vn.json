@@ -41,13 +41,10 @@
   },
   "lnd": {
     "expired": "Hết hạn",
-    "expiresIn": "Hết hạn sau {time} phút",
-    "payButton": "Thanh toán",
     "placeholder": "Hóa đơn hoặc địa chỉ",
     "refill": "Đổ đầy",
     "refill_create": "Để tiếp tục, vui lòng tạo một ví Bitcoin để nạp tiền. ",
-    "refill_lnd_balance": "Nạp lại số dư ví Lightning",
-    "title": "Quản lý quỹ"
+    "refill_lnd_balance": "Nạp lại số dư ví Lightning"
   },
   "lndViewInvoice": {
     "additional_info": "Thông tin thêm",
@@ -76,11 +73,7 @@
     "details_create": "Tạo ",
     "details_label": "Mô tả",
     "details_setAmount": "Nhận với số tiền",
-    "header": "Nhận",
-    "maxSats": "Số tiền tối đa là {max} sats",
-    "maxSatsFull": "Số tiền tối đa là {max} sats hoặc {currency} ",
-    "minSats": "Số tiền tối thiểu là {min} sats",
-    "minSatsFull": "Số tiền tối thiểu là {min} sats hoặc {currency} "
+    "header": "Nhận"
   },
   "send": {
     "provided_address_is_invoice": "Địa chỉ này dường như là cho một hóa đơn Lightning. Vui lòng sử dụng ví Lightning của bạn để thanh toán hoá đơn này.",
@@ -114,7 +107,6 @@
     "details_adv_import_qr": "Nhập giao dịch (QR)",
     "details_amount_field_is_not_valid": "Số tiền này không hợp lệ.",
     "details_amount_field_is_less_than_minimum_amount_sat": "Số tiền quá nhở. Vui lòng nhập số tiên lớn hơn 500 sats.",
-    "details_create": "Tạo hoá đơn",
     "details_error_decode": "Không thể giải mã địa chỉ Doi",
     "details_fee_field_is_not_valid": "Phí này không hợp lệ.",
     "details_next": "Tiếp",
@@ -173,9 +165,6 @@
     "about_selftest_electrum_disabled": "Tự kiểm tra không có sẵn trong khi Electrum ở chế độ ngoại tuyến. Vui lòng tắt chế độ ngoại tuyến và thử lại. ",
     "about_selftest_ok": "Các bài test nội bộ đã vượt qua thành công. Ví hoạt động tốt.",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Máy chủ Discord",
-    "about_sm_telegram": "Kênh Telegram",
-    "about_sm_twitter": "Theo chúng tôi trên Twitter",
     "biometrics": "Sinh trắc",
     "biom_10times": "Bạn đã thử nhập mật khẩu 10 lần rồi. Bạn có muốn đặt lại lưu trữ không? Điều này sẽ loại bỏ tất cả các ví và giải mã lưu trữ của bạn.",
     "biom_conf_identity": "Vui lòng xác nhận danh tính của bạn.",
@@ -294,7 +283,7 @@
     "add_entropy": "Entropy",
     "add_entropy_generated": "{gen} bytes entropy đã được tạo",
     "add_entropy_provide": "Cung cấp entropy bằng dice roll",
-    "add_entropy_remain": "{gen} bytes entropy đã được tạo. {gen} bytes còn lại sẽ lấy được từ số ngẫu nhiên của hệ thống. ",
+    "add_entropy_remain": "{gen} bytes entropy đã được tạo. {rem} bytes còn lại sẽ lấy được từ số ngẫu nhiên của hệ thống. ",
     "add_import_wallet": "Nhập ví",
     "add_lightning": "Lightning",
     "add_lightning_explain": "Để chi tiêu với các giao dịch tức thời ",
@@ -354,7 +343,6 @@
     "list_long_scan": "Quét mã QR",
     "list_title": "Các ví",
     "list_tryagain": "Thử lại",
-    "no_ln_wallet_error": "Trước khi thanh toán hoá đơn Lightning, đầu tiên bạn phải thêm một ví Lightning.",
     "looks_like_bip38": "Cái này trông giống một khoá cá nhân được bảo vệ bằng mật khẩu (BIP38).",
     "please_continue_scanning": "Vui lòng quét tiếp.",
     "select_no_bitcoin": "Hiện tại không có ví Doi có sẵn.",
@@ -458,7 +446,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "sign_title": "Ký/Xác minh tin nhắn",

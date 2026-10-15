@@ -42,12 +42,8 @@
   },
   "lnd": {
     "expired": "Süresi doldu",
-    "expiresIn": "{time} dakika içerisinde sona erer",
-    "payButton": "Öde",
     "refill": "Yükle",
-    "refill_lnd_balance": "Lightning cüzdana bakiye yükle",
-    "sameWalletAsInvoiceError": "Bir faturayı, oluştururken kullandığınız cüzdan ile ödeyemezsiniz.",
-    "title": "Bakiyeleri Yönet"
+    "refill_lnd_balance": "Lightning cüzdana bakiye yükle"
   },
   "lndViewInvoice": {
     "additional_info": "Ek Bilgi",
@@ -106,7 +102,6 @@
     "details_adv_import": "İşlemi dışarı aktar",
     "details_amount_field_is_not_valid": "Miktar alanı geçerli değil",
     "details_amount_field_is_less_than_minimum_amount_sat": "Belirlediğiniz tutar çok az. Lütfen 500 sat'tan daha büyük bir tutar giriniz.",
-    "details_create": "Oluştur",
     "details_error_decode": "Doi adresi tanımlanamadı",
     "details_fee_field_is_not_valid": "Ücret miktarı geçerli değil.",
     "details_next": "İleri",
@@ -140,9 +135,6 @@
   },
   "settings": {
     "about": "Hakkında",
-    "about_sm_discord": "Discord Sunucusu",
-    "about_sm_telegram": "Telegram Kanalı",
-    "about_sm_twitter": "Bizi Twitter'da takip edin",
     "biometrics": "Biyometrikler",
     "currency": "Para Birimi",
     "header": "ayarlar",
@@ -225,7 +217,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "sign_placeholder_address": "Adres",

@@ -42,14 +42,9 @@
   },
   "lnd": {
     "expired": "Kadaluarsa",
-    "expiresIn": "Kadaluwarsa dalam {time} menit",
-    "payButton": "Bayar",
-    "potentialFee": "Potensi biaya: {fee}",
     "refill": "Isi ulang",
     "refill_create": "Untuk melanjutkan, buat dompet Bitcoin untuk diisi ulang.",
-    "refill_lnd_balance": "Isi ulang saldo Lightning",
-    "sameWalletAsInvoiceError": "Kamu tidak bisa membayar invoice dengan dompet yang sama yang dipakai untuk membuat invoice.",
-    "title": "Atur Dana"
+    "refill_lnd_balance": "Isi ulang saldo Lightning"
   },
   "lndViewInvoice": {
     "additional_info": "Informasi Tambahan",
@@ -80,11 +75,7 @@
     "details_create": "Buat",
     "details_label": "Deskripsi",
     "details_setAmount": "Terima sejumlah",
-    "header": "Terima",
-    "maxSats": "Nominal maksimal adalah {max} sat",
-    "maxSatsFull": "Nominal maksimal adalah {max} sat atau {currency}",
-    "minSats": "Nominal minimal adalah {min} sat",
-    "minSatsFull": "Nominal minimal adalah {min} sat atau {currency}"
+    "header": "Terima"
   },
   "send": {
     "provided_address_is_invoice": "Alamat ini tampaknya untuk sebuah fraktur Lightning. Silakan ke dompet Lightning Anda untuk membayar fraktur ini.",
@@ -118,7 +109,6 @@
     "details_adv_import_qr": "Transaksi Penting (QR)",
     "details_amount_field_is_not_valid": "Jumlah tidak valid",
     "details_amount_field_is_less_than_minimum_amount_sat": "Jumlah terlalu kecil. Tolong masukkan jumlah yang lebih besar dari 500 sats.",
-    "details_create": "Buat",
     "details_error_decode": "Tidak dapat membaca alamat Doi",
     "details_fee_field_is_not_valid": "Tarif tidak valid",
     "details_next": "Selanjutnya",
@@ -176,9 +166,6 @@
     "about_selftest": "Jalankan tes sendiri",
     "about_selftest_ok": "Semua pengujian internal telah berhasil. Dompet berfungsi dengan baik.",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Server Discord",
-    "about_sm_telegram": "Channel Telegram",
-    "about_sm_twitter": "Ikuti kami di Twitter",
     "biometrics": "Biometrik",
     "biom_10times": "Anda telah mencoba memasukkan kata sandi Anda 10 kali. Apakah Anda ingin mengatur ulang penyimpanan Anda? Semua dompet anda akan dihapus dan penyimpanan anda akan didekripsi. ",
     "biom_conf_identity": "Mohon konfirmasi identitas Anda.",
@@ -361,7 +348,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "sign_title": "Tanda tangani/Verifikasi Pesan",

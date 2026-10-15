@@ -40,17 +40,13 @@
     "error": "ختا",
     "network": "ختا شبکه"
   },
-  "lnd": {    
+  "lnd": {
     "expired": "مونقزی وابیڌه",
-    "payButton": "پرداخت",
     "payment": "پرداخت",
     "placeholder": "سۊرت هساو یا آدرس",
-    "potentialFee": "کارمزد ائتمالی: {fee}",
     "refill": "پور کردن",
     "refill_create": "سی ادامه، یه کیف پیل بیت کوین سی پور کردن وورکل کۊنین.",
-    "refill_lnd_balance": "پور کردن مۉجۊڌی کیف پیل لایتنینگ",
-    "sameWalletAsInvoiceError": "ایسا نترین سۊرت هساوی نه وا همو کیف پیلی که وورکل کردین، پرداخت کۊنین.",
-    "title": "دؽوۉداری دارایی"
+    "refill_lnd_balance": "پور کردن مۉجۊڌی کیف پیل لایتنینگ"
   },
   "lndViewInvoice": {
     "additional_info": "دۉسمندیا بیشتر",
@@ -78,11 +74,7 @@
     "details_create": "وورکل",
     "details_setAmount": "گرؽڌن وا مقدار",
     "details_share": "یک رسۊوی...",
-    "header": "گرؽڌن",
-    "maxSats": "بیشترین مقدار {max} ساتۊشی هڌ.",
-    "maxSatsFull": "بیشترین مقدار {max} ساتۊشی یا {currency} هڌ.",
-    "minSats": "کمترین مقدار {min} ساتۊشی هڌ.",
-    "minSatsFull": "کمترین مقدار {min} ساتۊشی یا {currency} هڌ."
+    "header": "گرؽڌن"
   },
   "send": {
     "provided_address_is_invoice": "منی ای آدرس یه سۊرت هساو لایتنینگ هڌ. سی پرداخت ای سۊرت هساو، به کیف پیل لایتنینگ خوتۉ ریوین.",
@@ -112,7 +104,6 @@
     "details_adv_import_qr": "وه من اووردن تراکونش (QR)",
     "details_amount_field_is_not_valid": " مقدار زبال نؽ.",
     "details_amount_field_is_less_than_minimum_amount_sat": "مقدارؽ که زیڌیه قلوه کم هڌ. مقدار نه وا بیشتر زه 500 ساتۊشی زنی.",
-    "details_create": "وورکل سۊرت هساو",
     "details_error_decode": "نا مۉفق منه گۊشیڌن رزم آدرس بیت کوین",
     "details_fee_field_is_not_valid": "کارمزد زبال نؽ.",
     "details_next": "نیایی",
@@ -161,9 +152,6 @@
     "about_selftest_electrum_disabled": "خوس آزمایی منه هالت آفلاین منه دسرس نؽ. هالت آفلاین نه قیر فعال کو ۉ زه نۊ تفره کو.",
     "about_selftest_ok": "پوی واجۊریا منی به خۊوی ٱنجوم وابین. کیف پیل به خۊوی کار اکونه.",
     "about_sm_github": "گیت هاب",
-    "about_sm_discord": "سرور دیسکورد",
-    "about_sm_telegram": "تورگه تلگرام",
-    "about_sm_twitter": "ایما نه منه توییتر وه دین کۊنین",
     "biometrics": "بیومتریک",
     "biom_conf_identity": "هۊویته خوته تاییڌ کو.",
     "currency": "واهڌ پیل",

@@ -42,15 +42,11 @@
   },
   "lnd": {
     "expired": "منقضی‌شده",
-    "payButton": "پرداخت",
     "payment": "پرداخت",
     "placeholder": "صورت‌حساب یا آدرس",
-    "potentialFee": "کارمزد احتمالی: {fee}",
     "refill": "پرکردن",
     "refill_create": "جهت ادامه، لطفاً یک کیف پول بیت‌کوین جهت پرکردن ایجاد کنید.",
-    "refill_lnd_balance": "پرکردن موجودی کیف پول لایتنینگ",
-    "sameWalletAsInvoiceError": "شما نمی‌توانید صورت‌حسابی را با همان کیف پولی که برای ایجاد آن استفاده کرده‌اید بپردازید.",
-    "title": "مدیریت دارایی"
+    "refill_lnd_balance": "پرکردن موجودی کیف پول لایتنینگ"
   },
   "lndViewInvoice": {
     "additional_info": "اطلاعات بیشتر",
@@ -82,11 +78,7 @@
     "details_create": "ایجاد",
     "details_label": "شرح",
     "details_setAmount": "دریافت با مقدار",
-    "header": "دریافت",
-    "maxSats": "بیشترین مقدار {max} ساتوشی است.",
-    "maxSatsFull": "بیشترین مقدار {max} ساتوشی یا {currency} است.",
-    "minSats": "کمترین مقدار {min} ساتوشی است.",
-    "minSatsFull": "کمترین مقدار {min} ساتوشی یا {currency} است."
+    "header": "دریافت"
   },
   "send": {
     "provided_address_is_invoice": "به‌نظر می‌آید این آدرس یک صورت‌حساب لایتنینگ است. جهت پرداخت این صورت‌حساب لطفاً به کیف پول لایتنینگ خود بروید.",
@@ -120,7 +112,6 @@
     "details_adv_import_qr": "واردکردن تراکنش (QR)",
     "details_amount_field_is_not_valid": "مقدار معتبر نیست.",
     "details_amount_field_is_less_than_minimum_amount_sat": "مقدار تعیین‌شده بسیار کم است. لطفاً مقداری بیشتر از ۵۰۰ ساتوشی را وارد کنید.",
-    "details_create": "ایجاد صورت‌حساب",
     "details_error_decode": "ناموفق در رمزگشایی آدرس بیت‌کوین",
     "details_fee_field_is_not_valid": "کارمزد معتبر نیست.",
     "details_next": "بعدی",
@@ -180,9 +171,6 @@
     "about_selftest_electrum_disabled": "خودآزمایی در حالت آفلاین در دسترس نیست. لطفاً حالت آفلاین را غیرفعال کرده و مجدد تلاش کنید.",
     "about_selftest_ok": "تمام بررسی‌های داخلی با موفقیت انجام شدند. کیف پول به‌درستی کار می‌کند.",
     "about_sm_github": "گیت‌هاب",
-    "about_sm_discord": "سرور دیسکورد",
-    "about_sm_telegram": "کانال تلگرام",
-    "about_sm_twitter": "ما را در توئیتر دنبال کنید",
     "biometrics": "بیومتریک",
     "biom_10times": "شما برای واردکردن گذرواژهٔ خود ۱۰ بار تلاش کرده‌اید. آیا می‌خواهید فضای ذخیره‌سازی خود را بازنشانی کنید؟ این کار تمام کیف پول‌ها را حذف و فضای ذخیره‌سازی شما را رمزگشایی خواهد کرد.",
     "biom_conf_identity": "لطفاً هویت خود را تأیید کنید.",
@@ -368,7 +356,6 @@
     "list_long_scan": "اسکن کد QR",
     "list_title": "کیف پول‌ها",
     "list_tryagain": "دوباره امتحان کنید",
-    "no_ln_wallet_error": "قبل از پرداخت یک صورت‌حساب لایتنینگ، ابتدا باید یک کیف پول لایتنینگ اضافه کنید.",
     "looks_like_bip38": "این به کلید خصوصی محافظت‌شده با گذرواژه (BIP38) شباهت دارد.",
     "please_continue_scanning": "لطفاً به اسکن‌کردن ادامه دهید.",
     "select_no_bitcoin": "هیچ کیف پول بیت‌کوینی درحال‌حاضر دردسترس نیست.",
@@ -472,7 +459,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "sign_title": "امضا/صحت‌سنجی پیام",

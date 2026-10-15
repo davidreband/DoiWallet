@@ -21,9 +21,7 @@
   "lnd": {
     "expired": "Isteklo",
     "refill": "Dopuni",
-    "refill_lnd_balance": "Dopuni Lightning volet saldo",
-    "sameWalletAsInvoiceError": "Buraz! Ne možeš platiti račun s istim voletom s kojim si račun stvorio, ono.",
-    "title": "Uredi novčeke"
+    "refill_lnd_balance": "Dopuni Lightning volet saldo"
   },
   "plausibledeniability": {
     "create_fake_storage": "Stvori fejk enkriptirani spremnik",
@@ -55,7 +53,6 @@
     "details_address": "adresa",
     "details_address_field_is_not_valid": "Polje adrese nije ispravno",
     "details_amount_field_is_not_valid": "Iznos nije ispravan",
-    "details_create": "Stvori",
     "details_fee_field_is_not_valid": "Ovo polje nije ispravno",
     "details_note_placeholder": "bilješka za evidenciju",
     "details_scan": "Skeniraj",

@@ -52,17 +52,13 @@
     "network": "Ошибка сети"
   },
   "lnd": {
+    "errorInvoiceExpired": "Срок действия счёта истёк.",
     "expired": "Истекший",
-    "expiresIn": "Истекает через {time} мин",
-    "payButton": "Оплатить",
     "payment": "Платёж",
     "placeholder": "Инвойс или адрес",
-    "potentialFee": "Примерная комиссия: {fee}",
     "refill": "Пополнить",
     "refill_create": "Чтобы продолжить, пожалуйста, создайте биткоин-кошелёк для пополнения.",
-    "refill_lnd_balance": "Пополнить баланс кошелька Lightning",
-    "sameWalletAsInvoiceError": "Вы не можете оплатить инвойс тем же кошельком, который использовали для его создания.",
-    "title": "Управление средствами"
+    "refill_lnd_balance": "Пополнить баланс кошелька Lightning"
   },
   "lndViewInvoice": {
     "additional_info": "Дополнительная информация",
@@ -98,12 +94,9 @@
     "details_label": "Описание",
     "details_setAmount": "Указать сумму",
     "details_share": "Поделиться...",
+    "address_not_found": "Не удалось создать адрес для получения.",
     "header": "Получить",
     "reset": "Сбросить",
-    "maxSats": "Максимальная сумма: {max} сатоши",
-    "maxSatsFull": "Максимальная сумма: {max} сатоши или {currency}",
-    "minSats": "Минимальная сумма: {min} сатоши",
-    "minSatsFull": "Минимальная сумма: {min} сатоши или {currency}",
     "qrcode_for_the_address": "QR-код для адреса",
     "bip47_explanation": "Коды оплаты — это универсальные адреса, скрывающие ваши реальные. Поддерживается не всеми сервисами."
   },
@@ -144,13 +137,10 @@
     "details_adv_full_sure_frozen": "Использовать весь баланс? Замороженные монеты не учитываются.",
     "details_adv_import": "Импортировать транзакцию",
     "details_adv_import_qr": "Импортировать транзакцию (QR)",
-
     "details_amount_field_is_not_valid": "Введённая сумма неверна.",
     "details_amount_field_is_less_than_minimum_amount_sat": "Сумма слишком мала. Введите больше 500 сатоши.",
-    "details_create": "Создать инвойс",
     "details_error_decode": "Не удалось декодировать Doi адрес",
     "details_fee_field_is_not_valid": "Введённая комиссия неверна.",
-
     "details_frozen": "{amount} BTC заморожено.",
     "details_next": "Дальше",
     "details_no_signed_tx": "Файл не содержит импортируемой транзакции.",
@@ -204,15 +194,18 @@
     "cant_send_to_silentpayment_adress": "Этот кошелёк не может отправлять на адреса SilentPayment",
     "cant_send_to_bip47": "Этот кошелёк не может отправлять на коды оплаты BIP47",
     "cant_find_bip47_notification": "Сначала добавьте этот Код Оплаты в контакты",
-    "problem_with_psbt": "Проблема с PSBT"
+    "problem_with_psbt": "Проблема с PSBT",
+    "name": "Имя",
+    "broadcast": "Отправить сейчас",
+    "broadcast_value": "Сумма",
+    "input_index": "Индекс",
+    "foreign_address": "Чужой адрес"
   },
   "settings": {
     "about": "О программе",
     "about_awesome": "Основано на офигенных",
     "about_backup": "Всегда делайте резервные копии ваших ключей!",
-
     "about_free": "DoiWallet — бесплатный проект с открытым исходным кодом. Создано Биткойн пользователями.",
-
     "about_license": "Лицензия MIT",
     "about_release_notes": "История изменений",
     "about_review": "Оставьте отзыв о нас",
@@ -221,9 +214,6 @@
     "about_selftest_electrum_disabled": "Самотестирование недоступно в офлайн режиме. Отключите офлайн режим и попробуйте ещё раз.",
     "about_selftest_ok": "Все внутренние тесты прошли успешно. Кошелёк работает отлично.",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Discord-сервер",
-    "about_sm_telegram": "Telegram-канал",
-    "about_sm_twitter": "Мы в Twitter",
     "privacy_temporary_screenshots": "Разрешить скриншоты",
     "privacy_temporary_screenshots_instructions": "Защита от скриншотов будет отключена для этой сессии, позволяя вам делать скриншоты. После перезапуска приложения защита включится снова.",
     "biometrics": "Биометрия",
@@ -314,7 +304,13 @@
     "total_balance": "Общий баланс",
     "total_balance_explanation": "Показывать общий баланс в виджетах.",
     "widgets": "Виджеты",
-    "tools": "Инструменты"
+    "tools": "Инструменты",
+    "electrum_wrong_chain": "{server} работает в другой цепочке Doichain, чем этот кошелёк, поэтому его балансы и подтверждения здесь не действуют. Сервер удалён.",
+    "enable_receive_bitcoin_intent_desc": "Быстро показывает ваш адрес для получения Bitcoin в виде QR-кода.",
+    "no_wallet_available": "Нет доступных кошельков. Создайте или импортируйте кошелёк.",
+    "no_wallet_selected": "Кошелёк не выбран",
+    "push_notifications": "Push-уведомления",
+    "receive_bitcoin_intent": "Ярлык «Получить Bitcoin»"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "Хотите получать уведомления при входящих платежах?",
@@ -377,7 +373,17 @@
     "to": "Кому: {counterparty}",
     "updating": "Обновление...",
     "watchOnlyWarningTitle": "Предупреждение безопасности",
-    "watchOnlyWarningDescription": "Кошельки «только для чтения» не позволяют тратить средства. Будьте осторожны."
+    "watchOnlyWarningDescription": "Кошельки «только для чтения» не позволяют тратить средства. Будьте осторожны.",
+    "nameOps_name": "Имя",
+    "nameOps_value": "Значение",
+    "nameOps_checking": "Проверяем, кому принадлежит это имя…",
+    "nameOps_moved": "После этой транзакции имя перешло к другому владельцу. Сейчас им владеет {address}.",
+    "nameOps_not_ours": "Это имя принадлежит адресу {address}, который не относится к этому кошельку, поэтому отправить его отсюда нельзя.",
+    "nameOps_unchecked": "Не удалось проверить, кому принадлежит это имя. Подключитесь к серверу и откройте этот экран снова.",
+    "nameOps_current_value": "Текущее значение",
+    "nameOps_last_changed": "Последнее изменение в блоке {height}",
+    "send_to_doi_address": "Отправить на DoiAddress",
+    "send": "Отправить"
   },
   "wallets": {
     "add_bitcoin": "Doi",
@@ -468,15 +474,13 @@
     "list_long_scan": "Сканировать QR-код",
     "list_title": "Кошельки",
     "list_tryagain": "Попробовать ещё раз",
-    "no_ln_wallet_error": "Перед оплатой Лайтнинг инвойса добавьте Лайтнинг-кошелёк.",
     "looks_like_bip38": "Это закрытый ключ с паролем (BIP38).",
     "manage_title": "Управление кошельками",
-    "no_results_found": "Результатов нет.",
+    "no_results_found": "Результатов не найдено.",
     "please_continue_scanning": "Продолжайте сканирование.",
     "select_no_bitcoin": "Нет доступных Bitcoin кошельков.",
     "select_no_bitcoin_exp": "Bitcoin кошелёк нужен для пополнения Lightning кошельков.",
     "select_wallet": "Выбрать кошелёк",
-    "no_results_found": "Результатов не найдено.",
     "xpub_copiedToClipboard": "Скопировано в буфер обмена.",
     "pull_to_refresh": "Потяните, чтобы обновить",
     "warning_do_not_disclose": "Никогда не раскрывайте информацию ниже",
@@ -618,7 +622,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "copy_private_key": "Копировать приватный ключ",
@@ -672,7 +676,7 @@
     "notification_tx_unconfirmed": "Транзакция уведомления не подтверждена, подождите",
     "failed_create_notif_tx": "Не удалось создать on-chain транзакцию",
     "onchain_tx_needed": "Необходима on-chain транзакция",
-    "notif_tx_sent" : "Транзакция уведомления отправлена. Ожидайте подтверждения",
+    "notif_tx_sent": "Транзакция уведомления отправлена. Ожидайте подтверждения",
     "notif_tx": "Транзакция уведомления",
     "not_found": "Код оплаты не найден"
   }

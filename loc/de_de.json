@@ -52,14 +52,13 @@
     "network": "Netzwerkfehler"
   },
   "lnd": {
+    "errorInvoiceExpired": "Rechnung abgelaufen.",
     "expired": "Abgelaufen",
     "payment": "Zahlung",
     "placeholder": "Rechnung oder Adresse",
     "refill": "Aufladen",
     "refill_create": "Bitte eine Bitcoin Wallet erstellen um fortzufahren",
-    "refill_lnd_balance": "Lade deine Lightning Wallet auf",
-    "sameWalletAsInvoiceError": "Die Rechnung lässt sich nicht mit gleichen Wallet begleichen, mit der sie erstellt wurde.",
-    "title": "Beträge verwalten"
+    "refill_lnd_balance": "Lade deine Lightning Wallet auf"
   },
   "lndViewInvoice": {
     "additional_info": "Weiterführende Informationen",
@@ -95,12 +94,9 @@
     "details_label": "Beschreibung",
     "details_setAmount": "Zu erhaltender Betrag",
     "details_share": "Teilen",
+    "address_not_found": "Empfangsadresse konnte nicht erzeugt werden.",
     "header": "Erhalten",
     "reset": "Zurücksetzen",
-    "maxSats": "Der größtmögliche Betrag ist {max} sats",
-    "maxSatsFull": "Der größtmögliche Betrag ist {max} sats oder {currency}",
-    "minSats": "Der kleinstmögliche Betrag ist {min} sats",
-    "minSatsFull": "Der kleinstmögliche Betrag ist {min} sats oder {currency}",
     "qrcode_for_the_address": "QR-Code für die Adresse",
     "bip47_explanation": "Zahlungscodes sind eine universelle Adresse. Sie vermeiden die Offenlegung der Wallet-Adressen, werden aber nicht durch alle Dienste unterstützt."
   },
@@ -130,6 +126,9 @@
     "details_add_recc_rem_all_alert_description": "Wirklich alle Empfänger entfernen?",
     "details_add_rec_rem_all": "Alle Empfänger entfernen",
     "details_recipients_title": "Empfänger",
+    "details_recipient_title": "Empfänger #{number} von #{total}",
+    "please_complete_recipient_title": "Unvollständiger Empfänger",
+    "please_complete_recipient_details": "Bitte vervollständige die Angaben zu Empfänger #{number}, bevor Du einen neuen Empfänger hinzufügst.",
     "details_address": "Adresse",
     "details_address_field_is_not_valid": "Adresseingabe ist nicht korrekt",
     "details_adv_fee_bump": "Erhöhung TRX-Gebühr nach Senden erlauben",
@@ -140,7 +139,6 @@
     "details_adv_import_qr": "Transaktion scannen (QR)",
     "details_amount_field_is_not_valid": "Betragseingabe ist ungültig.",
     "details_amount_field_is_less_than_minimum_amount_sat": "Der angegebene Betrag ist zu klein. Bitte einen Betrag größer 500 sats eingeben.",
-    "details_create": "Erstellen",
     "details_error_decode": "Doi-Adresse kann nicht dekodiert werden",
     "details_fee_field_is_not_valid": "Gebühreneingabe ist nicht korrekt",
     "details_frozen": "{amount} BTC ist eingefroren.",
@@ -176,6 +174,7 @@
     "input_total": "Gesamt:",
     "permission_camera_message": "DoiWallet braucht Deine Erlaubnis, um die Kamera zu nutzen.",
     "psbt_sign": "Transaktion signieren",
+    "invalid_psbt": "Ungültige PSBT angegeben.",
     "open_settings": "Einstellungen öffnen",
     "permission_storage_denied_message": "DoiWallet kann die Datei nicht speichern. Dazu in den Systemeinstellungen der App DoiWallet das Recht erteilen, den internen Speicher zu verwenden.",
     "permission_storage_title": "Speicherzugriffsrecht",
@@ -198,7 +197,9 @@
     "problem_with_psbt": "PSBT-Problem",
     "name": "Name",
     "broadcast": "Broadcast now",
-    "broadcast_value": "Value"
+    "broadcast_value": "Value",
+    "input_index": "Index",
+    "foreign_address": "Fremde Adresse"
   },
   "settings": {
     "about": "Über",
@@ -213,9 +214,6 @@
     "about_selftest_electrum_disabled": "Deaktiviere den Electrum Offline-Modus, um den Selbsttest durchführen zu können.",
     "about_selftest_ok": "Alle internen Tests verliefen erfolgreich. Das Wallet funktioniert gut.",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Discord Server",
-    "about_sm_telegram": "Telegram-Channel",
-    "about_sm_twitter": "Folgt uns auf Twitter",
     "privacy_temporary_screenshots": "Bildschirmfotos zulassen",
     "privacy_temporary_screenshots_instructions": "Der Bildschirmaufnahmeschutz wird für diese Sitzung ausgeschaltet. Mit schließen und erneutem öffnen der App, wird der Schutz automatisch wieder aktiviert.",
     "biometrics": "Biometrie",
@@ -305,7 +303,14 @@
     "total_balance": "Gesamtes Guthaben",
     "total_balance_explanation": "Zeigt das Wallet Guthaben auf dem Widget deiner Homepage",
     "widgets": "Widgets",
-    "tools": "Werkzeuge"
+    "tools": "Werkzeuge",
+    "electrum_error_connect_tor": "Verbindung zum angegebenen Electrum-Server nicht möglich. Stelle sicher, dass die Orbot-App verbunden ist, und versuche es erneut.",
+    "electrum_wrong_chain": "{server} folgt einer anderen Doichain-Kette als diese Wallet, daher gelten seine Guthaben und Bestätigungen hier nicht. Der Server wurde entfernt.",
+    "enable_receive_bitcoin_intent_desc": "Zeigt Deine Bitcoin-Empfangsadresse schnell als QR-Code an.",
+    "no_wallet_available": "Keine Wallets vorhanden. Bitte erstelle oder importiere eine Wallet.",
+    "no_wallet_selected": "Keine Wallet ausgewählt",
+    "push_notifications": "Push-Benachrichtigungen",
+    "receive_bitcoin_intent": "Verknüpfung „Bitcoin empfangen“"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "Soll bei Zahlungseingängen eine Benachrichtigung zugestellt werden?",
@@ -370,7 +375,15 @@
     "nameOps_name": "Name",
     "nameOps_value": "Value",
     "watchOnlyWarningTitle": "Sicherheitswarnung",
-    "watchOnlyWarningDescription": "Achtung. Betrüger verwenden „Watch-only“-Wallets um Nutzern echte Wallet vorzutäsuchen. Sie können mit diesem Wallet keine Gelder kontrollieren oder senden, sondern nur den Kontostand einsehen."
+    "watchOnlyWarningDescription": "Achtung. Betrüger verwenden „Watch-only“-Wallets um Nutzern echte Wallet vorzutäsuchen. Sie können mit diesem Wallet keine Gelder kontrollieren oder senden, sondern nur den Kontostand einsehen.",
+    "nameOps_checking": "Es wird geprüft, wer diesen Namen hält …",
+    "nameOps_current_value": "Aktueller Wert",
+    "nameOps_last_changed": "Zuletzt geändert in Block {height}",
+    "nameOps_moved": "Dieser Name hat seit dieser Transaktion den Besitzer gewechselt. Er wird jetzt von {address} gehalten.",
+    "nameOps_not_ours": "Dieser Name wird von {address} gehalten, einer Adresse, die nicht zu dieser Wallet gehört, und kann daher von hier nicht gesendet werden.",
+    "nameOps_unchecked": "Es konnte nicht geprüft werden, wer diesen Namen hält. Verbinde Dich mit einem Server und öffne diesen Bildschirm erneut.",
+    "send": "Senden",
+    "send_to_doi_address": "An DoiAddress senden"
   },
   "wallets": {
     "add_bitcoin": "Doi",
@@ -461,7 +474,6 @@
     "list_long_scan": "QR Code scannen",
     "list_title": "Wallets",
     "list_tryagain": "Nochmal versuchen",
-    "no_ln_wallet_error": "Vor Bezahlung einer Lightning Rechnung zuerst ein Lightning Wallet eröffnen.",
     "looks_like_bip38": "Passwortgeschützter Privatschlüssel (BIP38) erkannt.",
     "manage_title": "Wallets verwalten",
     "no_results_found": "Keine Ergebnisse gefunden.",
@@ -498,6 +510,10 @@
     "default_label": "Multisignatur Tresor",
     "multisig_vault_explain": "Höchste Sicherheit für große Beträge",
     "provide_signature": "Schlüssel eingeben",
+    "provide_signature_details": "Verwende das Gerät und die Wallet, auf denen der Schlüssel liegt, um diese Transaktion zu signieren",
+    "provide_signature_details_bluewallet": "Gehe in BlueWallet im Menü des Sende-Bildschirms auf ",
+    "provide_signature_next_steps": "Signierte Transaktion scannen oder importieren",
+    "provide_signature_next_steps_details": "Sobald Deine Wallet die Transaktion signiert hat, scanne den angezeigten QR-Code oder importiere die zugehörige Datei und prüfe anschließend alle Transaktionsdetails, bevor Du sie überträgst.",
     "vault_key": "Tresor-Schlüssel: {number}",
     "required_keys_out_of_total": "Erforderliche Schlüssel aus dem Total",
     "fee": "Gebhür: {number}",
@@ -606,7 +622,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "copy_private_key": "Privaten Schlüssel kopieren",

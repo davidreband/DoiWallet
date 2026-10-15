@@ -45,15 +45,11 @@
   },
   "lnd": {
     "expired": "Erääntynyt",
-    "payButton": "Maksa",
     "payment": "Maksu",
     "placeholder": "Lasku",
-    "potentialFee": "Mahdollinen siirtokulu: {fee}",
     "refill": "Täytä",
     "refill_create": "Jatka luomalla Bitcoin-lompakko, jolla voit täyttää sen.",
-    "refill_lnd_balance": "Täytä Salamalompakon saldoa",
-    "sameWalletAsInvoiceError": "Et voi maksaa laskua samalla lompakolla, jolla se on luotu.",
-    "title": "hallinnoi varoja"
+    "refill_lnd_balance": "Täytä Salamalompakon saldoa"
   },
   "lndViewInvoice": {
     "additional_info": "Lisäinformaatio",
@@ -89,10 +85,6 @@
     "details_setAmount": "Vastaanotettava summa",
     "details_share": "Jaa...",
     "header": "Vastaanota",
-    "maxSats": "Enimmäismäärä on {max} satsia",
-    "maxSatsFull": "Enimmäismäärä on {max} satsia tai {currency}",
-    "minSats": "Vähimmäismäärä on {min} satsia",
-    "minSatsFull": "Vähimmäismäärä on {min} satsia tai {currency}",
     "qrcode_for_the_address": "QR-koodi osoitteelle"
   },
   "send": {
@@ -127,7 +119,6 @@
     "details_adv_import_qr": "Tuo siirtotapahtuma (QR)",
     "details_amount_field_is_not_valid": "Määrä ei kelpaa",
     "details_amount_field_is_less_than_minimum_amount_sat": "Määritetty määrä on liian pieni. Anna summa, joka on yli 500 sattia. ",
-    "details_create": "Luo Lasku",
     "details_error_decode": "Doi-osoitetta ei voida dekoodata ",
     "details_fee_field_is_not_valid": "Siirtomaksu ei ole pätevä",
     "details_frozen": "{amount} BTC on jäädytetty.",
@@ -189,9 +180,6 @@
     "about_selftest_electrum_disabled": "Electrum Self-Test toimintoa ei ole mahdollista käyttää offline-tilassa. Siirry pois offline-tilasta ja yritä uudelleen",
     "about_selftest_ok": "Kaikki sisäiset testit on läpäisty onnistuneesti. Lompakko toimii hyvin. ",
     "about_sm_github": "GitHub",
-    "about_sm_discord": "Discord-serveri",
-    "about_sm_telegram": "Telegram-kanava",
-    "about_sm_twitter": "Seuraa meitä Twitterissä",
     "biometrics": "Biometriset tiedot",
     "biom_10times": "Olet yrittänyt antaa salasanasi 10 kertaa. Haluatko nollata tallennustilan? Tämä poistaa kaikki lompakot ja purkaa tallennustilan salauksen.",
     "biom_conf_identity": "Vahvista identiteettisi.",
@@ -230,7 +218,6 @@
     "header": "asetukset",
     "language": "Kieli",
     "last_updated": "Päivitetty viimeksi",
-
     "language_isRTL": "DoiWallet on käynnistettävä uudelleen, jotta kielisuuntaus tulee voimaan.",
     "license": "Lisenssi",
     "lightning_settings": "Salama-asetukset",
@@ -388,7 +375,6 @@
     "list_long_scan": "Skannaa QR-koodi",
     "list_title": "lompakot",
     "list_tryagain": "Yritä uudelleen",
-    "no_ln_wallet_error": "Ennen kuin maksat Salamalaskun, sinun on ensin lisättävä Salamalompakko.",
     "looks_like_bip38": "Tämä näyttää salasanalla suojatulta yksityiseltä avaimelta (BIP38)",
     "please_continue_scanning": "Jatka skannausta",
     "select_no_bitcoin": "Doi-lompakkoa ei tällä hetkellä ole saatavana.",
@@ -505,7 +491,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "copy_private_key": "Kopio yksityinen avain",

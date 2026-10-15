@@ -30,13 +30,9 @@
   },
   "lnd": {
     "expired": "Expirovaná",
-    "expiresIn": "Vyprší za {time} minút",
-    "payButton": "Zaplatiť",
     "refill": "Doplniť",
     "refill_create": "Pre pokračovanie, prosím, vytvorte si Bitcoinovú peňaženku",
-    "refill_lnd_balance": "Doplniť zostatok na Lightning peňaženke",
-    "sameWalletAsInvoiceError": "Faktúra sa nedá uhradiť s rovnakou peňaženkou ako tá, ktorá ju vytvorila.",
-    "title": "spravovať zostatok"
+    "refill_lnd_balance": "Doplniť zostatok na Lightning peňaženke"
   },
   "lndViewInvoice": {
     "additional_info": "Doplňujúce informácie",
@@ -88,7 +84,6 @@
     "details_adv_full": "Použiť celý zostatok",
     "details_adv_import": "Importovať transakciu",
     "details_amount_field_is_not_valid": "Čiastka nie je správne vyplnená",
-    "details_create": "Vytvoriť",
     "details_fee_field_is_not_valid": "Poplatok nie je správne vyplnený",
     "details_next": "Ďalej",
     "details_note_placeholder": "poznámka pre seba",
@@ -114,8 +109,6 @@
     "about_free": "DoiWallet je projekt, ktorý je zdarma a s otvorenými zdrojovými kódmi. Vytvorený používateľmi Bitcoinu.",
     "about_review": "Napíšte nám recenziu",
     "about_sm_github": "GitHub",
-    "about_sm_telegram": "Telegram chat",
-    "about_sm_twitter": "Sledujte nás na Twitteri",
     "currency": "Mena",
     "default_wallets": "Zobraziť všetky peňaženky",
     "electrum_saved": "Vaše zmeny boli úspešne uložené. Aby sa zmeny prejavili, môže byť potrebný reštart.",
@@ -231,7 +224,7 @@
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
-    "swartz":"swartz"
+    "swartz": "swartz"
   },
   "addresses": {
     "sign_placeholder_address": "adresa",

@@ -19,7 +19,6 @@
     "error": "Қате"
   },
   "lnd": {
-    "payButton": "Төлем жасау",
     "refill": "Қайта толтыру"
   },
   "lndViewInvoice": {
