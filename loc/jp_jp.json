@@ -161,7 +161,7 @@
     "fee_1d": "1日",
     "fee_3h": "3時間",
     "fee_custom": "カスタム",
-    "insert_custom_fee": "カスタム手数料を入力",
+    "insert_custom_fee": "手数料を入力",
     "fee_fast": "高速",
     "fee_medium": "中速",
     "fee_replace_minvb": "希望する手数料レート（vByteあたりsatoshi）は{min} sat/vByteより高くするのが良いです。",
@@ -214,8 +214,8 @@
     "about_selftest_electrum_disabled": "Electrumオフラインモードではセルフテストができません。オフラインモードを無効にしてもう一度やり直してください。",
     "about_selftest_ok": "全ての内部テストが成功しました。ウォレットは正しく機能しています。",
     "about_sm_github": "GitHub",
-    "privacy_temporary_screenshots": "スクリーンショットを許可",
-    "privacy_temporary_screenshots_instructions": "このセッション中、スクリーンショット防止をオフにします。アプリを閉じて再度開くと、自動的に防止がオンに戻ります。",
+    "privacy_temporary_screenshots": "スクリーンキャプチャを許可",
+    "privacy_temporary_screenshots_instructions": "スクリーンキャプチャ保護が一時的にオフになり、スクリーンショットと録画が可能です。BlueWalletを閉じて再度開くと保護は自動的に有効になります。",
     "biometrics": "生体認証",
     "biometrics_no_longer_available": "デバイスの設定が変更され、アプリ内で選択したセキュリティ設定に適合しなくなりました。生体認証かパスコードを再度有効にしてから、アプリを再起動して変更を適用してください。",
     "biom_10times": "パスワードを10回入力しようとしました。ストレージをリセットしますか？これにより全てのウォレットが削除され、ストレージが復号化されます。",
@@ -374,6 +374,8 @@
     "updating": "更新中…",
     "watchOnlyWarningTitle": "セキュリティ警告",
     "watchOnlyWarningDescription": "「閲覧専用」ウォレットを使ってユーザーを騙す詐欺師に注意してください。このウォレットは資金の管理や送金ができず、残高を見ることだけができます。",
+    "custom_fee_warning_title": "警告",
+    "custom_fee_warning_description": "1 sat/vB 未満の手数料は有効ですが、ノードのポリシーによりリレーされない可能性があります。 ",
     "nameOps_name": "名前",
     "nameOps_value": "値",
     "nameOps_checking": "この名前の保有者を確認しています…",
@@ -492,7 +494,7 @@
     "add_ln_wallet_first": "先にライトニングウォレットを追加する必要があります。",
     "identity_pubkey": "識別用公開鍵",
     "xpub_title": "ウォレット XPUB",
-    "manage_wallets_search_placeholder": "ウォレット・メモを検索",
+    "manage_wallets_search_placeholder": "ウォレット・アドレス・トランザクション・メモを検索",
     "more_info": "詳細情報",
     "details_delete_wallet_error_message": "ウォレットが通知から削除されたかの確認に問題が生じました—ネットワークの問題か、接続が弱いためかもしれません。続行すると、ウォレットを削除した後でも、関連するトランザクションの通知を受け取る可能性があります。",
     "details_delete_anyway": "とにかく削除"
@@ -618,10 +620,10 @@
     "sort_by": "ソート方法"
   },
   "units": {
-    "DOI": "DOI",
     "MAX": "MAX",
-    "sat_byte": "swartz/byte",
     "sats": "swartz",
+    "DOI": "DOI",
+    "sat_byte": "swartz/byte",
     "swartz": "swartz"
   },
   "addresses": {

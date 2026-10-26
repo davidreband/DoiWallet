@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { ActivityIndicator, FlatList, LayoutAnimation, Platform, StyleSheet, UIManager, View } from 'react-native';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
-import { BlueButtonLink, BlueFormLabel, BlueSpacing10, BlueSpacing20, BlueSpacing40, BlueText } from '../../BlueComponents';
+import { BlueButtonLink, BlueFormLabel, BlueText } from '../../BlueComponents';
 import { HDSegwitBech32Wallet, WatchOnlyWallet } from '../../class';
 import startImport, { TImport } from '../../class/wallet-import';
 import presentAlert from '../../components/Alert';
@@ -18,7 +18,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { THDWalletForWatchOnly, TWallet } from '../../class/wallets/types';
 import { useSettings } from '../../hooks/context/useSettings';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
-import { enableScreenProtect, disableScreenProtect } from '../../helpers/screenProtect';
+import { useScreenProtect } from '../../hooks/useScreenProtect';
+import { BlueSpacing10, BlueSpacing20, BlueSpacing40 } from '../../components/BlueSpacing';
 
 type RouteProps = RouteProp<AddWalletStackParamList, 'ImportWalletDiscovery'>;
 type NavigationProp = NativeStackNavigationProp<AddWalletStackParamList, 'ImportWalletDiscovery'>;
@@ -39,6 +40,7 @@ const ImportWalletDiscovery: React.FC = () => {
   const route = useRoute<RouteProps>();
   const { importText, askPassphrase, searchAccounts } = route.params;
   const { isElectrumDisabled, isPrivacyBlurEnabled } = useSettings();
+  const { enableScreenProtect, disableScreenProtect } = useScreenProtect();
   const task = useRef<TImport | null>(null);
   const { addAndSaveWallet } = useStorage();
   const [loading, setLoading] = useState<boolean>(true);
@@ -146,7 +148,7 @@ const ImportWalletDiscovery: React.FC = () => {
     return () => {
       disableScreenProtect();
     };
-  }, [isPrivacyBlurEnabled]);
+  }, [isPrivacyBlurEnabled, enableScreenProtect, disableScreenProtect]);
 
   const handleCustomDerivation = () => {
     task.current?.stop();

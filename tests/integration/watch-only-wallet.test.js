@@ -62,7 +62,7 @@ describe('Watch only wallet', () => {
 
     for (const tx of w.getTransactions()) {
       assert.ok(tx.hash);
-      assert.ok(tx.received);
+      assert.ok(tx.timestamp);
       assert.ok(tx.confirmations > 1);
 
       // the amount shown next to a transaction is what we gained minus what we spent, in satoshi.

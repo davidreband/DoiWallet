@@ -22,18 +22,18 @@ describe('getNameOPStackScript', () => {
   it('matches the fixtures of doichainjs-lib byte for byte', () => {
     // an empty value still has to be a push, or Core reads no name at all
     assert.strictEqual(
-      getNameOPStackScript('hello', '', P2PKH_HOLDER, DOICHAIN_REGTEST).toString('hex'),
+      Buffer.from(getNameOPStackScript('hello', '', P2PKH_HOLDER, DOICHAIN_REGTEST)).toString('hex'),
       '5a0568656c6c6f006d7576a9148359edeb2dcbec1c9117500de7bfdbf5f14e421588ac',
     );
 
     assert.strictEqual(
-      getNameOPStackScript('hello', 'world', P2WPKH_HOLDER, DOICHAIN_REGTEST).toString('hex'),
+      Buffer.from(getNameOPStackScript('hello', 'world', P2WPKH_HOLDER, DOICHAIN_REGTEST)).toString('hex'),
       '5a0568656c6c6f05776f726c646d7500144242424242424242424242424242424242424242',
     );
 
     // a value over 75 bytes is pushed with OP_PUSHDATA1
     assert.strictEqual(
-      getNameOPStackScript('hello', 'a'.repeat(80), P2WPKH_HOLDER, DOICHAIN_REGTEST).toString('hex'),
+      Buffer.from(getNameOPStackScript('hello', 'a'.repeat(80), P2WPKH_HOLDER, DOICHAIN_REGTEST)).toString('hex'),
       '5a0568656c6c6f4c50' + '61'.repeat(80) + '6d7500144242424242424242424242424242424242424242',
     );
   });
@@ -81,8 +81,8 @@ describe('getNameOPStackScript', () => {
 
     assert.notStrictEqual(nfc, nfd);
     assert.strictEqual(
-      getNameOPStackScript(nfc, 'x', P2PKH_HOLDER, DOICHAIN_REGTEST).toString('hex'),
-      getNameOPStackScript(nfd, 'x', P2PKH_HOLDER, DOICHAIN_REGTEST).toString('hex'),
+      Buffer.from(getNameOPStackScript(nfc, 'x', P2PKH_HOLDER, DOICHAIN_REGTEST)).toString('hex'),
+      Buffer.from(getNameOPStackScript(nfd, 'x', P2PKH_HOLDER, DOICHAIN_REGTEST)).toString('hex'),
     );
   });
 

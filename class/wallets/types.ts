@@ -1,4 +1,4 @@
-import bitcoin from '@doichain/doichainjs-lib';
+import * as bitcoin from '@doichain/doichainjs-lib';
 import { CoinSelectOutput, CoinSelectReturnInput, CoinSelectUtxo } from 'coinselect';
 
 import { DoichainUnit } from '../../models/doichainUnits';
@@ -127,7 +127,7 @@ export type LightningTransaction = {
   type?: 'user_invoice' | 'payment_request' | 'bitcoind_tx' | 'paid_invoice';
   payment_hash?: string | { data: string };
   category?: 'receive';
-  timestamp?: number;
+  timestamp: number; // seconds, not milliseconds
   expire_time?: number;
   ispaid?: boolean;
   walletID?: string;
@@ -153,7 +153,7 @@ export type Transaction = {
   confirmations: number;
   time: number;
   blocktime: number;
-  received?: number;
+  timestamp: number; // seconds, not milliseconds
   value?: number;
 
   /**

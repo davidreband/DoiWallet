@@ -1,7 +1,7 @@
 import { RouteProp, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useMemo, useReducer, useRef } from 'react';
 import { ActivityIndicator, InteractionManager, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { BlueSpacing20, BlueText } from '../../BlueComponents';
+import { BlueText } from '../../BlueComponents';
 import { TWallet } from '../../class/wallets/types';
 import { DynamicQRCode } from '../../components/DynamicQRCode';
 import SaveFileButton from '../../components/SaveFileButton';
@@ -11,8 +11,9 @@ import loc from '../../loc';
 import { useStorage } from '../../hooks/context/useStorage';
 import { ExportMultisigCoordinationSetupStackRootParamList } from '../../navigation/ExportMultisigCoordinationSetupStack';
 import { useSettings } from '../../hooks/context/useSettings';
-import { enableScreenProtect, disableScreenProtect } from '../../helpers/screenProtect';
+import { useScreenProtect } from '../../hooks/useScreenProtect';
 import SafeArea from '../../components/SafeArea';
+import { BlueSpacing20 } from '../../components/BlueSpacing';
 
 const enum ActionType {
   SET_LOADING = 'SET_LOADING',
@@ -78,6 +79,7 @@ const ExportMultisigCoordinationSetup: React.FC = () => {
   const wallet: TWallet | undefined = wallets.find(w => w.getID() === walletID);
   const dynamicQRCode = useRef<any>();
   const { colors } = useTheme();
+  const { enableScreenProtect, disableScreenProtect } = useScreenProtect();
 
   const navigation = useNavigation();
   const stylesHook = StyleSheet.create({
@@ -140,7 +142,7 @@ const ExportMultisigCoordinationSetup: React.FC = () => {
       return () => {
         disableScreenProtect();
       };
-    }, [isPrivacyBlurEnabled]),
+    }, [isPrivacyBlurEnabled, enableScreenProtect, disableScreenProtect]),
   );
 
   useFocusEffect(

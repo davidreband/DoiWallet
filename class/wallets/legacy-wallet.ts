@@ -377,6 +377,7 @@ export class LegacyWallet extends AbstractWallet {
             ...txRest,
             inputs: [...vin2],
             outputs: [...vout],
+            timestamp: tx.blocktime || tx.time || Math.floor(+new Date() / 1000) - 30 /* unconfirmed */,
           };
 
           _txsByExternalIndex.push(clonedTx);
@@ -390,6 +391,7 @@ export class LegacyWallet extends AbstractWallet {
             ...txRest,
             inputs: [...vin],
             outputs: [...vout2],
+            timestamp: tx.blocktime || tx.time || Math.floor(+new Date() / 1000) - 30 /* unconfirmed */,
           };
 
           _txsByExternalIndex.push(clonedTx);
@@ -555,7 +557,7 @@ export class LegacyWallet extends AbstractWallet {
     sanitizedOutputs.forEach(output => {
       const outputData = {
         address: output.address,
-        value: output.value,
+        value: BigInt(output.value),
       };
 
       psbt.addOutput(outputData);
@@ -581,7 +583,7 @@ export class LegacyWallet extends AbstractWallet {
     }
     let max = 0;
     for (const tx of this.getTransactions()) {
-      max = Math.max(new Date(tx.received ?? 0).getTime(), max);
+      max = Math.max(tx.timestamp ? tx.timestamp * 1000 : 0, max);
     }
     return new Date(max).toString();
   }
@@ -692,7 +694,7 @@ export class LegacyWallet extends AbstractWallet {
     const privateKey = keyPair.privateKey;
     if (!privateKey) throw new Error('Invalid private key');
     const options = this.segwitType && useSegwit ? { segwitType: this.segwitType } : undefined;
-    const signature = bitcoinMessage.sign(message, privateKey, keyPair.compressed, options);
+    const signature = bitcoinMessage.sign(message, Buffer.from(privateKey), keyPair.compressed, options);
     return signature.toString('base64');
   }
 

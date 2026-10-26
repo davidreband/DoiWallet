@@ -3,7 +3,6 @@ import * as bitcoin from '@doichain/doichainjs-lib';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
-import { BlueSpacing20 } from '../../BlueComponents';
 import presentAlert from '../../components/Alert';
 import { DynamicQRCode } from '../../components/DynamicQRCode';
 import SaveFileButton from '../../components/SaveFileButton';
@@ -14,6 +13,7 @@ import { DOICHAIN } from '../../blue_modules/network.js';
 import TipBox from '../../components/TipBox';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import { SendDetailsStackParamList } from '../../navigation/SendDetailsStackParamList';
+import { BlueSpacing20 } from '../../components/BlueSpacing';
 
 interface BarcodeScanResult {
   data?: string;

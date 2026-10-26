@@ -1,4 +1,4 @@
-import createHash from 'create-hash';
+import { sha256 } from '@noble/hashes/sha256';
 import { element } from 'detox';
 
 export async function waitForId(id, timeout = 33000) {
@@ -84,7 +84,7 @@ export async function sleep(ms) {
 }
 
 export function hashIt(s) {
-  return createHash('sha256').update(s).digest().toString('hex');
+  return Buffer.from(sha256(s)).toString('hex');
 }
 
 export async function helperDeleteWallet(label, remainingBalanceSat = false) {
@@ -240,4 +240,14 @@ export async function countElements(testId) {
     }
   }
   return count;
+}
+
+export async function scanText(text) {
+  await sleep(5000); // wait for camera screen to initialize
+  await waitForId('ScanQrBackdoorButton');
+  for (let c = 0; c <= 5; c++) {
+    await element(by.id('ScanQrBackdoorButton')).tap();
+  }
+  await element(by.id('scanQrBackdoorInput')).replaceText(text);
+  await element(by.id('scanQrBackdoorOkButton')).tap();
 }

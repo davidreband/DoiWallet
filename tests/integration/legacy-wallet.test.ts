@@ -64,7 +64,7 @@ describe('LegacyWallet', function () {
     for (const tx of w.getTransactions()) {
       assert.ok(tx.hash);
       assert.ok(tx.value);
-      assert.ok(tx.received);
+      assert.ok(tx.timestamp);
       assert.ok(tx.confirmations! > 1);
     }
 
@@ -119,7 +119,7 @@ describe('LegacyWallet', function () {
       for (const tx of w.getTransactions()) {
         assert.ok(tx.hash);
         assert.ok(tx.value);
-        assert.ok(tx.received);
+        assert.ok(tx.timestamp);
         assert.ok(tx.confirmations! > 1);
       }
     },
@@ -196,7 +196,7 @@ describe('SegwitBech32Wallet', function () {
     // that sum is computed right; recomputing it from the transaction does.
     for (const tx of txs) {
       assert.strictEqual(tx.hash, tx.txid);
-      assert.ok(tx.received);
+      assert.ok(tx.timestamp);
       assert.ok(tx.confirmations! > 1);
 
       let gained = 0;
@@ -213,7 +213,7 @@ describe('SegwitBech32Wallet', function () {
 
     // newest first, which is the order the transaction list is drawn in
     for (let i = 1; i < txs.length; i++) {
-      assert.ok(Number(txs[i - 1].received) >= Number(txs[i].received), 'transactions are not newest first');
+      assert.ok(Number(txs[i - 1].timestamp) >= Number(txs[i].timestamp), 'transactions are not newest first');
     }
   });
 
@@ -230,7 +230,7 @@ describe('SegwitBech32Wallet', function () {
     const tx = w.getTransactions()[1];
     assert.ok(tx.hash);
     assert.strictEqual(tx.value, 39976496);
-    assert.ok(tx.received);
+    assert.ok(tx.timestamp);
     assert.ok(tx.confirmations! > 1);
 
     const tx0 = w.getTransactions()[0];

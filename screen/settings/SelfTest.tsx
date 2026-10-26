@@ -14,7 +14,7 @@ import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import * as encryption from '../../blue_modules/encryption';
 import * as fs from '../../blue_modules/fs';
 import ecc from '../../blue_modules/noble_ecc';
-import { BlueLoading, BlueSpacing20, BlueText } from '../../BlueComponents';
+import { BlueText } from '../../BlueComponents';
 import {
   HDAezeedWallet,
   HDSegwitBech32Wallet,
@@ -29,6 +29,8 @@ import Button from '../../components/Button';
 import SaveFileButton from '../../components/SaveFileButton';
 import loc from '../../loc';
 import { CreateTransactionUtxo } from '../../class/wallets/types.ts';
+import { BlueSpacing20 } from '../../components/BlueSpacing';
+import { BlueLoading } from '../../components/BlueLoading.tsx';
 
 const bip32 = BIP32Factory(ecc);
 
@@ -203,6 +205,28 @@ export default class SelfTest extends Component {
       l.setSecret('TkY79tUnVeDjWzCr31s9iifnvGxofRNeicfomety5NgrNA92jacx');
       if (l.getAddress() !== 'dc1payhxedzyjtu8w7ven7au9925pmhc5gl59m77ht9vqq0l5xq8fsgqdh0pr7') {
         throw new Error('failed to generate Taproot address from WIF');
+      }
+
+      //
+
+      const txNewTaproot = l.createTransaction(
+        [
+          {
+            value: 9778,
+            address: 'dc1payhxedzyjtu8w7ven7au9925pmhc5gl59m77ht9vqq0l5xq8fsgqdh0pr7',
+            txid: '511e007f9c96b6d713a72b730506198f61dd96046edee72f0dc636bfe1f3a9cf',
+            vout: 0,
+          },
+        ],
+        [{ address: 'NGQYU5ptSU571M3FEGQQVByPbkibZWoeqz' }],
+        1,
+        String(l.getAddress()),
+        0xffffffff,
+        false,
+        0,
+      );
+      if (!txNewTaproot.tx) {
+        throw new Error('failed to create Taproot tx');
       }
 
       //

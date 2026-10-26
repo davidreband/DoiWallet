@@ -19,7 +19,6 @@ import * as RNLocalize from 'react-native-localize';
 
 import { DoichainUnit } from '../../models/doichainUnits';
 import debounce from '../../blue_modules/debounce';
-import { BlueSpacing10, BlueSpacing20 } from '../../BlueComponents';
 import { TWallet, Utxo } from '../../class/wallets/types';
 import BottomModal, { BottomModalHandle } from '../../components/BottomModal';
 import Button from '../../components/Button';
@@ -38,6 +37,7 @@ import { CommonToolTipActions } from '../../typings/CommonToolTipActions';
 import { useKeyboard } from '../../hooks/useKeyboard';
 import TipBox from '../../components/TipBox';
 import SafeAreaFlatList from '../../components/SafeAreaFlatList';
+import { BlueSpacing10, BlueSpacing20 } from '../../components/BlueSpacing';
 
 type NavigationProps = NativeStackNavigationProp<SendDetailsStackParamList, 'CoinControl'>;
 type RouteProps = RouteProp<SendDetailsStackParamList, 'CoinControl'>;

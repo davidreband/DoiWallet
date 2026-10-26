@@ -105,7 +105,7 @@ export class SegwitBech32Wallet extends LegacyWallet {
         sequence,
         witnessUtxo: {
           script: p2wpkh.output,
-          value: input.value,
+          value: BigInt(input.value),
         },
       });
     });
@@ -118,7 +118,7 @@ export class SegwitBech32Wallet extends LegacyWallet {
 
       const outputData = {
         address: output.address,
-        value: output.value,
+        value: BigInt(output.value),
       };
 
       psbt.addOutput(outputData);

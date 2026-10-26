@@ -2,6 +2,8 @@ import { Psbt } from '@doichain/doichainjs-lib';
 import { CreateTransactionTarget, CreateTransactionUtxo, TWallet } from '../class/wallets/types';
 import { DoichainUnit, Chain } from '../models/doichainUnits';
 import { ScanQRCodeParamList } from './DetailViewStackParamList';
+import { IFee } from '../screen/send/SendDetails';
+import { NetworkTransactionFeeType } from '../models/networkTransactionFees';
 
 export interface NameOpParams {
   nameId: string;
@@ -37,6 +39,8 @@ export type SendDetailsParams = {
   isEditable?: boolean;
   uri?: string;
   paymentCode?: string;
+  selectedFeeRate?: string | undefined;
+  selectedFeeType?: NetworkTransactionFeeType;
   addRecipientParams?: {
     address: string;
     amount?: number;
@@ -56,6 +60,18 @@ export type TNavigationWrapper = {
 
 export type SendDetailsStackParamList = {
   SendDetails: SendDetailsParams;
+  SelectFee: {
+    networkTransactionFees: {
+      fastestFee: number;
+      mediumFee: number;
+      slowFee: number;
+    };
+    feePrecalc: IFee;
+    feeRate: string;
+    feeUnit?: DoichainUnit;
+    walletID: string;
+    customFee?: string | null;
+  };
   Confirm: {
     fee: number;
     memo?: string;

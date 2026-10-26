@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { useFocusEffect, useLocale, useRoute } from '@react-navigation/native';
 import {
   ActivityIndicator,
   FlatList,
-  I18nManager,
   InteractionManager,
   Keyboard,
   LayoutAnimation,
@@ -17,7 +16,7 @@ import { Icon } from '@rneui/themed';
 import A from '../../blue_modules/analytics';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { encodeUR } from '../../blue_modules/ur';
-import { BlueFormMultiInput, BlueSpacing10, BlueSpacing20, BlueTextCentered } from '../../BlueComponents';
+import { BlueFormMultiInput, BlueTextCentered } from '../../BlueComponents';
 import { HDSegwitBech32Wallet, MultisigCosigner, MultisigHDWallet } from '../../class';
 import presentAlert from '../../components/Alert';
 import BottomModal from '../../components/BottomModal';
@@ -43,12 +42,14 @@ import MultipleStepsListItem, {
   MultipleStepsListItemDashType,
 } from '../../components/MultipleStepsListItem';
 import { AddressInputScanButton } from '../../components/AddressInputScanButton';
-import { enableScreenProtect, disableScreenProtect } from '../../helpers/screenProtect';
+import { useScreenProtect } from '../../hooks/useScreenProtect';
+import { BlueSpacing10, BlueSpacing20 } from '../../components/BlueSpacing';
 
 const staticCache = {};
 
 const WalletsAddMultisigStep2 = () => {
   const { addAndSaveWallet, isElectrumDisabled, sleep, currentSharedCosigner, setSharedCosigner } = useStorage();
+  const { enableScreenProtect, disableScreenProtect } = useScreenProtect();
   const { colors } = useTheme();
 
   const navigation = useExtendedNavigation();
@@ -68,6 +69,7 @@ const WalletsAddMultisigStep2 = () => {
   const { isPrivacyBlurEnabled } = useSettings();
   const data = useRef(new Array(n));
   const { isVisible } = useKeyboard();
+  const { direction } = useLocale();
 
   useFocusEffect(
     useCallback(() => {
@@ -77,7 +79,7 @@ const WalletsAddMultisigStep2 = () => {
       return () => {
         disableScreenProtect();
       };
-    }, [isPrivacyBlurEnabled]),
+    }, [isPrivacyBlurEnabled, enableScreenProtect, disableScreenProtect]),
   );
 
   useEffect(() => {
@@ -122,6 +124,12 @@ const WalletsAddMultisigStep2 = () => {
     },
     helpButtonText: {
       color: colors.foregroundColor,
+    },
+    helpButtonWrapper: {
+      flexDirection: direction === 'rtl' ? 'row' : 'row-reverse',
+    },
+    secretContainer: {
+      flexDirection: direction === 'rtl' ? 'row-reverse' : 'row',
     },
   });
 
@@ -630,7 +638,7 @@ const WalletsAddMultisigStep2 = () => {
         <BlueSpacing20 />
         <Text style={[styles.textDestination, stylesHook.textDestination]}>{loc._.seed}</Text>
         <BlueSpacing10 />
-        <View style={styles.secretContainer}>{renderSecret(vaultKeyData.seed.split(' '))}</View>
+        <View style={[styles.secretContainer, stylesHook.secretContainer]}>{renderSecret(vaultKeyData.seed.split(' '))}</View>
         <BlueSpacing20 />
       </BottomModal>
     );
@@ -641,7 +649,7 @@ const WalletsAddMultisigStep2 = () => {
     return (
       <BottomModal
         footer={
-          <View style={[styles.modalFooterBottomPadding, { opacity }]} pointerEvents={isVisible ? 'none' : 'auto'}>
+          <View style={[styles.modalFooterBottomPadding, { opacity }]}>
             {isLoading ? (
               <ActivityIndicator />
             ) : (
@@ -751,7 +759,7 @@ const WalletsAddMultisigStep2 = () => {
   const renderHelp = () => {
     const opacity = isLoading ? 0.5 : 1;
     return (
-      <View style={styles.helpButtonWrapper}>
+      <View style={[styles.helpButtonWrapper, stylesHook.helpButtonWrapper]}>
         <TouchableOpacity
           accessibilityRole="button"
           style={[styles.helpButton, stylesHook.helpButton, { opacity }]}
@@ -845,7 +853,6 @@ const styles = StyleSheet.create({
   askPassprase: { marginLeft: 32, justifyContent: 'center', width: 33, height: 33, borderRadius: 33 / 2 },
 
   secretContainer: {
-    flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
     justifyContent: 'flex-start',
     flexWrap: 'wrap',
   },
@@ -858,7 +865,6 @@ const styles = StyleSheet.create({
   },
   helpButtonWrapper: {
     alignItems: 'flex-end',
-    flexDirection: I18nManager.isRTL ? 'row' : 'row-reverse',
   },
   helpButton: {
     paddingHorizontal: 16,

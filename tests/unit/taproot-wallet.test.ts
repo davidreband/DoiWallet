@@ -69,6 +69,6 @@ describe('Taproot wallet', () => {
     assert.strictEqual(tx.ins[0].witness[0].length, 64);
     assert.strictEqual(tx.ins[0].script.length, 0);
     // sendMax leaves no change, so the fee is whatever the input did not pay out
-    assert.strictEqual(9778 - tx.outs[0].value, txNew.fee);
+    assert.strictEqual(9778 - Number(tx.outs[0].value), txNew.fee);
   });
 });
