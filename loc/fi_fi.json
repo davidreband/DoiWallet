@@ -121,7 +121,7 @@
     "details_amount_field_is_less_than_minimum_amount_sat": "Määritetty määrä on liian pieni. Anna summa, joka on yli 500 sattia. ",
     "details_error_decode": "Doi-osoitetta ei voida dekoodata ",
     "details_fee_field_is_not_valid": "Siirtomaksu ei ole pätevä",
-    "details_frozen": "{amount} BTC on jäädytetty.",
+    "details_frozen": "{amount} DOI on jäädytetty.",
     "details_next": "Seuraava",
     "details_no_signed_tx": "Valittu tiedosto ei sisällä tuotavaa siirtotapahtumaa.",
     "details_note_placeholder": "muistiinpano itselle",

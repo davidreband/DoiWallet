@@ -130,7 +130,7 @@
     "details_amount_field_is_less_than_minimum_amount_sat": "مقدارؽ ک زیڌیه قلوه کم هڌ. مقدار ن وا بیشتر ز 500 ساتۊشی زنی.",
     "details_error_decode": "نا مووفق منه گۊشیڌن رزم آدرس بیت کوین",
     "details_fee_field_is_not_valid": "کارمزد زبال نؽ.",
-    "details_frozen": "{amount} بیت کوین مسدۊد وابیڌه.",
+    "details_frozen": "{amount} DOI مسدۊد وابیڌه.",
     "details_next": "نیایی",
     "details_no_signed_tx": "فایل پسند بیڌه، تراکونشی منس نؽڌ ک ترسته بویم ب من یاریمس.",
     "details_note_placeholder": "ویرداشت و خوت",
