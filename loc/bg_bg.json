@@ -39,8 +39,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "Допълнителна информация",
-    "lightning_invoice": "Лайтнинг фактура",
-    "open_direct_channel": "Директно свързване с нода:"
+    "lightning_invoice": "Лайтнинг фактура"
   },
   "plausibledeniability": {
     "create_fake_storage": "Създайте Криптирано Хранилище",
@@ -144,7 +143,6 @@
     "biom_conf_identity": "Моля, потвърдете вашата самоличност.",
     "biom_remove_decrypt": "Всички портфейли ще бъдат изтрити и хранилището ще бъде декриптирано. Сигурни ли сте, че искате да продължите?",
     "currency": "Валута",
-    "default_info": "Информация",
     "default_title": "При Стартиране",
     "default_wallets": "Виж всички портфейли",
     "electrum_connected": "Свързан",
@@ -156,13 +154,14 @@
     "electrum_reset": "Начални настройки",
     "encrypt_decrypt": "Декриптирай хранилището",
     "encrypt_decrypt_q": "Сигурни ли сте, че искате да декриптирате хранилището? Това ще направи портфейлите ви достъпни без парола.",
-    "encrypt_enc_and_pass": "Криптиран и защитен с парола",
     "encrypt_title": "Сигурност",
     "encrypt_tstorage": "Хранилище",
     "encrypt_use": "Използвай {type}",
     "general": "Основно",
     "plausible_deniability": "Plausible Deniability",
-    "save": "Запази"
+    "save": "Запази",
+    "encrypt_enc_and_pass": "Криптиран и защитен с парола",
+    "default_info": "Информация"
   },
   "transactions": {
     "cpfp_create": "Създай",

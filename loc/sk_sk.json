@@ -32,8 +32,7 @@
     "expired": "Expirovaná"
   },
   "lndViewInvoice": {
-    "additional_info": "Doplňujúce informácie",
-    "open_direct_channel": "Otvoriť priamy kanál s týmto uzlom:"
+    "additional_info": "Doplňujúce informácie"
   },
   "plausibledeniability": {
     "create_fake_storage": "Vytvoriť falošné zašifrované úložisko",
@@ -110,7 +109,6 @@
     "electrum_status": "Stav",
     "encrypt_decrypt": "Dešifrovať úložisko",
     "encrypt_decrypt_q": "Naozaj chcete dešifrovať úložisko? Peňaženky budú prístupné bez hesla.",
-    "encrypt_enc_and_pass": "Zašifrované a chránené heslom",
     "encrypt_title": "Bezpečnosť",
     "encrypt_tstorage": "úložisko",
     "encrypt_use": "Použiť {type}",
@@ -125,7 +123,8 @@
     "plausible_deniability": "Plausible deniability...",
     "privacy_system_settings": "Systémové nastavenia",
     "save": "Uložiť",
-    "saved": "Uložené"
+    "saved": "Uložené",
+    "encrypt_enc_and_pass": "Zašifrované a chránené heslom"
   },
   "transactions": {
     "cancel_no": "Táto transakcia sa nedá nahradiť",
@@ -213,10 +212,10 @@
     "sort_status": "Stav"
   },
   "units": {
+    "sats": "swartz",
     "DOI": "DOI",
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
-    "sats": "swartz",
     "swartz": "swartz"
   },
   "addresses": {

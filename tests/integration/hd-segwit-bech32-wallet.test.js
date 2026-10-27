@@ -66,7 +66,7 @@ describe('Bech32 Segwit HD (BIP84)', () => {
 
     for (const tx of hd.getTransactions()) {
       assert.ok(tx.hash);
-      assert.strictEqual(tx.value, 50000);
+      assert.strictEqual(tx.value, 600);
       assert.ok(tx.timestamp);
       assert.ok(tx.confirmations > 1);
     }

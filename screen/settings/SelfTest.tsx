@@ -4,7 +4,7 @@ import bip38 from 'bip38';
 import * as bip39 from 'bip39';
 import * as bitcoin from '@doichain/doichainjs-lib';
 import React, { Component } from 'react';
-import { Linking, ScrollView, StyleSheet, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 // @ts-ignore theres no type declaration for this
 import BlueCrypto from 'react-native-blue-crypto';
 import wif from 'wif';
@@ -14,6 +14,7 @@ import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import * as encryption from '../../blue_modules/encryption';
 import * as fs from '../../blue_modules/fs';
 import ecc from '../../blue_modules/noble_ecc';
+import { hexToUint8Array, uint8ArrayToHex } from '../../blue_modules/uint8array-extras';
 import { BlueText } from '../../BlueComponents';
 import {
   HDAezeedWallet,
@@ -28,9 +29,10 @@ import presentAlert from '../../components/Alert';
 import Button from '../../components/Button';
 import SaveFileButton from '../../components/SaveFileButton';
 import loc from '../../loc';
-import { CreateTransactionUtxo } from '../../class/wallets/types.ts';
+import { CreateTransactionUtxo } from '../../class/wallets/types';
 import { BlueSpacing20 } from '../../components/BlueSpacing';
-import { BlueLoading } from '../../components/BlueLoading.tsx';
+import { BlueLoading } from '../../components/BlueLoading';
+import { SettingsCard, SettingsScrollView } from '../../components/platform';
 
 const bip32 = BIP32Factory(ecc);
 
@@ -340,9 +342,9 @@ export default class SelfTest extends Component {
         // skipping RN-specific test'
       }
 
-      //
-
+      // Buffer and Uint8Array tests
       assertStrictEqual(Buffer.from('00ff0f', 'hex').reverse().toString('hex'), '0fff00');
+      assertStrictEqual(uint8ArrayToHex(hexToUint8Array('00ff0f').reverse()), '0fff00');
 
       //
     } catch (Err) {
@@ -359,15 +361,21 @@ export default class SelfTest extends Component {
   }
 
   render() {
-    return (
-      <ScrollView automaticallyAdjustContentInsets contentInsetAdjustmentBehavior="automatic">
+    return <SelfTestContent state={this.state} onPressImportDocument={this.onPressImportDocument} />;
+  }
+}
+
+const SelfTestContent: React.FC<{ state: TState; onPressImportDocument: () => void }> = ({ state, onPressImportDocument }) => {
+  return (
+    <SettingsScrollView automaticallyAdjustContentInsets contentInsetAdjustmentBehavior="automatic">
+      <SettingsCard>
         <BlueSpacing20 />
 
-        {this.state.isLoading ? (
+        {state.isLoading ? (
           <BlueLoading testID="SelfTestLoading" />
         ) : (
           (() => {
-            if (this.state.isOk) {
+            if (state.isOk) {
               return (
                 <View style={styles.center}>
                   <BlueText testID="SelfTestOk" h4>
@@ -381,7 +389,7 @@ export default class SelfTest extends Component {
               return (
                 <View style={styles.center}>
                   <BlueText h4 numberOfLines={0}>
-                    {this.state.errorMessage}
+                    {state.errorMessage}
                   </BlueText>
                 </View>
               );
@@ -393,8 +401,8 @@ export default class SelfTest extends Component {
           <Button title="Test Save to Storage" />
         </SaveFileButton>
         <BlueSpacing20 />
-        <Button title="Test File Import" onPress={this.onPressImportDocument} />
-      </ScrollView>
-    );
-  }
-}
+        <Button title="Test File Import" onPress={onPressImportDocument} />
+      </SettingsCard>
+    </SettingsScrollView>
+  );
+};

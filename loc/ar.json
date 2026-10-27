@@ -46,8 +46,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "معلومة إضافية",
-    "lightning_invoice": "برقية",
-    "open_direct_channel": "فتح قناة مباشرة مع هذه النود:"
+    "lightning_invoice": "برقية"
   },
   "plausibledeniability": {
     "create_fake_storage": "إنشاء وحدة تخزين مشفرة",
@@ -169,7 +168,6 @@
     "currency": "العملة",
     "currency_fetch_error": "حدث خطأ أثناء الحصول على سعر العملة المحددة.",
     "default_desc": "عند تعطيل هذا الإعداد، ستفتح DoiWallet المحفظة المحدَّدة فور التشغيل.",
-    "default_info": "المعلومات الافتراضية",
     "default_title": "عند التشغيل",
     "default_wallets": "عرض جميع المحافظ",
     "electrum_connected": "متصل",
@@ -187,11 +185,9 @@
     "electrum_reset": "إعادة تعيين إلى الافتراضي",
     "encrypt_decrypt": "فك تشفير وحدة التخزين",
     "encrypt_decrypt_q": "هل أنت متأكد أنك تريد فك تشفير وحدة التخزين الخاصة بك؟ سيسمح إجراء ذلك بالوصول إلى محافظك دون كلمة مرور.",
-    "encrypt_enc_and_pass": "مشفرة ومحمية بكلمة مرور",
     "encrypt_title": "الأمان",
     "encrypt_tstorage": "وحدة التخزين",
     "encrypt_use": "استخدام {type}",
-    "encrypt_use_expl": "سيتم استخدام {type} لتأكيد هويتك قبل إجراء معاملة أو فتح محفظة أو تصديرها أو حذفها. ولن يتم استخدام {type} لفتح وحدة تخزين مشفرة.",
     "general": "عام",
     "general_continuity": "الاتساق",
     "general_continuity_e": "عند تمكين هذا الإعداد، ستتمكن من عرض المحافظ والعمليات المحدَّدة باستخدام أجهزتك الأخرى المتصلة بنفس حساب Apple iCloud.",
@@ -223,7 +219,10 @@
     "total_balance": "الرصيد الاجمالي",
     "total_balance_explanation": "اعرض الرصيد الإجمالي لجميع محافظك على ويدجت الشاشة الرئيسية الخاصة بك.",
     "widgets": "ويدجت",
-    "tools": "ادوات"
+    "tools": "ادوات",
+    "encrypt_enc_and_pass": "مشفرة ومحمية بكلمة مرور",
+    "encrypt_use_expl": "سيتم استخدام {type} لتأكيد هويتك قبل إجراء معاملة أو فتح محفظة أو تصديرها أو حذفها. ولن يتم استخدام {type} لفتح وحدة تخزين مشفرة.",
+    "default_info": "المعلومات الافتراضية"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "هل ترغب في تلقي إشعارات عند استلام مدفوعات؟"
@@ -439,10 +438,10 @@
     "sort_status": "الحالة"
   },
   "units": {
-    "DOI": "DOI",
     "MAX": "MAX",
-    "sat_byte": "swartz/byte",
     "sats": "swartz",
+    "DOI": "DOI",
+    "sat_byte": "swartz/byte",
     "swartz": "swartz"
   },
   "addresses": {

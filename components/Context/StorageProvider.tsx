@@ -10,6 +10,8 @@ import { startAndDecrypt } from '../../blue_modules/start-and-decrypt';
 import { isNotificationsEnabled, majorTomToGroundControl, unsubscribe } from '../../blue_modules/notifications';
 import { DoichainUnit } from '../../models/doichainUnits';
 import { navigationRef } from '../../NavigationService';
+import { getScanWasBBQR } from '../../helpers/scan-qr.ts';
+import { setWalletIdMustUseBBQR } from '../../blue_modules/ur';
 
 const BlueApp = BlueAppClass.getInstance();
 
@@ -450,6 +452,13 @@ export const StorageProvider = ({ children }: { children: React.ReactNode }) => 
       if (w.getLabel() === emptyWalletLabel) w.setLabel(loc.wallets.import_imported + ' ' + w.typeReadable);
       w.setUserHasSavedExport(true);
       addWallet(w);
+      if (getScanWasBBQR()) {
+        // to avoid proxying `useBBQR` through a bunch of screens during import procedure, we use a trick:
+        // on add-wallet screen we reset `lastScanWasBBQR` to false. then potentially user scans QR in BBQR format
+        // and saves his wallet to storage, in which case execution lands here, where we check last scan and save walletID
+        // internally as a marker that this wallet should display animated QR codes in this format
+        await setWalletIdMustUseBBQR(w.getID());
+      }
       triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
       await saveToDisk();
 

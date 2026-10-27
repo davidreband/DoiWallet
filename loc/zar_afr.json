@@ -44,8 +44,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "Bykomende Inligting",
-    "lightning_invoice": "Lightning Faktuur",
-    "open_direct_channel": "Open direkte kanaal met hierdie knoop-punt:"
+    "lightning_invoice": "Lightning Faktuur"
   },
   "plausibledeniability": {
     "create_fake_storage": "Skep fantasie berging wagwoord",

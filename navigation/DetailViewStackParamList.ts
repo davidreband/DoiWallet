@@ -12,7 +12,7 @@ export type ScanQRCodeParamList = {
   urTotal?: number;
   urHave?: number;
   backdoorText?: string;
-  onBarScanned?: (data: string) => void;
+  onBarScanned?: (data: string, useBBQR: boolean) => void;
   showFileImportButton?: boolean;
   backdoorVisible?: boolean;
   orientation?: 'portrait';
@@ -84,7 +84,7 @@ export type DetailViewStackParamList = {
   Licensing: undefined;
   NetworkSettings: undefined;
   About: undefined;
-  DefaultView: undefined;
+  // DefaultView: undefined; // Commented out - not accessible from UI
   ElectrumSettings: { server?: ElectrumServerItem; onBarScanned?: string };
   SettingsBlockExplorer: undefined;
   EncryptStorage: undefined;
@@ -96,8 +96,7 @@ export type DetailViewStackParamList = {
   NotificationSettings: undefined;
   SelfTest: undefined;
   ReleaseNotes: undefined;
-  ToolsScreen: undefined;
-  SettingsPrivacy: undefined;
+  SettingsTools: undefined;
   ViewEditMultisigCosignersRoot: { walletID: string; cosigners: string[] };
   WalletXpub: { walletID: string; xpub: string };
   SignVerifyRoot: {

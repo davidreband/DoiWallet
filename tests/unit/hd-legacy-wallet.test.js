@@ -6,12 +6,12 @@ import { uint8ArrayToHex } from '../../blue_modules/uint8array-extras';
 
 describe('Legacy HD (BIP44)', () => {
   it('works', async () => {
-    if (!process.env.HD_MNEMONIC) {
-      console.error('process.env.HD_MNEMONIC not set, skipped');
+    if (!process.env.HD_MNEMONIC_OLD) {
+      console.error('process.env.HD_MNEMONIC_OLD not set, skipped');
       return;
     }
     const hd = new HDLegacyP2PKHWallet();
-    hd.setSecret(process.env.HD_MNEMONIC);
+    hd.setSecret(process.env.HD_MNEMONIC_OLD);
     assert.ok(hd.validateMnemonic());
 
     assert.strictEqual(
@@ -47,7 +47,7 @@ describe('Legacy HD (BIP44)', () => {
       return;
     }
     const hd = new HDLegacyP2PKHWallet();
-    hd.setSecret(process.env.HD_MNEMONIC);
+    hd.setSecret(process.env.HD_MNEMONIC_OLD);
     assert.ok(hd.validateMnemonic());
 
     const utxo = [

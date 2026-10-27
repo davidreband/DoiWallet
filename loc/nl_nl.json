@@ -46,8 +46,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "Extra informatie",
-    "lightning_invoice": "Lightning-factuur",
-    "open_direct_channel": "Open een rechtstreeks kanaal met deze node:"
+    "lightning_invoice": "Lightning-factuur"
   },
   "plausibledeniability": {
     "create_fake_storage": "Creëer versleutelde opslag",
@@ -166,7 +165,6 @@
     "currency": "Valuta",
     "currency_fetch_error": "Er is een fout opgetreden bij het ophalen van de Rate voor de geselecteerde muntsoort",
     "default_desc": "Indien uitgeschakeld zal DoiWallet meteen de geselecteerde wallet openen bij het opstarten.",
-    "default_info": "Standaard info",
     "default_title": "Bij opstarten",
     "default_wallets": "Bekijk alle wallets",
     "electrum_connected": "Verbonden",
@@ -184,11 +182,9 @@
     "electrum_reset": "Naar standaardinstellingen resetten",
     "encrypt_decrypt": "Versleutel opslag",
     "encrypt_decrypt_q": "Weet u zeker dat u uw opslag wilt ontsleutelen? Hierdoor kunnen uw wallets zonder wachtwoord worden geopend.",
-    "encrypt_enc_and_pass": "Versleuteld en wachtwoord beveiligd",
     "encrypt_title": "Beveiliging",
     "encrypt_tstorage": "opslag",
     "encrypt_use": "Gebruik {type}",
-    "encrypt_use_expl": "{type} wordt gebruikt om jouw identiteit te bevestigen voordat je een transactie uitvoert, een wallet ontgrendelt, exporteert of verwijdert. {type} wordt niet gebruikt om versleutelde opslag te ontgrendelen.",
     "general": "Algemeen",
     "general_continuity": "Continuïteit",
     "general_continuity_e": "Indien ingeschakeld, kunt u geselecteerde wallets en transacties bekijken met uw andere Apple iCloud-apparaten.",
@@ -220,7 +216,10 @@
     "total_balance": "Totaalbalans",
     "total_balance_explanation": "Laat de totaalbalans van al je wallets zien op de widgets op je thuisscherm.",
     "widgets": "Widgets",
-    "tools": "Hulpmiddelen"
+    "tools": "Hulpmiddelen",
+    "encrypt_enc_and_pass": "Versleuteld en wachtwoord beveiligd",
+    "encrypt_use_expl": "{type} wordt gebruikt om jouw identiteit te bevestigen voordat je een transactie uitvoert, een wallet ontgrendelt, exporteert of verwijdert. {type} wordt niet gebruikt om versleutelde opslag te ontgrendelen.",
+    "default_info": "Standaard info"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "Wil je meldingen ontvangen als je binnenkomende betalingen ontvangt?"
@@ -427,10 +426,10 @@
     "sort_status": "Status"
   },
   "units": {
-    "DOI": "DOI",
     "MAX": "MAX",
-    "sat_byte": "swartz/byte",
     "sats": "swartz",
+    "DOI": "DOI",
+    "sat_byte": "swartz/byte",
     "swartz": "swartz"
   },
   "addresses": {

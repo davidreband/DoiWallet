@@ -1,11 +1,11 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React from 'react';
+import React, { lazy } from 'react';
 
 import navigationStyle from '../components/navigationStyle';
 import { useTheme } from '../components/themes';
 import loc from '../loc';
 import { ViewEditMultisigCosignersComponent } from './LazyLoadViewEditMultisigCosignersStack';
-import { ScanQRCodeComponent } from './LazyLoadScanQRCodeStack';
+import { withLazySuspense } from './LazyLoadingIndicator';
 import { ScanQRCodeParamList } from './DetailViewStackParamList';
 
 export type ViewEditMultisigCosignersStackParamList = {
@@ -17,6 +17,9 @@ export type ViewEditMultisigCosignersStackParamList = {
 };
 
 const Stack = createNativeStackNavigator<ViewEditMultisigCosignersStackParamList>();
+
+const ScanQRCode = lazy(() => import('../screen/send/ScanQRCode'));
+const ScanQRCodeComponent = withLazySuspense(ScanQRCode);
 
 const ViewEditMultisigCosignersStackRoot = () => {
   const theme = useTheme();

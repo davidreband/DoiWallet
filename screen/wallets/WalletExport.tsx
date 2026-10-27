@@ -111,7 +111,9 @@ const WalletExport: React.FC = () => {
     if (isPrivacyBlurEnabled) {
       enableScreenProtect();
     }
-
+    return () => {
+      disableScreenProtect();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPrivacyBlurEnabled]);
 

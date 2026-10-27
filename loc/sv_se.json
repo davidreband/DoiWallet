@@ -45,8 +45,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "Ytterligare information",
-    "lightning_invoice": "Lightning-faktura",
-    "open_direct_channel": "Öppna en direkt kanal med denna nod:"
+    "lightning_invoice": "Lightning-faktura"
   },
   "plausibledeniability": {
     "create_fake_storage": "Skapa fejkad lagringsyta",
@@ -166,7 +165,6 @@
     "currency": "Valuta",
     "currency_fetch_error": "Det uppstod ett fel när kursen för den valda valutan skulle hämtas.",
     "default_desc": "När den är inaktiverad öppnar DoiWallet omedelbart den valda plånboken.",
-    "default_info": "Standardinformation",
     "default_title": "Vid uppstart",
     "default_wallets": "Visa alla plånböcker",
     "electrum_connected": "Ansluten",
@@ -184,11 +182,9 @@
     "electrum_reset": "Återställ till standard",
     "encrypt_decrypt": "Dekryptera lagring",
     "encrypt_decrypt_q": "Är du säker på att du vill dekryptera din lagring? Detta gör att dina plånböcker kan nås utan lösenord.",
-    "encrypt_enc_and_pass": "Krypterad och lösenordsskyddad",
     "encrypt_title": "Säkerhet",
     "encrypt_tstorage": "Lagring",
     "encrypt_use": "Använd {type}",
-    "encrypt_use_expl": "{type} kommer att användas för att bekräfta din identitet innan du gör en transaktion, låser upp, exporterar eller tar bort en plånbok. {type} kommer inte att användas för att låsa upp krypterad lagring.",
     "general": "Allmänt",
     "general_continuity": "Kontinuitet",
     "general_continuity_e": "När det är aktiverat kommer du att kunna se utvalda plånböcker och transaktioner med dina andra Apple iCloud-anslutna enheter.",
@@ -221,7 +217,10 @@
     "total_balance": "Total balans",
     "total_balance_explanation": "Visa det totala saldot för alla dina plånböcker på dina startskärmswidgets.",
     "widgets": "Widgets",
-    "tools": "Verktyg"
+    "tools": "Verktyg",
+    "encrypt_enc_and_pass": "Krypterad och lösenordsskyddad",
+    "encrypt_use_expl": "{type} kommer att användas för att bekräfta din identitet innan du gör en transaktion, låser upp, exporterar eller tar bort en plånbok. {type} kommer inte att användas för att låsa upp krypterad lagring.",
+    "default_info": "Standardinformation"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "Vill du få aviseringar när du får inkommande betalningar?"
@@ -438,10 +437,10 @@
     "sort_status": "Status"
   },
   "units": {
-    "DOI": "DOI",
     "MAX": "MAX",
-    "sat_byte": "swartz/byte",
     "sats": "swartz",
+    "DOI": "DOI",
+    "sat_byte": "swartz/byte",
     "swartz": "swartz"
   },
   "addresses": {

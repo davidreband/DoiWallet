@@ -16,7 +16,6 @@
     "seed": "Siemen",
     "success": "Onnistui",
     "wallet_key": "Lompakkoavain",
-    "invalid_animated_qr_code_fragment": "Virheellinen animoitu QRCode-fragmentti, yritä uudelleen.",
     "close": "Sulje",
     "change_input_currency": "Vaihda lähdevaluutta",
     "refresh": "Päivitä",
@@ -49,8 +48,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "Lisäinformaatio",
-    "lightning_invoice": "Salamalasku",
-    "open_direct_channel": "Avaa suora kanava tällä solmulla:"
+    "lightning_invoice": "Salamalasku"
   },
   "plausibledeniability": {
     "create_fake_storage": "Luo Salattu tallennustila",
@@ -178,7 +176,6 @@
     "currency": "Valuutta",
     "currency_fetch_error": "Valitu valuutan vaihtokurssin hakemisessa tapahtui virhe.",
     "default_desc": "Kun on pois käytöstä, DoiWallet avaa valitun lompakon heti käynnistettäessä.",
-    "default_info": "Oletustiedot",
     "default_title": "Käynnistettäessä",
     "default_wallets": "Näytä Kaikki Lompakot",
     "electrum_connected": "Yhdistetty",
@@ -197,11 +194,9 @@
     "electrum_reset": "Palauta oletusasetuksiin",
     "encrypt_decrypt": "Pura tallennustilan salaus",
     "encrypt_decrypt_q": "Haluatko varmasti purkaa tallennustilan salauksen? Tämä mahdollistaa lompakkoihisi pääsyn ilman salasanaa.",
-    "encrypt_enc_and_pass": "Salattu ja Salasanalla suojattu",
     "encrypt_title": "Tietoturva",
     "encrypt_tstorage": "tallennustila",
     "encrypt_use": "Käytä {type}",
-    "encrypt_use_expl": "Ennen tapahtumia, avaamista vientiä tai lompakon poistoa identiteettis varmistetaan {type}:lla. {type} ei kuitenkaan voi käyttää salatun tallennustilan avaamiseen.",
     "general": "Yleinen",
     "general_continuity": "Jatkuvuus",
     "general_continuity_e": "Kun tämä asetus on käytössä, voit tarkastella valittuja lompakoita ja siirtotapahtumia muilla Apple iCloud -laitteilla.",
@@ -236,7 +231,10 @@
     "total_balance": "Kokonaissaldo",
     "total_balance_explanation": "Näytä kaikkien lompakoiden kokonaissaldo aloitusnäytön widgeteissä.",
     "widgets": "Widgetit",
-    "tools": "Työkalut"
+    "tools": "Työkalut",
+    "encrypt_enc_and_pass": "Salattu ja Salasanalla suojattu",
+    "encrypt_use_expl": "Ennen tapahtumia, avaamista vientiä tai lompakon poistoa identiteettis varmistetaan {type}:lla. {type} ei kuitenkaan voi käyttää salatun tallennustilan avaamiseen.",
+    "default_info": "Oletustiedot"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "Haluatko saada ilmoituksia, kun saat saapuvia maksuja?",
@@ -476,10 +474,10 @@
     "sort_status": "Tila"
   },
   "units": {
-    "DOI": "DOI",
     "MAX": "MAX",
-    "sat_byte": "swartz/byte",
     "sats": "swartz",
+    "DOI": "DOI",
+    "sat_byte": "swartz/byte",
     "swartz": "swartz"
   },
   "addresses": {

@@ -45,8 +45,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "थप जानकारी",
-    "lightning_invoice": "लाइटनिङ इनभ्वाइस",
-    "open_direct_channel": "यो नोडको साथ प्रत्यक्ष च्यानल खोल्नुहोस्:"
+    "lightning_invoice": "लाइटनिङ इनभ्वाइस"
   },
   "plausibledeniability": {
     "create_fake_storage": "ईन्क्रिप्टेड स्टोरेज सिर्जना गर्नुहोस्",
@@ -159,7 +158,6 @@
     "biom_remove_decrypt": "तपाईंको सबै वालेटहरू हटाइनेछ र तपाईंको भण्डारण डिक्रिप्ट गरिनेछ। के तपाई निश्चित रूपमा अगाडि बढ्न चाहनुहुन्छ?",
     "currency": "मुद्रा",
     "currency_fetch_error": "चयन गरिएको मुद्राको लागि दर प्राप्त गर्दा एर्रोर भयो।",
-    "default_info": "पूर्वनिर्धारित जानकारी",
     "default_wallets": "सबै वालेटहरू हेर्नुहोस्",
     "electrum_connected": "जोडिएको",
     "electrum_connected_not": "जोडिएको छैन",
@@ -172,7 +170,6 @@
     "encrypt_title": "सुरक्षा",
     "encrypt_tstorage": "स्टोरेज",
     "encrypt_use": "प्रयोग गर्नुहोस् {type}",
-    "encrypt_use_expl": "{type} लेनदेन, अनलक, निर्यात, वा वालेट मेटाउनु अघि तपाइँको पहिचान पुष्टि गर्न प्रयोग गरिनेछ। इन्क्रिप्टेड स्टोरेज अनलक गर्न {type} प्रयोग गरिने छैन।",
     "general_continuity": "निरन्तरता",
     "header": "सेटिङहरू",
     "language": "भाषा",
@@ -187,7 +184,9 @@
     "rate": "दर",
     "save": "सेव",
     "saved": "बचत गरियो",
-    "total_balance": "पूरा रकम"
+    "total_balance": "पूरा रकम",
+    "encrypt_use_expl": "{type} लेनदेन, अनलक, निर्यात, वा वालेट मेटाउनु अघि तपाइँको पहिचान पुष्टि गर्न प्रयोग गरिनेछ। इन्क्रिप्टेड स्टोरेज अनलक गर्न {type} प्रयोग गरिने छैन।",
+    "default_info": "पूर्वनिर्धारित जानकारी"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "तपाईंले आगमन भुक्तानीहरू प्राप्त गर्दा सूचनाहरू प्राप्त गर्न चाहनुहुन्छ?"

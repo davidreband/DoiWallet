@@ -5,7 +5,6 @@ import { DeviceEventEmitter, Linking, Platform } from 'react-native';
 import QuickActions, { ShortcutItem } from 'react-native-quick-actions';
 import DeeplinkSchemaMatch from '../class/deeplink-schema-match';
 import { TWallet } from '../class/wallets/types';
-import useOnAppLaunch from '../hooks/useOnAppLaunch';
 import { formatBalance } from '../loc';
 import * as NavigationService from '../NavigationService';
 import { useSettings } from '../hooks/context/useSettings';
@@ -33,7 +32,6 @@ export async function getEnabled(): Promise<boolean> {
 const useDeviceQuickActions = () => {
   const { wallets, walletsInitialized, isStorageEncrypted, addWallet, saveToDisk, setSharedCosigner } = useStorage();
   const { preferredFiatCurrency, isQuickActionsEnabled } = useSettings();
-  const { isViewAllWalletsEnabled, getSelectedDefaultWallet } = useOnAppLaunch();
 
   useEffect(() => {
     if (walletsInitialized) {
@@ -53,7 +51,11 @@ const useDeviceQuickActions = () => {
   useEffect(() => {
     if (walletsInitialized) {
       DeviceEventEmitter.addListener('quickActionShortcut', walletQuickActions);
-      popInitialShortcutAction().then(popInitialAction);
+      popInitialShortcutAction()
+        .then(popInitialAction)
+        .catch(error => {
+          console.error('Failed to process initial quick action:', error);
+        });
       return () => DeviceEventEmitter.removeAllListeners('quickActionShortcut');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -76,42 +78,28 @@ const useDeviceQuickActions = () => {
   };
 
   const popInitialAction = async (data: any): Promise<void> => {
-    if (data) {
-      const wallet = wallets.find(w => w.getID() === data.userInfo.url.split('wallet/')[1]);
-      if (wallet) {
-        NavigationService.dispatch(
-          CommonActions.navigate({
-            name: 'WalletTransactions',
-            params: {
-              walletID: wallet.getID(),
-              walletType: wallet.type,
-            },
-          }),
-        );
-      }
-    } else {
-      const url = await Linking.getInitialURL();
-      if (url) {
-        if (DeeplinkSchemaMatch.hasSchema(url)) {
-          handleOpenURL({ url });
+    try {
+      if (data) {
+        const wallet = wallets.find(w => w.getID() === data.userInfo.url.split('wallet/')[1]);
+        if (wallet) {
+          NavigationService.dispatch(
+            CommonActions.navigate({
+              name: 'WalletTransactions',
+              params: {
+                walletID: wallet.getID(),
+                walletType: wallet.type,
+              },
+            }),
+          );
         }
       } else {
-        if (!(await isViewAllWalletsEnabled())) {
-          const selectedDefaultWalletID = (await getSelectedDefaultWallet()) as string;
-          const selectedDefaultWallet = wallets.find((w: TWallet) => w.getID() === selectedDefaultWalletID);
-          if (selectedDefaultWallet) {
-            NavigationService.dispatch(
-              CommonActions.navigate({
-                name: 'WalletTransactions',
-                params: {
-                  walletID: selectedDefaultWalletID,
-                  walletType: selectedDefaultWallet.type,
-                },
-              }),
-            );
-          }
+        const url = await Linking.getInitialURL();
+        if (url && DeeplinkSchemaMatch.hasSchema(url)) {
+          handleOpenURL({ url });
         }
       }
+    } catch (error) {
+      console.error('Failed to handle initial quick action/deeplink:', error);
     }
   };
 

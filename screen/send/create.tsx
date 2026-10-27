@@ -1,13 +1,11 @@
 import Clipboard from '@react-native-clipboard/clipboard';
-import { DoichainUnit } from '../../models/doichainUnits';
-import { DOICHAIN } from '../../blue_modules/network.js';
-import { useNavigation, useRoute } from '@react-navigation/native';
-
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import BigNumber from 'bignumber.js';
 import * as bitcoin from '@doichain/doichainjs-lib';
-import PropTypes from 'prop-types';
+import { DoichainUnit } from '../../models/doichainUnits';
+import { DOICHAIN } from '../../blue_modules/network.js';
 import React, { useCallback, useEffect } from 'react';
-import { Alert, FlatList, Linking, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, Linking, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, ListRenderItemInfo } from 'react-native';
 import { Icon } from '@rneui/themed';
 import RNFS from 'react-native-fs';
 import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
@@ -27,20 +25,33 @@ import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import { useSettings } from '../../hooks/context/useSettings';
 import { useScreenProtect } from '../../hooks/useScreenProtect';
 import { BlueSpacing20 } from '../../components/BlueSpacing';
+import { SendDetailsStackParamList } from '../../navigation/SendDetailsStackParamList';
+import { CreateTransactionTarget } from '../../class/wallets/types';
+
+// a recipient, or an input of the PSBT; name outputs carry the name they register or move
+type CreateItem = CreateTransactionTarget & {
+  index?: number;
+  isIncluded?: boolean;
+  sig?: unknown;
+  nameId?: string;
+  nameValue?: string;
+};
 
 const SendCreate = () => {
-  const { fee, recipients, wallet, memo = '', satoshiPerByte, psbt, showAnimatedQr, tx } = useRoute().params;
+  const { fee, recipients, wallet, memo = '', satoshiPerByte, psbt, showAnimatedQr, tx } =
+    useRoute<RouteProp<SendDetailsStackParamList, 'CreateTransaction'>>().params;
 
-  const { txMetadata, fetchAndSaveWalletTransactions, isElectrumDisabled } = useStorage();
-  const transaction = tx ? bitcoin.Transaction.fromHex(tx) : 0;
-  const size = tx ? transaction.virtualSize() : 1;
-  const { isPrivacyBlurEnabled } = useSettings();
+  const { txMetadata, fetchAndSaveWalletTransactions } = useStorage();
+  const transaction = tx ? bitcoin.Transaction.fromHex(tx) : undefined;
+  const size = transaction ? transaction.virtualSize() : 1;
+  const { isPrivacyBlurEnabled, isElectrumDisabled } = useSettings();
   const { colors } = useTheme();
   const { setOptions } = useNavigation();
 
   const navigation = useExtendedNavigation();
 
-  const inputs = psbt.data.inputs.map((input, index) => {
+  // every route into this screen hands over a PSBT; the type only marks it optional
+  const inputs: CreateItem[] = (psbt?.data.inputs ?? []).map((input, index) => {
     if (input.witnessUtxo) {
       return {
         address: bitcoin.address.fromOutputScript(input.witnessUtxo.script, DOICHAIN),
@@ -49,7 +60,7 @@ const SendCreate = () => {
         sig: input.finalScriptSig || input.finalScriptWitness || input.partialSig,
       };
     } else if (input.nonWitnessUtxo) {
-      const txin = psbt.txInputs[index];
+      const txin = psbt!.txInputs[index];
       const txout = bitcoin.Transaction.fromBuffer(input.nonWitnessUtxo).outs[txin.index];
       return {
         address: bitcoin.address.fromOutputScript(txout.script, DOICHAIN),
@@ -62,7 +73,7 @@ const SendCreate = () => {
     }
   });
 
-  const inputAndOutput = inputs.concat(recipients);
+  const inputAndOutput: CreateItem[] = [...inputs, ...(recipients as CreateItem[])];
 
   // console.log("____inputAndOutput___", inputAndOutput);
 
@@ -80,6 +91,7 @@ const SendCreate = () => {
     try {
       await BlueElectrum.ping();
       await BlueElectrum.waitTillConnected();
+      if (!wallet) throw new Error('No wallet to broadcast from');
       const result = await wallet.broadcastTx(tx);
       if (result) {
         //  setIsLoading(false);
@@ -102,7 +114,7 @@ const SendCreate = () => {
           */
         presentAlert({ message: loc.errors.broadcast });
       }
-    } catch (error) {
+    } catch (error: any) {
       /*
         triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
         setIsLoading(false);
@@ -169,7 +181,8 @@ const SendCreate = () => {
           presentAlert({ message: loc.formatString(loc.send.txSaved, { filePath }) });
         } catch (e) {
           console.log(e);
-          presentAlert({ message: e.message });
+          const message = e instanceof Error ? e.message : typeof e === 'string' ? e : 'Unknown error';
+          presentAlert({ message });
         }
       } else {
         console.log('Storage Permission: Denied');
@@ -198,7 +211,7 @@ const SendCreate = () => {
     });
   }, [colors, exportTXN, setOptions]);
 
-  const _renderItem = ({ index, item }) => {
+  const _renderItem = ({ index, item }: ListRenderItemInfo<CreateItem>) => {
     return (
       <>
         <View>
@@ -212,7 +225,7 @@ const SendCreate = () => {
           <Text style={[styles.transactionDetailsSubtitle, styleHooks.transactionDetailsSubtitle]}>{item.address}</Text>
           <Text style={[styles.transactionDetailsTitle, styleHooks.transactionDetailsTitle]}>{loc.send.create_amount}</Text>
           <Text style={[styles.transactionDetailsSubtitle, styleHooks.transactionDetailsSubtitle]}>
-            {satoshiToBTC(item.value)} {DoichainUnit.DOI}
+            {item.value != null ? `${satoshiToBTC(item.value)} ${DoichainUnit.DOI}` : '-'}
           </Text>
           {item.index !== undefined && (
             <Text style={[styles.transactionDetailsTitle, styleHooks.transactionDetailsTitle]}>
@@ -246,15 +259,6 @@ const SendCreate = () => {
       </>
     );
   };
-  _renderItem.propTypes = {
-    index: PropTypes.number,
-    item: PropTypes.shape({
-      address: PropTypes.string,
-      value: PropTypes.number,
-      nameId: PropTypes.nameId,
-      nameValue: PropTypes.nameValue,
-    }),
-  };
 
   const renderSeparator = () => {
     return <View style={[styles.separator, styleHooks.separator]} />;
@@ -265,14 +269,14 @@ const SendCreate = () => {
       {showAnimatedQr && psbt ? (
         <>
           <BlueSpacing20 />
-          <DynamicQRCode value={psbt.toHex()} />
+          <DynamicQRCode value={psbt!.toHex()} />
           <BlueSpacing20 />
         </>
       ) : null}
       <BlueText style={[styles.cardText, styleHooks.cardText]}>{loc.send.create_this_is_hex}</BlueText>
-      <TextInput testID="TxhexInput" style={styles.cardTx} height={72} multiline editable={false} value={tx || psbt.toBase64()} />
+      <TextInput testID="TxhexInput" style={styles.cardTx} multiline editable={false} value={tx || psbt?.toBase64()} />
 
-      <TouchableOpacity accessibilityRole="button" style={styles.actionTouch} onPress={() => Clipboard.setString(tx || psbt.toBase64())}>
+      <TouchableOpacity accessibilityRole="button" style={styles.actionTouch} onPress={() => Clipboard.setString(tx || psbt?.toBase64() || '')}>
         <Text style={styles.actionText}>{loc.send.create_copy}</Text>
       </TouchableOpacity>
 
@@ -300,7 +304,7 @@ const SendCreate = () => {
   );
 
   return (
-    <FlatList
+    <FlatList<CreateTransactionTarget>
       contentContainerStyle={[styles.root, styleHooks.root]}
       extraData={inputAndOutput}
       data={inputAndOutput}
@@ -357,6 +361,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 16,
     paddingTop: 16,
+    height: 72,
   },
   actionTouch: {
     marginVertical: 24,

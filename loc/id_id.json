@@ -45,8 +45,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "Informasi Tambahan",
-    "lightning_invoice": "Fraktur Lightning",
-    "open_direct_channel": "Buka saluran langsung dengan node ini:"
+    "lightning_invoice": "Fraktur Lightning"
   },
   "plausibledeniability": {
     "create_fake_storage": "Create fake encrypted storage",
@@ -164,7 +163,6 @@
     "biom_remove_decrypt": "Semua dompet Anda akan dihapus dan penyimpanan Anda akan didekripsi. Anda yakin ingin melanjutkan?",
     "currency": "Mata Uang",
     "default_desc": "Saat dinonaktifkan, BlueWallet akan segera membuka dompet yang dipilih saat diluncurkan.",
-    "default_info": "Informasi standar",
     "default_title": "Diluncurkan",
     "default_wallets": "Lihat Semua Dompet",
     "electrum_connected": "Terhubung",
@@ -176,7 +174,6 @@
     "electrum_status": "Status",
     "electrum_unable_to_connect": "Tidak bisa mengubungkan ke {server}.",
     "electrum_reset": "Atur ulang ke bawaan",
-    "encrypt_enc_and_pass": "Dienkripsi dan kata sandi dilindungi",
     "encrypt_title": "Keamanan",
     "encrypt_tstorage": "Penyimpanan",
     "encrypt_use": "Gunakan {type}",
@@ -202,7 +199,9 @@
     "save": "simpan",
     "saved": "Tersimpan",
     "total_balance": "Total saldo",
-    "tools": "Alat"
+    "tools": "Alat",
+    "encrypt_enc_and_pass": "Dienkripsi dan kata sandi dilindungi",
+    "default_info": "Informasi standar"
   },
   "transactions": {
     "cancel_no": "Transaksi ini tidak bisa digantikan.",
@@ -336,10 +335,10 @@
     "sort_status": "Status"
   },
   "units": {
-    "DOI": "DOI",
     "MAX": "MAX",
-    "sat_byte": "swartz/byte",
     "sats": "swartz",
+    "DOI": "DOI",
+    "sat_byte": "swartz/byte",
     "swartz": "swartz"
   },
   "addresses": {

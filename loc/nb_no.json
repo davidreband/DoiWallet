@@ -40,8 +40,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "Tilleggsinformasjon",
-    "lightning_invoice": "Lightning-faktura",
-    "open_direct_channel": "Åpne direkte kanal med denne noden:"
+    "lightning_invoice": "Lightning-faktura"
   },
   "plausibledeniability": {
     "create_fake_storage": "Opprett Kryptert Lagring",
@@ -160,7 +159,6 @@
     "currency": "Valuta",
     "currency_fetch_error": "Det oppsto en feil under henting av kursen for den valgte valutaen.",
     "default_desc": "Når den er deaktivert, vil DoiWallet umiddelbart åpne den valgte lommeboken ved åpning.",
-    "default_info": "Standardinformasjon",
     "default_title": "Ved åpning",
     "default_wallets": "Se Alle Lommebøker",
     "electrum_connected": "Tilkoblet",
@@ -178,11 +176,9 @@
     "electrum_reset": "Tilbakestill til standard",
     "encrypt_decrypt": "Dekrypter Lagring",
     "encrypt_decrypt_q": "Er du sikker på at du vil dekryptere lagringen din? Dette vil tillate tilgang til lommeboken din uten passord.",
-    "encrypt_enc_and_pass": "Kryptert og passordbeskyttet",
     "encrypt_title": "Sikkerhet",
     "encrypt_tstorage": "Lagring",
     "encrypt_use": "Bruk  {type}",
-    "encrypt_use_expl": "{type} vil bli brukt til å bekrefte identiteten din før du foretar en transaksjon, låser opp, eksporterer eller sletter en lommebok. {type} vil ikke bli brukt til å låse opp kryptert lagring.",
     "general": "Generelt",
     "general_continuity": "Kontinuitet",
     "general_continuity_e": "Når den er aktivert, vil du kunne se utvalgte lommebøker og transaksjoner ved å bruke de andre Apple iCloud-tilkoblede enhetene dine.",
@@ -214,7 +210,10 @@
     "total_balance": "Total balanse",
     "total_balance_explanation": "Vis den totale saldoen til alle lommebokene dine på widgetene på startskjermen.",
     "widgets": "Widgets",
-    "tools": "Verktøy"
+    "tools": "Verktøy",
+    "encrypt_enc_and_pass": "Kryptert og passordbeskyttet",
+    "encrypt_use_expl": "{type} vil bli brukt til å bekrefte identiteten din før du foretar en transaksjon, låser opp, eksporterer eller sletter en lommebok. {type} vil ikke bli brukt til å låse opp kryptert lagring.",
+    "default_info": "Standardinformasjon"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "Vil du motta varsler når du mottar innbetalinger?"
@@ -427,10 +426,10 @@
     "sort_status": "Status"
   },
   "units": {
-    "DOI": "DOI",
     "MAX": "MAX",
-    "sat_byte": "swartz/byte",
     "sats": "swartz",
+    "DOI": "DOI",
+    "sat_byte": "swartz/byte",
     "swartz": "swartz"
   },
   "addresses": {

@@ -215,7 +215,6 @@
     "currency_source": "Der Kurs wird bezogen von",
     "currency_fetch_error": "Beim Abrufen des Wechselkurses für die ausgewählte Währung trat ein Fehler auf.",
     "default_desc": "Wenn deaktiviert öffnet DoiWallet beim Start die ausgewählte Wallet.",
-    "default_info": "Standard Info",
     "default_title": "Beim Start",
     "default_wallets": "Alle Wallets anzeigen",
     "electrum_connected": "Verbunden",
@@ -240,7 +239,6 @@
     "electrum_reset_to_default_and_clear_history": "Auf die Standardeinstellungen zurücksetzen und den Verlauf löschen.",
     "encrypt_decrypt": "Speicher entschlüsseln",
     "encrypt_decrypt_q": "Die Speicherverschlüsselung wirklich aufheben? Hiermit werden die Wallet ohne Passwortschutz direkt benutzbar. ",
-    "encrypt_enc_and_pass": "Verschlüsselt und passwortgeschützt",
     "encrypt_storage_explanation_headline": "Speicherverschlüsselung aktivieren",
     "encrypt_storage_explanation_description_line1": "Die Aktivierung der Speicherverschlüsselung fügt Ihrer App ein zusätzlicher Schutz hinzu. Die Art und Weise, wie die Daten auf Ihrem Gerät gespeichert werden, macht es anderen damit schwieriger, ohne Erlaubnis darauf zuzugreifen.",
     "encrypt_storage_explanation_description_line2": "Diese Verschlüsselung betrifft den Zugriff auf die im Gerät gespeicherten Schlüssel, schützt also die Wallets. Die Wallet selbst werden dabei nicht mit einem Passwort oder einem anderen zusätzlichen Schutz versehen.",
@@ -254,7 +252,6 @@
     "set_as_preferred": "Als bevorzugt festlegen",
     "set_as_preferred_electrum": "Mit der Wahl von {host}:{port} als präferierten Server wird die zufällige Verbindung zu einem der vorgeschlagenen Servern abgeschaltet.",
     "encrypted_feature_disabled": "Diese Funktion kann bei verschlüsseltem Speicher nicht genutzt werden.",
-    "encrypt_use_expl": "{type} wird zur Transaktionsdurchführung, zum Entsperren, dem Export oder der Löschung einer Wallet benötigt. {type} ersetzt nicht die Passworteingabe bei verschlüsseltem Speicher.",
     "biometrics_fail": "Wenn {type} nicht aktiviert ist oder entsperrt werden kann, alternativ Ihren Gerätepasscode verwenden.",
     "general": "Allgemein",
     "general_continuity": "Kontinuität",
@@ -294,12 +291,15 @@
     "total_balance_explanation": "Zeigt das Wallet Guthaben auf dem Widget deiner Homepage",
     "widgets": "Widgets",
     "tools": "Werkzeuge",
+    "encrypt_enc_and_pass": "Verschlüsselt und passwortgeschützt",
+    "encrypt_use_expl": "{type} wird zur Transaktionsdurchführung, zum Entsperren, dem Export oder der Löschung einer Wallet benötigt. {type} ersetzt nicht die Passworteingabe bei verschlüsseltem Speicher.",
     "electrum_wrong_chain": "{server} folgt einer anderen Doichain-Kette als diese Wallet, daher gelten seine Guthaben und Bestätigungen hier nicht. Der Server wurde entfernt.",
     "enable_receive_bitcoin_intent_desc": "Zeigt Deine Bitcoin-Empfangsadresse schnell als QR-Code an.",
     "no_wallet_available": "Keine Wallets vorhanden. Bitte erstelle oder importiere eine Wallet.",
     "no_wallet_selected": "Keine Wallet ausgewählt",
     "push_notifications": "Push-Benachrichtigungen",
-    "receive_bitcoin_intent": "Verknüpfung „Bitcoin empfangen“"
+    "receive_bitcoin_intent": "Verknüpfung „Bitcoin empfangen“",
+    "default_info": "Standard Info"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "Soll bei Zahlungseingängen eine Benachrichtigung zugestellt werden?",
@@ -578,10 +578,10 @@
     "view_qrcode": "QR-Code anzeigen"
   },
   "autofill_word": {
-    "title": "Das letzte mnemonische Wort generieren",
     "enter": "Die unvollendete mnemonische Phrase eingeben",
     "generate_word": "Erzeuge das letzte Word",
-    "error": "Die Eingabe ist keine unvollendete 11- oder 23 Wort Phrase. Bitte erneut versuchen."
+    "error": "Die Eingabe ist keine unvollendete 11- oder 23 Wort Phrase. Bitte erneut versuchen.",
+    "title": "Das letzte mnemonische Wort generieren"
   },
   "cc": {
     "change": "Ändern",
