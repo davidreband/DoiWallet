@@ -134,7 +134,17 @@ const OutputList: React.FC<TOutputListProps> = ({
 };
 
 
-const OutputModal = ({ item: { address, txid, value, vout, confirmations = 0 }, balanceUnit = DoichainUnit.DOI, oMemo }) => {
+type TOutputModalProps = {
+  item: Utxo;
+  balanceUnit?: string;
+  oMemo?: string;
+};
+
+const OutputModal: React.FC<TOutputModalProps> = ({
+  item: { address, txid, value, vout, confirmations = 0 },
+  balanceUnit = DoichainUnit.DOI,
+  oMemo,
+}) => {
   const { colors } = useTheme();
   const { txMetadata } = useStorage();
   const memo = oMemo || txMetadata[txid]?.memo || '';

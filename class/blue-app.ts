@@ -24,6 +24,8 @@ import { SegwitP2SHWallet } from './wallets/segwit-p2sh-wallet';
 import { SLIP39LegacyP2PKHWallet, SLIP39SegwitBech32Wallet, SLIP39SegwitP2SHWallet } from './wallets/slip39-wallets';
 import { ExtendedTransaction, Transaction, TWallet } from './wallets/types';
 import { WatchOnlyWallet } from './wallets/watch-only-wallet';
+import { hexToUint8Array, uint8ArrayToHex } from '../blue_modules/uint8array-extras';
+import { HDTaprootWallet } from './wallets/hd-taproot-wallet';
 
 let usedBucketNum: boolean | number = false;
 let savingInProgress = 0; // its both a flag and a counter of attempts to write to disk
@@ -257,7 +259,7 @@ export class BlueApp {
   };
 
   hashIt = (s: string): string => {
-    return Buffer.from(sha256(s)).toString('hex');
+    return uint8ArrayToHex(sha256(s));
   };
 
   /**
@@ -267,7 +269,7 @@ export class BlueApp {
   async getRealmForTransactions() {
     const cacheFolderPath = RNFS.CachesDirectoryPath; // Path to cache folder
     const password = this.hashIt(this.cachedPassword || 'fyegjitkyf[eqjnc.lf');
-    const buf = Buffer.from(this.hashIt(password) + this.hashIt(password), 'hex');
+    const buf = hexToUint8Array(this.hashIt(password) + this.hashIt(password));
     const encryptionKey = Int8Array.from(buf);
     const fileName = this.hashIt(this.hashIt(password)) + '-wallettransactions.realm';
     const path = `${cacheFolderPath}/${fileName}`; // Use cache folder path
@@ -308,11 +310,11 @@ export class BlueApp {
       password = credentials.password;
     } else {
       const buf = await randomBytes(64);
-      password = buf.toString('hex');
+      password = uint8ArrayToHex(buf);
       await Keychain.setGenericPassword(service, password, { service });
     }
 
-    const buf = Buffer.from(password, 'hex');
+    const buf = hexToUint8Array(password);
     const encryptionKey = Int8Array.from(buf);
     const path = `${cacheFolderPath}/keyvalue.realm`; // Use cache folder path
 
@@ -407,6 +409,9 @@ export class BlueApp {
             break;
           case HDSegwitBech32Wallet.type:
             unserializedWallet = HDSegwitBech32Wallet.fromJson(key) as unknown as HDSegwitBech32Wallet;
+            break;
+          case HDTaprootWallet.type:
+            unserializedWallet = HDTaprootWallet.fromJson(key) as unknown as HDTaprootWallet;
             break;
           case HDLegacyBreadwalletWallet.type:
             unserializedWallet = HDLegacyBreadwalletWallet.fromJson(key) as unknown as HDLegacyBreadwalletWallet;

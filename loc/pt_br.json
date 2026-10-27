@@ -138,7 +138,7 @@
     "details_amount_field_is_less_than_minimum_amount_sat": "O valor especificado é muito baixo. Por favor, insira um valor acima de 500 sats.",
     "details_error_decode": "Não foi possível decodificar o endereço Doi",
     "details_fee_field_is_not_valid": "A taxa não é válida.",
-    "details_frozen": "{amount} BTC está congelado.",
+    "details_frozen": "{amount} DOI está congelado.",
     "details_next": "Próximo",
     "details_no_signed_tx": "O arquivo selecionado não contém uma transação que possa ser importada.",
     "details_note_placeholder": "Nota pessoal",

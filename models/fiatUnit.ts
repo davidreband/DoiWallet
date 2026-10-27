@@ -248,7 +248,7 @@ export type TFiatUnit = {
   locale: string;
 
   country: string;
-  source: 'CoinDesk' | 'Yadio' | 'Exir' | 'coinpaprika' | 'Bitstamp' | 'Kraken';
+  source: 'Coinbase' | 'CoinDesk' | 'Yadio' | 'Exir' | 'coinpaprika' | 'Bitstamp' | 'Kraken';
 };
 
 export type TFiatUnits = {

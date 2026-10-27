@@ -387,7 +387,9 @@ interface FButtonProps {
   last?: boolean;
   singleChild?: boolean;
   isVertical?: boolean;
-  borderRadius?: number;
+  borderRadius?: number | Animated.Value;
+  fontSize?: number;
+  isAnimating?: boolean;
   disabled?: boolean;
   testID?: string;
   onPress: () => void;

@@ -1,6 +1,8 @@
+import { AztecoVoucher } from '../class/azteco';
 import { LightningTransaction, Transaction, TWallet } from '../class/wallets/types';
+import { Chain } from '../models/doichainUnits';
 import { ElectrumServerItem } from '../screen/settings/ElectrumSettings';
-import { SendDetailsParams } from './SendDetailsStackParamList';
+import { SendDetailsParams, TNavigationWrapper } from './SendDetailsStackParamList';
 
 export type ScanQRCodeParamList = {
   cameraStatusGranted?: boolean;
@@ -30,7 +32,14 @@ export type DetailViewStackParamList = {
   };
   RBFBumpFee: { txid: string; wallet: TWallet | null };
   RBFCancel: { txid: string; wallet: TWallet | null };
-  SelectWallet: undefined;
+  SelectWallet: {
+    chainType?: Chain;
+    onWalletSelect?: (wallet: TWallet, navigationWrapper: TNavigationWrapper) => void;
+    availableWallets?: TWallet[];
+    noWalletExplanationText?: string;
+    onChainRequireSend?: boolean;
+    selectedWalletID?: string; // Add this parameter to scroll to a specific wallet
+  };
   LNDViewInvoice: { invoice: LightningTransaction; walletID: string };
   LNDViewAdditionalInvoiceInformation: { invoiceId: string };
   LNDViewAdditionalInvoicePreImage: { invoiceId: string };
@@ -57,8 +66,14 @@ export type DetailViewStackParamList = {
       justPaid: boolean;
     };
   };
-  AztecoRedeemRoot: undefined;
-  WalletExportRoot: undefined;
+  AztecoRedeemRoot: {
+    screen: string;
+    params: {
+      aztecoVoucher: AztecoVoucher;
+    };
+  };
+  AztecoRedeem: { aztecoVoucher: AztecoVoucher };
+  WalletExport: undefined;
   ExportMultisigCoordinationSetupRoot: undefined;
   Settings: undefined;
   Currency: undefined;
@@ -82,7 +97,7 @@ export type DetailViewStackParamList = {
   ToolsScreen: undefined;
   SettingsPrivacy: undefined;
   ViewEditMultisigCosignersRoot: { walletID: string; cosigners: string[] };
-  WalletXpubRoot: undefined;
+  WalletXpub: { walletID: string; xpub: string };
   SignVerifyRoot: {
     screen: 'SignVerify';
     params: {

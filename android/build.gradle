@@ -22,7 +22,7 @@ buildscript {
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
-	    classpath 'com.google.gms:google-services:4.4.3'  // Google Services plugin
+	    classpath 'com.google.gms:google-services:4.4.4'  // Google Services plugin
         classpath("com.bugsnag:bugsnag-android-gradle-plugin:8.2.0")
     }
 }
@@ -68,6 +68,8 @@ subprojects {
             }
         }
         tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
+            // FIXME: next line should be removed when https://github.com/wix/Detox/issues/4678 is fixed
+            kotlinOptions.freeCompilerArgs += ["-Xopt-in=kotlin.ExperimentalStdlibApi"]
             if (project.plugins.hasPlugin("com.android.application") || project.plugins.hasPlugin("com.android.library")) {
                 kotlinOptions.jvmTarget = android.compileOptions.sourceCompatibility
             } else {

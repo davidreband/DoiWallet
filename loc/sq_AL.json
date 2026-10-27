@@ -130,7 +130,7 @@
     "details_amount_field_is_less_than_minimum_amount_sat": "Sasia e percaktuar eshte shume e vogel. Ju lutem fusni nje sasi me te madhe se 500 sats.",
     "details_error_decode": "E pamundur me de-koduar adresen e Bitcoin-it",
     "details_fee_field_is_not_valid": "Komisioni nuk eshte i vlefshem",
-    "details_frozen": "{amount} BTC jane te ngrira.",
+    "details_frozen": "{amount} DOI jane te ngrira.",
     "details_next": "Pas",
     "details_no_signed_tx": "File-at e zgjedhur nuk permbajne asnje transferte e cila mund te importohet.",
     "details_note_placeholder": "Shenim per veten",

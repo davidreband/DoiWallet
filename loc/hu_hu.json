@@ -111,7 +111,7 @@
     "details_amount_field_is_less_than_minimum_amount_sat": "A megadott összeg túl kevés. Kérlek adj meg egy 500sat-nál nagyobb összeget.",
     "details_error_decode": "Nem lehet dekódolni a Doi címet",
     "details_fee_field_is_not_valid": "Èrvénytelen tranzakciós díj",
-    "details_frozen": "{amount} BTC fagyasztva áll.",
+    "details_frozen": "{amount} DOI fagyasztva áll.",
     "details_next": "Következő",
     "details_no_signed_tx": "A kiválasztott fájl nem tartalmaz importálható tranzakciót.",
     "details_note_placeholder": "saját megjegyzés",

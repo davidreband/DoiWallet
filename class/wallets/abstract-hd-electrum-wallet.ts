@@ -14,6 +14,7 @@ import { ECPairFactory, ECPairInterface } from 'ecpair';
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import { ElectrumHistory } from '../../blue_modules/BlueElectrum';
 import ecc from '../../blue_modules/noble_ecc';
+import { hexToUint8Array, concatUint8Arrays, uint8ArrayToHex } from '../../blue_modules/uint8array-extras';
 import { randomBytes } from '../rng';
 import { AbstractHDWallet } from './abstract-hd-wallet';
 import {
@@ -67,6 +68,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
   _txs_by_internal_index: Record<number, Transaction[]>;
 
   _utxo: any[];
+  _fp: string;
 
   // BIP47
   _enable_BIP47: boolean;
@@ -133,6 +135,9 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
     this._next_free_payment_code_address_index_send = {};
     this._balances_by_payment_code_index = {};
     this._addresses_by_payment_code_receive = {};
+
+    // cache
+    this._fp = '';
   }
 
   /**
@@ -172,14 +177,14 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
 
   async generate() {
     const buf = await randomBytes(16);
-    this.secret = bip39.entropyToMnemonic(buf.toString('hex'));
+    this.secret = bip39.entropyToMnemonic(uint8ArrayToHex(buf));
   }
 
-  async generateFromEntropy(user: Buffer) {
+  async generateFromEntropy(user: Uint8Array) {
     if (user.length !== 32 && user.length !== 16) {
       throw new Error('Entropy has to be 16 or 32 bytes long');
     }
-    this.secret = bip39.entropyToMnemonic(user.toString('hex'));
+    this.secret = bip39.entropyToMnemonic(uint8ArrayToHex(user));
   }
 
   _getExternalWIFByIndex(index: number): string | false {
@@ -305,8 +310,8 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
     // bitcoinjs does not support zpub yet, so we just convert it from xpub
     let data = b58.decode(xpub);
     data = data.slice(4);
-    data = Buffer.concat([Buffer.from('04b24746', 'hex'), data]);
-    this._xpub = b58.encode(data);
+    const concatenated = concatUint8Arrays([hexToUint8Array('04b24746'), data]);
+    this._xpub = b58.encode(concatenated);
 
     return this._xpub;
   }
@@ -1076,10 +1081,11 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
     if (returnSpentUtxoAsWell) return utxos;
 
     // got all utxos we ever had. lets filter out the ones that are spent:
+    const txs = this.getTransactions();
     const ret = [];
     for (const utxo of utxos) {
       let spent = false;
-      for (const tx of this.getTransactions()) {
+      for (const tx of txs) {
         for (const input of tx.inputs) {
           if (input.txid === utxo.txid && input.vout === utxo.vout) spent = true;
           // utxo we got previously was actually spent right here ^^
@@ -1117,9 +1123,9 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
   /**
    *
    * @param address {string} Address that belongs to this wallet
-   * @returns {Buffer|false} Either buffer with pubkey or false
+   * @returns {Uint8Array|false} Either Uint8Array with pubkey or false
    */
-  _getPubkeyByAddress(address: string): Buffer | false {
+  _getPubkeyByAddress(address: string): Uint8Array | false {
     for (let c = 0; c < this.next_free_address_index + this.gap_limit; c++) {
       if (this._getExternalAddressByIndex(c) === address) return this._getNodePubkeyByIndex(0, c);
     }
@@ -1267,6 +1273,9 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
       // for a single wallet all utxos gona be the same type, so we define it only once:
       let utxoType: SPUTXOType = 'non-eligible';
       switch (this.segwitType) {
+        case 'p2tr':
+          utxoType = 'p2tr';
+          break;
         case 'p2sh(p2wpkh)':
           utxoType = 'p2sh-p2wpkh';
           break;
@@ -1307,10 +1316,10 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
       if (masterFingerprint) {
         let masterFingerprintHex = Number(masterFingerprint).toString(16);
         if (masterFingerprintHex.length < 8) masterFingerprintHex = '0' + masterFingerprintHex; // conversion without explicit zero might result in lost byte
-        const hexBuffer = Buffer.from(masterFingerprintHex, 'hex');
-        masterFingerprintBuffer = Buffer.from(hexBuffer).reverse();
+        const hexBuffer = hexToUint8Array(masterFingerprintHex);
+        masterFingerprintBuffer = hexBuffer.reverse();
       } else {
-        masterFingerprintBuffer = Buffer.from([0x00, 0x00, 0x00, 0x00]);
+        masterFingerprintBuffer = new Uint8Array([0x00, 0x00, 0x00, 0x00]);
       }
       // this is not correct fingerprint, as we dont know real fingerprint - we got zpub with 84/0, but fingerpting
       // should be from root. basically, fingerprint should be provided from outside  by user when importing zpub
@@ -1333,10 +1342,10 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
       if (masterFingerprint) {
         let masterFingerprintHex = Number(masterFingerprint).toString(16);
         if (masterFingerprintHex.length < 8) masterFingerprintHex = '0' + masterFingerprintHex; // conversion without explicit zero might result in lost byte
-        const hexBuffer = Buffer.from(masterFingerprintHex, 'hex');
-        masterFingerprintBuffer = Buffer.from(hexBuffer).reverse();
+        const hexBuffer = hexToUint8Array(masterFingerprintHex);
+        masterFingerprintBuffer = hexBuffer.reverse();
       } else {
-        masterFingerprintBuffer = Buffer.from([0x00, 0x00, 0x00, 0x00]);
+        masterFingerprintBuffer = new Uint8Array([0x00, 0x00, 0x00, 0x00]);
       }
 
       // this is not correct fingerprint, as we dont know realfingerprint - we got zpub with 84/0, but fingerpting
@@ -1381,14 +1390,14 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
               : [],
         });
       } else {
-        outputScript = extendedOutput.script?.hex ? Buffer.from(extendedOutput.script.hex, 'hex') : undefined;
+        outputScript = extendedOutput.script?.hex ? hexToUint8Array(extendedOutput.script.hex) : undefined;
         psbt.addOutput({
           address: output.address,
           // @ts-ignore types from bitcoinjs are not exported so we cant define outputData separately and add fields conditionally (either address or script should be present)
           script: outputScript,
           value: BigInt(output.value),
           bip32Derivation:
-            change && path && pubkey
+            change && path && pubkey && this.segwitType !== 'p2tr'
               ? [
                   {
                     masterFingerprint: masterFingerprintBuffer,
@@ -1397,6 +1406,18 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
                   },
                 ]
               : [],
+          tapBip32Derivation:
+            this.segwitType === 'p2tr' && pubkey && path && change
+              ? [
+                  {
+                    pubkey: new Uint8Array(pubkey),
+                    masterFingerprint: new Uint8Array(masterFingerprintBuffer),
+                    path,
+                    leafHashes: [],
+                  },
+                ]
+              : [],
+          ...(this.segwitType === 'p2tr' && pubkey ? { tapInternalKey: new Uint8Array(pubkey) } : {}),
         });
       }
     });
@@ -1407,7 +1428,15 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
     if (!skipSigning) {
       // skiping signing related stuff
       for (let cc = 0; cc < c; cc++) {
-        psbt.signInput(cc, keypairs[cc]);
+        if (this.segwitType === 'p2tr') {
+          assert(psbt.data.inputs[cc].tapInternalKey, 'TapInternalKey is required for taproot inputs');
+          psbt.signTaprootInput(
+            cc,
+            keypairs[cc].tweak(bitcoin.crypto.taggedHash('TapTweak', psbt.data.inputs[cc].tapInternalKey as Uint8Array)),
+          );
+        } else {
+          psbt.signInput(cc, keypairs[cc]);
+        }
       }
     }
 
@@ -1418,7 +1447,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
     return { tx, inputs, outputs, fee, psbt };
   }
 
-  _addPsbtInput(psbt: Psbt, input: CoinSelectReturnInput, sequence: number, masterFingerprintBuffer: Buffer) {
+  _addPsbtInput(psbt: Psbt, input: CoinSelectReturnInput, sequence: number, masterFingerprintBuffer: Uint8Array) {
     if (!input.address) {
       throw new Error('Internal error: no address on Utxo during _addPsbtInput()');
     }
@@ -1722,7 +1751,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
    */
   static seedToFingerprint(seed: Buffer) {
     const root = bip32.fromSeed(seed, DOICHAIN);
-    let hex = root.fingerprint.toString('hex');
+    let hex = uint8ArrayToHex(root.fingerprint);
     while (hex.length < 8) hex = '0' + hex; // leading zeroes
     return hex.toUpperCase();
   }
@@ -1737,11 +1766,16 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
   }
 
   /**
-   * @returns {string} Hex string of fingerprint derived from wallet mnemonics. Always has length of 8 chars and correct leading zeroes
+   * @returns Hex string of fingerprint derived from wallet mnemonics. Always has length of 8 chars and correct leading zeroes
    */
   getMasterFingerprintHex() {
+    if (this._fp) {
+      return this._fp; // cache hit
+    }
+
     const seed = this._getSeed();
-    return AbstractHDElectrumWallet.seedToFingerprint(seed);
+    this._fp = AbstractHDElectrumWallet.seedToFingerprint(seed);
+    return this._fp;
   }
 
   /**
@@ -1843,7 +1877,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
     targetsTemp.push({
       value: 0,
       script: {
-        hex: Buffer.alloc(83).toString('hex'), // no `address` here, its gonabe op_return. but we pass dummy data here with a correct size just to choose utxo
+        hex: uint8ArrayToHex(new Uint8Array(83)), // no `address` here, its gonabe op_return. but we pass dummy data here with a correct size just to choose utxo
       },
     });
 
@@ -1869,7 +1903,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
       bobBip47,
       keyPair.privateKey as Buffer,
       // txid is reversed, as well as output number
-      Buffer.from(inputsTemp[0].txid, 'hex').reverse().toString('hex') + outputNumber.toString('hex'),
+      uint8ArrayToHex(hexToUint8Array(inputsTemp[0].txid).reverse()) + outputNumber.toString('hex'),
     );
 
     // targets:

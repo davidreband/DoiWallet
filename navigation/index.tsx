@@ -4,6 +4,11 @@ import UnlockWith from '../screen/UnlockWith';
 import { LazyLoadingIndicator } from './LazyLoadingIndicator';
 import { DetailViewStackParamList } from './DetailViewStackParamList';
 import { useStorage } from '../hooks/context/useStorage';
+import loc from '../loc';
+import navigationStyle, { CloseButtonPosition } from '../components/navigationStyle';
+import { useTheme } from '../components/themes';
+import WalletXpub from '../screen/wallets/xpub';
+import WalletExport from '../screen/wallets/WalletExport';
 
 // Lazy load all components except UnlockWith
 const DrawerRoot = lazy(() => import('./DrawerRoot'));
@@ -11,9 +16,7 @@ const AddWalletStack = lazy(() => import('./AddWalletStack'));
 const SendDetailsStack = lazy(() => import('./SendDetailsStack'));
 
 const AztecoRedeemStackRoot = lazy(() => import('./AztecoRedeemStack'));
-const WalletExportStack = lazy(() => import('./WalletExportStack'));
 const ExportMultisigCoordinationSetupStack = lazy(() => import('./ExportMultisigCoordinationSetupStack'));
-const WalletXpubStackRoot = lazy(() => import('./WalletXpubStack'));
 const SignVerifyStackRoot = lazy(() => import('./SignVerifyStack'));
 const ScanQRCode = lazy(() => import('../screen/send/ScanQRCode'));
 const ViewEditMultisigCosignersStack = lazy(() => import('./ViewEditMultisigCosignersStack'));
@@ -63,12 +66,6 @@ const LazyAztecoRedeemStackRoot = () => (
   </Suspense>
 );
 
-const LazyWalletExportStack = () => (
-  <Suspense fallback={<LazyLoadingIndicator />}>
-    <WalletExportStack />
-  </Suspense>
-);
-
 const LazyExportMultisigCoordinationSetupStack = () => (
   <Suspense fallback={<LazyLoadingIndicator />}>
     <ExportMultisigCoordinationSetupStack />
@@ -78,12 +75,6 @@ const LazyExportMultisigCoordinationSetupStack = () => (
 const LazyViewEditMultisigCosignersStack = () => (
   <Suspense fallback={<LazyLoadingIndicator />}>
     <ViewEditMultisigCosignersStack />
-  </Suspense>
-);
-
-const LazyWalletXpubStackRoot = () => (
-  <Suspense fallback={<LazyLoadingIndicator />}>
-    <WalletXpubStackRoot />
   </Suspense>
 );
 
@@ -101,6 +92,7 @@ const LazyScanQRCodeComponent = () => (
 
 const MainRoot = () => {
   const { walletsInitialized } = useStorage();
+  const theme = useTheme();
 
   return (
     <DetailViewStack.Navigator screenOptions={{ headerShown: false }}>
@@ -114,10 +106,17 @@ const MainRoot = () => {
           <DetailViewStack.Screen name="AddWalletRoot" component={LazyAddWalletStack} options={NavigationDefaultOptions} />
           <DetailViewStack.Screen name="SendDetailsRoot" component={LazySendDetailsStack} options={NavigationFormNoSwipeDefaultOptions} />
           <DetailViewStack.Screen name="AztecoRedeemRoot" component={LazyAztecoRedeemStackRoot} options={NavigationDefaultOptions} />
+
           <DetailViewStack.Screen
-            name="WalletExportRoot"
-            component={LazyWalletExportStack}
-            options={{ ...NavigationDefaultOptions, ...StatusBarLightOptions }}
+            name="WalletExport"
+            component={WalletExport}
+            options={navigationStyle({
+              headerBackVisible: false,
+              title: loc.wallets.export_title,
+              presentation: 'modal',
+              headerShown: true,
+              closeButtonPosition: CloseButtonPosition.Right,
+            })(theme)}
           />
           <DetailViewStack.Screen
             name="ExportMultisigCoordinationSetupRoot"
@@ -133,9 +132,14 @@ const MainRoot = () => {
             options={{ ...NavigationDefaultOptions, gestureEnabled: false }}
           />
           <DetailViewStack.Screen
-            name="WalletXpubRoot"
-            component={LazyWalletXpubStackRoot}
-            options={{ ...NavigationDefaultOptions, ...StatusBarLightOptions }}
+            name="WalletXpub"
+            component={WalletXpub}
+            options={navigationStyle({
+              title: loc.wallets.xpub_title,
+              presentation: 'modal',
+              headerShown: true,
+              closeButtonPosition: CloseButtonPosition.Right,
+            })(theme)}
           />
           <DetailViewStack.Screen
             name="SignVerifyRoot"
