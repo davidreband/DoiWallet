@@ -3,6 +3,7 @@ import { Psbt } from '@doichain/doichainjs-lib';
 
 import { BlueURDecoder, clearUseURv1, decodeUR, encodeUR, extractSingleWorkload, setUseURv1 } from '../../blue_modules/ur';
 import { WatchOnlyWallet } from '../../class';
+import { uint8ArrayToHex } from '../../blue_modules/uint8array-extras';
 
 describe('Watch only wallet', () => {
   it('can validate address', async () => {
@@ -63,30 +64,38 @@ describe('Watch only wallet', () => {
   });
 
   it('can create PSBT base64 without signature for HW wallet xpub', async () => {
-    const w = new WatchOnlyWallet();
-    w.setSecret('zpub6rLXmt9RCjYTbb4VLV7ZwVf1NSAXPWjuiDY1Q1QgvfjkbB9UHR38hjCc7jxbLYPhBSEoDGtKd3NHwAi4EVKy7D2ZYHUWbu7GTU7e792gFez');
-    w.init();
-    const changeAddress = 'dc1qj93genwg3y84zjh550zwjvfzmh9ncchww8fmxm';
-    // hardcoding so we wont have to call w.getChangeAddressAsync()
-    const utxos = [
-      {
-        height: 530926,
-        value: 1000,
-        address: 'dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk',
-        txid: 'd0432027a86119c63a0be8fa453275c2333b59067f1e559389cd3e0e377c8b96',
-        vout: 1,
-        txhex:
-          '0100000001b630ac364a04b83548994ded4705b98316b2d1fe18b9fffa2627be9eef11bf60000000006b48304502210096e68d94d374e3a688ed2e6605289f81172540abaab5f6cc431c231919860746022075ee4e64c867ed9d369d01a9b35d8b1689a821be8d729fff7fb3dfcc75d16f6401210281d2e40ba6422fc97b61fd5643bee83dd749d8369339edc795d7b3f00e96c681fdffffff02ef020000000000001976a914e4271ef9e9a03a89b981c73d3d6936d2f6fccc0688ace8030000000000001976a914120ad7854152901ebeb269acb6cef20e71b3cf5988acea190800',
-      },
-    ];
-    // hardcoding utxo so we wont have to call w.fetchUtxo() and w.getUtxo()
+    for (const cleanupInternals of [false, true]) {
+      const w = new WatchOnlyWallet();
+      w.setSecret('zpub6rLXmt9RCjYTbb4VLV7ZwVf1NSAXPWjuiDY1Q1QgvfjkbB9UHR38hjCc7jxbLYPhBSEoDGtKd3NHwAi4EVKy7D2ZYHUWbu7GTU7e792gFez');
+      w.init();
+      const changeAddress = 'dc1qj93genwg3y84zjh550zwjvfzmh9ncchww8fmxm';
+      // hardcoding so we wont have to call w.getChangeAddressAsync()
+      const utxos = [
+        {
+          height: 530926,
+          value: 1000,
+          address: 'dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk',
+          txid: 'd0432027a86119c63a0be8fa453275c2333b59067f1e559389cd3e0e377c8b96',
+          vout: 1,
+          txhex:
+            '0100000001b630ac364a04b83548994ded4705b98316b2d1fe18b9fffa2627be9eef11bf60000000006b48304502210096e68d94d374e3a688ed2e6605289f81172540abaab5f6cc431c231919860746022075ee4e64c867ed9d369d01a9b35d8b1689a821be8d729fff7fb3dfcc75d16f6401210281d2e40ba6422fc97b61fd5643bee83dd749d8369339edc795d7b3f00e96c681fdffffff02ef020000000000001976a914e4271ef9e9a03a89b981c73d3d6936d2f6fccc0688ace8030000000000001976a914120ad7854152901ebeb269acb6cef20e71b3cf5988acea190800',
+        },
+      ];
+      // hardcoding utxo so we wont have to call w.fetchUtxo() and w.getUtxo()
 
-    const { psbt } = await w.createTransaction(utxos, [{ address: 'dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk' }], 1, changeAddress);
+      const { psbt } = await w.createTransaction(utxos, [{ address: 'dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk' }], 1, changeAddress);
 
-    assert.strictEqual(
-      psbt.toBase64(),
-      'cHNidP8BAFICAAAAAZaLfDcOPs2Jk1UefwZZOzPCdTJF+ugLOsYZYagnIEPQAQAAAAAAAACAAXgDAAAAAAAAFgAUR8BR1OIHfj61MvsaAvcEO5M6KV4AAAAAAAEBH+gDAAAAAAAAFgAUR8BR1OIHfj61MvsaAvcEO5M6KV4iBgMu6FAS11Wjae/YYBZmzRBne+nTi20rKsXzzLGKFJ33cBgAAAAAVAAAgAAAAIAAAACAAAAAAAAAAAAAAA==',
-    );
+      if (cleanupInternals) {
+        // these might be purged when preparing for serialization before saving to disk
+        w._hdWalletInstance._node0 = undefined;
+        w._hdWalletInstance._node1 = undefined;
+      }
+
+      assert.strictEqual(
+        psbt.toBase64(),
+        'cHNidP8BAFICAAAAAZaLfDcOPs2Jk1UefwZZOzPCdTJF+ugLOsYZYagnIEPQAQAAAAAAAACAAXgDAAAAAAAAFgAUR8BR1OIHfj61MvsaAvcEO5M6KV4AAAAAAAEBH+gDAAAAAAAAFgAUR8BR1OIHfj61MvsaAvcEO5M6KV4iBgMu6FAS11Wjae/YYBZmzRBne+nTi20rKsXzzLGKFJ33cBgAAAAAVAAAgAAAAIAAAACAAAAAAAAAAAAAAA==',
+      );
+    }
   });
 
   it('can create PSBT base64 without signature for HW wallet ypub', async () => {
@@ -189,6 +198,18 @@ describe('Watch only wallet', () => {
     );
   });
 
+  it('does not hand out taproot addresses for a BIP86 descriptor', async () => {
+    // Upstream builds an HDTaprootWallet for an m/86' path. Taproot is never activated on Doichain
+    // mainnet, so a dc1p output is protected by nothing - the watch-only wallet must not offer one.
+    const w = new WatchOnlyWallet();
+    w.setSecret(
+      "tr([97311f91/86'/0'/0']xpub6C85eQDGy5NKEqCPnrnf4QcvxQCzRiTZFTa6YfuDU1hSQGWQHf6QBHogKXaS8hUhtvk6ND4btTdiWic26UKrk1pWrU4CQGrQoGxd6DP33Sw)",
+    );
+    w.init();
+    assert.strictEqual(w.getDerivationPath(), "m/86'/0'/0'");
+    assert.ok(!w._getExternalAddressByIndex(0).startsWith('dc1p'), 'got a taproot address: ' + w._getExternalAddressByIndex(0));
+  });
+
   it('can combine signed PSBT and prepare it for broadcast', async () => {
     const w = new WatchOnlyWallet();
     w.setSecret('zpub6rjLjQVqVnj7crz9E4QWj4WgczmEseJq22u2B6k2HZr6NE2PQx3ZYg8BnbjN9kCfHymSeMd2EpwpM5iiz5Nrb3TzvddxW2RMcE3VXdVaXHk');
@@ -261,7 +282,7 @@ describe('Watch only wallet', () => {
     const { psbt } = w.createTransaction(utxos, [{ address: 'dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk', value: 5000 }], 1, changeAddress);
 
     assert.strictEqual(
-      psbt.data.outputs[1].bip32Derivation[0].pubkey.toString('hex'),
+      uint8ArrayToHex(psbt.data.outputs[1].bip32Derivation[0].pubkey),
       '02fee86cb8101a1537c559846794f46e1f4460483da57dcaf502f891fc474a9ea8',
     );
     assert.strictEqual(psbt.data.inputs[0].bip32Derivation[0].path, "m/84'/0'/0'/0/0");
@@ -282,7 +303,7 @@ describe('Watch only wallet', () => {
     );
 
     assert.strictEqual(
-      psbt2.data.outputs[1].bip32Derivation[0].pubkey.toString('hex'),
+      uint8ArrayToHex(psbt2.data.outputs[1].bip32Derivation[0].pubkey),
       '02fee86cb8101a1537c559846794f46e1f4460483da57dcaf502f891fc474a9ea8',
     );
     assert.strictEqual(psbt2.data.inputs[0].bip32Derivation[0].path, newPath + '/0/0');

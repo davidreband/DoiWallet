@@ -11,6 +11,7 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
+import assert from 'assert';
 
 import A from '../../blue_modules/analytics';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
@@ -34,6 +35,7 @@ import { AddWalletStackParamList } from '../../navigation/AddWalletStack';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import SafeAreaScrollView from '../../components/SafeAreaScrollView';
 import { BlueSpacing20, BlueSpacing40 } from '../../components/BlueSpacing';
+import { hexToUint8Array, uint8ArrayToHex } from '../../blue_modules/uint8array-extras';
 
 enum ButtonSelected {
   // @ts-ignore: Return later to update
@@ -60,10 +62,19 @@ const ActionTypes = {
 } as const;
 type ActionTypes = (typeof ActionTypes)[keyof typeof ActionTypes];
 
-interface Action {
+interface TAction {
   type: ActionTypes;
   payload?: any;
 }
+
+const index2walletType: Record<number, { text: string; subtitle: string; walletType: string }> = {
+  // Upstream offers HD legacy and HD taproot here instead of the two P2SH types. Taproot is never
+  // activated on Doichain mainnet (DEPLOYMENT_TAPROOT is NEVER_ACTIVE in doichain-core), so a dc1p
+  // output is not protected by its rules and must not be offered as a place to receive coins.
+  0: { subtitle: 'p2wsh/HD', text: `${loc.multisig.native_segwit_title}`, walletType: HDSegwitBech32Wallet.type },
+  1: { subtitle: 'p2sh-p2wsh/HD', text: `${loc.multisig.wrapped_segwit_title}`, walletType: SegwitP2SHWallet.type },
+  2: { subtitle: 'p2sh/non-HD', text: `${loc.multisig.legacy_title}`, walletType: HDSegwitP2SHWallet.type },
+};
 
 const initialState: State = {
   isLoading: true,
@@ -73,7 +84,7 @@ const initialState: State = {
   selectedWalletType: ButtonSelected.ONCHAIN,
 };
 
-const walletReducer = (state: State, action: Action): State => {
+const walletReducer = (state: State, action: TAction): State => {
   switch (action.type) {
     case ActionTypes.SET_LOADING:
       return { ...state, isLoading: action.payload };
@@ -108,7 +119,7 @@ const WalletsAdd: React.FC = () => {
 
   const { addWallet, saveToDisk } = useStorage();
   const { entropy: entropyHex, words } = useRoute<RouteProps>().params || {};
-  const entropy = entropyHex ? Buffer.from(entropyHex, 'hex') : undefined;
+  const entropy = entropyHex ? hexToUint8Array(entropyHex) : undefined;
   const { navigate, goBack, setOptions, setParams } = useExtendedNavigation<NavigationProps>();
   const stylesHook = {
     advancedText: {
@@ -174,21 +185,21 @@ const WalletsAdd: React.FC = () => {
   const toolTipActions = useMemo(() => {
     const walletSubactions: Action[] = [
       {
-        id: HDSegwitBech32Wallet.type,
-        text: `${loc.multisig.native_segwit_title}`,
-        subtitle: 'p2wsh/HD',
+        id: index2walletType[0].walletType,
+        text: index2walletType[0].text,
+        subtitle: index2walletType[0].subtitle,
         menuState: selectedIndex === 0 && selectedWalletType === ButtonSelected.ONCHAIN,
       },
       {
-        id: SegwitP2SHWallet.type,
-        text: `${loc.multisig.wrapped_segwit_title}`,
-        subtitle: 'p2sh-p2wsh/HD',
+        id: index2walletType[1].walletType,
+        text: index2walletType[1].text,
+        subtitle: index2walletType[1].subtitle,
         menuState: selectedIndex === 1 && selectedWalletType === ButtonSelected.ONCHAIN,
       },
       {
-        id: HDSegwitP2SHWallet.type,
-        text: `${loc.multisig.legacy_title}`,
-        subtitle: 'p2sh/non-HD',
+        id: index2walletType[2].walletType,
+        text: index2walletType[2].text,
+        subtitle: index2walletType[2].subtitle,
         menuState: selectedIndex === 2 && selectedWalletType === ButtonSelected.ONCHAIN,
       },
     ];
@@ -241,11 +252,19 @@ const WalletsAdd: React.FC = () => {
           } else if (id === HDSegwitP2SHWallet.type) {
             setSelectedIndex(2);
           } else if (id === '12_words') {
-            navigate('ProvideEntropy', { words: 12, entropy: entropy?.toString('hex') });
+            navigate('ProvideEntropy', { words: 12, entropy: entropy ? uint8ArrayToHex(entropy) : undefined });
           } else if (id === '24_words') {
-            navigate('ProvideEntropy', { words: 24, entropy: entropy?.toString('hex') });
+            navigate('ProvideEntropy', { words: 24, entropy: entropy ? uint8ArrayToHex(entropy) : undefined });
           } else if (id === CommonToolTipActions.ResetToDefault.id) {
             confirmResetEntropy(ButtonSelected.ONCHAIN);
+          } else {
+            for (let c = 0; c < Object.values(index2walletType).length; c++) {
+              if (index2walletType[c].walletType === id) {
+                // found our item that was pressed
+                setSelectedIndex(c);
+                break;
+              }
+            }
           }
         }}
         actions={toolTipActions}
@@ -295,21 +314,28 @@ const WalletsAdd: React.FC = () => {
       createLightningWallet();
     } else if (selectedWalletType === ButtonSelected.ONCHAIN) {
       let w: HDSegwitBech32Wallet | SegwitP2SHWallet | HDSegwitP2SHWallet;
-      if (selectedIndex === 2) {
-        // zero index radio - HD segwit
-        w = new HDSegwitP2SHWallet();
-        w.setLabel(label || loc.wallets.details_title);
-      } else if (selectedIndex === 1) {
-        // btc was selected
-        // index 1 radio - segwit single address
-        w = new SegwitP2SHWallet();
-        w.setLabel(label || loc.wallets.details_title);
-      } else {
-        // btc was selected
-        // index 2 radio - hd bip84
-        w = new HDSegwitBech32Wallet();
-        w.setLabel(label || loc.wallets.details_title);
+
+      for (let c = 0; c < Object.values(index2walletType).length; c++) {
+        if (c === selectedIndex) {
+          switch (index2walletType[c].walletType) {
+            case HDSegwitP2SHWallet.type:
+              w = new HDSegwitP2SHWallet();
+              w.setLabel(label || loc.wallets.details_title);
+              break;
+            case SegwitP2SHWallet.type:
+              w = new SegwitP2SHWallet();
+              w.setLabel(label || loc.wallets.details_title);
+              break;
+            case HDSegwitBech32Wallet.type:
+              w = new HDSegwitBech32Wallet();
+              w.setLabel(label || loc.wallets.details_title);
+              break;
+          }
+        }
       }
+
+      assert(w!, 'Internal error: could not decide which wallet to create');
+
       if (selectedWalletType === ButtonSelected.ONCHAIN) {
         if (entropy) {
           try {

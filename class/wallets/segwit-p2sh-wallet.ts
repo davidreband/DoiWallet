@@ -6,6 +6,7 @@ import ecc from '../../blue_modules/noble_ecc';
 import { LegacyWallet } from './legacy-wallet';
 import { CreateTransactionResult, CreateTransactionUtxo } from './types';
 import { DOICHAIN } from '../../blue_modules/network.js';
+import { hexToUint8Array } from '../../blue_modules/uint8array-extras';
 
 const ECPair = ECPairFactory(ecc);
 
@@ -15,7 +16,7 @@ const ECPair = ECPairFactory(ecc);
  * @param network
  * @returns {String}
  */
-function pubkeyToP2shSegwitAddress(pubkey: Buffer): string | false {
+function pubkeyToP2shSegwitAddress(pubkey: Uint8Array): string | false {
   const { address } = bitcoin.payments.p2sh({
     redeem: bitcoin.payments.p2wpkh({ pubkey, network: DOICHAIN }),
   });
@@ -33,7 +34,7 @@ export class SegwitP2SHWallet extends LegacyWallet {
 
   static witnessToAddress(witness: string): string | false {
     try {
-      const pubKey = Buffer.from(witness, 'hex');
+      const pubKey = hexToUint8Array(witness);
       return pubkeyToP2shSegwitAddress(pubKey);
     } catch (_) {
       return false;
@@ -48,7 +49,7 @@ export class SegwitP2SHWallet extends LegacyWallet {
    */
   static scriptPubKeyToAddress(scriptPubKey: string): string | false {
     try {
-      const scriptPubKey2 = Buffer.from(scriptPubKey, 'hex');
+      const scriptPubKey2 = hexToUint8Array(scriptPubKey);
       return (
         bitcoin.payments.p2sh({
           output: scriptPubKey2,
@@ -70,7 +71,7 @@ export class SegwitP2SHWallet extends LegacyWallet {
         console.warn('only compressed public keys are good for segwit');
         return false;
       }
-      address = pubkeyToP2shSegwitAddress(Buffer.from(pubKey));
+      address = pubkeyToP2shSegwitAddress(pubKey);
     } catch (err) {
       return false;
     }

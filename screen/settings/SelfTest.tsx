@@ -98,6 +98,7 @@ export default class SelfTest extends Component {
 
       //
 
+
       if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
         await BlueElectrum.ping();
         await BlueElectrum.waitTillConnected();
@@ -203,7 +204,7 @@ export default class SelfTest extends Component {
 
       l = new TaprootWallet();
       l.setSecret('TkY79tUnVeDjWzCr31s9iifnvGxofRNeicfomety5NgrNA92jacx');
-      if (l.getAddress() !== 'dc1payhxedzyjtu8w7ven7au9925pmhc5gl59m77ht9vqq0l5xq8fsgqdh0pr7') {
+      if (l.getAddress() !== 'dc1pm6lqlel3qxefsx0v39nshtghasvvp6ghn3e5hd5q280j5m9h7csq909klt') {
         throw new Error('failed to generate Taproot address from WIF');
       }
 
@@ -213,7 +214,7 @@ export default class SelfTest extends Component {
         [
           {
             value: 9778,
-            address: 'dc1payhxedzyjtu8w7ven7au9925pmhc5gl59m77ht9vqq0l5xq8fsgqdh0pr7',
+            address: 'dc1pm6lqlel3qxefsx0v39nshtghasvvp6ghn3e5hd5q280j5m9h7csq909klt',
             txid: '511e007f9c96b6d713a72b730506198f61dd96046edee72f0dc636bfe1f3a9cf',
             vout: 0,
           },

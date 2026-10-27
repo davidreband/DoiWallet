@@ -27,8 +27,6 @@ import {
   Pressable,
   View,
 } from 'react-native';
-
-import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import { btcToSatoshi, fiatToBTC } from '../../blue_modules/currency';
 import * as fs from '../../blue_modules/fs';
@@ -61,6 +59,8 @@ import { SendDetailsStackParamList } from '../../navigation/SendDetailsStackPara
 import { CommonToolTipActions, ToolTipAction } from '../../typings/CommonToolTipActions';
 import { decodeNameBytes } from '../../utils/getNameOPStackScript';
 import ActionSheet from '../ActionSheet';
+import { isCancel, pickTransaction } from '../../blue_modules/fs';
+import { Measure } from '../../class/measure';
 
 interface IPaymentDestinations {
   address: string; // btc address or payment code
@@ -367,7 +367,9 @@ const SendDetails = () => {
     if (!wallet) return; // wait for it
     const fees = networkTransactionFees;
     const requestedSatPerByte = Number(feeRate);
+    const m = new Measure('getUtxo');
     const lutxo = utxos || wallet.getUtxo();
+    m.end();
     let frozen = 0;
     if (!utxos) {
       // if utxo is not limited search for frozen outputs and calc it's balance
@@ -640,6 +642,7 @@ const SendDetails = () => {
     } catch (Err: any) {
       setIsLoading(false);
       presentAlert({ title: loc.errors.error, message: Err.message });
+      console.log(Err);
       triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
     }
   };
@@ -830,12 +833,7 @@ const SendDetails = () => {
     }
 
     try {
-      const res = await DocumentPicker.pickSingle({
-        type:
-          Platform.OS === 'ios'
-            ? ['io.bluewallet.psbt', 'io.bluewallet.psbt.txn', DocumentPicker.types.plainText, DocumentPicker.types.json]
-            : [DocumentPicker.types.allFiles],
-      });
+      const res = await pickTransaction();
 
       if (DeeplinkSchemaMatch.isPossiblySignedPSBTFile(res.uri)) {
         // we assume that transaction is already signed, so all we have to do is get txhex and pass it to next screen
@@ -872,7 +870,7 @@ const SendDetails = () => {
       triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
       presentAlert({ title: loc.errors.error, message: loc.send.details_unrecognized_file_format });
     } catch (err) {
-      if (!DocumentPicker.isCancel(err)) {
+      if (!isCancel(err)) {
         triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
         presentAlert({ title: loc.errors.error, message: loc.send.details_no_signed_tx });
       }
@@ -1408,7 +1406,6 @@ const SendDetails = () => {
     root: {
       backgroundColor: colors.elevated,
     },
-
     selectLabel: {
       color: colors.buttonTextColor,
     },
@@ -1423,7 +1420,6 @@ const SendDetails = () => {
     feeLabel: {
       color: colors.feeText,
     },
-
     feeRow: {
       backgroundColor: colors.feeLabel,
     },

@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { Image, Linking, View, ViewStyle, StyleSheet } from 'react-native';
 import Lnurl from '../class/lnurl';
-import { Transaction } from '../class/wallets/types';
+import { LightningTransaction, Transaction } from '../class/wallets/types';
 import { NameOpTransaction } from '../types/transaction';
 import TransactionExpiredIcon from '../components/icons/TransactionExpiredIcon';
 import TransactionIncomingIcon from '../components/icons/TransactionIncomingIcon';
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
 interface TransactionListItemProps {
   itemPriceUnit?: DoichainUnit;
   walletID: string;
-  item: Transaction & Partial<NameOpTransaction>; // using type intersection to have less issues with ts
+  item: Transaction & LightningTransaction & Partial<NameOpTransaction>; // using type intersection to have less issues with ts
   searchQuery?: string;
   style?: ViewStyle;
   renderHighlightedText?: (text: string, query: string) => JSX.Element;
@@ -60,7 +60,15 @@ interface TransactionListItemProps {
 type NavigationProps = NativeStackNavigationProp<DetailViewStackParamList>;
 
 export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
-  ({ item, itemPriceUnit = DoichainUnit.DOI, walletID, searchQuery, style, renderHighlightedText, onPress: customOnPress }) => {
+  ({
+    item,
+    itemPriceUnit = DoichainUnit.DOI,
+    walletID,
+    searchQuery,
+    style,
+    renderHighlightedText,
+    onPress: customOnPress,
+  }: TransactionListItemProps) => {
     const [subtitleNumberOfLines, setSubtitleNumberOfLines] = useState(1);
     const { colors } = useTheme();
     const { navigate } = useExtendedNavigation<NavigationProps>();
@@ -363,6 +371,8 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
             walletID: lightningWallet[0].getID(),
           });
         }
+      } else {
+        console.log('cant handle press');
       }
     }, [item, renderHighlightedText, navigate, walletID, wallets, customOnPress]);
 

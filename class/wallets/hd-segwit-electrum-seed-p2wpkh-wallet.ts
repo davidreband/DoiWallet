@@ -4,6 +4,7 @@ import b58 from 'bs58check';
 import * as mn from 'electrum-mnemonic';
 
 import ecc from '../../blue_modules/noble_ecc';
+import { concatUint8Arrays, hexToUint8Array } from '../../blue_modules/uint8array-extras';
 import { HDSegwitBech32Wallet } from './hd-segwit-bech32-wallet';
 import { DOICHAIN } from '../../blue_modules/network.js';
 
@@ -54,8 +55,8 @@ export class HDSegwitElectrumSeedP2WPKHWallet extends HDSegwitBech32Wallet {
     // bitcoinjs does not support zpub yet, so we just convert it from xpub
     let data = b58.decode(xpub);
     data = data.slice(4);
-    data = Buffer.concat([Buffer.from('04b24746', 'hex'), data]);
-    this._xpub = b58.encode(data);
+    const concatenated = concatUint8Arrays([hexToUint8Array('04b24746'), data]);
+    this._xpub = b58.encode(concatenated);
 
     return this._xpub;
   }

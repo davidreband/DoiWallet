@@ -169,11 +169,6 @@ const DetailViewStackScreensStack = () => {
             backgroundColor: theme.colors.customHeader,
           },
         })(theme)}
-      /> */}
-      {/* <DetailViewStack.Screen
-        name="LNDViewAdditionalInvoiceInformation"
-        component={LNDViewAdditionalInvoiceInformation}
-        options={navigationStyle({ title: loc.lndViewInvoice.additional_info })(theme)}
       />
       <DetailViewStack.Screen
         name="LNDViewAdditionalInvoicePreImage"

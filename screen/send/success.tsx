@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from 'react';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import React, { useEffect } from 'react';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import Clipboard from '@react-native-clipboard/clipboard';
 import BigNumber from 'bignumber.js';
 import LottieView from 'lottie-react-native';
-import PropTypes from 'prop-types';
 import { StyleSheet, View, Linking } from 'react-native';
 import { Text } from '@rneui/themed';
 import { BlueCard } from '../../BlueComponents';
@@ -14,15 +14,16 @@ import loc from '../../loc';
 import HandOffComponent from '../../components/HandOffComponent';
 import { HandOffActivityType } from '../../components/types';
 import ToolTipMenu from '../../components/TooltipMenu';
+import { SendDetailsStackParamList } from '../../navigation/SendDetailsStackParamList.ts';
+import { useExtendedNavigation } from '../../hooks/useExtendedNavigation.ts';
+
+type RouteProps = RouteProp<SendDetailsStackParamList, 'Success'>;
 
 const Success = () => {
-  const pop = () => {
-    getParent().pop();
-  };
+  const navigation = useExtendedNavigation();
   const { colors } = useTheme();
-  const { getParent } = useNavigation();
-  const { amount, fee, amountUnit = DoichainUnit.DOI, invoiceDescription = '', onDonePressed = pop, txid } = useRoute().params;
-
+  const route = useRoute<RouteProps>();
+  const { amount, fee, amountUnit = DoichainUnit.DOI, invoiceDescription = '', txid } = route.params || {};
   const stylesHook = StyleSheet.create({
     root: {
       backgroundColor: colors.elevated,
@@ -40,6 +41,12 @@ const Success = () => {
       backgroundColor: colors.lightButton,
     },
   });
+
+  const onDonePressed = () => {
+    // @ts-ignore idk
+    navigation?.getParent().pop();
+  };
+
   useEffect(() => {
     console.log('send/success - useEffect');
   }, []);
@@ -66,9 +73,14 @@ const Success = () => {
     },
   ];
 
+  const explorerUrl = txid ? `https://explorer.doichain.org/tx/?txid=${txid}` : 'https://explorer.doichain.org';
+
+  const handleOnPressMenuItem = (id: string) => {
+    if (id === actionKeys.CopyToClipboard) Clipboard.setString(explorerUrl);
+  };
+
   const handleOnOpenTransactionOnBlockExplorerTapped = () => {
-    let url = `https://explorer.doichain.org`;
-    if (txid) url += `/tx/?txid=${txid}`;
+    const url = explorerUrl;
     Linking.canOpenURL(url)
       .then(supported => {
         if (supported) {
@@ -86,13 +98,7 @@ const Success = () => {
 
   return (
     <SafeArea style={[styles.root, stylesHook.root]}>
-      <SuccessView
-        amount={amount}
-        amountUnit={amountUnit}
-        fee={fee}
-        invoiceDescription={invoiceDescription}
-        onDonePressed={onDonePressed}
-      />
+      <SuccessView amount={amount} amountUnit={amountUnit} fee={fee} invoiceDescription={invoiceDescription} />
       <View style={styles.buttonContainer}>
         <Button onPress={onDonePressed} title={loc.send.success_done} />
       </View>
@@ -100,18 +106,18 @@ const Success = () => {
       <ToolTipMenu
         isButton
         actions={toolTipMenuActions}
-        // onPressMenuItem={handleCopyPress}
+        onPressMenuItem={handleOnPressMenuItem}
         onPress={handleOnOpenTransactionOnBlockExplorerTapped}
         buttonStyle={StyleSheet.flatten([styles.greyButton, stylesHook.greyButton])}
       >
-        <Text style={[styles.Link, stylesHook.Link]}>{loc.transactions.details_show_in_block_explorer}</Text>
+        <Text style={stylesHook.Link}>{loc.transactions.details_view_in_browser}</Text>
       </ToolTipMenu>
 
       {txid && (
         <HandOffComponent
           title={loc.transactions.details_title}
           type={HandOffActivityType.ViewInBlockExplorer}
-          url={`https://explorer.doichain.org/tx/?txid=${txid}`}
+          url={explorerUrl}
         />
       )}
     </SafeArea>
@@ -120,9 +126,24 @@ const Success = () => {
 
 export default Success;
 
-export const SuccessView = ({ amount, amountUnit, fee, invoiceDescription, shouldAnimate = true }) => {
-  const animationRef = useRef();
+interface SuccessViewParam {
+  amount?: number;
+  amountUnit?: DoichainUnit;
+  fee?: number;
+  invoiceDescription?: string;
+  shouldAnimate?: boolean;
+}
+
+export const SuccessView = ({ amount, amountUnit, fee, invoiceDescription, shouldAnimate = true }: SuccessViewParam) => {
   const { colors } = useTheme();
+
+  let unit: string = '';
+  switch (amountUnit) {
+    case DoichainUnit.DOI:
+    case DoichainUnit.SWARTZ:
+      unit = loc.units[amountUnit];
+      break;
+  }
 
   const stylesHook = StyleSheet.create({
     amountValue: {
@@ -133,34 +154,21 @@ export const SuccessView = ({ amount, amountUnit, fee, invoiceDescription, shoul
     },
   });
 
-  useEffect(() => {
-    if (shouldAnimate && animationRef.current) {
-      /*
-      https://github.com/lottie-react-native/lottie-react-native/issues/832#issuecomment-1008209732
-      Temporary workaround until Lottie is fixed.
-      */
-      setTimeout(() => {
-        animationRef.current?.reset();
-        animationRef.current?.play();
-      }, 100);
-    }
-  }, [colors, shouldAnimate]);
-
   return (
     <View style={styles.root}>
-      {amount || fee > 0 ? (
+      {amount || (fee ?? 0) > 0 ? (
         <BlueCard style={styles.amount}>
           <View style={styles.view}>
             {amount ? (
               <>
                 <Text style={[styles.amountValue, stylesHook.amountValue]}>{amount}</Text>
-                <Text style={[styles.amountUnit, stylesHook.amountUnit]}>{' ' + loc.units[amountUnit]}</Text>
+                <Text style={[styles.amountUnit, stylesHook.amountUnit]}>{' ' + unit}</Text>
               </>
             ) : null}
           </View>
-          {fee > 0 && (
+          {(fee ?? 0) > 0 && (
             <Text style={styles.feeText}>
-              {loc.send.create_fee}: {new BigNumber(fee).toFixed()} {loc.units[DoichainUnit.DOI]}
+              {loc.send.create_fee}: {new BigNumber(fee ?? 0).toFixed()} {loc.units[DoichainUnit.DOI]}
             </Text>
           )}
           <Text numberOfLines={0} style={styles.feeText}>
@@ -174,7 +182,6 @@ export const SuccessView = ({ amount, amountUnit, fee, invoiceDescription, shoul
           style={styles.lottie}
           source={require('../../img/bluenice.json')}
           autoPlay={shouldAnimate}
-          ref={animationRef}
           loop={false}
           progress={shouldAnimate ? 0 : 1}
           colorFilters={[
@@ -196,14 +203,6 @@ export const SuccessView = ({ amount, amountUnit, fee, invoiceDescription, shoul
       </View>
     </View>
   );
-};
-
-SuccessView.propTypes = {
-  amount: PropTypes.number,
-  amountUnit: PropTypes.string,
-  fee: PropTypes.number,
-  invoiceDescription: PropTypes.string,
-  shouldAnimate: PropTypes.bool,
 };
 
 const styles = StyleSheet.create({

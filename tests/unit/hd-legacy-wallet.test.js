@@ -2,6 +2,7 @@ import assert from 'assert';
 import * as bitcoin from '@doichain/doichainjs-lib';
 
 import { HDLegacyP2PKHWallet } from '../../class';
+import { uint8ArrayToHex } from '../../blue_modules/uint8array-extras';
 
 describe('Legacy HD (BIP44)', () => {
   it('works', async () => {
@@ -28,11 +29,11 @@ describe('Legacy HD (BIP44)', () => {
     assert.ok(!hd.getAllExternalAddresses().includes('1J9zoJz5LsAJ361SQHYnLTWg46Tc2AXUCj')); // not internal
 
     assert.strictEqual(
-      hd._getPubkeyByAddress(hd._getExternalAddressByIndex(0)).toString('hex'),
+      uint8ArrayToHex(hd._getPubkeyByAddress(hd._getExternalAddressByIndex(0))),
       '03415cef3849debb777718ff1aeae2b6d75802392d8c5b40df66a13a42929c475a',
     );
     assert.strictEqual(
-      hd._getPubkeyByAddress(hd._getInternalAddressByIndex(0)).toString('hex'),
+      uint8ArrayToHex(hd._getPubkeyByAddress(hd._getInternalAddressByIndex(0))),
       '0243ace72389bdd3c420f1bad5ab316d2de98daa5f3d9f0da10f89c7ad8ae196da',
     );
 

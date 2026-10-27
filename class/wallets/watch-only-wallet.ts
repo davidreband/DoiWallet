@@ -75,8 +75,12 @@ export class WatchOnlyWallet extends LegacyWallet {
    */
   init() {
     let hdWalletInstance: THDWalletForWatchOnly;
-    if (this.secret.startsWith('xpub')) hdWalletInstance = new HDLegacyP2PKHWallet();
-    else if (this.secret.startsWith('ypub')) hdWalletInstance = new HDSegwitP2SHWallet();
+
+    // upstream builds an HDTaprootWallet for an m/86' path; taproot is not active on Doichain, see
+    // class/wallet-import.ts
+    if (this.secret.startsWith('xpub')) {
+      hdWalletInstance = new HDLegacyP2PKHWallet();
+    } else if (this.secret.startsWith('ypub')) hdWalletInstance = new HDSegwitP2SHWallet();
     else if (this.secret.startsWith('zpub')) hdWalletInstance = new HDSegwitBech32Wallet();
     else return this;
     hdWalletInstance._xpub = this.secret;
@@ -245,7 +249,7 @@ export class WatchOnlyWallet extends LegacyWallet {
   }
 
   allowMasterFingerprint() {
-    return this.getSecret().startsWith('zpub');
+    return this.getSecret().startsWith('zpub') || this.getSecret().startsWith('ypub') || this.getSecret().startsWith('xpub');
   }
 
   useWithHardwareWalletEnabled() {

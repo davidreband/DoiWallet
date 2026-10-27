@@ -36,7 +36,7 @@ import WatchOnlyWarning from '../../components/WatchOnlyWarning';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamList';
 import { Transaction, TWallet } from '../../class/wallets/types';
-import getWalletTransactionsOptions from '../../navigation/helpers/getWalletTransactionsOptions';
+import getWalletTransactionsOptions, { WalletTransactionsRouteProps } from '../../navigation/helpers/getWalletTransactionsOptions';
 import { presentWalletExportReminder } from '../../helpers/presentWalletExportReminder';
 import selectWallet from '../../helpers/select-wallet';
 import assert from 'assert';
@@ -57,7 +57,7 @@ type RouteProps = RouteProp<DetailViewStackParamList, 'WalletTransactions'>;
 type WalletTransactionsProps = NativeStackScreenProps<DetailViewStackParamList, 'WalletTransactions'>;
 
 type TransactionListItem = Transaction & { type: 'transaction' | 'header' };
-const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
+const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { route: WalletTransactionsRouteProps }) => {
   const { wallets, saveToDisk } = useStorage();
   const { registerTransactionsHandler, unregisterTransactionsHandler } = useMenuElements();
   const { isBiometricUseCapableAndEnabled } = useBiometrics();
@@ -243,12 +243,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
 
   const onWalletSelect = useCallback(
     async (selectedWallet: TWallet) => {
-      assert(wallet.type === LightningCustodianWallet.type, `internal error, wallet is not ${LightningCustodianWallet.type}`);
-      navigate('WalletTransactions', {
-        walletType: wallet.type,
-        walletID,
-        key: `WalletTransactions-${walletID}`,
-      }); // navigating back to ln wallet screen
+      assert(wallet?.type === LightningCustodianWallet.type, `internal error, wallet is not ${LightningCustodianWallet.type}`);
 
       // getting refill address, either cached or from the server:
       let toAddress;
@@ -273,7 +268,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
         },
       });
     },
-    [navigate, wallet, walletID],
+    [navigate, wallet],
   );
 
   const navigateToViewEditCosigners = useCallback(() => {
@@ -292,13 +287,13 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
         if (availableWallets.length === 0) {
           presentAlert({ message: loc.lnd.refill_create });
         } else {
-          selectWallet(navigate, name, Chain.ONCHAIN).then(onWalletSelect);
+          selectWallet(navigation, name, Chain.ONCHAIN).then(onWalletSelect);
         }
       } else if (id === actionKeys.RefillWithExternalWallet) {
         navigate('ReceiveDetails', { walletID });
       }
     },
-    [name, navigate, onWalletSelect, walletID, wallets],
+    [name, navigate, navigation, onWalletSelect, walletID, wallets],
   );
 
   const getItemLayout = (_: any, index: number) => ({
@@ -513,11 +508,8 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
                     onManageFundsPressed(id);
                   })
                   .catch(() => {
-                    navigate('WalletExportRoot', {
-                      screen: 'WalletExport',
-                      params: {
-                        walletID,
-                      },
+                    navigate('WalletExport', {
+                      walletID,
                     });
                   });
               }

@@ -1,6 +1,7 @@
 import assert from 'assert';
 
 import { HDLegacyBreadwalletWallet } from '../../class';
+import { uint8ArrayToHex } from '../../blue_modules/uint8array-extras';
 
 describe('HDLegacyBreadwalletWallet', () => {
   it('Legacy HD Breadwallet works', async () => {
@@ -24,11 +25,11 @@ describe('HDLegacyBreadwalletWallet', () => {
     assert.strictEqual(hdBread._getDerivationPathByAddress('dc1qym3dkfstg7xhd5l02nztmdr7auee70aw0j7x9u'), "m/0'/0/2");
 
     assert.strictEqual(
-      hdBread._getPubkeyByAddress(hdBread._getExternalAddressByIndex(0)).toString('hex'),
+      uint8ArrayToHex(hdBread._getPubkeyByAddress(hdBread._getExternalAddressByIndex(0))),
       '02367900d613be4ea66856315f1cda6944ff824d301dd3604e7cebf592bc29ef61',
     );
     assert.strictEqual(
-      hdBread._getPubkeyByAddress(hdBread._getInternalAddressByIndex(0)).toString('hex'),
+      uint8ArrayToHex(hdBread._getPubkeyByAddress(hdBread._getInternalAddressByIndex(0))),
       '03288a2a7125b7b5a9e34b1d73fdc01bbd871e3b3d287a671fd289b7918deb0dd6',
     );
 

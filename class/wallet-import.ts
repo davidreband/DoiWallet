@@ -11,6 +11,7 @@ import {
   HDSegwitBech32Wallet,
   HDSegwitElectrumSeedP2WPKHWallet,
   HDSegwitP2SHWallet,
+  HDTaprootWallet,
   LegacyWallet,
   MultisigHDWallet,
   SegwitBech32Wallet,
@@ -21,12 +22,16 @@ import {
   TaprootWallet,
   WatchOnlyWallet,
 } from '.';
-import bip39WalletFormats from './bip39_wallet_formats.json'; // https://github.com/spesmilo/electrum/blob/master/electrum/bip39_wallet_formats.json
+import bip39WalletFormatsElectrum from './bip39_wallet_formats.json'; // https://github.com/spesmilo/electrum/blob/master/electrum/bip39_wallet_formats.json
 import bip39WalletFormatsBlueWallet from './bip39_wallet_formats_bluewallet.json';
 import type { TWallet } from './wallets/types';
 
 // https://github.com/bitcoinjs/bip32/blob/master/ts-src/bip32.ts#L43
 export const validateBip32 = (path: string) => path.match(/^(m\/)?(\d+'?\/)*\d+'?$/) !== null;
+
+// Upstream adds BIP86 taproot (m/86'/0'/0') to the paths searched here. Taproot is never activated
+// on Doichain mainnet, so discovering a taproot wallet would hand the user dc1p receive addresses
+// whose outputs nothing protects - it stays out.
 
 type TStatus = {
   cancelled: boolean;
@@ -100,7 +105,6 @@ const startImport = (
     // -3. ask for password, if needed and validate it
     // -2. check if BIP38 encrypted
     // -1a. check if multisig
-    // -1. check lightning custodian
     // 0. check if its HDSegwitBech32Wallet (BIP84)
     // 1. check if its HDSegwitP2SHWallet (BIP49)
     // 2. check if its HDLegacyP2PKHWallet (BIP44)
@@ -187,26 +191,6 @@ const startImport = (
       yield { wallet: ms };
     }
 
-    // is it lightning custodian?
-    yield { progress: 'lightning custodian' };
-    if (text.startsWith('blitzhub://') || text.startsWith('lndhub://')) {
-      const lnd = new LightningCustodianWallet();
-      if (text.includes('@')) {
-        const split = text.split('@');
-        lnd.setBaseURI(split[1]);
-        lnd.setSecret(split[0]);
-      }
-      await lnd.init();
-      if (!offline) {
-        await lnd.authorize();
-        await lnd.fetchTransactions();
-        await lnd.fetchUserInvoices();
-        await lnd.fetchPendingTransactions();
-        await lnd.fetchBalance();
-      }
-      yield { wallet: lnd };
-    }
-
     // check bip39 wallets
     yield { progress: 'bip39' };
     const hd2 = new HDSegwitBech32Wallet();
@@ -217,7 +201,7 @@ const startImport = (
     if (hd2.validateMnemonic()) {
       let walletFound = false;
       // by default we don't try all the paths and options
-      const searchPaths = searchAccounts ? bip39WalletFormats : bip39WalletFormatsBlueWallet;
+      const searchPaths = searchAccounts ? bip39WalletFormatsElectrum : bip39WalletFormatsBlueWallet;
       for (const i of searchPaths) {
         // we need to skip m/0' p2pkh from default scan list. It could be a BRD wallet and will be handled later
         if (i.derivation_path === "m/0'" && i.script_type === 'p2pkh') continue;
@@ -235,6 +219,9 @@ const startImport = (
             break;
           case 'p2wpkh-p2sh':
             WalletClass = HDSegwitP2SHWallet;
+            break;
+          case 'p2tr':
+            WalletClass = HDTaprootWallet;
             break;
           default:
             // p2wpkh
@@ -349,6 +336,7 @@ const startImport = (
         yield { wallet: segwitBech32Wallet };
         yield { wallet: segwitWallet };
         yield { wallet: legacyWallet };
+        yield { wallet: taprootWallet };
       }
     }
 
