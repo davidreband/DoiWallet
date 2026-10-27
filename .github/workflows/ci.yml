@@ -35,6 +35,10 @@ jobs:
     - name: Run tests
       run: npm run lint
 
+    # tsc was down to zero errors in 7.2.3; this keeps it there
+    - name: Type check
+      run: npm run tslint
+
   unit:
     runs-on: ubuntu-latest
     steps:
