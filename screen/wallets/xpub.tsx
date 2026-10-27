@@ -2,18 +2,19 @@ import { NavigationProp, RouteProp, useFocusEffect, useNavigation, useRoute } fr
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, InteractionManager, View } from 'react-native';
 import Share from 'react-native-share';
-import { BlueSpacing20, BlueText } from '../../BlueComponents';
+import { BlueText } from '../../BlueComponents';
 import Button from '../../components/Button';
 import CopyTextToClipboard from '../../components/CopyTextToClipboard';
 import HandOffComponent from '../../components/HandOffComponent';
 import QRCodeComponent from '../../components/QRCodeComponent';
 import SafeArea from '../../components/SafeArea';
-import { enableScreenProtect, disableScreenProtect } from '../../helpers/screenProtect';
+import { useScreenProtect } from '../../hooks/useScreenProtect';
 import loc from '../../loc';
 import { styles, useDynamicStyles } from './xpub.styles';
 import { useStorage } from '../../hooks/context/useStorage';
 import { HandOffActivityType } from '../../components/types';
 import { useSettings } from '../../hooks/context/useSettings';
+import { BlueSpacing20 } from '../../components/BlueSpacing';
 
 type WalletXpubRouteProp = RouteProp<{ params: { walletID: string; xpub: string } }, 'params'>;
 export type RootStackParamList = {
@@ -29,6 +30,7 @@ const WalletXpub: React.FC = () => {
   const { walletID, xpub } = route.params;
   const wallet = wallets.find(w => w.getID() === walletID);
   const { isPrivacyBlurEnabled } = useSettings();
+  const { enableScreenProtect, disableScreenProtect } = useScreenProtect();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [xPubText, setXPubText] = useState<string | undefined>(undefined);
   const navigation = useNavigation<NavigationProp<RootStackParamList, 'WalletXpub'>>();
@@ -60,7 +62,7 @@ const WalletXpub: React.FC = () => {
         disableScreenProtect();
         task.cancel();
       };
-    }, [isPrivacyBlurEnabled, walletID, wallet, xpub, navigation]),
+    }, [isPrivacyBlurEnabled, walletID, wallet, xpub, navigation, enableScreenProtect, disableScreenProtect]),
   );
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { I18nManager, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { MultisigHDWallet } from '../class';
 import WalletGradient from '../class/wallet-gradient';
@@ -12,6 +12,7 @@ import { BlurredBalanceView } from './BlurredBalanceView';
 import { useSettings } from '../hooks/context/useSettings';
 import ToolTipMenu from './TooltipMenu';
 import useAnimateOnChange from '../hooks/useAnimateOnChange';
+import { useLocale } from '@react-navigation/native';
 
 interface TransactionsNavigationHeaderProps {
   wallet: TWallet;
@@ -30,6 +31,7 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
 }) => {
   const { hideBalance } = wallet;
   const { preferredFiatCurrency } = useSettings();
+  const { direction } = useLocale();
 
   const handleCopyPress = useCallback(() => {
     const value = formatBalance(wallet.getBalance(), unit);
@@ -117,11 +119,11 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
   const imageSource = useMemo(() => {
     switch (wallet.type) {
       case MultisigHDWallet.type:
-        return I18nManager.isRTL ? require('../img/vault-shape-rtl.png') : require('../img/vault-shape.png');
+        return direction === 'rtl' ? require('../img/vault-shape-rtl.png') : require('../img/vault-shape.png');
       default:
-        return I18nManager.isRTL ? require('../img/btc-shape-rtl.png') : require('../img/btc-shape.png');
+        return direction === 'rtl' ? require('../img/btc-shape-rtl.png') : require('../img/btc-shape.png');
     }
-  }, [wallet.type]);
+  }, [direction, wallet.type]);
 
   useAnimateOnChange(balance);
   useAnimateOnChange(hideBalance);
@@ -134,9 +136,9 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
       style={styles.lineaderGradient}
       {...WalletGradient.linearGradientProps(wallet.type)}
     >
-      <Image source={imageSource} style={styles.chainIcon} />
+      <ImageBackground source={imageSource} style={styles.chainIcon} />
 
-      <Text testID="WalletLabel" numberOfLines={1} style={styles.walletLabel} selectable>
+      <Text testID="WalletLabel" numberOfLines={1} style={[styles.walletLabel, { writingDirection: direction }]}>
         {wallet.getLabel()}
       </Text>
       <View style={styles.walletBalanceAndUnitContainer}>
@@ -200,7 +202,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     fontSize: 19,
     color: '#fff',
-    writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
     marginBottom: 10,
   },
   walletBalance: {

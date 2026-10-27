@@ -161,7 +161,7 @@
     "fee_1d": "1日",
     "fee_3h": "3小时",
     "fee_custom": "自选",
-    "insert_custom_fee": "输入自定义矿工费率",
+    "insert_custom_fee": "加入交易费用",
     "fee_fast": "快速",
     "fee_medium": "中等",
     "fee_replace_minvb": "您希望支付的总费率 (聪 / vByte) 应高于 {min} 聪 / vByte。",
@@ -214,8 +214,8 @@
     "about_selftest_electrum_disabled": "在 Electrum 离线模式下，自我检测不可用。请禁用离线模式并重试。",
     "about_selftest_ok": "所有内部测试均已成功通过，钱包运作良好。",
     "about_sm_github": "Github",
-    "privacy_temporary_screenshots": "允许截屏",
-    "privacy_temporary_screenshots_instructions": "屏幕截图保护将在此会话中关闭，允许你截屏。关闭并重新打开应用后，保护将自动开启。",
+    "privacy_temporary_screenshots": " 允许截屏",
+    "privacy_temporary_screenshots_instructions": "屏幕截图保护将被暂时关闭，从而可以进行屏幕截图和屏幕录制。关闭并重新打开 BlueWallet 时，保护将自动重新激活。",
     "biometrics": "生物识别",
     "biometrics_no_longer_available": "您的设备设置已更改，不再与应用程序中选择的安全设置相匹配。请重新启用生物识别或密码，然后重启应用程序以应用这些更改。",
     "biom_10times": "您已尝试输入密码10次。 您想重置存储空间吗？ 这将删除所有钱包并解密您的存储。",
@@ -374,6 +374,8 @@
     "updating": "正在更新...",
     "watchOnlyWarningTitle": "安全警告",
     "watchOnlyWarningDescription": "小心诈骗份子，他们经常使用 “仅供观察 ”钱包来欺骗用户。这些钱包不允许您控制或发送资金，只允许您查看余额。",
+    "custom_fee_warning_title": " 警告",
+    "custom_fee_warning_description": " 低于 1 聪/vB 的矿工费用是有效的，但由于节点政策，可能无法转发。",
     "nameOps_name": "名称",
     "nameOps_value": "值",
     "nameOps_checking": "正在查询该名称的持有者…",
@@ -492,7 +494,7 @@
     "add_ln_wallet_first": "您必须先添加一个闪电钱包。",
     "identity_pubkey": "身份公钥",
     "xpub_title": "钱包公钥",
-    "manage_wallets_search_placeholder": "搜索钱包、备忘录",
+    "manage_wallets_search_placeholder": " 搜索钱包、地址、交易和备忘录",
     "more_info": "更多信息",
     "details_delete_wallet_error_message": "此钱包在确认是否从通知中删除时出现了问题，这可能是由于网络问题或连接不畅造成的。如果您继续使用，即使钱包已删除，您可能仍会收到与之相关的交易通知。",
     "details_delete_anyway": "继续删除"
@@ -618,10 +620,10 @@
     "sort_by": "排序方式"
   },
   "units": {
-    "DOI": "DOI",
     "MAX": "最大",
-    "sat_byte": "swartz/字节",
     "sats": "聪",
+    "DOI": "DOI",
+    "sat_byte": "swartz/字节",
     "swartz": "swartz"
   },
   "addresses": {

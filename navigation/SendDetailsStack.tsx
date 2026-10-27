@@ -19,6 +19,8 @@ import { SendDetailsStackParamList } from './SendDetailsStackParamList';
 import HeaderRightButton from '../components/HeaderRightButton';
 import { DoichainUnit } from '../models/doichainUnits';
 import { ScanQRCodeComponent } from './LazyLoadScanQRCodeStack';
+import SelectFeeScreen from '../screen/SelectFeeScreen';
+import { Platform } from 'react-native';
 
 const Stack = createNativeStackNavigator<SendDetailsStackParamList>();
 
@@ -40,6 +42,16 @@ const SendDetailsStack = () => {
           closeButtonPosition: CloseButtonPosition.Left,
         })(theme)}
         initialParams={{ isEditable: true, feeUnit: DoichainUnit.DOI, amountUnit: DoichainUnit.DOI }} // Correctly typed now
+      />
+      <Stack.Screen
+        name="SelectFee"
+        component={SelectFeeScreen}
+        options={navigationStyle({
+          sheetAllowedDetents: Platform.OS === 'ios' ? 'fitToContents' : [0.9],
+          presentation: 'formSheet',
+          headerTitle: '',
+          sheetGrabberVisible: true,
+        })(theme)}
       />
       <Stack.Screen
         name="Confirm"

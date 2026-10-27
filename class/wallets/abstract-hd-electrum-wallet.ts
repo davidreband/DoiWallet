@@ -9,8 +9,7 @@ import { Psbt, Transaction as BTransaction } from '@doichain/doichainjs-lib';
 import { getNameOPStackScript } from '../../utils/getNameOPStackScript';
 import b58 from 'bs58check';
 import { CoinSelectOutput, CoinSelectReturnInput } from 'coinselect';
-import { ECPairFactory } from 'ecpair';
-import { ECPairInterface } from 'ecpair/src/ecpair';
+import { ECPairFactory, ECPairInterface } from 'ecpair';
 
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import { ElectrumHistory } from '../../blue_modules/BlueElectrum';
@@ -27,6 +26,8 @@ import {
 } from './types';
 import { SilentPayment, UTXOType as SPUTXOType, UTXO as SPUTXO } from 'silent-payments';
 import { DOICHAIN, MIN_NAME_AMOUNT_SAT, VERSION } from '../../blue_modules/network.js';
+import { isValidBech32Address } from '../../utils/isValidBech32Address';
+
 const ECPair = ECPairFactory(ecc);
 const bip32 = BIP32Factory(ecc);
 const bip47 = BIP47Factory(ecc);
@@ -386,6 +387,9 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
     // then we combine all this data (we need inputs to see source addresses and amounts)
     const vinTxids = [];
     for (const txdata of Object.values(txdatas)) {
+      if (txdata.vin.length > 99) continue;
+      // ^^^ cutoff, some transactions have thousands of inputs, so the resulting array of txs for inputs to fetch
+      // might be dozens of thousands. too much to handle, so we skip such transactions
       for (const vin of txdata.vin) {
         vin.txid && vinTxids.push(vin.txid);
         // ^^^^ not all inputs have txid, some of them are Coinbase (newly-created coins)
@@ -433,7 +437,12 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
             // this TX is related to our address
             this._txs_by_external_index[c] = this._txs_by_external_index[c] || [];
             const { vin: txVin, vout: txVout, ...txRest } = tx;
-            const clonedTx = { ...txRest, inputs: txVin.slice(0), outputs: txVout.slice(0) };
+            const clonedTx = {
+              ...txRest,
+              inputs: txVin.slice(0),
+              outputs: txVout.slice(0),
+              timestamp: tx.blocktime || tx.time || Math.floor(+new Date() / 1000) - 30 /* unconfirmed */,
+            };
 
             // trying to replace tx if it exists already (because it has lower confirmations, for example)
             let replaced = false;
@@ -451,7 +460,12 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
             // this TX is related to our address
             this._txs_by_external_index[c] = this._txs_by_external_index[c] || [];
             const { vin: txVin, vout: txVout, ...txRest } = tx;
-            const clonedTx = { ...txRest, inputs: txVin.slice(0), outputs: txVout.slice(0) };
+            const clonedTx = {
+              ...txRest,
+              inputs: txVin.slice(0),
+              outputs: txVout.slice(0),
+              timestamp: tx.blocktime || tx.time || Math.floor(+new Date() / 1000) - 30 /* unconfirmed */,
+            };
 
             // trying to replace tx if it exists already (because it has lower confirmations, for example)
             let replaced = false;
@@ -474,7 +488,12 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
             // this TX is related to our address
             this._txs_by_internal_index[c] = this._txs_by_internal_index[c] || [];
             const { vin: txVin, vout: txVout, ...txRest } = tx;
-            const clonedTx = { ...txRest, inputs: txVin.slice(0), outputs: txVout.slice(0) };
+            const clonedTx = {
+              ...txRest,
+              inputs: txVin.slice(0),
+              outputs: txVout.slice(0),
+              timestamp: tx.blocktime || tx.time || Math.floor(+new Date() / 1000) - 30 /* unconfirmed */,
+            };
 
             // trying to replace tx if it exists already (because it has lower confirmations, for example)
             let replaced = false;
@@ -492,7 +511,12 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
             // this TX is related to our address
             this._txs_by_internal_index[c] = this._txs_by_internal_index[c] || [];
             const { vin: txVin, vout: txVout, ...txRest } = tx;
-            const clonedTx = { ...txRest, inputs: txVin.slice(0), outputs: txVout.slice(0) };
+            const clonedTx = {
+              ...txRest,
+              inputs: txVin.slice(0),
+              outputs: txVout.slice(0),
+              timestamp: tx.blocktime || tx.time || Math.floor(+new Date() / 1000) - 30 /* unconfirmed */,
+            };
 
             // trying to replace tx if it exists already (because it has lower confirmations, for example)
             let replaced = false;
@@ -518,7 +542,12 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
               this._txs_by_payment_code_index[pc] = this._txs_by_payment_code_index[pc] || {};
               this._txs_by_payment_code_index[pc][c] = this._txs_by_payment_code_index[pc][c] || [];
               const { vin: txVin, vout: txVout, ...txRest } = tx;
-              const clonedTx = { ...txRest, inputs: txVin.slice(0), outputs: txVout.slice(0) };
+              const clonedTx = {
+                ...txRest,
+                inputs: txVin.slice(0),
+                outputs: txVout.slice(0),
+                timestamp: tx.blocktime || tx.time || Math.floor(+new Date() / 1000) - 30 /* unconfirmed */,
+              };
 
               // trying to replace tx if it exists already (because it has lower confirmations, for example)
               let replaced = false;
@@ -578,8 +607,8 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
 
     const ret: Transaction[] = [];
     for (const tx of txs) {
-      tx.received = tx.blocktime * 1000;
-      if (!tx.blocktime) tx.received = +new Date() - 30 * 1000; // unconfirmed
+      tx.timestamp = tx.blocktime;
+      if (!tx.blocktime) tx.timestamp = Math.floor(+new Date() / 1000) - 30; // unconfirmed
       tx.confirmations = tx.confirmations || 0; // unconfirmed
       tx.hash = tx.txid;
       tx.value = 0;
@@ -613,7 +642,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
     }
 
     return ret2.sort(function (a, b) {
-      return Number(b.received) - Number(a.received);
+      return Number(b.timestamp) - Number(a.timestamp);
     });
   }
 
@@ -1131,8 +1160,10 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
     if (!address) return false;
     let cleanAddress = address;
 
-    if (this.segwitType === 'p2wpkh') {
-      cleanAddress = address.toLowerCase();
+    const isBech32Address = isValidBech32Address(address);
+
+    if (isBech32Address) {
+      cleanAddress = address.toLocaleLowerCase();
     }
 
     for (let c = 0; c < this.next_free_address_index + this.gap_limit; c++) {
@@ -1337,7 +1368,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
 
         psbt.addOutput({
           script: outputScript,
-          value: output.value,
+          value: BigInt(output.value),
           bip32Derivation:
             change && path && pubkey
               ? [
@@ -1355,7 +1386,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
           address: output.address,
           // @ts-ignore types from bitcoinjs are not exported so we cant define outputData separately and add fields conditionally (either address or script should be present)
           script: outputScript,
-          value: output.value,
+          value: BigInt(output.value),
           bip32Derivation:
             change && path && pubkey
               ? [
@@ -1414,7 +1445,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
       ],
       witnessUtxo: {
         script: p2wpkh.output,
-        value: input.value,
+        value: BigInt(input.value),
       },
     });
 
@@ -1595,7 +1626,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
         if (input.witnessUtxo) {
           return {
             address: bitcoin.address.fromOutputScript(input.witnessUtxo.script, DOICHAIN),
-            value: input.witnessUtxo.value,
+            value: Number(input.witnessUtxo.value),
           };
         } else if (input.nonWitnessUtxo) {
           const txin = psbt.txInputs[index];
@@ -1603,7 +1634,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
           console.log('____input_adress', bitcoin.address.fromOutputScript(txout.script, DOICHAIN));
           return {
             address: bitcoin.address.fromOutputScript(txout.script, DOICHAIN),
-            value: txout.value,
+            value: Number(txout.value),
           };
         } else {
           throw new Error('Could not get input of #' + index);

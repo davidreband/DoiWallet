@@ -31,7 +31,7 @@ const ERRORS = {
  * P2SH or Taproot address is simply lost: it can never be transferred or updated again, and its
  * locked DOI are gone (Doichain/DoiWallet#36).
  */
-const isSpendableOwner = (ownerScript: Buffer): boolean => {
+const isSpendableOwner = (ownerScript: Uint8Array): boolean => {
   const chunks = script.decompile(ownerScript);
   if (!chunks) return false;
 
@@ -40,7 +40,7 @@ const isSpendableOwner = (ownerScript: Buffer): boolean => {
     chunks.length === 5 &&
     chunks[0] === opcodes.OP_DUP &&
     chunks[1] === opcodes.OP_HASH160 &&
-    Buffer.isBuffer(chunks[2]) &&
+    chunks[2] instanceof Uint8Array &&
     chunks[2].length === 20 &&
     chunks[3] === opcodes.OP_EQUALVERIFY &&
     chunks[4] === opcodes.OP_CHECKSIG
@@ -49,7 +49,7 @@ const isSpendableOwner = (ownerScript: Buffer): boolean => {
   }
 
   // P2WPKH: OP_0 <20 bytes>. A 32-byte program is P2WSH, and OP_1 <32 bytes> is Taproot.
-  return chunks.length === 2 && chunks[0] === opcodes.OP_0 && Buffer.isBuffer(chunks[1]) && chunks[1].length === 20;
+  return chunks.length === 2 && chunks[0] === opcodes.OP_0 && chunks[1] instanceof Uint8Array && chunks[1].length === 20;
 };
 
 /**
@@ -69,7 +69,7 @@ const isSpendableOwner = (ownerScript: Buffer): boolean => {
  * @param network - The Doichain network, mainnet by default.
  * @returns The compiled name output script.
  */
-export const getNameOPStackScript = (nameId: string, nameValue: string, recipientAddress: string, network: Network = DOICHAIN): Buffer => {
+export const getNameOPStackScript = (nameId: string, nameValue: string, recipientAddress: string, network: Network = DOICHAIN): Uint8Array => {
   if (!nameId || nameValue === undefined) {
     throw new Error(ERRORS.NAME_ID_DEFINED);
   }
@@ -86,7 +86,7 @@ export const getNameOPStackScript = (nameId: string, nameValue: string, recipien
     throw new Error(ERRORS.NAME_VALUE_LENGTH);
   }
 
-  let ownerScript: Buffer;
+  let ownerScript: Uint8Array;
   try {
     ownerScript = address.toOutputScript(recipientAddress, network);
   } catch (e) {
@@ -108,10 +108,12 @@ export const getNameOPStackScript = (nameId: string, nameValue: string, recipien
  * garbled name (Doichain/DoiWallet#36). An empty push arrives as the opcode `OP_0`, i.e. a number
  * rather than a buffer, which is an empty value.
  */
-export const decodeNameBytes = (chunk: Buffer | number | undefined): string => {
-  if (!Buffer.isBuffer(chunk)) return '';
+export const decodeNameBytes = (chunk: Uint8Array | number | undefined): string => {
+  // script.decompile hands out Uint8Array since bitcoinjs 7, no longer Buffer
+  if (!(chunk instanceof Uint8Array)) return '';
 
-  const text = chunk.toString('utf8');
+  const bytes = Buffer.from(chunk);
+  const text = bytes.toString('utf8');
   // Buffer turns invalid sequences into U+FFFD, so a round-trip that differs means it was not UTF-8
-  return Buffer.from(text, 'utf8').equals(chunk) ? text : chunk.toString('hex');
+  return Buffer.from(text, 'utf8').equals(bytes) ? text : bytes.toString('hex');
 };

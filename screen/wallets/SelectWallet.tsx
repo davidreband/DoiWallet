@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigationState, useRoute, RouteProp } from '@react-navigation/native';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
-import { BlueSpacing20, BlueText } from '../../BlueComponents';
+import { BlueText } from '../../BlueComponents';
 import SafeArea from '../../components/SafeArea';
 import { useTheme } from '../../components/themes';
 import loc from '../../loc';
@@ -14,6 +14,7 @@ import { TWallet } from '../../class/wallets/types';
 import { pop } from '../../NavigationService';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SendDetailsStackParamList } from '../../navigation/SendDetailsStackParamList';
+import { BlueSpacing20 } from '../../components/BlueSpacing';
 
 type NavigationProps = NativeStackNavigationProp<SendDetailsStackParamList, 'SelectWallet'>;
 
@@ -107,13 +108,8 @@ const SelectWallet: React.FC = () => {
   const onPress = (item: TWallet) => {
     triggerHapticFeedback(HapticFeedbackTypes.Selection);
     if (onWalletSelect) {
-      // Create a dummy navigate function with proper type compatibility
-      const dummyNavigate = (..._args: any[]) => {
-        // This function intentionally does nothing
-        console.log('Dummy navigate called');
-      };
-
-      onWalletSelect(item, { navigation: { pop, navigate: dummyNavigate } });
+      // @ts-ignore idk how to fix
+      onWalletSelect(item, { navigation: { pop, navigate: navigation.navigate } });
     } else {
       // @ts-ignore: fix later
       navigation.popTo(previousRouteName, { walletID: item.getID(), merge: true });
@@ -146,7 +142,7 @@ const SelectWallet: React.FC = () => {
       scrollEnabled
       onPress={onPress}
       ref={walletsCarousel}
-      testID="WalletsList"
+      testID="SelectWalletsList"
       horizontal={false}
       style={styles.walletsCarousel}
       animateChanges={true}

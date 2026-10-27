@@ -18,7 +18,7 @@ describe('#37 - name outputs stay out of coin selection', () => {
     wallet.setSecret(MNEMONIC);
     const holder = wallet._getExternalAddressByIndex(0);
 
-    const nameScript = nameops.nameDoiScript('somename', 'somevalue', libAddress.toOutputScript(holder, DOICHAIN)).toString('hex');
+    const nameScript = Buffer.from(nameops.nameDoiScript('somename', 'somevalue', libAddress.toOutputScript(holder, DOICHAIN))).toString('hex');
 
     // @ts-ignore standing in for fetchUtxo()
     wallet._utxo = [
@@ -87,7 +87,7 @@ describe('#37 - name outputs stay out of coin selection', () => {
     assert.ok(tx, 'no transaction was built');
 
     const spent = coin + MIN_NAME_AMOUNT_SAT; // both inputs
-    const received = tx!.outs.reduce((total: number, out: any) => total + out.value, 0);
+    const received = tx!.outs.reduce((total: number, out: any) => total + Number(out.value), 0);
     const paidFee = spent - received;
 
     assert.strictEqual(paidFee, fee, `the transaction pays ${paidFee} while it reports ${fee}`);

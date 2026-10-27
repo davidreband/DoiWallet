@@ -94,11 +94,11 @@
     "details_label": "Описание",
     "details_setAmount": "Указать сумму",
     "details_share": "Поделиться...",
-    "address_not_found": "Не удалось создать адрес для получения.",
     "header": "Получить",
     "reset": "Сбросить",
     "qrcode_for_the_address": "QR-код для адреса",
-    "bip47_explanation": "Коды оплаты — это универсальные адреса, скрывающие ваши реальные. Поддерживается не всеми сервисами."
+    "bip47_explanation": "Коды оплаты — это универсальные адреса, скрывающие ваши реальные. Поддерживается не всеми сервисами.",
+    "address_not_found": "Не удалось создать адрес для получения."
   },
   "send": {
     "provided_address_is_invoice": "Похоже, этот адрес предназначен для Лайтнинг-инвойса. Перейдите в свой Lightning кошелёк, чтобы оплатить его.",
@@ -161,7 +161,6 @@
     "fee_1d": "1д",
     "fee_3h": "3ч",
     "fee_custom": "Другое",
-    "insert_custom_fee": "Введите свою комиссию",
     "fee_fast": "Быстро",
     "fee_medium": "Средне",
     "fee_replace_minvb": "Комиссия должна быть выше {min} сат/вБайт.",
@@ -195,6 +194,7 @@
     "cant_send_to_bip47": "Этот кошелёк не может отправлять на коды оплаты BIP47",
     "cant_find_bip47_notification": "Сначала добавьте этот Код Оплаты в контакты",
     "problem_with_psbt": "Проблема с PSBT",
+    "insert_custom_fee": "Введите свою комиссию",
     "name": "Имя",
     "broadcast": "Отправить сейчас",
     "broadcast_value": "Сумма",
@@ -214,8 +214,6 @@
     "about_selftest_electrum_disabled": "Самотестирование недоступно в офлайн режиме. Отключите офлайн режим и попробуйте ещё раз.",
     "about_selftest_ok": "Все внутренние тесты прошли успешно. Кошелёк работает отлично.",
     "about_sm_github": "GitHub",
-    "privacy_temporary_screenshots": "Разрешить скриншоты",
-    "privacy_temporary_screenshots_instructions": "Защита от скриншотов будет отключена для этой сессии, позволяя вам делать скриншоты. После перезапуска приложения защита включится снова.",
     "biometrics": "Биометрия",
     "biometrics_no_longer_available": "Настройки устройства изменились и больше не соответствуют выбранным в приложении. Включите биометрию или пароль и перезапустите приложение.",
     "biom_10times": "Вы 10 раз ввели неверный пароль. Очистить хранилище? Это удалит все кошельки.",
@@ -305,6 +303,8 @@
     "total_balance_explanation": "Показывать общий баланс в виджетах.",
     "widgets": "Виджеты",
     "tools": "Инструменты",
+    "privacy_temporary_screenshots": "Разрешить скриншоты",
+    "privacy_temporary_screenshots_instructions": "Защита от скриншотов будет отключена для этой сессии, позволяя вам делать скриншоты. После перезапуска приложения защита включится снова.",
     "electrum_wrong_chain": "{server} работает в другой цепочке Doichain, чем этот кошелёк, поэтому его балансы и подтверждения здесь не действуют. Сервер удалён.",
     "enable_receive_bitcoin_intent_desc": "Быстро показывает ваш адрес для получения Bitcoin в виде QR-кода.",
     "no_wallet_available": "Нет доступных кошельков. Создайте или импортируйте кошелёк.",
@@ -374,6 +374,8 @@
     "updating": "Обновление...",
     "watchOnlyWarningTitle": "Предупреждение безопасности",
     "watchOnlyWarningDescription": "Кошельки «только для чтения» не позволяют тратить средства. Будьте осторожны.",
+    "custom_fee_warning_title": "Предупреждение",
+    "custom_fee_warning_description": "Комиссия ниже 1 sat/vB допустима, но узлы могут не передать такую транзакцию из-за своих правил.",
     "nameOps_name": "Имя",
     "nameOps_value": "Значение",
     "nameOps_checking": "Проверяем, кому принадлежит это имя…",
@@ -492,10 +494,10 @@
     "add_ln_wallet_first": "Сначала добавьте Лайтнинг-кошелёк.",
     "identity_pubkey": "Identity Pubkey",
     "xpub_title": "XPUB кошелька",
-    "manage_wallets_search_placeholder": "Поиск кошельков или заметок",
     "more_info": "Подробнее",
     "details_delete_wallet_error_message": "Ошибка при удалении уведомлений. Возможно, проблемы с сетью.",
-    "details_delete_anyway": "Удалить всё равно"
+    "details_delete_anyway": "Удалить всё равно",
+    "manage_wallets_search_placeholder": "Поиск кошельков или заметок"
   },
   "total_balance_view": {
     "display_in_bitcoin": "Показывать в Bitcoin",
@@ -618,10 +620,10 @@
     "sort_by": "Сортировать по"
   },
   "units": {
-    "DOI": "DOI",
     "MAX": "MAX",
-    "sat_byte": "swartz/byte",
     "sats": "swartz",
+    "DOI": "DOI",
+    "sat_byte": "swartz/byte",
     "swartz": "swartz"
   },
   "addresses": {

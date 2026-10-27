@@ -18,10 +18,10 @@ describe('name lookup through the ElectrumX name index', () => {
     // measured on 17 September 2026 against itchy-jellyfish-89.doi.works, ElectrumX 1.15.0, as
     // recorded in Doichain/DoiWallet#35 - another encoding yields another hash, and then a name
     // that is taken looks free
-    assert.strictEqual(nameops.nameIndexScript('doichain').toString('hex'), '5308646f69636861696e006d756a');
+    assert.strictEqual(Buffer.from(nameops.nameIndexScript('doichain')).toString('hex'), '5308646f69636861696e006d756a');
     assert.strictEqual(nameops.nameIndexScriptHash('doichain'), '03cc7f01576bded817bef39ccbcca7f1fd3e878967bc30340095470c179e9bb4');
 
-    assert.strictEqual(nameops.nameIndexScript('bitcoin').toString('hex'), '5307626974636f696e006d756a');
+    assert.strictEqual(Buffer.from(nameops.nameIndexScript('bitcoin')).toString('hex'), '5307626974636f696e006d756a');
     assert.strictEqual(nameops.nameIndexScriptHash('bitcoin'), '58e0b0aab4833bbc04803af603ab5cc74eb55da6c62d2db6110b6d768673556f');
   });
 
@@ -30,7 +30,7 @@ describe('name lookup through the ElectrumX name index', () => {
     assert.strictEqual(name.length, 2);
     assert.strictEqual(Buffer.byteLength(name, 'utf8'), 3);
     // 0x53, push of 3 bytes, empty value, OP_2DROP OP_DROP OP_RETURN
-    assert.strictEqual(nameops.nameIndexScript(name).toString('hex'), '5303' + Buffer.from(name, 'utf8').toString('hex') + '006d756a');
+    assert.strictEqual(Buffer.from(nameops.nameIndexScript(name)).toString('hex'), '5303' + Buffer.from(name, 'utf8').toString('hex') + '006d756a');
   });
 
   it('puts the newest operation last, with mempool entries after confirmed ones', () => {

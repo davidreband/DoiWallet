@@ -72,6 +72,9 @@ describe('Localization', () => {
   it.each([
     [123000000, DoichainUnit.SWARTZ, false, '123000000 swartz'],
     [123000000, DoichainUnit.DOI, false, '1.23 DOI'],
+    [15, DoichainUnit.DOI, false, '0.00000015 DOI'],
+    [1, DoichainUnit.DOI, false, '0.00000001 DOI'],
+    [0, DoichainUnit.DOI, false, '0 DOI'],
     [123000000, DoichainUnit.LOCAL_CURRENCY, false, '$1.23'],
   ])(
     'can formatBalance',

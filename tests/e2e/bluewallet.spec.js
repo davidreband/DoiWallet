@@ -2,6 +2,7 @@ import assert from 'assert';
 import * as bitcoin from '@doichain/doichainjs-lib';
 
 import {
+  scanText,
   expectToBeVisible,
   extractTextFromElementById,
   hashIt,
@@ -229,9 +230,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
 
     await waitForId('BitcoinAddressQRCodeContainer');
     await waitForId('CopyTextToClipboard');
-    await device.pressBack();
-    await device.pressBack();
-    await helperDeleteWallet('cr34t3d');
+
     process.env.TRAVIS && require('fs').writeFileSync(lockFile, '1');
   });
 
@@ -391,8 +390,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await element(by.id('OKButton')).tap();
     await tapIfPresent('OKButton'); // in case it didnt work first time
     await sleep(3000); // propagate
-
-    await helperDeleteWallet('fake_wallet');
+    await expect(element(by.text('fake_wallet'))).toBeVisible();
 
     process.env.TRAVIS && require('fs').writeFileSync(lockFile, '1');
   });
@@ -475,7 +473,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     // relaunch app
     await device.launchApp({ newInstance: true });
     await waitForId('cr34t3d'); // success
-    await helperDeleteWallet('cr34t3d');
+
     process.env.TRAVIS && require('fs').writeFileSync(lockFile, '1');
   });
 
@@ -686,13 +684,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     assert.ok(transaction.ins.length === 1);
     assert.strictEqual(transaction.outs.length, 2);
     assert.strictEqual(bitcoin.address.fromOutputScript(transaction.outs[0].script), 'bc1q063ctu6jhe5k4v8ka99qac8rcm2tzjjnuktyrl'); // to address
-    assert.strictEqual(transaction.outs[0].value, 50000);
-
-    await device.pressBack();
-    await device.pressBack();
-    await device.pressBack();
-    await device.pressBack();
-    await helperDeleteWallet(expectedWalletLabel, '108880');
+    assert.strictEqual(transaction.outs[0].value, 50000n);
 
     process.env.TRAVIS && require('fs').writeFileSync(lockFile, '1');
   });
@@ -756,14 +748,38 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await element(by.id('WalletDetails')).tap();
     await expect(element(by.id('DerivationPath'))).toHaveText("m/44'/0'/1'");
 
-    await device.pressBack();
-    await device.pressBack();
-    await helperDeleteWallet('Imported HD Legacy (BIP44 P2PKH)');
-    // helperSwitchAdvancedMode has never existed in this repository; these tests are
-    // it.skip'd, so the call stays as the record of what un-skipping them would need
-    // eslint-disable-next-line no-undef
-    await helperSwitchAdvancedMode();
+    process.env.TRAVIS && require('fs').writeFileSync(lockFile, '1');
+  });
 
+  it('can create wallet, and use main screen SCAN button to scan address', async () => {
+    const lockFile = '/tmp/travislock.' + hashIt('t8');
+    if (process.env.TRAVIS) {
+      if (require('fs').existsSync(lockFile)) return console.warn('skipping', JSON.stringify('t8'), 'as it previously passed on Travis');
+    }
+    await device.launchApp({ delete: true }); // reinstalling the app just for any case to clean up app's storage
+    await waitForId('WalletsList');
+
+    await helperCreateWallet();
+    await tapAndTapAgainIfElementIsNotVisible('HomeScreenScanButton', 'ScanQrBackdoorButton');
+    // upstream scans a bitcoin: address, then lndhub and lightning invoices; this fork
+    // speaks doichain: and has no Lightning, so only the on-chain half is kept
+    await scanText('doichain:dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk?amount=0.000001');
+    await expect(element(by.id('AddressInput'))).toHaveText('dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk');
+    await expect(element(by.id('BitcoinAmountInput'))).toHaveText('0.000001');
+
+    process.env.TRAVIS && require('fs').writeFileSync(lockFile, '1');
+  });
+
+  it('can create wallet and delete wallet', async () => {
+    const lockFile = '/tmp/travislock.' + hashIt('t9');
+    if (process.env.TRAVIS) {
+      if (require('fs').existsSync(lockFile)) return console.warn('skipping', JSON.stringify('t8'), 'as it previously passed on Travis');
+    }
+    await device.launchApp({ delete: true }); // reinstalling the app just for any case to clean up app's storage
+    await waitForId('WalletsList');
+    await helperCreateWallet();
+    // nop
+    await helperDeleteWallet('cr34t3d');
     process.env.TRAVIS && require('fs').writeFileSync(lockFile, '1');
   });
 });

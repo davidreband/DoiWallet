@@ -16,7 +16,7 @@ import { SecondButton } from '../../components/SecondButton';
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import { satoshiToBTC } from '../../blue_modules/currency';
 import { isDesktop } from '../../blue_modules/environment';
-import { BlueSpacing20, BlueText } from '../../BlueComponents';
+import { BlueText } from '../../BlueComponents';
 import presentAlert from '../../components/Alert';
 import { DynamicQRCode } from '../../components/DynamicQRCode';
 import { useTheme } from '../../components/themes';
@@ -25,7 +25,8 @@ import { useStorage } from '../../hooks/context/useStorage';
 import { useBiometrics, unlockWithBiometrics } from '../../hooks/useBiometrics';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import { useSettings } from '../../hooks/context/useSettings';
-import { enableScreenProtect, disableScreenProtect } from '../../helpers/screenProtect';
+import { useScreenProtect } from '../../hooks/useScreenProtect';
+import { BlueSpacing20 } from '../../components/BlueSpacing';
 
 const SendCreate = () => {
   const { fee, recipients, wallet, memo = '', satoshiPerByte, psbt, showAnimatedQr, tx } = useRoute().params;
@@ -43,7 +44,7 @@ const SendCreate = () => {
     if (input.witnessUtxo) {
       return {
         address: bitcoin.address.fromOutputScript(input.witnessUtxo.script, DOICHAIN),
-        value: input.witnessUtxo.value,
+        value: Number(input.witnessUtxo.value),
         index,
         sig: input.finalScriptSig || input.finalScriptWitness || input.partialSig,
       };
@@ -52,7 +53,7 @@ const SendCreate = () => {
       const txout = bitcoin.Transaction.fromBuffer(input.nonWitnessUtxo).outs[txin.index];
       return {
         address: bitcoin.address.fromOutputScript(txout.script, DOICHAIN),
-        value: txout.value,
+        value: Number(txout.value),
         index,
         sig: input.finalScriptSig || input.finalScriptWitness || input.partialSig,
       };
@@ -131,6 +132,8 @@ const SendCreate = () => {
     },
   });
 
+  const { enableScreenProtect, disableScreenProtect } = useScreenProtect();
+
   useEffect(() => {
     console.log('send/create - useEffect');
     if (isPrivacyBlurEnabled) {
@@ -139,7 +142,7 @@ const SendCreate = () => {
     return () => {
       disableScreenProtect();
     };
-  }, [isPrivacyBlurEnabled]);
+  }, [isPrivacyBlurEnabled, enableScreenProtect, disableScreenProtect]);
 
   const exportTXN = useCallback(async () => {
     const fileName = `${Date.now()}.txn`;

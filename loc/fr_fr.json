@@ -94,11 +94,11 @@
     "details_label": "Description",
     "details_setAmount": "Recevoir avec un montant spécifique",
     "details_share": "partager",
-    "address_not_found": "Impossible de générer une adresse de réception.",
     "header": "Recevoir",
     "reset": "Réinitialiser",
     "qrcode_for_the_address": "Code QR pour l'adresse",
-    "bip47_explanation": "Les codes de paiement sont une adresse universelle qui évite de divulguer vos adresses de portefeuille. Tous les services ne les prennent pas en charge."
+    "bip47_explanation": "Les codes de paiement sont une adresse universelle qui évite de divulguer vos adresses de portefeuille. Tous les services ne les prennent pas en charge.",
+    "address_not_found": "Impossible de générer une adresse de réception."
   },
   "send": {
     "provided_address_is_invoice": "Cette adresse semble correspondre à une facture Lightning. Veuillez utiliser votre portefeuille Lightning pour payer cette facture.",
@@ -214,8 +214,6 @@
     "about_selftest_electrum_disabled": "L'auto-test n'est pas disponible avec le mode hors ligne Electrum. Veuillez désactiver le mode hors connexion et réessayer.",
     "about_selftest_ok": "Tous les tests internes ont été passés avec succès. Le portefeuille fonctionne parfaitement. ",
     "about_sm_github": "GitHub",
-    "privacy_temporary_screenshots": "Autorise copie écran",
-    "privacy_temporary_screenshots_instructions": "La protection contre la capture d'écran sera désactivée pour cette session, ce qui vous permettra de prendre des captures d'écran. Une fois l'application fermée et rouverte, la protection sera automatiquement réactivée.",
     "biometrics": "Biométrie",
     "biometrics_no_longer_available": "Les paramètres de votre appareil ont changé et ne correspondent plus aux paramètres de sécurité sélectionnés dans l'application. Veuillez réactiver la biométrie ou le mot de passe, puis redémarrer l'application pour appliquer ces modifications.",
     "biom_10times": "Vous avez tenter d'entrer votre mots de passe 10 fois. Voulez vous réinitialiser votre espace de stockage ? Ceci effacera tous les portefeuilles et déchiffrera votre espace de stockage.",
@@ -305,6 +303,8 @@
     "total_balance_explanation": "Afficher le solde total de tous vos portefeuilles sur l'écran d'accueil.",
     "widgets": "Widgets",
     "tools": "Outils",
+    "privacy_temporary_screenshots": "Autorise copie écran",
+    "privacy_temporary_screenshots_instructions": "La protection contre la capture d'écran sera désactivée pour cette session, ce qui vous permettra de prendre des captures d'écran. Une fois l'application fermée et rouverte, la protection sera automatiquement réactivée.",
     "electrum_wrong_chain": "{server} suit une chaîne Doichain différente de celle de ce portefeuille ; ses soldes et confirmations ne s’appliquent pas ici. Le serveur a été retiré.",
     "enable_receive_bitcoin_intent_desc": "Affiche rapidement votre adresse de réception Bitcoin sous forme de QR code.",
     "no_wallet_available": "Aucun portefeuille disponible. Veuillez créer ou importer un portefeuille.",
@@ -374,6 +374,8 @@
     "updating": "Chargement...",
     "watchOnlyWarningTitle": "Avertissement de sécurité",
     "watchOnlyWarningDescription": "Méfiez-vous des fraudeurs qui utilisent souvent des portefeuilles « lecture seul» pour tromper les utilisateurs. Ces portefeuilles ne vous permettent pas de contrôler ou d’envoyer des fonds ; ils vous permettent uniquement de consulter le solde.",
+    "custom_fee_warning_title": "Avertissement",
+    "custom_fee_warning_description": "Les frais inférieurs à 1 sat/vB sont valides, mais peuvent ne pas être relayés en raison des règles des nœuds.",
     "nameOps_name": "Nom",
     "nameOps_value": "Valeur",
     "nameOps_checking": "Vérification du détenteur de ce nom…",
@@ -618,10 +620,10 @@
     "sort_by": "Trier par"
   },
   "units": {
-    "DOI": "DOI",
     "MAX": "MAX",
-    "sat_byte": "swartz/byte",
     "sats": "swartz",
+    "DOI": "DOI",
+    "sat_byte": "swartz/byte",
     "swartz": "swartz"
   },
   "addresses": {

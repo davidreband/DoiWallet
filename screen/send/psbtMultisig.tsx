@@ -1,8 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import BigNumber from 'bignumber.js';
 import * as bitcoin from '@doichain/doichainjs-lib';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View, LayoutAnimation } from 'react-native';
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  LayoutAnimation,
+  ListRenderItemInfo,
+  NativeSyntheticEvent,
+  LayoutRectangle,
+  NodeHandle,
+} from 'react-native';
 import { Icon } from '@rneui/themed';
 
 import { satoshiToBTC, satoshiToLocalCurrency } from '../../blue_modules/currency';
@@ -19,15 +30,27 @@ import loc from '../../loc';
 import { useStorage } from '../../hooks/context/useStorage';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import { combinePSBTs } from '../../utils/combinePSBTs';
+import { MultisigHDWallet } from '../../class';
+import assert from 'assert';
+
+type RouteParams = {
+  params: {
+    walletID: string;
+    psbtBase64: string;
+    memo: string;
+    receivedPSBTBase64: string;
+    launchedBy: string;
+  };
+};
 
 const PsbtMultisig = () => {
   const { wallets } = useStorage();
   const { navigate, setParams } = useExtendedNavigation();
   const { colors } = useTheme();
   const [flatListHeight, setFlatListHeight] = useState(0);
-  const { walletID, psbtBase64, memo, receivedPSBTBase64, launchedBy } = useRoute().params;
-  /** @type MultisigHDWallet */
-  const wallet = wallets.find(w => w.getID() === walletID);
+  const { walletID, psbtBase64, memo, receivedPSBTBase64, launchedBy } = useRoute<RouteProp<RouteParams>>().params;
+  const wallet = wallets.find(w => w.getID() === walletID) as MultisigHDWallet;
+  assert(wallet, 'Internal error: MultisigHDWallet not found');
 
   const [psbt, setPsbt] = useState(() => {
     try {
@@ -100,7 +123,7 @@ const PsbtMultisig = () => {
     for (const output of psbt.txOutputs) {
       if (output.address) {
         if (useFilter && wallet.weOwnAddress(output.address)) continue;
-        totalSat += output.value;
+        totalSat += Number(output.value);
         addresses.push(output.address);
         targets.push({ address: output.address, value: output.value });
       }
@@ -121,7 +144,7 @@ const PsbtMultisig = () => {
     return wallet.calculateFeeFromPsbt(psbt);
   };
 
-  const _renderItem = el => {
+  const _renderItem = (el: ListRenderItemInfo<any>) => {
     if (el.index >= howManySignaturesWeHave) return _renderItemUnsigned(el);
     else return _renderItemSigned(el);
   };
@@ -130,7 +153,7 @@ const PsbtMultisig = () => {
     navigate('PsbtMultisigQRCode', { walletID, psbtBase64: psbt.toBase64(), isShowOpenScanner: isConfirmEnabled() });
   };
 
-  const _renderItemUnsigned = el => {
+  const _renderItemUnsigned = (el: ListRenderItemInfo<any>) => {
     const renderProvideSignature = el.index === howManySignaturesWeHave;
     return (
       <View testID="ItemUnsigned">
@@ -163,7 +186,7 @@ const PsbtMultisig = () => {
     );
   };
 
-  const _renderItemSigned = el => {
+  const _renderItemSigned = (el: ListRenderItemInfo<any>) => {
     return (
       <View style={styles.flexDirectionRow} testID="ItemSigned">
         <View style={[styles.vaultKeyCircleSuccess, stylesHook.vaultKeyCircleSuccess]}>
@@ -184,7 +207,7 @@ const PsbtMultisig = () => {
         const combined = combinePSBTs({ psbtBase64: psbt.toBase64(), newPSBTBase64: receivedPSBTBase64 });
         setPsbt(combined);
         setParams({ receivedPSBTBase64: undefined });
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error during PSBT combination:', error);
         presentAlert({ message: error.message });
       }
@@ -216,7 +239,7 @@ const PsbtMultisig = () => {
         recipients: targets,
         satoshiPerByte,
       });
-    } catch (error) {
+    } catch (error: any) {
       presentAlert({ message: error });
     }
   };
@@ -233,7 +256,7 @@ const PsbtMultisig = () => {
     const whitespace = '_';
     const destinations = Object.entries(displayAddrs);
     for (const [index, address] of destinations) {
-      if (index > 1) {
+      if (Number(index) > 1) {
         destinationAddressView.push(
           <View style={styles.destinationTextContainer} key={`end-${index}`}>
             <Text numberOfLines={0} style={[styles.textDestinationFirstFour, stylesHook.textFiat]}>
@@ -279,7 +302,7 @@ const PsbtMultisig = () => {
           </BlueText>
         </TouchableOpacity>
         <View style={styles.textBtcUnit}>
-          <BlueText selectable style={[styles.textBtcUnitValue, stylesHook.textBtcUnitValue]}>
+          <BlueText selectable style={stylesHook.textBtcUnitValue}>
             {' '}
             {DoichainUnit.DOI}
           </BlueText>
@@ -298,7 +321,7 @@ const PsbtMultisig = () => {
 
   const footer = null;
 
-  const onLayout = event => {
+  const onLayout = (event: NativeSyntheticEvent<{ layout: LayoutRectangle; target?: NodeHandle | null }>) => {
     const newHeight = event.nativeEvent.layout.height;
     setFlatListHeight(newHeight);
   };
@@ -348,7 +371,7 @@ const PsbtMultisig = () => {
           <View style={styles.feeContainer}>
             <View style={styles.bottomWrapper}>
               <View style={styles.bottomFeesWrapper}>
-                <BlueText selectable style={[styles.feeFiatText, stylesHook.feeFiatText]}>
+                <BlueText selectable style={stylesHook.feeFiatText}>
                   {loc.formatString(loc.multisig.fee, { number: satoshiToLocalCurrency(getFee()) })} -{' '}
                 </BlueText>
                 <BlueText selectable>{loc.formatString(loc.multisig.fee_btc, { number: satoshiToBTC(getFee()) })}</BlueText>

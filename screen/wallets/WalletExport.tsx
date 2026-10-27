@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { Icon } from '@rneui/themed';
-import { LayoutChangeEvent, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { enableScreenProtect, disableScreenProtect } from '../../helpers/screenProtect';
+import { LayoutChangeEvent, ScrollView, StyleSheet, Pressable, View } from 'react-native';
+import { useScreenProtect } from '../../hooks/useScreenProtect';
 import { validateMnemonic } from '../../blue_modules/bip39';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { BlueText } from '../../BlueComponents';
@@ -31,7 +31,7 @@ const CopyBox: React.FC<{ text: string; onPress: () => void }> = ({ text, onPres
   });
 
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.copyRoot, stylesHook.copyRoot]}>
+    <Pressable onPress={onPress} style={({ pressed }) => [pressed && styles.pressed, styles.copyRoot, stylesHook.copyRoot]}>
       <View style={styles.copyLeft}>
         <BlueText textBreakStrategy="balanced" style={styles.copyText}>
           {text}
@@ -40,7 +40,7 @@ const CopyBox: React.FC<{ text: string; onPress: () => void }> = ({ text, onPres
       <View style={styles.copyRight}>
         <Icon name="copy" type="font-awesome-5" color={colors.foregroundColor} />
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
@@ -82,6 +82,8 @@ const WalletExport: React.FC = () => {
     return validateMnemonic(wallet.getSecret());
   }, [wallet]);
 
+  const { enableScreenProtect, disableScreenProtect } = useScreenProtect();
+
   useEffect(() => {
     if (previousAppState === 'active' && currentAppState !== 'active') {
       const timer = setTimeout(() => navigation.goBack(), 500);
@@ -96,7 +98,7 @@ const WalletExport: React.FC = () => {
     return () => {
       disableScreenProtect();
     };
-  }, [isPrivacyBlurEnabled]);
+  }, [isPrivacyBlurEnabled, enableScreenProtect, disableScreenProtect]);
 
   const onLayout = useCallback((e: LayoutChangeEvent) => {
     const { height, width } = e.nativeEvent.layout;
@@ -261,6 +263,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
+  },
+  pressed: {
+    opacity: 0.6,
   },
 });
 

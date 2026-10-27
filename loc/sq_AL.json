@@ -150,7 +150,6 @@
     "fee_1d": "1d",
     "fee_3h": "3h",
     "fee_custom": "Peronal",
-    "insert_custom_fee": "Fut komisionin e deshiruar",
     "fee_fast": "Shpejt",
     "fee_medium": "Mesatar",
     "fee_satvbyte": "ne sat/vByte",
@@ -162,7 +161,8 @@
     "input_total": "Total:",
     "psbt_sign": "Firmos një transfertë",
     "psbt_tx_export": "Exporto ne file",
-    "success_done": "U kry"
+    "success_done": "U kry",
+    "insert_custom_fee": "Fut komisionin e deshiruar"
   },
   "settings": {
     "about": "Rreth",
