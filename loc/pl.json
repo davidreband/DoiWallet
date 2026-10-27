@@ -52,24 +52,13 @@
     "network": "Błąd sieciowy"
   },
   "lnd": {
-    "errorInvoiceExpired": "Faktura wygasła.",
     "expired": "Przeterminowana",
-    "payment": "Płatność",
-    "placeholder": "Faktura lub adres",
-    "refill": "Doładuj",
-    "refill_create": "Aby kontynuować, utwórz portfel Bitcoinowy który potem doładujesz.",
-    "refill_lnd_balance": "Doładowanie stanu portfela Lightning"
+    "payment": "Płatność"
   },
   "lndViewInvoice": {
     "additional_info": "Dodatkowe informacje",
-    "for": "Do:",
     "lightning_invoice": "Faktura Lightning",
-    "open_direct_channel": "Otwórz kanał bezpośredni z tym nodem:",
-    "please_pay_between_and": "Proszę zapłać między {min} a {max}",
-    "please_pay": "Proszę zapłać",
-    "sats": "satoshi.",
-    "date_time": "Data i czas",
-    "wasnt_paid_and_expired": "Ta faktura nie została opłacona i przeterminowała się."
+    "open_direct_channel": "Otwórz kanał bezpośredni z tym nodem:"
   },
   "plausibledeniability": {
     "create_fake_storage": "Utwórz zaszyfrowany magazyn danych",
@@ -402,9 +391,6 @@
     "add_import_wallet": "Import portfela",
     "add_lightning": "Lightning",
     "add_lightning_explain": "W celu wydawania za pomocą natychmiastowych transakcji",
-    "add_lndhub": "Podłącz do swojego LNDhuba",
-    "add_lndhub_error": "Podany adres węzła jest nieprawidłowym węzłem LNDhub.",
-    "add_lndhub_placeholder": "Adres twojego węzła",
     "add_placeholder": "mój pierwszy portfel",
     "add_title": "Dodaj portfel",
     "add_wallet_name": "Nazwa",
@@ -449,7 +435,6 @@
     "import_success_watchonly": "Twój portfel został zaimportowany. UWAGA: To jest portfel tylko do odczytu, nie możesz z niego wydawać.",
     "import_search_accounts": "Szukaj kont",
     "import_title": "Importuj",
-    "learn_more": "Dowiedz się więcej",
     "import_discovery_title": "Wyszukiwanie",
     "import_discovery_subtitle": "Wybierz odnaleziony portfel",
     "import_discovery_derivation": "Użyj niestandardowej ścieżki derywacji",
@@ -491,7 +476,6 @@
     "write_down": "Zapisz i bezpiecznie przechowaj te słowa. Użyj ich, aby odtworzyć swój portfel w późniejszym czasie.",
     "wallet_type_this": "Ten typ portfela to {type}.",
     "share_number": "Udostępnij {number}",
-    "add_ln_wallet_first": "Najpierw musisz dodać portfel Lightning.",
     "identity_pubkey": "Klucz publiczny tożsamości",
     "xpub_title": "XPUB portfela",
     "manage_wallets_search_placeholder": "Szukaj portfeli, adresów, transakcji i notatek",

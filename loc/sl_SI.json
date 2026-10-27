@@ -36,20 +36,12 @@
     "network": "Omrežna napaka"
   },
   "lnd": {
-    "expired": "Potekel",
-    "refill": "Napolni",
-    "refill_create": "Če želite nadaljevati, ustvarite Bitcoin denarnico, s katero boste napolnili.",
-    "refill_lnd_balance": "Napolni stanje Lightning denarnice"
+    "expired": "Potekel"
   },
   "lndViewInvoice": {
     "additional_info": "Dodatne Informacije",
-    "for": "Za:",
     "lightning_invoice": "Lightning Račun",
-    "open_direct_channel": "Odpri neposreden kanal s tem vozliščem:",
-    "please_pay_between_and": "Prosim plačajte med {min} in {max}",
-    "please_pay": "Prosim plačajte",
-    "sats": "sats.",
-    "wasnt_paid_and_expired": "Ta račun ni bil plačan in je potekel."
+    "open_direct_channel": "Odpri neposreden kanal s tem vozliščem:"
   },
   "plausibledeniability": {
     "create_fake_storage": "Ustvari šifrirano shrambo",
@@ -285,7 +277,6 @@
     "add_import_wallet": "Uvozi denarnico",
     "add_lightning": "Lightning",
     "add_lightning_explain": "Za hitre vsakodnevne transakcije",
-    "add_lndhub_placeholder": "naslov vašega vozlišča",
     "add_placeholder": "moja prva denarnica",
     "add_title": "Dodajte denarnico",
     "add_wallet_name": "Ime",
@@ -348,7 +339,6 @@
     "select_wallet": "Izberite Denarnico",
     "xpub_copiedToClipboard": "Kopirano v odložišče.",
     "pull_to_refresh": "Povlecite za osvežitev",
-    "add_ln_wallet_first": "Najprej morate dodati Lightning denarnico.",
     "identity_pubkey": "Identity Pubkey",
     "xpub_title": "XPUB denarnice"
   },

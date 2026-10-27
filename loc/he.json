@@ -52,24 +52,13 @@
     "network": "שגיאת רשת"
   },
   "lnd": {
-    "errorInvoiceExpired": "תוקף החשבונית פג.",
     "expired": "פג",
-    "payment": "תשלום",
-    "placeholder": "חשבונית או כתובת",
-    "refill": "טעינה",
-    "refill_create": "כדי להמשיך, אנא צרו ארנק ביטקוין כדי לטעון באמצעותו.",
-    "refill_lnd_balance": "מלאו את יתרת ארנק הברק"
+    "payment": "תשלום"
   },
   "lndViewInvoice": {
     "additional_info": "מידע נוסף",
-    "for": "עבור:",
     "lightning_invoice": "חשבונית ברק",
-    "open_direct_channel": "פתח ערוץ ישיר עם צומת זה:",
-    "please_pay_between_and": "אנא שלמו בין {min} לבין {max}",
-    "please_pay": "אנא שלמו",
-    "date_time": "תאריך ושעה",
-    "wasnt_paid_and_expired": "חשבונית זו לא שולמה ופגה",
-    "sats": "סאטס."
+    "open_direct_channel": "פתח ערוץ ישיר עם צומת זה:"
   },
   "plausibledeniability": {
     "create_fake_storage": "צרו אחסון מוצפן",
@@ -402,9 +391,6 @@
     "add_import_wallet": "יבוא ארנק",
     "add_lightning": "ברק",
     "add_lightning_explain": "לבזבוז עם העברות מידיות",
-    "add_lndhub": "התחברו ל- LNDHub האישי שלכם",
-    "add_lndhub_error": "כתובת הצומת שסופקה אינה צומת LNDHub תקין.",
-    "add_lndhub_placeholder": "כתובת הצומת שלך",
     "add_placeholder": "הארנק הראשון שלי",
     "add_title": "הוספת ארנק",
     "add_wallet_name": "שם",
@@ -449,7 +435,6 @@
     "import_success_watchonly": "ארנקך יובא בהצלחה. אזהרה: זהו ארנק צפייה-בלבד, אין באפשרותך לבזבז ממנו.",
     "import_search_accounts": "חיפוש חשבונות",
     "import_title": "יבוא",
-    "learn_more": "למדו עוד",
     "import_discovery_title": "גילוי",
     "import_discovery_subtitle": "בחירת ארנק שהתגלה",
     "import_discovery_derivation": "שימוש בנתיב גזירה מותאם",
@@ -488,7 +473,6 @@
     "write_down_header": "יצירת גיבוי ידני",
     "wallet_type_this": "סוג ארנק זה הוא {type}.",
     "share_number": "שיתוף {number}",
-    "add_ln_wallet_first": "עלייך להוסיף ארנק ברק קודם.",
     "identity_pubkey": "מפתח זהות ציבורי",
     "xpub_title": "מפתח צפייה של הארנק",
     "more_info": "מידע נוסף",

@@ -36,20 +36,12 @@
     "network": "Eroare de rețea"
   },
   "lnd": {
-    "expired": "Expirat",
-    "refill": "Reumple",
-    "refill_create": "Pentru a continua, creează un portofel Doi cu care să reumpli.",
-    "refill_lnd_balance": "Reumple balanța portofelului Lightning"
+    "expired": "Expirat"
   },
   "lndViewInvoice": {
     "additional_info": "Informații suplimentare",
-    "for": "Pentru:",
     "lightning_invoice": "Factură Lightning",
-    "open_direct_channel": "Deschide canal direct cu acest nod:",
-    "please_pay_between_and": "Plătește între {min} și {max}",
-    "please_pay": "Plătește",
-    "sats": "sats.",
-    "wasnt_paid_and_expired": "Această factură nu a fost plătită și a expirat."
+    "open_direct_channel": "Deschide canal direct cu acest nod:"
   },
   "plausibledeniability": {
     "create_fake_storage": "Creează Spațiu de Stocare Criptat",
@@ -271,7 +263,6 @@
     "add_import_wallet": "Import portofel",
     "add_lightning": "Lightning",
     "add_lightning_explain": "Pentru cheltuirea cu tranzacții instante",
-    "add_lndhub_placeholder": "Adresa nodului tău",
     "add_placeholder": "primul meu portofel",
     "add_title": "Adaugă portofel",
     "add_wallet_name": "Nume",
@@ -328,7 +319,6 @@
     "select_wallet": "Alege portofel",
     "xpub_copiedToClipboard": "Copiat în clipboard.",
     "pull_to_refresh": "Trage pentru a reîncărca",
-    "add_ln_wallet_first": " Trebuie mai întîi să adaugi un portofel Lightning.",
     "identity_pubkey": "Pubkey identitate",
     "xpub_title": "XPUB-ul portofelului"
   },

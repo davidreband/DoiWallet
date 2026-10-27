@@ -47,7 +47,8 @@ describe('Localization', () => {
 
   it.each([
     [123000000, DoichainUnit.SWARTZ, false, '123000000', false],
-    [123000000, DoichainUnit.SWARTZ, true, '123.000.000', false],
+    // grouped by the machine's locale - 123,000,000 on CI, 123.000.000 on a German desktop
+    [123000000, DoichainUnit.SWARTZ, true, new Intl.NumberFormat().format(123000000), false],
     [123456000, DoichainUnit.DOI, true, '1.23456', false], // can handle strings
     [100000000, DoichainUnit.DOI, true, '1', false],
     [10000000, DoichainUnit.DOI, true, '0.1', false],

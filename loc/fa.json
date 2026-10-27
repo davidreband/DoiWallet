@@ -42,21 +42,12 @@
   },
   "lnd": {
     "expired": "منقضی‌شده",
-    "payment": "پرداخت",
-    "placeholder": "صورت‌حساب یا آدرس",
-    "refill": "پرکردن",
-    "refill_create": "جهت ادامه، لطفاً یک کیف پول بیت‌کوین جهت پرکردن ایجاد کنید.",
-    "refill_lnd_balance": "پرکردن موجودی کیف پول لایتنینگ"
+    "payment": "پرداخت"
   },
   "lndViewInvoice": {
     "additional_info": "اطلاعات بیشتر",
-    "for": "برای: ",
     "lightning_invoice": "صورت‌حساب لایتنینگ",
-    "open_direct_channel": "کانال مستقیمی با این گره باز کن:",
-    "please_pay_between_and": "لطفاً بین {min} و {max} بپردازید",
-    "please_pay": "لطفاً",
-    "sats": "ساتوشی بپردازید.",
-    "wasnt_paid_and_expired": "این صورت‌حساب پرداخت نشده و منقضی شده است."
+    "open_direct_channel": "کانال مستقیمی با این گره باز کن:"
   },
   "plausibledeniability": {
     "create_fake_storage": "ایجاد فضای ذخیره‌سازی رمزگذاری‌شده",
@@ -295,7 +286,6 @@
     "add_import_wallet": "واردکردن کیف پول",
     "add_lightning": "لایتنینگ",
     "add_lightning_explain": "برای خرج‌کردن با تراکنش‌های آنی",
-    "add_lndhub_placeholder": "آدرس گره شما",
     "add_placeholder": "کیف پول اول من",
     "add_title": "افزودن کیف پول",
     "add_wallet_name": "نام",
@@ -363,7 +353,6 @@
     "select_wallet": "انتخاب کیف پول",
     "xpub_copiedToClipboard": "در کلیپ‌بورد کپی شد.",
     "pull_to_refresh": "برای به‌روزسانی به پایین بکشید",
-    "add_ln_wallet_first": "ابتدا باید یک کیف پول لایتنینگ اضافه کنید.",
     "identity_pubkey": "هویت/کلید عمومی",
     "xpub_title": "کلید XPUB کیف پول"
   },

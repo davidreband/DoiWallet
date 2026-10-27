@@ -53,23 +53,12 @@
     "network": "네크워크 오류"
   },
   "lnd": {
-    "errorInvoiceExpired": "인보이스가 만료되었습니다.",
     "expired": "만료되었습니다",
-    "payment": "결제",
-    "placeholder": "인보이스 또는 주소",
-    "refill": "재충전",
-    "refill_create": "진행을 위해서 재충전할 수있는 비트코인 지갑을 만들어주세요.",
-    "refill_lnd_balance": "라이트닝 지갑 잔고 재충전하기"
+    "payment": "결제"
   },
   "lndViewInvoice": {
     "additional_info": "추가적인 정보",
-    "for": "For:",
-    "lightning_invoice": "라이트닝 청구서",
-    "please_pay_between_and": "{min}와 {max} 사이의 금액으로 지불하세요",
-    "please_pay": "지불해주세요.",
-    "sats": "사토시",
-    "date_time": "날짜와 시간",
-    "wasnt_paid_and_expired": "이 청구서는 미결제되었으며 유효기간이 경과되었습니다."
+    "lightning_invoice": "라이트닝 청구서"
   },
   "plausibledeniability": {
     "create_fake_storage": "암호화된 스토리지 만들기",
@@ -382,9 +371,6 @@
     "add_import_wallet": "지갑 들여오기",
     "add_lightning": "라이트닝",
     "add_lightning_explain": "즉시 거래를 통한 지출",
-    "add_lndhub": "LNDhub에 연결",
-    "add_lndhub_error": "제공된 노드 주소가 유효한 LNDhub 노드가 아닙니다.",
-    "add_lndhub_placeholder": "사용자 노드 주소",
     "add_placeholder": "내 첫 지갑",
     "add_title": "지갑 추가",
     "add_wallet_name": "이름",
@@ -429,7 +415,6 @@
     "import_success_watchonly": "지갑이 성공적으로 가져와졌습니다. 경고: 이 지갑은 조회 전용 지갑이며, 송금할 수 없습니다.",
     "import_search_accounts": "계좌 검색",
     "import_title": "들여오기",
-    "learn_more": "더 알아보기",
     "import_discovery_title": "발견",
     "import_discovery_subtitle": "발견된 지갑 선택",
     "import_discovery_derivation": "맞춤형 유도경로 사용",
@@ -471,7 +456,6 @@
     "write_down": "이 단어들을 적어두고 안전하게 보관하세요. 나중에 지갑을 복원할 때 사용합니다.",
     "wallet_type_this": "이 지갑의 유형은 {type} 입니다.",
     "share_number": "{number} 공유",
-    "add_ln_wallet_first": "먼저 라이트닝 월렛을 추가해야합니다.",
     "identity_pubkey": "아이덴티티 퍼브키",
     "xpub_title": "지갑 XPUB",
     "manage_wallets_search_placeholder": "지갑, 주소, 트랜잭션 및 메모 검색",

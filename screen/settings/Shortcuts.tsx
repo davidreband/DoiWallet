@@ -1,4 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
+import { TNavigationWrapper } from '../../navigation/SendDetailsStackParamList';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect, useReducer, useState } from 'react';
 import { ScrollView, TouchableWithoutFeedback, View, Platform } from 'react-native';
@@ -118,7 +119,8 @@ const ShortcutSettings: React.FC = () => {
     }
   };
 
-  const onWalletSelectForReceiveBitcoinIntent = async (wallet: TWallet) => {
+  // SelectWallet hands its own navigation in; called directly there is no screen to leave
+  const onWalletSelectForReceiveBitcoinIntent = async (wallet: TWallet, navigationWrapper?: TNavigationWrapper) => {
     const walletAddress = await wallet.getAddressAsync();
 
     if (typeof walletAddress === 'string') {
@@ -129,7 +131,7 @@ const ShortcutSettings: React.FC = () => {
       dispatch({ type: ActionType.SetIntentWalletLabel, payload: wallet.getLabel() });
       dispatch({ type: ActionType.SetUseReceiveBitcoinIntentSwitch, payload: true });
     }
-    pop();
+    navigationWrapper?.navigation.pop();
   };
 
   const onWalletSelectForDefault = async (wallet: TWallet) => {

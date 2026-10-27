@@ -9,14 +9,8 @@
   "azteco": {
     "success": "You correct"
   },
-  "lnd": {
-    "refill_create": "To proceed like this so, abeg create Bitcoin wallet wey you go refill am with"
-  },
-  "lndViewInvoice": {
-    "please_pay_between_and": "Abeg pay between {min} and {max}",
-    "please_pay": "Abeg pay",
-    "wasnt_paid_and_expired": "You nor quick pay this invoice and e don kalas"
-  },
+  "lnd": {},
+  "lndViewInvoice": {},
   "plausibledeniability": {
     "password_should_not_match": "You dey use this password, run another password wey you never use."
   },

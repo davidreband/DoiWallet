@@ -52,24 +52,13 @@
     "network": "Erro na rede"
   },
   "lnd": {
-    "errorInvoiceExpired": "Fatura expirada.",
     "expired": "Expirada",
-    "payment": "Pagamento",
-    "placeholder": "Fatura ou endereço",
-    "refill": "Recarregar",
-    "refill_create": "Para continuar, por favor, crie uma carteira Bitcoin para recarregar.",
-    "refill_lnd_balance": "Recarregar a carteira Lightning"
+    "payment": "Pagamento"
   },
   "lndViewInvoice": {
     "additional_info": "Informação adicional",
-    "for": "Para:",
     "lightning_invoice": "Fatura Lightning",
-    "open_direct_channel": "Abrir canal direto com este nó:",
-    "please_pay_between_and": "Por favor, pague entre {min} e {max}",
-    "please_pay": "Por favor, pague",
-    "sats": "sats.",
-    "date_time": "Data e Horário",
-    "wasnt_paid_and_expired": "Esta fatura não foi paga e expirou."
+    "open_direct_channel": "Abrir canal direto com este nó:"
   },
   "plausibledeniability": {
     "create_fake_storage": "Criar armazenamento criptografado",
@@ -402,9 +391,6 @@
     "add_import_wallet": "Importar carteira",
     "add_lightning": "Lightning",
     "add_lightning_explain": "Para gastar com transações instantâneas",
-    "add_lndhub": "Conectar ao seu LNDHub",
-    "add_lndhub_error": "O endereço do nó fornecido é um nó LNDHub inválido",
-    "add_lndhub_placeholder": "Seu endereço de nó",
     "add_placeholder": "minha primeira carteira",
     "add_title": "Adicionar Carteira",
     "add_wallet_name": "Nome",
@@ -449,7 +435,6 @@
     "import_success_watchonly": "A carteira foi importada.\nAVISO: Esta é uma carteira de consulta e você NÃO pode mover fundos com ela.",
     "import_search_accounts": "Procurar contas",
     "import_title": "Importar",
-    "learn_more": "Saber mais",
     "import_discovery_title": "Descoberta",
     "import_discovery_subtitle": "Escolha uma carteira encontrada",
     "import_discovery_derivation": "Use um caminho de derivação personalizado",
@@ -491,7 +476,6 @@
     "write_down": "Anote e armazene essas palavras com segurança. Use-as para restaurar sua carteira mais tarde.",
     "wallet_type_this": "O tipo desta carteira é {type}.",
     "share_number": "Compartilhar {number}",
-    "add_ln_wallet_first": "Primeiro você deve adicionar uma carteira Lightning.",
     "identity_pubkey": "Identificar chave pública",
     "xpub_title": "XPUB da Carteira",
     "more_info": "Mais informações",

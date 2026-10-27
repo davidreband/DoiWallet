@@ -507,18 +507,18 @@ const ReceiveDetails = () => {
   };
 
   /**
-   * @returns {string} BTC amount, accounting for current `customUnit` and `customUnit`
+   * @returns {string} DOI amount, accounting for current `customUnit` and `customUnit`
    */
   const getDisplayAmount = (): string | null => {
     const number = Number(customAmount);
     if (number > 0) {
       switch (customUnit) {
         case DoichainUnit.DOI:
-          return customAmount + ' BTC';
+          return customAmount + ' DOI';
         case DoichainUnit.SWARTZ:
-          return satoshiToBTC(customAmount) + ' BTC';
+          return satoshiToBTC(number) + ' DOI';
         case DoichainUnit.LOCAL_CURRENCY:
-          return fiatToBTC(customAmount) + ' BTC';
+          return fiatToBTC(number) + ' DOI';
       }
       return customAmount + ' ' + customUnit;
     } else {

@@ -66,8 +66,8 @@
     "ios": "react-native run-ios",
     "postinstall": "npm run releasenotes2json; npm run branch2json; npm run buildtime2json; npm run patches",
     "patches": "",
-    "test": "npm run lint && npm run unit && npm run jest",
-    "jest": "jest tests/integration/*",
+    "test": "npm run lint && npm run unit && npm run integration",
+    "integration": "jest tests/integration/*",
     "e2e:debug-build": "detox build -c android.debug",
     "e2e:debug-test": "detox test -c android.debug -d 200000 --loglevel error --reuse",
     "e2e:debug-test-device": "detox test -c android.debug.device -d 200000 --loglevel error --reuse",
@@ -80,7 +80,7 @@
     "lint": "node scripts/find-unused-loc.js && eslint --ext .js,.ts,.tsx '*.@(js|ts|tsx)' screen 'blue_modules/*.@(js|ts|tsx)' class models loc tests components navigation typings",
     "lint:fix": "npm run lint -- --fix",
     "lint:quickfix": "git status --porcelain | grep -v '\\.json' | grep -E '\\.js|\\.ts' --color=never |  awk '{print $2}' | xargs eslint --fix; exit 0",
-    "unit": "jest -b -w tests/unit/*",
+    "unit": "jest -b tests/unit",
     "regtest": "jest --maxWorkers=1 tests/regtest"
   },
   "dependencies": {

@@ -53,23 +53,12 @@
     "network": "Ошибка сети"
   },
   "lnd": {
-    "errorInvoiceExpired": "Срок действия счёта истёк.",
     "expired": "Просрочен",
-    "payment": "Платёж",
-    "placeholder": "Инвойс или адрес",
-    "refill": "Пополнить",
-    "refill_create": "Чтобы продолжить, создайте биткоин-кошелёк для пополнения.",
-    "refill_lnd_balance": "Пополнить баланс кошелька Lightning"
+    "payment": "Платёж"
   },
   "lndViewInvoice": {
     "additional_info": "Дополнительная информация",
-    "for": "Для:",
-    "lightning_invoice": "Lightning инвойс",
-    "please_pay_between_and": "Оплатите от {min} до {max}",
-    "please_pay": "Пожалуйста, оплатите",
-    "sats": "сатоши.",
-    "date_time": "Дата и время",
-    "wasnt_paid_and_expired": "Этот инвойс не был оплачен и просрочен."
+    "lightning_invoice": "Lightning инвойс"
   },
   "plausibledeniability": {
     "create_fake_storage": "Создать зашифрованное хранилище",
@@ -403,9 +392,6 @@
     "add_import_wallet": "Импортировать кошелёк",
     "add_lightning": "Lightning",
     "add_lightning_explain": "Для мгновенных переводов",
-    "add_lndhub": "Подключиться к вашему LNDhub",
-    "add_lndhub_error": "Предоставленный адрес ноды является недействительным LNDhub узлом.",
-    "add_lndhub_placeholder": "Адрес вашей ноды",
     "add_placeholder": "мой первый кошелёк",
     "add_title": "Добавить кошелёк",
     "add_wallet_name": "Имя кошелька",
@@ -450,7 +436,6 @@
     "import_success_watchonly": "Кошелёк импортирован. ВНИМАНИЕ: кошелёк только для просмотра, тратить нельзя.",
     "import_search_accounts": "Поиск аккаунтов",
     "import_title": "Импорт",
-    "learn_more": "Узнать больше",
     "import_discovery_title": "Поиск",
     "import_discovery_subtitle": "Выберите обнаруженный кошелёк",
     "import_discovery_derivation": "Использовать другой путь деривации",
@@ -492,7 +477,6 @@
     "write_down": "Запишите и сохраните эти слова. Они нужны для восстановления кошелька.",
     "wallet_type_this": "Тип этого кошелька — {type}.",
     "share_number": "Поделиться {number}",
-    "add_ln_wallet_first": "Сначала добавьте Лайтнинг-кошелёк.",
     "identity_pubkey": "Identity Pubkey",
     "xpub_title": "XPUB кошелька",
     "manage_wallets_search_placeholder": "Поиск кошельков или заметок",

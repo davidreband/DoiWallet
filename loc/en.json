@@ -18,7 +18,6 @@
     "seed": "Seed",
     "success": "Success",
     "wallet_key": "Wallet key",
-    "invalid_animated_qr_code_fragment": "Invalid animated QR Code fragment. Please try again.",
     "close": "Close",
     "change_input_currency": "Change input currency",
     "refresh": "Refresh",
@@ -53,23 +52,12 @@
     "network": "Network Error"
   },
   "lnd": {
-    "errorInvoiceExpired": "Invoice expired.",
     "expired": "Expired",
-    "payment": "Payment",
-    "placeholder": "Invoice or address",
-    "refill": "Refill",
-    "refill_create": "In order to proceed, please create a Bitcoin wallet to refill with.",
-    "refill_lnd_balance": "Refill Lightning Wallet Balance"
+    "payment": "Payment"
   },
   "lndViewInvoice": {
     "additional_info": "Additional Information",
-    "for": "For:",
-    "lightning_invoice": "Lightning Invoice",
-    "please_pay_between_and": "Please pay between {min} and {max}",
-    "please_pay": "Please pay",
-    "sats": "sats.",
-    "date_time": "Date and Time",
-    "wasnt_paid_and_expired": "This invoice was not paid and has expired."
+    "lightning_invoice": "Lightning Invoice"
   },
   "plausibledeniability": {
     "create_fake_storage": "Create Encrypted Storage",
@@ -403,9 +391,6 @@
     "add_import_wallet": "Import wallet",
     "add_lightning": "Lightning",
     "add_lightning_explain": "For spending with instant transactions",
-    "add_lndhub": "Connect to your LNDhub",
-    "add_lndhub_error": "The provided node address is an invalid LNDhub node.",
-    "add_lndhub_placeholder": "Your Node Address",
     "add_placeholder": "my first wallet",
     "add_title": "Add Wallet",
     "add_wallet_name": "Name",
@@ -450,7 +435,6 @@
     "import_success_watchonly": "Your wallet has been successfully imported. WARNING: This is a watch-only wallet, you can NOT spend from it.",
     "import_search_accounts": "Search accounts",
     "import_title": "Import",
-    "learn_more": "Learn more",
     "import_discovery_title": "Discovery",
     "import_discovery_subtitle": "Choose a discovered wallet",
     "import_discovery_derivation": "Use custom derivation path",
@@ -492,7 +476,6 @@
     "write_down": "Write down and securely store these words. Use them to restore your wallet at a later time.",
     "wallet_type_this": "This wallet type is {type}.",
     "share_number": "Share {number}",
-    "add_ln_wallet_first": "You must first add a Lightning wallet.",
     "identity_pubkey": "Identity Pubkey",
     "xpub_title": "Wallet XPUB",
     "manage_wallets_search_placeholder": "Search wallets, addresses, transactions and memos",

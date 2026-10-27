@@ -53,23 +53,12 @@
     "network": "Chyba sítě"
   },
   "lnd": {
-    "errorInvoiceExpired": "Platnost faktury vypršela.",
     "expired": "Expirováno",
-    "payment": "Platba",
-    "placeholder": "Faktura nebo adresa",
-    "refill": "Doplnit",
-    "refill_create": "Chcete-li pokračovat, vytvořte prosím bitcoinovou peněženku, kterou můžete doplnit.",
-    "refill_lnd_balance": "Doplnit zůstatek na Lightning peněžence"
+    "payment": "Platba"
   },
   "lndViewInvoice": {
     "additional_info": "Dodatečné informace",
-    "for": "Pro:",
-    "lightning_invoice": "Lightning faktura",
-    "please_pay_between_and": "Zaplaťte prosím mezi {min} a {max}",
-    "please_pay": "Zaplaťte prosím",
-    "sats": "sats.",
-    "date_time": "Datum a čas",
-    "wasnt_paid_and_expired": "Tato faktura nebyla zaplacena a její platnost vypršela."
+    "lightning_invoice": "Lightning faktura"
   },
   "plausibledeniability": {
     "create_fake_storage": "Vytvořit zašifrované úložiště",
@@ -403,9 +392,6 @@
     "add_import_wallet": "Importovat peněženku",
     "add_lightning": "Lightning",
     "add_lightning_explain": "Pro utrácení s okamžitými transakcemi",
-    "add_lndhub": "Připojte se ke svému LNDhubu",
-    "add_lndhub_error": "Uvedená adresa uzlu je neplatný LNDhub uzel.",
-    "add_lndhub_placeholder": "Adresa vašeho uzlu",
     "add_placeholder": "moje první peněženka",
     "add_title": "Přidat peněženku",
     "add_wallet_name": "Název peněženky",
@@ -450,7 +436,6 @@
     "import_success_watchonly": "Vaše peněženka byla úspěšně importována. UPOZORNĚNÍ: Tato peněženka je určena pouze pro sledování, nelze z ní utrácet prostředky.",
     "import_search_accounts": "Vyhledat účty",
     "import_title": "Importovat",
-    "learn_more": "Zjistěte více",
     "import_discovery_title": "Objevování",
     "import_discovery_subtitle": "Vyberte si objevenou peněženku",
     "import_discovery_derivation": "Použít vlastní derivační cestu",
@@ -492,7 +477,6 @@
     "write_down": "Zapište si a bezpečně uložte tato slova. Lze je použít pro pozdější obnovu vaší peněženky.",
     "wallet_type_this": "Typ této peněženky je {type}.",
     "share_number": "Sdílet {number}",
-    "add_ln_wallet_first": "Nejdříve musíte přidat Lightning peněženku.",
     "identity_pubkey": "Identity Pubkey",
     "xpub_title": "XPUB peněženky",
     "manage_wallets_search_placeholder": "Prohledávejte peněženky, adresy, transakce a poznámky",

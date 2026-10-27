@@ -41,21 +41,12 @@
   },
   "lnd": {
     "expired": "Förfallen",
-    "payment": "Betalning",
-    "placeholder": "Faktura eller adress",
-    "refill": "Fyll på",
-    "refill_create": "För att fortsätta, vänligen skapa en Bitcoin plånbok att fylla på med",
-    "refill_lnd_balance": "Fyll på Lightning-plånbok"
+    "payment": "Betalning"
   },
   "lndViewInvoice": {
     "additional_info": "Ytterligare information",
-    "for": "För:",
     "lightning_invoice": "Lightning-faktura",
-    "open_direct_channel": "Öppna en direkt kanal med denna nod:",
-    "please_pay_between_and": "Betala mellan {min} och {max}",
-    "please_pay": "Var god betala",
-    "sats": "sats",
-    "wasnt_paid_and_expired": "Denna faktura har ej betalats och är nu utgången"
+    "open_direct_channel": "Öppna en direkt kanal med denna nod:"
   },
   "plausibledeniability": {
     "create_fake_storage": "Skapa fejkad lagringsyta",
@@ -291,7 +282,6 @@
     "add_import_wallet": "Importera plånbok",
     "add_lightning": "Lightning",
     "add_lightning_explain": "För utgifter med omedelbara transaktioner",
-    "add_lndhub_placeholder": "Din nodadress",
     "add_placeholder": "Min första plånbok",
     "add_title": "ny plånbok",
     "add_wallet_name": "namn",
@@ -356,7 +346,6 @@
     "select_wallet": "Välj plånbok",
     "xpub_copiedToClipboard": "Kopierad till urklipp",
     "pull_to_refresh": "Dra för att uppdatera",
-    "add_ln_wallet_first": "Du måste först lägga till en Lightning-plånbok.",
     "identity_pubkey": "Identitet Pubkey",
     "xpub_title": "plånbokens XPUB"
   },

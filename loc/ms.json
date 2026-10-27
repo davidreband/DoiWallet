@@ -36,20 +36,12 @@
     "network": "Ralat Rangkaian"
   },
   "lnd": {
-    "expired": "Tamat tempoh",
-    "refill": "Isi semula",
-    "refill_create": "Untuk meneruskan, sila buat dompet Bitcoin untuk diisi semula.",
-    "refill_lnd_balance": "Isi Semula Baki Dompet Lightning"
+    "expired": "Tamat tempoh"
   },
   "lndViewInvoice": {
     "additional_info": "Maklumat Tambahan",
-    "for": "Untuk:",
     "lightning_invoice": "Invois Lightning",
-    "open_direct_channel": "Buka saluran terus dengan nod ini:",
-    "please_pay_between_and": "Sila bayar di antara {min} dan {max}",
-    "please_pay": "Sila bayar",
-    "sats": "sat.",
-    "wasnt_paid_and_expired": "Invois ini tidak dibayar dan sudah luput."
+    "open_direct_channel": "Buka saluran terus dengan nod ini:"
   },
   "plausibledeniability": {
     "create_fake_storage": "Cipta Simpanan Sulit.",
@@ -266,7 +258,6 @@
     "add_import_wallet": "Pindah masuk dompet",
     "add_lightning": "Lightning",
     "add_lightning_explain": "Untuk perbelanjaan dengan urusan sepantas kilat",
-    "add_lndhub_placeholder": "Alamat Nod Anda",
     "add_title": "Tambah Dompet",
     "add_wallet_name": "Nama",
     "add_wallet_type": "Jenis",
@@ -320,7 +311,6 @@
     "select_wallet": "Pilih Dompet",
     "xpub_copiedToClipboard": "Disalin ke papan sepit.",
     "pull_to_refresh": "Tarik untuk Segar Semula",
-    "add_ln_wallet_first": "Anda perlu menambah dompet Lightning terlebih dahulu.",
     "identity_pubkey": "Kunci Umum Keperibadian",
     "xpub_title": "Dompet XPUB"
   },

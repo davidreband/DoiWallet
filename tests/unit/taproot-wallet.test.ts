@@ -73,7 +73,9 @@ describe('Taproot wallet', () => {
     // untweaked signature, which is what this wallet produced before 7.2.2, fails here
     const prevScript = bitcoin.address.toOutputScript(ADDRESS, DOICHAIN);
     const sighash = tx.hashForWitnessV1(0, [prevScript], [9778n], bitcoin.Transaction.SIGHASH_DEFAULT);
-    assert.ok(ecc.verifySchnorr(sighash, prevScript.subarray(2), tx.ins[0].witness[0]));
+    const verifySchnorr = ecc.verifySchnorr;
+    assert.ok(verifySchnorr);
+    assert.ok(verifySchnorr(sighash, prevScript.subarray(2), tx.ins[0].witness[0]));
     // sendMax leaves no change, so the fee is whatever the input did not pay out
     assert.strictEqual(9778 - Number(tx.outs[0].value), txNew.fee);
   });

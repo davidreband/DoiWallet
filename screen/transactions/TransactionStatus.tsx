@@ -234,6 +234,8 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
         Alert.alert(loc.errors.error, 'Please enter a DoiAddress');
         return;
       }
+      // the send screen builds the transfer from this wallet; without one there is nothing to spend from
+      if (!walletID) return;
 
       // Ask the chain which output holds the name instead of taking the holder address off the
       // transaction being looked at. That transaction may be old: the name could have moved on

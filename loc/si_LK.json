@@ -36,20 +36,12 @@
     "network": "ජාලකරණ දෝෂයකි"
   },
   "lnd": {
-    "expired": "කල් ඉකුත් වී ඇත",
-    "refill": "නැවත පුරවන්න",
-    "refill_create": "ඉදිරියට යාමට, කරුණාකර නැවත පිරවීම සඳහා බිට්කොයින් පසුම්බියක් සාදන්න.",
-    "refill_lnd_balance": "ලයිට්නින් පසුම්බියේ ශේෂය නැවත පුරවන්න"
+    "expired": "කල් ඉකුත් වී ඇත"
   },
   "lndViewInvoice": {
     "additional_info": "අමතර තොරතුරු",
-    "for": "සඳහා:",
     "lightning_invoice": "ලයිට්නින් ඉන්වොයිසිය",
-    "open_direct_channel": "මෙම නෝඩය සමග ඍජු නාලිකාව විවෘත කරන්න:",
-    "please_pay_between_and": "කරුණාකර {min} සහ {max} අතර ගෙවන්න",
-    "please_pay": "කරුණාකර ගෙවන්න",
-    "sats": "සැට්.",
-    "wasnt_paid_and_expired": "මෙම ඉන්වොයිසිය ගෙවා නැති අතර කල් ඉකුත් වී ඇත."
+    "open_direct_channel": "මෙම නෝඩය සමග ඍජු නාලිකාව විවෘත කරන්න:"
   },
   "plausibledeniability": {
     "create_fake_storage": "සංකේතනය කළ ගබඩාවක් සාදන්න",
@@ -279,7 +271,6 @@
     "add_import_wallet": "මුදල් පසුම්බිය ආනයනය කරන්න",
     "add_lightning": "ලයිට්නින්",
     "add_lightning_explain": "ක්‍ෂණික ගනුදෙනු සමඟ වියදම් කිරීම සඳහා",
-    "add_lndhub_placeholder": "ඔබේ නෝඩ් ලිපිනය",
     "add_placeholder": "මගේ පළමු මුදල් පසුම්බිය",
     "add_title": "පසුම්බිය එකතු කරන්න",
     "add_wallet_name": "නම",
@@ -341,7 +332,6 @@
     "select_wallet": "පසුම්බිය තෝරන්න",
     "xpub_copiedToClipboard": "පසුරු පුවරුවට පිටපත් කර ඇත.",
     "pull_to_refresh": "නැවුම් කිරීමට අදින්න",
-    "add_ln_wallet_first": "ඔබ මුලින්ම ලයිට්නින් පසුම්බියක් එකතු කළ යුතුයි.",
     "identity_pubkey": "අනන්‍යතා Pubkey",
     "xpub_title": "XPUB පසුම්බිය"
   },

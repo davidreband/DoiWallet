@@ -88,6 +88,9 @@ const ViewEditMultisigCosigners: React.FC = () => {
     root: {
       backgroundColor: colors.elevated,
     },
+    askPassphrase: {
+      backgroundColor: colors.lightButton,
+    },
     textDestination: {
       color: colors.foregroundColor,
     },
@@ -669,6 +672,7 @@ const ViewEditMultisigCosigners: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  askPassprase: { top: 0, left: 0, justifyContent: 'center', width: 33, height: 33, borderRadius: 33 / 2 },
   root: {
     flex: 1,
     justifyContent: 'space-between',

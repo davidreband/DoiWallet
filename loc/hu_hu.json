@@ -37,21 +37,12 @@
     "network": "Hálózati hiba"
   },
   "lnd": {
-    "expired": "Lejárt",
-    "placeholder": "Számla",
-    "refill": "Feltölt",
-    "refill_create": "A folytatáshoz, hozz létre egy Bitcoin tárcát amire feltölthetsz.",
-    "refill_lnd_balance": "Lightning egyenleg feltöltése"
+    "expired": "Lejárt"
   },
   "lndViewInvoice": {
     "additional_info": "További információk",
-    "for": "Cím:",
     "lightning_invoice": "Villám Számla",
-    "open_direct_channel": "Közvetlen csatorna nyitása erre a csomópontra:",
-    "please_pay_between_and": "Kérem fizessen {min} és {max} közötti összeget",
-    "please_pay": "Kérlek fizess",
-    "sats": "satoshi",
-    "wasnt_paid_and_expired": "Ezt a számlát nem fizették ki és lejárt"
+    "open_direct_channel": "Közvetlen csatorna nyitása erre a csomópontra:"
   },
   "plausibledeniability": {
     "create_fake_storage": "Hamis tárhely létrehozása",
@@ -293,7 +284,6 @@
     "add_import_wallet": "Tárca importálása",
     "add_lightning": "Lightning",
     "add_lightning_explain": "Költés azonnali tranzakcióval",
-    "add_lndhub_placeholder": "a te node címed",
     "add_placeholder": "az első tárcám",
     "add_title": "új tárca",
     "add_wallet_name": "név",
@@ -363,7 +353,6 @@
     "select_wallet": "Válassz tárcát",
     "xpub_copiedToClipboard": "Vágólapra másolva",
     "pull_to_refresh": "Húzza le a frissítéshez",
-    "add_ln_wallet_first": "Először egy Lightning Tárcát kell létrehoznod vagy beadnod.",
     "identity_pubkey": "Nyilvános kulcs",
     "xpub_title": "a tárca XPUB kulcsa"
   },

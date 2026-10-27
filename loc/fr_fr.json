@@ -52,24 +52,13 @@
     "network": "Erreur réseau"
   },
   "lnd": {
-    "errorInvoiceExpired": "Facture expirée.",
     "expired": "Expiré",
-    "payment": "Paiement",
-    "placeholder": "Facture ou adresse",
-    "refill": "Déposer des fonds",
-    "refill_create": "Pour continuer, veuillez créer un portefeuille Bitcoin à partir duquel déposer des fonds.",
-    "refill_lnd_balance": "Déposer des fonds dans votre portfeuille Lightning"
+    "payment": "Paiement"
   },
   "lndViewInvoice": {
     "additional_info": "Informations complémentaires",
-    "for": "A :",
     "lightning_invoice": "Facture Ligthning",
-    "open_direct_channel": "Ouvrir un canal direct avec ce noeud :",
-    "please_pay_between_and": "Veuillez payer entre {min} et {max}",
-    "please_pay": "Veuillez payer",
-    "sats": "sats",
-    "date_time": "Date et Heure",
-    "wasnt_paid_and_expired": "Cette requête n'a pas été réglée et a expiré"
+    "open_direct_channel": "Ouvrir un canal direct avec ce noeud :"
   },
   "plausibledeniability": {
     "create_fake_storage": "Créer un faux espace de stockage chiffré",
@@ -402,9 +391,6 @@
     "add_import_wallet": "Importer un portefeuille",
     "add_lightning": "Lightning",
     "add_lightning_explain": "Pour payer avec des transactions instantanées",
-    "add_lndhub": "Connectez-vous à votre LNDhub",
-    "add_lndhub_error": "L'adresse de nœud fournie est un nœud LNDhub non valide.",
-    "add_lndhub_placeholder": "l'adresse de votre noeud",
     "add_placeholder": "mon premier portefeuille",
     "add_title": "Ajouter Portefeuille",
     "add_wallet_name": "Nom",
@@ -449,7 +435,6 @@
     "import_success_watchonly": "Votre portefeuille a été importé avec succès. AVERTISSEMENT : Il s'agit d'un portefeuille lectures seules, vous ne pouvez PAS dépenser avec celui-ci.",
     "import_search_accounts": "Rechercher des comptes",
     "import_title": "importer",
-    "learn_more": "En apprendre plus",
     "import_discovery_title": "Découverte",
     "import_discovery_subtitle": "Choisissez un portefeuille trouvé",
     "import_discovery_derivation": "Utiliser un chemin de dérivation personnalisé",
@@ -491,7 +476,6 @@
     "write_down": "Notez et conservez ces mots en toute sécurité. Utilisez-les pour restaurer votre portefeuille ultérieurement.",
     "wallet_type_this": "Ce type de portefeuille est {type}.",
     "share_number": "Partager {number}",
-    "add_ln_wallet_first": "Vous devez d'abord ajouter un portefeuille Lightning.",
     "identity_pubkey": "Clé publique identité",
     "xpub_title": "XPUB portefeuille",
     "manage_wallets_search_placeholder": "Chercher portefeuilles, adresses, transactions et memos",

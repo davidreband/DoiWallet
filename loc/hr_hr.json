@@ -19,9 +19,7 @@
     "save": "Spremi"
   },
   "lnd": {
-    "expired": "Isteklo",
-    "refill": "Dopuni",
-    "refill_lnd_balance": "Dopuni Lightning volet saldo"
+    "expired": "Isteklo"
   },
   "plausibledeniability": {
     "create_fake_storage": "Stvori fejk enkriptirani spremnik",

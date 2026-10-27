@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Keyboard, StyleSheet, TextInput, View, ScrollView, Pressable } from 'react-native';
+import { Keyboard, StyleSheet, Text, TextInput, View, ScrollView, Pressable } from 'react-native';
 import { BlueButtonLink, BlueCard, BlueText } from '../../BlueComponents';
 import Button from '../../components/Button';
 import { useTheme } from '../../components/themes';
@@ -98,6 +98,33 @@ const IsItMyAddress: React.FC = () => {
   };
 
   const isCheckAddressDisabled = address.trim().length === 0;
+
+  const renderFormattedText = (text: string, values: { [key: string]: string }) => {
+    const regex = /\{(\w+)\}/g;
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+    let index = 0;
+
+    while ((match = regex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push(<Text key={`text-${index++}`}>{text.substring(lastIndex, match.index)}</Text>);
+      }
+      const value = values[match[1]];
+      if (value) {
+        parts.push(
+          <Text key={`bold-${index++}`} style={styles.boldText} selectable>
+            {value}
+          </Text>,
+        );
+      }
+      lastIndex = regex.lastIndex;
+    }
+    if (lastIndex < text.length) {
+      parts.push(<Text key={`text-${index++}`}>{text.substring(lastIndex)}</Text>);
+    }
+    return parts;
+  };
 
   return (
     <SafeAreaScrollView
@@ -200,6 +227,9 @@ const styles = StyleSheet.create({
     padding: 8,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  boldText: {
+    fontWeight: 'bold',
   },
   resultText: {
     marginVertical: 10,

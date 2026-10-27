@@ -18,12 +18,8 @@
   "errors": {
     "error": "Қате"
   },
-  "lnd": {
-    "refill": "Қайта толтыру"
-  },
-  "lndViewInvoice": {
-    "sats": "сат."
-  },
+  "lnd": {},
+  "lndViewInvoice": {},
   "receive": {
     "details_create": "Жасау"
   },

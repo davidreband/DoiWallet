@@ -41,21 +41,12 @@
     "network": "Помилка Мережі"
   },
   "lnd": {
-    "expired": "Термін дії закінчився",
-    "placeholder": "Рахунок або адреса",
-    "refill": "Поповнити",
-    "refill_create": "Щоб продовжити, будь ласка, створіть біткоїн-гаманець для поповнення.",
-    "refill_lnd_balance": "Збільшити баланс Lightning гаманця"
+    "expired": "Термін дії закінчився"
   },
   "lndViewInvoice": {
     "additional_info": "Додаткова Інформація",
-    "for": "Для:",
     "lightning_invoice": "Lightning Рахунок",
-    "open_direct_channel": "Відкрийте прямий канал з цим вузлом:",
-    "please_pay_between_and": "Будь ласка, сплатіть від {min} до {max}",
-    "please_pay": "Будь ласка оплатіть",
-    "sats": "sats.",
-    "wasnt_paid_and_expired": "Цей рахунок не було оплачено, термін його дії закінчився."
+    "open_direct_channel": "Відкрийте прямий канал з цим вузлом:"
   },
   "plausibledeniability": {
     "create_fake_storage": "Створити Зашифроване Сховище",
@@ -206,7 +197,6 @@
     "add_entropy": "Ентропія",
     "add_import_wallet": "Імпортувати гаманець",
     "add_lightning": "Lightning",
-    "add_lndhub_placeholder": "Адреса Вашої Ноди",
     "add_placeholder": "мій перший гаманець",
     "add_title": "Додати Гаманець",
     "add_wallet_name": "ім'я гаманця",

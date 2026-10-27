@@ -2,6 +2,7 @@ import * as Keychain from 'react-native-keychain';
 import { GROUP_IO_BLUEWALLET } from '../blue_modules/currency';
 import { DEFAULT_SERVICE } from './intents';
 
+// The iOS module reads accessGroup on every call; the package's types only declare it for set
 const ACCESS_GROUP = GROUP_IO_BLUEWALLET;
 
 /**
@@ -30,10 +31,11 @@ export const storeInKeychain = async (data: Record<string, string>, service: str
  */
 export const getFromKeychain = async (key: string): Promise<Record<string, string> | null> => {
   try {
-    const credentials = await Keychain.getGenericPassword({
+    const options: Keychain.GetOptions & { accessGroup: string } = {
       service: `${DEFAULT_SERVICE}.${key}`,
       accessGroup: ACCESS_GROUP,
-    });
+    };
+    const credentials = await Keychain.getGenericPassword(options);
     if (credentials) {
       return {
         [credentials.username]: credentials.password,
@@ -52,10 +54,11 @@ export const getFromKeychain = async (key: string): Promise<Record<string, strin
  */
 export const deleteFromKeychain = async (key: string): Promise<void> => {
   try {
-    await Keychain.resetGenericPassword({
+    const options: Keychain.BaseOptions & { accessGroup: string } = {
       service: `${DEFAULT_SERVICE}.${key}`,
       accessGroup: ACCESS_GROUP,
-    });
+    };
+    await Keychain.resetGenericPassword(options);
     console.log('Data successfully deleted from Keychain.');
   } catch (error) {
     console.error('Error deleting data from Keychain', error);

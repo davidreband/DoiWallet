@@ -48,24 +48,13 @@
     "network": "Errore di rete"
   },
   "lnd": {
-    "errorInvoiceExpired": "Fattura scaduta",
     "expired": "Scaduto",
-    "payment": "Pagamento",
-    "placeholder": "Fattura o indirizzo",
-    "refill": "Ricarica",
-    "refill_create": "Per continuare, crea un portafoglio Bitcoin dal quale ricaricare.",
-    "refill_lnd_balance": "Ricarica saldo del portafoglio Lightning"
+    "payment": "Pagamento"
   },
   "lndViewInvoice": {
     "additional_info": "Ulteriori Informazioni",
-    "for": "Per:",
     "lightning_invoice": "Fattura Lightning",
-    "open_direct_channel": "Apri un canale diretto con questo nodo:",
-    "please_pay_between_and": "Paga tra {min} e {max}",
-    "please_pay": "Per favore paga",
-    "sats": "sats.",
-    "date_time": "Data e Ora",
-    "wasnt_paid_and_expired": "Questa fattura non è stata pagata ed è scaduta."
+    "open_direct_channel": "Apri un canale diretto con questo nodo:"
   },
   "plausibledeniability": {
     "create_fake_storage": "Crea archivio criptato",
@@ -304,7 +293,6 @@
     "add_import_wallet": "Importa Portafoglio",
     "add_lightning": "Lightning",
     "add_lightning_explain": "Per invio con transazioni istantanee",
-    "add_lndhub_placeholder": "L'indirizzo del tuo nodo",
     "add_placeholder": "Il mio primo wallet",
     "add_title": "Aggiungi Portafoglio",
     "add_wallet_name": "Nome Portafoglio",
@@ -367,7 +355,6 @@
     "select_wallet": "Seleziona Portafoglio",
     "xpub_copiedToClipboard": "Copiata negli appunti.",
     "pull_to_refresh": "Tira verso il basso per aggiornare",
-    "add_ln_wallet_first": "Devi prima aggiungere un portafoglio Lightning.",
     "identity_pubkey": "Identity Pubkey",
     "xpub_title": "XPUB del Portafoglio"
   },

@@ -22,6 +22,7 @@ export interface NameOpParams {
 
 export type SendDetailsParams = {
   transactionMemo?: string;
+  memo?: string;
   isTransactionReplaceable?: boolean;
   payjoinUrl?: string;
   feeUnit?: DoichainUnit;
@@ -92,6 +93,7 @@ export type SendDetailsStackParamList = {
   };
   CreateTransaction: {
     memo?: string;
+    wallet?: TWallet;
     psbt?: Psbt;
     txhex?: string;
     tx: string;

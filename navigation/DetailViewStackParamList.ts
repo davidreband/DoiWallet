@@ -2,7 +2,8 @@ import { AztecoVoucher } from '../class/azteco';
 import { LightningTransaction, Transaction, TWallet } from '../class/wallets/types';
 import { Chain } from '../models/doichainUnits';
 import { ElectrumServerItem } from '../screen/settings/ElectrumSettings';
-import { SendDetailsParams, TNavigationWrapper } from './SendDetailsStackParamList';
+import { NavigatorScreenParams } from '@react-navigation/native';
+import { SendDetailsParams, SendDetailsStackParamList, TNavigationWrapper } from './SendDetailsStackParamList';
 
 export type ScanQRCodeParamList = {
   cameraStatusGranted?: boolean;
@@ -56,7 +57,8 @@ export type DetailViewStackParamList = {
   Success: undefined;
   WalletAddresses: { walletID: string };
   AddWalletRoot: undefined;
-  SendDetailsRoot: SendDetailsParams;
+  // reached both ways: with SendDetails' params directly, and as { screen, params } into the stack
+  SendDetailsRoot: SendDetailsParams | NavigatorScreenParams<SendDetailsStackParamList>;
   LNDCreateInvoiceRoot: undefined;
   ScanLNDInvoiceRoot: {
     screen: string;

@@ -49,23 +49,13 @@
     "network": "Problem me Internetin"
   },
   "lnd": {
-    "errorInvoiceExpired": "Fatura ka skaduar.",
     "expired": "Skaduar",
-    "payment": "Pagesa",
-    "placeholder": "Fatura ose adresa",
-    "refill": "Rimbush",
-    "refill_create": "Krijoni në portofol Bitcoin-i për të vazhduar.",
-    "refill_lnd_balance": "Rimbush ballancën e portofolit Lightning."
+    "payment": "Pagesa"
   },
   "lndViewInvoice": {
     "additional_info": "Informacione të tjera",
-    "for": "Për:",
     "lightning_invoice": "Fatura Lightning",
-    "open_direct_channel": "Hap një kanal direkt me këtë nyje:",
-    "please_pay_between_and": "Ju lutem paguani ndërmjet {min} dhe {max}",
-    "please_pay": "Ju lutem paguani",
-    "sats": "sats.",
-    "wasnt_paid_and_expired": "Fatura nuk është paguar dhe ka skaduar."
+    "open_direct_channel": "Hap një kanal direkt me këtë nyje:"
   },
   "plausibledeniability": {
     "create_fake_storage": "Krijo një memorie të kriptuar",
