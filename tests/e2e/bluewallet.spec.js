@@ -761,56 +761,11 @@ describe('BlueWallet UI Tests - no wallets', () => {
 
     await helperCreateWallet();
     await tapAndTapAgainIfElementIsNotVisible('HomeScreenScanButton', 'ScanQrBackdoorButton');
-    await scanText('bitcoin:bc1qzrtn3xwlunlrm0n0uu23lr00gmdx4lnlavdy75');
-    await expect(element(by.id('AddressInput'))).toHaveText('bc1qzrtn3xwlunlrm0n0uu23lr00gmdx4lnlavdy75');
-
-    // now, gona import second wallet (ln) and test bip21 with both onchain and offchain present
-
-    await device.pressBack();
-    await waitForId('WalletsList');
-    await element(by.id('WalletsList')).swipe('left', 'fast', 1); // in case emu screen is small and it doesnt fit
-    // going to Import Wallet screen and importing mnemonic
-    await tapAndTapAgainIfElementIsNotVisible('CreateAWallet', 'ImportWallet');
-    await element(by.id('ImportWallet')).tap();
-    await element(by.id('ScanImport')).tap();
-    await scanText('lndhub://a3b4c9109408a043d1ea:ec5a888596b2c45729d1@https://kek.lol');
-    await waitForText('OK', 30_000); // waiting for wallet import
-    await element(by.text('OK')).tap();
-
-    // imported
-
-    await tapAndTapAgainIfElementIsNotVisible('HomeScreenScanButton', 'ScanQrBackdoorButton');
-    await scanText(
-      'lightning:lnbc1p090vrqpp5yxpd5wjtln4r874a9grkpr772cs0uyn7ayva3ypleyut7z0a4rgsdpu235hqurfdcsx7an9wf6x7undv4h8ggpgw35hqurfdchx6eff9p6nzvfc8q5scqzpgxqyz5vqcy30v2txquuh06h6946pal4dlm4hyujqv8ec3cunetf46gfydpxswedv4sr2rlg8dwpcg3fq9gah3j42373w366e6yau37t30amp5zqqftd004',
-    );
-    await expect(element(by.id('AddressInput'))).toHaveText(
-      'lnbc1p090vrqpp5yxpd5wjtln4r874a9grkpr772cs0uyn7ayva3ypleyut7z0a4rgsdpu235hqurfdcsx7an9wf6x7undv4h8ggpgw35hqurfdchx6eff9p6nzvfc8q5scqzpgxqyz5vqcy30v2txquuh06h6946pal4dlm4hyujqv8ec3cunetf46gfydpxswedv4sr2rlg8dwpcg3fq9gah3j42373w366e6yau37t30amp5zqqftd004',
-    );
-
-    // ok, time to test wallets selector
-
-    await device.pressBack();
-
-    await waitForId('WalletsList');
-    await tapAndTapAgainIfElementIsNotVisible('HomeScreenScanButton', 'ScanQrBackdoorButton');
-    await scanText(
-      'bitcoin:1DamianM2k8WfNEeJmyqSe2YW1upB7UATx?amount=0.000001&lightning=lnbc1u1pwry044pp53xlmkghmzjzm3cljl6729cwwqz5hhnhevwfajpkln850n7clft4sdqlgfy4qv33ypmj7sj0f32rzvfqw3jhxaqcqzysxq97zvuq5zy8ge6q70prnvgwtade0g2k5h2r76ws7j2926xdjj2pjaq6q3r4awsxtm6k5prqcul73p3atveljkn6wxdkrcy69t6k5edhtc6q7lgpe4m5k4',
-    );
-
-    await waitForId('SelectWalletsList');
-    await element(by.text('Imported Lightning')).tap();
-    await expect(element(by.id('AddressInput'))).toHaveText(
-      'lnbc1u1pwry044pp53xlmkghmzjzm3cljl6729cwwqz5hhnhevwfajpkln850n7clft4sdqlgfy4qv33ypmj7sj0f32rzvfqw3jhxaqcqzysxq97zvuq5zy8ge6q70prnvgwtade0g2k5h2r76ws7j2926xdjj2pjaq6q3r4awsxtm6k5prqcul73p3atveljkn6wxdkrcy69t6k5edhtc6q7lgpe4m5k4',
-    ); // send screen, and ln invoice is prefilled!
-
-    // now again, but chosing onchain
-
-    await device.pressBack();
-    await helperDeleteWallet('Imported HD Legacy (BIP44 P2PKH)');
-    // helperSwitchAdvancedMode has never existed in this repository; these tests are
-    // it.skip'd, so the call stays as the record of what un-skipping them would need
-    // eslint-disable-next-line no-undef
-    await helperSwitchAdvancedMode();
+    // upstream scans a bitcoin: address, then lndhub and lightning invoices; this fork
+    // speaks doichain: and has no Lightning, so only the on-chain half is kept
+    await scanText('doichain:dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk?amount=0.000001');
+    await expect(element(by.id('AddressInput'))).toHaveText('dc1qglq9r48zqalradfjlvdq9acy8wfn5227nlfjdk');
+    await expect(element(by.id('BitcoinAmountInput'))).toHaveText('0.000001');
 
     process.env.TRAVIS && require('fs').writeFileSync(lockFile, '1');
   });
