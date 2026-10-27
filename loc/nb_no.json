@@ -36,20 +36,12 @@
     "network": "Nettverksfeil"
   },
   "lnd": {
-    "expired": "Utløpt",
-    "refill": "Fyll på",
-    "refill_create": "For å fortsette må du lage en Bitcoin-lommebok du kan fylle på med.",
-    "refill_lnd_balance": "Fyll på Lightning Wallet-balanse"
+    "expired": "Utløpt"
   },
   "lndViewInvoice": {
     "additional_info": "Tilleggsinformasjon",
-    "for": "Til:",
     "lightning_invoice": "Lightning-faktura",
-    "open_direct_channel": "Åpne direkte kanal med denne noden:",
-    "please_pay_between_and": "Vennligst betal mellom {min} og {max}",
-    "please_pay": "Vennligst betal",
-    "sats": "sats.",
-    "wasnt_paid_and_expired": "Denne fakturaen ble ikke betalt og har utløpt."
+    "open_direct_channel": "Åpne direkte kanal med denne noden:"
   },
   "plausibledeniability": {
     "create_fake_storage": "Opprett Kryptert Lagring",
@@ -282,7 +274,6 @@
     "add_import_wallet": "Importer lommebok",
     "add_lightning": "Lightning",
     "add_lightning_explain": "For betaling med umiddelbare transaksjoner",
-    "add_lndhub_placeholder": "Din nodeadresse",
     "add_placeholder": "min første lommebok",
     "add_title": "Legg til lommebok",
     "add_wallet_name": "Navn",
@@ -344,7 +335,6 @@
     "select_wallet": "Velg Lommebok",
     "xpub_copiedToClipboard": "Kopiert til utklippstavlen.",
     "pull_to_refresh": "Dra for å oppdatere",
-    "add_ln_wallet_first": "Du må først legge til en Lightning-lommebok.",
     "identity_pubkey": "Identity Pubkey",
     "xpub_title": "Wallet XPUB"
   },

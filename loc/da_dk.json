@@ -14,10 +14,7 @@
   "entropy": {
     "save": "save"
   },
-  "lnd": {
-    "refill": "Genopfyld",
-    "refill_lnd_balance": "Genopfyld Lightning wallet"
-  },
+  "lnd": {},
   "plausibledeniability": {
     "create_fake_storage": "Opret falsk kryopteret lager",
     "create_password_explanation": "Adgangskoden til det falske lager må ikke være den samme som den du bruger til det rigtige lager",

@@ -53,23 +53,12 @@
     "network": "ネットワークエラー"
   },
   "lnd": {
-    "errorInvoiceExpired": "請求書の有効期限が切れました。",
     "expired": "失効",
-    "payment": "支払い",
-    "placeholder": "インボイスまたはアドレス",
-    "refill": "送金",
-    "refill_create": "先に進むためには、ビットコインウォレットを作成して補充してください。",
-    "refill_lnd_balance": "Lightning ウォレットへ送金"
+    "payment": "支払い"
   },
   "lndViewInvoice": {
     "additional_info": "追加情報",
-    "for": "メモ:",
-    "lightning_invoice": "ライトニングインボイス",
-    "please_pay_between_and": "{min}と{max}の間で支払ってください",
-    "please_pay": "取引額",
-    "sats": "sats",
-    "date_time": "日時",
-    "wasnt_paid_and_expired": "この請求書は支払いが行われなかったため無効になりました"
+    "lightning_invoice": "ライトニングインボイス"
   },
   "plausibledeniability": {
     "create_fake_storage": "ダミーの暗号化ウォレットの作成",
@@ -403,9 +392,6 @@
     "add_import_wallet": "ウォレットをインポート",
     "add_lightning": "ライトニング",
     "add_lightning_explain": "復号のためパスワードを入力",
-    "add_lndhub": "あなたのLNDHubに接続",
-    "add_lndhub_error": "指定されたノードアドレスは無効なLNDHubノードです。",
-    "add_lndhub_placeholder": "あなたのノードアドレス",
     "add_placeholder": "はじめてのウォレット",
     "add_title": "ウォレットの追加",
     "add_wallet_name": "ウォレット名",
@@ -450,7 +436,6 @@
     "import_success_watchonly": "ウォレットのインポートに成功しました。警告：これは閲覧専用ウォレットで、支払いはできません。",
     "import_search_accounts": "アカウントを検索",
     "import_title": "インポート",
-    "learn_more": "詳細を見る",
     "import_discovery_title": "発見",
     "import_discovery_subtitle": "発見したウォレットを選択",
     "import_discovery_derivation": "カスタム derivation path を使用",
@@ -492,7 +477,6 @@
     "write_down": "これらの言葉を書きとめ、安全に保管してください。あとでウォレットを復元するために使います。",
     "wallet_type_this": "ウォレットの種類は{type}。",
     "share_number": "{number}を共有",
-    "add_ln_wallet_first": "先にライトニングウォレットを追加する必要があります。",
     "identity_pubkey": "識別用公開鍵",
     "xpub_title": "ウォレット XPUB",
     "manage_wallets_search_placeholder": "ウォレット・アドレス・トランザクション・メモを検索",

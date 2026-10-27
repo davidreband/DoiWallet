@@ -25,7 +25,7 @@ import presentAlert, { AlertType } from '../../components/Alert';
 import { FButton, FContainer } from '../../components/FloatButtons';
 import { useTheme } from '../../components/themes';
 import { TransactionListItem } from '../../components/TransactionListItem';
-import TransactionsNavigationHeader, { actionKeys } from '../../components/TransactionsNavigationHeader';
+import TransactionsNavigationHeader from '../../components/TransactionsNavigationHeader';
 import { unlockWithBiometrics, useBiometrics } from '../../hooks/useBiometrics';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import loc, { formatBalance } from '../../loc';
@@ -35,11 +35,8 @@ import { useStorage } from '../../hooks/context/useStorage';
 import WatchOnlyWarning from '../../components/WatchOnlyWarning';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamList';
-import { Transaction, TWallet } from '../../class/wallets/types';
+import { Transaction } from '../../class/wallets/types';
 import getWalletTransactionsOptions, { WalletTransactionsRouteProps } from '../../navigation/helpers/getWalletTransactionsOptions';
-import { presentWalletExportReminder } from '../../helpers/presentWalletExportReminder';
-import selectWallet from '../../helpers/select-wallet';
-import assert from 'assert';
 import useMenuElements from '../../hooks/useMenuElements';
 import { useSettings } from '../../hooks/context/useSettings';
 import useWalletSubscribe from '../../hooks/useWalletSubscribe';
@@ -58,12 +55,12 @@ type WalletTransactionsProps = NativeStackScreenProps<DetailViewStackParamList, 
 
 type TransactionListItem = Transaction & { type: 'transaction' | 'header' };
 const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { route: WalletTransactionsRouteProps }) => {
-  const { wallets, saveToDisk } = useStorage();
+  const { saveToDisk } = useStorage();
   const { registerTransactionsHandler, unregisterTransactionsHandler } = useMenuElements();
   const { isBiometricUseCapableAndEnabled } = useBiometrics();
   const { direction } = useLocale();
   const [isLoading, setIsLoading] = useState(false);
-  const { params, name } = useRoute<RouteProps>();
+  const { params } = useRoute<RouteProps>();
   const { walletID } = params;
   const wallet = useWalletSubscribe(walletID);
   const [limit, setLimit] = useState(15);
@@ -180,12 +177,6 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { rout
         if (oldBalance !== wallet.getBalance()) smthChanged = true;
         const oldTxLen = wallet.getTransactions().length;
         await wallet.fetchTransactions();
-        if ('fetchPendingTransactions' in wallet) {
-          await wallet.fetchPendingTransactions();
-        }
-        if ('fetchUserInvoices' in wallet) {
-          await wallet.fetchUserInvoices();
-        }
         if (oldTxLen !== wallet.getTransactions().length) smthChanged = true;
 
         // Success - reset failure counter and update timestamps
@@ -241,36 +232,6 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { rout
     });
   };
 
-  const onWalletSelect = useCallback(
-    async (selectedWallet: TWallet) => {
-      assert(wallet?.type === LightningCustodianWallet.type, `internal error, wallet is not ${LightningCustodianWallet.type}`);
-
-      // getting refill address, either cached or from the server:
-      let toAddress;
-      if (wallet.refill_addressess.length > 0) {
-        toAddress = wallet.refill_addressess[0];
-      } else {
-        try {
-          await wallet.fetchBtcAddress();
-          toAddress = wallet.refill_addressess[0];
-        } catch (Err) {
-          return presentAlert({ message: (Err as Error).message, type: AlertType.Toast });
-        }
-      }
-
-      // navigating to pay screen where user can pay to refill address:
-      navigate('SendDetailsRoot', {
-        screen: 'SendDetails',
-        params: {
-          transactionMemo: loc.lnd.refill_lnd_balance,
-          address: toAddress,
-          walletID: selectedWallet.getID(),
-        },
-      });
-    },
-    [navigate, wallet],
-  );
-
   const navigateToViewEditCosigners = useCallback(() => {
     navigate('ViewEditMultisigCosignersRoot', {
       screen: 'ViewEditMultisigCosigners',
@@ -279,22 +240,6 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { rout
       },
     });
   }, [navigate, walletID]);
-
-  const onManageFundsPressed = useCallback(
-    (id?: string) => {
-      if (id === actionKeys.Refill) {
-        const availableWallets = wallets.filter(item => item.chain === Chain.ONCHAIN && item.allowSend());
-        if (availableWallets.length === 0) {
-          presentAlert({ message: loc.lnd.refill_create });
-        } else {
-          selectWallet(navigation, name, Chain.ONCHAIN).then(onWalletSelect);
-        }
-      } else if (id === actionKeys.RefillWithExternalWallet) {
-        navigate('ReceiveDetails', { walletID });
-      }
-    },
-    [name, navigate, navigation, onWalletSelect, walletID, wallets],
-  );
 
   const getItemLayout = (_: any, index: number) => ({
     length: 64,
@@ -495,24 +440,6 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { rout
           onManageFundsPressed={id => {
             if (wallet.type === MultisigHDWallet.type) {
               navigateToViewEditCosigners();
-            } else if (wallet.type === LightningCustodianWallet.type) {
-              if (wallet.getUserHasSavedExport()) {
-                if (!id) return;
-                onManageFundsPressed(id);
-              } else {
-                presentWalletExportReminder()
-                  .then(async () => {
-                    if (!id) return;
-                    wallet.setUserHasSavedExport(true);
-                    await saveToDisk();
-                    onManageFundsPressed(id);
-                  })
-                  .catch(() => {
-                    navigate('WalletExport', {
-                      walletID,
-                    });
-                  });
-              }
             }
           }}
         />
@@ -544,9 +471,6 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { rout
       saveToDisk,
       isBiometricUseCapableAndEnabled,
       navigateToViewEditCosigners,
-      onManageFundsPressed,
-      navigate,
-      walletID,
     ],
   );
 

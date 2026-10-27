@@ -29,17 +29,11 @@
     "network": "Sieťová chyba"
   },
   "lnd": {
-    "expired": "Expirovaná",
-    "refill": "Doplniť",
-    "refill_create": "Pre pokračovanie, prosím, vytvorte si Bitcoinovú peňaženku",
-    "refill_lnd_balance": "Doplniť zostatok na Lightning peňaženke"
+    "expired": "Expirovaná"
   },
   "lndViewInvoice": {
     "additional_info": "Doplňujúce informácie",
-    "for": "Za:",
-    "open_direct_channel": "Otvoriť priamy kanál s týmto uzlom:",
-    "please_pay": "Prosím zaplaťte",
-    "sats": "sats"
+    "open_direct_channel": "Otvoriť priamy kanál s týmto uzlom:"
   },
   "plausibledeniability": {
     "create_fake_storage": "Vytvoriť falošné zašifrované úložisko",
@@ -164,7 +158,6 @@
     "add_entropy_remain": "{gen} bytov vygenerovanej entropie. Zvyšných {rem} bytov sa získa zo systémového generátora náhodných čísel.",
     "add_import_wallet": "Importovať peňaženku",
     "add_lightning": "Lightning",
-    "add_lndhub_placeholder": "adresa uzla",
     "add_title": "pridať peňaženku",
     "add_wallet_name": "názov peňaženky",
     "add_wallet_type": "typ",

@@ -43,20 +43,12 @@
   },
   "lnd": {
     "expired": "Caducat",
-    "payment": "Pagament",
-    "placeholder": "Factura o adreça",
-    "refill": "Recarregar",
-    "refill_lnd_balance": "Recarregar el balanç del moneder Lightning"
+    "payment": "Pagament"
   },
   "lndViewInvoice": {
     "additional_info": "Informació addicional",
-    "for": "Per:",
     "lightning_invoice": "Factura Lightning",
-    "open_direct_channel": "Obrir un canal directe amb aquest node:",
-    "please_pay_between_and": "Si us plau, pagui entre {min} i {max}",
-    "please_pay": "Si us plau, pagui",
-    "sats": "sats",
-    "wasnt_paid_and_expired": "Aquesta factura no ha estat pagada i ha caducat"
+    "open_direct_channel": "Obrir un canal directe amb aquest node:"
   },
   "plausibledeniability": {
     "create_fake_storage": "Crear informació xifrada falsa",

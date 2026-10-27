@@ -45,21 +45,12 @@
   },
   "lnd": {
     "expired": "Erääntynyt",
-    "payment": "Maksu",
-    "placeholder": "Lasku",
-    "refill": "Täytä",
-    "refill_create": "Jatka luomalla Bitcoin-lompakko, jolla voit täyttää sen.",
-    "refill_lnd_balance": "Täytä Salamalompakon saldoa"
+    "payment": "Maksu"
   },
   "lndViewInvoice": {
     "additional_info": "Lisäinformaatio",
-    "for": "Kenelle:",
     "lightning_invoice": "Salamalasku",
-    "open_direct_channel": "Avaa suora kanava tällä solmulla:",
-    "please_pay_between_and": "Maksa vähintään {min} ja enintään {max}",
-    "please_pay": "Ole hyvä ja maksa",
-    "sats": "sattia",
-    "wasnt_paid_and_expired": "Tätä laskua ei maksettu, ja se on vanhentunut."
+    "open_direct_channel": "Avaa suora kanava tällä solmulla:"
   },
   "plausibledeniability": {
     "create_fake_storage": "Luo Salattu tallennustila",
@@ -309,7 +300,6 @@
     "add_import_wallet": "Tuo lompakko",
     "add_lightning": "Salama",
     "add_lightning_explain": "Käytetään välittömiin siirtotapahtumiin",
-    "add_lndhub_placeholder": "solmusi osoite",
     "add_placeholder": "minun lompakkoni",
     "add_title": "lisää lompakko",
     "add_wallet_name": "nimi",
@@ -382,7 +372,6 @@
     "select_wallet": "Valitse Lompakko",
     "xpub_copiedToClipboard": "Kopioitu leikepöydälle.",
     "pull_to_refresh": "vedä päivittääksesi",
-    "add_ln_wallet_first": "Sinun on ensin lisättävä Salamalompakko.",
     "identity_pubkey": "Tunnus Pubkey",
     "xpub_title": "lompakon XPUB"
   },

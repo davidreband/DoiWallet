@@ -52,23 +52,12 @@
     "network": "网络错误"
   },
   "lnd": {
-    "errorInvoiceExpired": "发票已过期。",
     "expired": "已过期",
-    "payment": "付款",
-    "placeholder": "发票或地址",
-    "refill": "充值",
-    "refill_create": "为了继续操作，请先创建一个比特币钱包以进行充值。",
-    "refill_lnd_balance": "充值闪电网络钱包余额"
+    "payment": "付款"
   },
   "lndViewInvoice": {
     "additional_info": "其他信息",
-    "for": "收款方：",
-    "lightning_invoice": "闪电网络发票",
-    "please_pay_between_and": "请支付介于 {min} 与 {max} 之间的金额",
-    "please_pay": "请支付",
-    "sats": "聪",
-    "date_time": "日期与时间",
-    "wasnt_paid_and_expired": "该发票未支付，已过期。"
+    "lightning_invoice": "闪电网络发票"
   },
   "plausibledeniability": {
     "create_fake_storage": "创建加密存储",
@@ -402,9 +391,6 @@
     "add_import_wallet": "导入钱包",
     "add_lightning": "闪电网络",
     "add_lightning_explain": "用于即时交易支出",
-    "add_lndhub": "连接到您的闪电网络守护节点集线器（LNDhub）",
-    "add_lndhub_error": "提供的节点地址是无效的闪电网络守护节点集线器（LNDhub）节点。",
-    "add_lndhub_placeholder": "您的节点地址",
     "add_placeholder": "我的第一个钱包",
     "add_title": "添加钱包",
     "add_wallet_name": "名称",
@@ -449,7 +435,6 @@
     "import_success_watchonly": "您的钱包已成功导入。警告：这是一个“观察钱包”，您无法从中支出资金。",
     "import_search_accounts": "搜索账户",
     "import_title": "导入",
-    "learn_more": "了解详情",
     "import_discovery_title": "发现",
     "import_discovery_subtitle": "选择一个已发现的钱包",
     "import_discovery_derivation": "使用自定义派生路径",
@@ -491,7 +476,6 @@
     "write_down": "请将这些助记词抄写并妥善保存，以便在日后恢复您的钱包。",
     "wallet_type_this": "此钱包类型为 {type}。",
     "share_number": "分片 {number}",
-    "add_ln_wallet_first": "您必须先添加一个闪电网络钱包。",
     "identity_pubkey": "身份公钥",
     "xpub_title": "钱包扩展公钥（XPUB）",
     "manage_wallets_search_placeholder": "搜索钱包、地址、交易和备注",

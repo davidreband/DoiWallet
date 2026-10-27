@@ -40,20 +40,12 @@
   },
   "lnd": {
     "expired": "Verval",
-    "payment": "Betaling",
-    "placeholder": "Faktuur of adres",
-    "refill": "Herlaai",
-    "refill_create": "Om voort te gaan, skep asb 'n Doi beursie om vondse mee aan te vul.",
-    "refill_lnd_balance": "Herlaai Lightning beursie"
+    "payment": "Betaling"
   },
   "lndViewInvoice": {
     "additional_info": "Bykomende Inligting",
     "lightning_invoice": "Lightning Faktuur",
-    "open_direct_channel": "Open direkte kanaal met hierdie knoop-punt:",
-    "please_pay_between_and": "Betaal asseblief tussen {min} en {max}",
-    "please_pay": "Betaal asseblief",
-    "sats": "sats.",
-    "wasnt_paid_and_expired": "Die faktuur was nie betaal nie en het verval."
+    "open_direct_channel": "Open direkte kanaal met hierdie knoop-punt:"
   },
   "plausibledeniability": {
     "create_fake_storage": "Skep fantasie berging wagwoord",
@@ -147,7 +139,6 @@
     "add_create": "Skep",
     "add_entropy": "Entropie",
     "add_import_wallet": "Beursie Invoer",
-    "add_lndhub_placeholder": "Jou Knoop-punt Adres",
     "add_title": "skep beursie",
     "add_wallet_name": "beursie naam",
     "add_wallet_type": "tipe",
@@ -175,7 +166,6 @@
     "list_title": "beursies",
     "select_wallet": "Kies Beursie",
     "xpub_copiedToClipboard": "Gestuur na klipbord.",
-    "add_ln_wallet_first": "Jy moet eers 'n Lightning beursie byvoeg.",
     "xpub_title": "beursie XPUB"
   },
   "multisig": {

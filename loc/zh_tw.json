@@ -36,19 +36,12 @@
     "network": "網路錯誤"
   },
   "lnd": {
-    "expired": "已過期",
-    "refill": "增值",
-    "refill_create": "爲了繼續進行，請建立一個要增值的比特幣錢包。",
-    "refill_lnd_balance": "給閃電錢包增值"
+    "expired": "已過期"
   },
   "lndViewInvoice": {
     "additional_info": "附加信息",
-    "for": "为了：",
     "lightning_invoice": "閃電賬單",
-    "open_direct_channel": "使用此節點來開啟直接頻道：",
-    "please_pay": "請付款",
-    "sats": "聰",
-    "wasnt_paid_and_expired": "此賬單尚未付款，已過期。"
+    "open_direct_channel": "使用此節點來開啟直接頻道："
   },
   "plausibledeniability": {
     "create_fake_storage": "建立加密儲存",
@@ -244,7 +237,6 @@
     "add_import_wallet": "匯入錢包",
     "add_lightning": "閃電",
     "add_lightning_explain": "用於即時交易的花費",
-    "add_lndhub_placeholder": "您的節點地址",
     "add_placeholder": "我的第一個錢包",
     "add_title": "新增錢包",
     "add_wallet_name": "名稱",
@@ -297,7 +289,6 @@
     "select_wallet": "選擇錢包",
     "xpub_copiedToClipboard": "複製到貼上板.",
     "pull_to_refresh": "拉動來刷新",
-    "add_ln_wallet_first": "您必須先添加一個閃電錢包。",
     "identity_pubkey": "身份公鑰",
     "xpub_title": "錢包公鑰"
   },

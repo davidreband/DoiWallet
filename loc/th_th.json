@@ -34,19 +34,12 @@
     "network": "เน็ตเวิร์คผิดพลาด"
   },
   "lnd": {
-    "expired": "หมดอายุแล้ว",
-    "refill": "เติม",
-    "refill_create": "กรุณาสร้างกระเป๋าสตางค์บิตคอยน์ เพื่อดำเนินการต่อ",
-    "refill_lnd_balance": "เติมกระเป๋าสตางค์ไลท์นิง"
+    "expired": "หมดอายุแล้ว"
   },
   "lndViewInvoice": {
     "additional_info": "ข้อมูลเพิ่มเติม",
-    "for": "สำหรับ:",
     "lightning_invoice": "ใบแจ้งหนี้ไลท์นิง",
-    "open_direct_channel": "เปิดช่องโดยตรงไปที่โหนดนี้",
-    "please_pay": "กรุณาจ่าย",
-    "sats": "แซท",
-    "wasnt_paid_and_expired": "ใบวางบิลนี้ไม่ได้จ่ายและหมดอายุแล้ว"
+    "open_direct_channel": "เปิดช่องโดยตรงไปที่โหนดนี้"
   },
   "plausibledeniability": {
     "create_fake_storage": "สร้างที่เก็บข้อมูลเทียม",
@@ -202,7 +195,6 @@
     "add_entropy": "เอนโทรปี",
     "add_import_wallet": "นำเข้ากระเป๋าสตางค์",
     "add_lightning": "ไลท์นิง",
-    "add_lndhub_placeholder": "แอดเดรสของโหนดของท่าน",
     "add_title": "เพิ่มกระเป๋าสตางค์",
     "add_wallet_name": "ชื่อกระเป๋าสตางค์",
     "add_wallet_type": "ชนิด",
@@ -244,7 +236,6 @@
     "select_wallet": "เลือกกระเป๋าสตางค์",
     "xpub_copiedToClipboard": "ก๊อปปี้ไปที่คลิปบอร์ดแล้ว.",
     "pull_to_refresh": "ดึงเพื่อรีเฟรช",
-    "add_ln_wallet_first": "คุณต้องเพิ่มกระเป๋าเงินไลท์นิงก่อน",
     "xpub_title": "XPUB ของกระเป๋าสตางค์"
   },
   "total_balance_view": {

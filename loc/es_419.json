@@ -52,23 +52,12 @@
     "network": "Error de red"
   },
   "lnd": {
-    "errorInvoiceExpired": "La factura expiró.",
     "expired": "Expirado",
-    "payment": "Pago",
-    "placeholder": "Factura o dirección",
-    "refill": "Recarga",
-    "refill_create": "Para continuar, crea una billetera Bitcoin para recargar.",
-    "refill_lnd_balance": "Recargar el saldo de la billetera Lightning"
+    "payment": "Pago"
   },
   "lndViewInvoice": {
     "additional_info": "Información adicional",
-    "for": "Para:",
-    "lightning_invoice": "Factura Lightning",
-    "please_pay_between_and": "Paga entre {min} y {max}",
-    "please_pay": "Pagar por favor",
-    "sats": "sats.",
-    "date_time": "Fecha y hora",
-    "wasnt_paid_and_expired": "Esta factura no se pagó y ha caducado."
+    "lightning_invoice": "Factura Lightning"
   },
   "plausibledeniability": {
     "create_fake_storage": "Crear almacenamiento encriptado",
@@ -402,9 +391,6 @@
     "add_import_wallet": "Importar billetera",
     "add_lightning": "Lightning",
     "add_lightning_explain": "Para gastar con transacciones instantáneas",
-    "add_lndhub": "Conéctate a tu LNDhub",
-    "add_lndhub_error": "La dirección de nodo proporcionada es un nodo LNDhub no válido.",
-    "add_lndhub_placeholder": "Tu Dirección de Nodo",
     "add_placeholder": "mi primera billetera",
     "add_title": "Agregar Billetera",
     "add_wallet_name": "Nombre",
@@ -449,7 +435,6 @@
     "import_success_watchonly": "Tu billetera se ha importado correctamente. ADVERTENCIA: Esta es una billetera de \"solo ver\", NO puedes gastar desde él.",
     "import_search_accounts": "Buscar cuentas",
     "import_title": "Importar",
-    "learn_more": "Saber más",
     "import_discovery_title": "Descubrimiento",
     "import_discovery_subtitle": "Elige una billetera descubierta",
     "import_discovery_derivation": "Utilizar una ruta de derivación personalizada",
@@ -491,7 +476,6 @@
     "write_down": "Anota y guarda estas palabras de forma segura. Úsalas para recuperar tu billetera más adelante.",
     "wallet_type_this": "Este tipo de billetera es {type}.",
     "share_number": "Compartir {number}",
-    "add_ln_wallet_first": "Primero debes agregar una billetera Lightning.",
     "identity_pubkey": "Identidad Pubkey",
     "xpub_title": "XPUB de la billetera",
     "manage_wallets_search_placeholder": "Búsqueda de billeteras, direcciones, transacciones y memos",

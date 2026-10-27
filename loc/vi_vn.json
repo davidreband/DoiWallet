@@ -40,21 +40,12 @@
     "network": "Lỗi mạng"
   },
   "lnd": {
-    "expired": "Hết hạn",
-    "placeholder": "Hóa đơn hoặc địa chỉ",
-    "refill": "Đổ đầy",
-    "refill_create": "Để tiếp tục, vui lòng tạo một ví Bitcoin để nạp tiền. ",
-    "refill_lnd_balance": "Nạp lại số dư ví Lightning"
+    "expired": "Hết hạn"
   },
   "lndViewInvoice": {
     "additional_info": "Thông tin thêm",
-    "for": "Cho:",
     "lightning_invoice": "Hoá đơn Lightning",
-    "open_direct_channel": "Mở kênh trực tiếp với node này:",
-    "please_pay_between_and": "Vui lòng thanh toán từ {min} đến {max}",
-    "please_pay": "Vui lòng thanh toán",
-    "sats": "sats.",
-    "wasnt_paid_and_expired": "Hoá đơn này chưa được thanh toán và đã hết hạn. "
+    "open_direct_channel": "Mở kênh trực tiếp với node này:"
   },
   "plausibledeniability": {
     "create_fake_storage": "Tạo lưu trữ được mã hoá",
@@ -287,7 +278,6 @@
     "add_import_wallet": "Nhập ví",
     "add_lightning": "Lightning",
     "add_lightning_explain": "Để chi tiêu với các giao dịch tức thời ",
-    "add_lndhub_placeholder": "Địa chỉ node của bạn",
     "add_placeholder": "Ví đầu tiên của tôi",
     "add_title": "Thêm ví",
     "add_wallet_name": "Tên",
@@ -350,7 +340,6 @@
     "select_wallet": "Chọn ví",
     "xpub_copiedToClipboard": "Đã sao chép vào bảng tạm.",
     "pull_to_refresh": "Kéo để làm mới",
-    "add_ln_wallet_first": "Đầu tiên bạn phải thêm một ví Lightning.",
     "identity_pubkey": "PubKey danh tính",
     "xpub_title": "XPUB của ví"
   },

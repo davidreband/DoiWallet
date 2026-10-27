@@ -52,23 +52,12 @@
     "network": "Netzwerkfehler"
   },
   "lnd": {
-    "errorInvoiceExpired": "Rechnung abgelaufen.",
     "expired": "Abgelaufen",
-    "payment": "Zahlung",
-    "placeholder": "Rechnung oder Adresse",
-    "refill": "Aufladen",
-    "refill_create": "Bitte eine Bitcoin Wallet erstellen um fortzufahren",
-    "refill_lnd_balance": "Lade deine Lightning Wallet auf"
+    "payment": "Zahlung"
   },
   "lndViewInvoice": {
     "additional_info": "Weiterführende Informationen",
-    "for": "Für:",
-    "lightning_invoice": "Lightning Rechnung",
-    "please_pay_between_and": "Zwischen {min} und {max} zahlen",
-    "please_pay": "Bitte zahle",
-    "sats": "sats",
-    "date_time": "Datum und Zeit",
-    "wasnt_paid_and_expired": "Diese Rechnung ist unbezahlt abgelaufen."
+    "lightning_invoice": "Lightning Rechnung"
   },
   "plausibledeniability": {
     "create_fake_storage": "Verschlüsselten Speicher erstellen",
@@ -402,9 +391,6 @@
     "add_import_wallet": "Wallet importieren",
     "add_lightning": "Lightning",
     "add_lightning_explain": "Für Ausgaben mit sofortigen Transaktionen",
-    "add_lndhub": "Ihren LNDhub verbinden",
-    "add_lndhub_error": "Die Adresse verweist auf einen ungültigen LNDhub-Knoten.",
-    "add_lndhub_placeholder": "DOI Knoten-Adresse",
     "add_placeholder": "Mein Wallet",
     "add_title": "Wallet hinzufügen",
     "add_wallet_name": "Wallet Name",
@@ -449,7 +435,6 @@
     "import_success_watchonly": "Deine Wallet wurde erfolgreich importiert. WARNUNG: Dies ist eine reine Wallet nur zum Anschauen, du kannst NICHT mit ihr ausgeben.",
     "import_search_accounts": "Konten suchen",
     "import_title": "Importieren",
-    "learn_more": "Mehr erfahren",
     "import_discovery_title": "Treffer",
     "import_discovery_subtitle": "Wallet aus Trefferliste wählen",
     "import_discovery_derivation": "Eigener Ableitungspfad wählen",
@@ -491,7 +476,6 @@
     "write_down": "Diese Worte aufschreiben und sicher verwahren. Sie sind nötig um die Wallet später wiederherzustellen.",
     "wallet_type_this": "Wallet vom Typ {type}.",
     "share_number": "Teil {number}",
-    "add_ln_wallet_first": "Bitte zuerst ein Lightning-Wallet hinzufügen.",
     "identity_pubkey": "Pubkey-Identität",
     "xpub_title": "Wallet xPub",
     "manage_wallets_search_placeholder": "Suche in Wallets, Notizen",

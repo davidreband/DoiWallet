@@ -37,21 +37,12 @@
     "network": "Erro da rede"
   },
   "lnd": {
-    "expired": "Expirado",
-    "placeholder": "Fatura ou endereço",
-    "refill": "Carregar",
-    "refill_create": "Para continuar, crie uma carteira Doi para recarregar.",
-    "refill_lnd_balance": "Carregar o saldo da Lightning wallet"
+    "expired": "Expirado"
   },
   "lndViewInvoice": {
     "additional_info": "Informação adicional",
-    "for": "Para:",
     "lightning_invoice": "Fatura Lightning",
-    "open_direct_channel": "Abrir canal directo com este nó:",
-    "please_pay_between_and": "Por favor pague entre {min} e {max}",
-    "please_pay": "Por favor pague",
-    "sats": "sats",
-    "wasnt_paid_and_expired": "Esta factura não foi paga e expirou"
+    "open_direct_channel": "Abrir canal directo com este nó:"
   },
   "plausibledeniability": {
     "create_fake_storage": "Criar armazenamento encriptado",
@@ -250,7 +241,6 @@
     "add_import_wallet": "Importar wallet",
     "add_lightning": "Lightning",
     "add_lightning_explain": "Para gastar com transações instantâneas",
-    "add_lndhub_placeholder": "O endereço do seu nó",
     "add_placeholder": "a minha primeira carteira",
     "add_title": "Adicionar carteira",
     "add_wallet_name": "nome",

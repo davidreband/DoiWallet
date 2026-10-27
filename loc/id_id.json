@@ -41,20 +41,12 @@
     "network": "Kesalahan Jaringan"
   },
   "lnd": {
-    "expired": "Kadaluarsa",
-    "refill": "Isi ulang",
-    "refill_create": "Untuk melanjutkan, buat dompet Bitcoin untuk diisi ulang.",
-    "refill_lnd_balance": "Isi ulang saldo Lightning"
+    "expired": "Kadaluarsa"
   },
   "lndViewInvoice": {
     "additional_info": "Informasi Tambahan",
-    "for": "Untuk:",
     "lightning_invoice": "Fraktur Lightning",
-    "open_direct_channel": "Buka saluran langsung dengan node ini:",
-    "please_pay_between_and": "Silakan bayar antara {min} dan {max}",
-    "please_pay": "Silakan bayar",
-    "sats": "sat.",
-    "wasnt_paid_and_expired": "Faktur ini belum dibayar dan telah kedaluwarsa"
+    "open_direct_channel": "Buka saluran langsung dengan node ini:"
   },
   "plausibledeniability": {
     "create_fake_storage": "Create fake encrypted storage",

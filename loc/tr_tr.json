@@ -41,19 +41,12 @@
     "network": "Ağ Hatası"
   },
   "lnd": {
-    "expired": "Süresi doldu",
-    "refill": "Yükle",
-    "refill_lnd_balance": "Lightning cüzdana bakiye yükle"
+    "expired": "Süresi doldu"
   },
   "lndViewInvoice": {
     "additional_info": "Ek Bilgi",
-    "for": "İçin: ",
     "lightning_invoice": "Lightning faturası",
-    "open_direct_channel": "Bu noda direkt kanal aç: ",
-    "please_pay_between_and": "{min} ve {max} arasında bir ödeme yapın",
-    "please_pay": "Lütfen ödeyin",
-    "sats": "sats.",
-    "wasnt_paid_and_expired": "Bu fatura ödenmeden zaman aşımına uğradı."
+    "open_direct_channel": "Bu noda direkt kanal aç: "
   },
   "plausibledeniability": {
     "create_fake_storage": "Sahte şifreli depolama oluşturun",

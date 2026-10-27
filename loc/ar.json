@@ -42,21 +42,12 @@
     "network": "خطأ في الشبكة"
   },
   "lnd": {
-    "expired": "منتهية الصلاحية",
-    "placeholder": "عنوان أو برقية",
-    "refill": "إعادة التعبئة",
-    "refill_create": "للمتابعة، يُرجى إنشاء محفظة بتكوين لإعادة التعبئة باستخدامها.",
-    "refill_lnd_balance": "إعادة تعبئة رصيد محفظة البرق (Lightning)"
+    "expired": "منتهية الصلاحية"
   },
   "lndViewInvoice": {
     "additional_info": "معلومة إضافية",
-    "for": "إلى:",
     "lightning_invoice": "برقية",
-    "open_direct_channel": "فتح قناة مباشرة مع هذه النود:",
-    "please_pay_between_and": "يرجى دفع ما بين {min} و{max}",
-    "please_pay": "يُرجى الدفع",
-    "sats": "بالساتوشي",
-    "wasnt_paid_and_expired": "لم يتم دفع هذه البرقية وانتهت صلاحيتها"
+    "open_direct_channel": "فتح قناة مباشرة مع هذه النود:"
   },
   "plausibledeniability": {
     "create_fake_storage": "إنشاء وحدة تخزين مشفرة",
@@ -294,7 +285,6 @@
     "add_import_wallet": "استيراد محفظة",
     "add_lightning": "البرق",
     "add_lightning_explain": "لإرسال المعاملات بشكل فوري عبر شبكة البرق",
-    "add_lndhub_placeholder": "عنوان النود الخاص بك",
     "add_placeholder": "محفظتي الأولى",
     "add_title": "إضافة محفظة",
     "add_wallet_name": "الاسم",
@@ -358,7 +348,6 @@
     "select_wallet": "اختيار محفظة",
     "xpub_copiedToClipboard": "تم النسخ إلى الحافظة.",
     "pull_to_refresh": "اسحب للتحديث",
-    "add_ln_wallet_first": "يجب عليك أولاً إضافة محفظة برق.",
     "identity_pubkey": "هوية Pubkey",
     "xpub_title": "عنوان XPUB للمحفظة"
   },

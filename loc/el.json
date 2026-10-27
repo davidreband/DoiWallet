@@ -33,18 +33,11 @@
   },
   "lnd": {
     "expired": "Έληξε",
-    "payment": "Πληρωμή",
-    "placeholder": "Τιμολόγιο ή διεύθυνση",
-    "refill": "Γέμισμα πορτοφολιού",
-    "refill_lnd_balance": "Γέμισε το πορτοφόλι Lightning"
+    "payment": "Πληρωμή"
   },
   "lndViewInvoice": {
     "additional_info": "Επιπρόσθετη πληροφορία",
-    "for": "Για:",
-    "lightning_invoice": "Τιμολόγιο  Lightning",
-    "please_pay": "Παρακαλώ πληρώστε",
-    "sats": "sats.",
-    "wasnt_paid_and_expired": "Το τιμολόγιο δεν πληρώθηκε και έχει λήξει."
+    "lightning_invoice": "Τιμολόγιο  Lightning"
   },
   "plausibledeniability": {
     "create_fake_storage": "Δημιούργησε ένα ψεύτικο κρυπτογραφημένο αρχείο",
@@ -211,7 +204,6 @@
     "add_entropy": "Εντροπία",
     "add_import_wallet": "Εισαγωγή πορτοφολιού",
     "add_lightning": "Lightning",
-    "add_lndhub_placeholder": "Η  διεύθυνση του κόμβου σας",
     "add_placeholder": "το πρώτο μου πορτοφόλι",
     "add_title": "Προσθήκη πορτοφολιού",
     "add_wallet_name": "Όνομα",

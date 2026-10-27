@@ -31,9 +31,7 @@
     "save": "ndoloza"
   },
   "lnd": {
-    "expired": "Iphelewe lixesha",
-    "refill": "Gcwalisa",
-    "refill_lnd_balance": "Gcwalisa ingxowa yakho yemali"
+    "expired": "Iphelewe lixesha"
   },
   "plausibledeniability": {
     "create_fake_storage": "Ukudala igumbi lokugcina elifihlakeleyo",

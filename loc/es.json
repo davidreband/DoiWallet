@@ -36,20 +36,12 @@
     "network": "Error de red"
   },
   "lnd": {
-    "expired": "Expirado",
-    "refill": "Recargar",
-    "refill_create": "Para continuar, por favor crea una cartera de Bitcoin con la que recargar.",
-    "refill_lnd_balance": "Recargar saldo de la cartera Lightning"
+    "expired": "Expirado"
   },
   "lndViewInvoice": {
     "additional_info": "Información adicional",
-    "for": "Para:",
     "lightning_invoice": "Factura Lighting",
-    "open_direct_channel": "Abrir un canal directo con este nodo:",
-    "please_pay_between_and": "Paga entre {min} y {max}",
-    "please_pay": "Por favor, pague",
-    "sats": "sats.",
-    "wasnt_paid_and_expired": "Esta factura no fue pagada y ha expirado."
+    "open_direct_channel": "Abrir un canal directo con este nodo:"
   },
   "plausibledeniability": {
     "create_fake_storage": "Crear almacenamiento cifrado",
@@ -286,7 +278,6 @@
     "add_import_wallet": "Importar cartera",
     "add_lightning": "Lightning",
     "add_lightning_explain": "Para pagos con transferencias instantáneas",
-    "add_lndhub_placeholder": "La dirección de tu nodo",
     "add_placeholder": "Mi primera cartera",
     "add_title": "Añadir cartera",
     "add_wallet_name": "Nombre",
@@ -349,7 +340,6 @@
     "select_wallet": "Selecciona una cartera",
     "xpub_copiedToClipboard": "Copiado a portapapeles.",
     "pull_to_refresh": "Desliza el dedo de arriba a abajo para actualizar",
-    "add_ln_wallet_first": "Primero tienes que agregar una cartera Lightning.",
     "identity_pubkey": "Identity Pubkey",
     "xpub_title": "XPUB de la cartera"
   },

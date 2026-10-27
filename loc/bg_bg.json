@@ -35,19 +35,12 @@
     "network": "Грешка с мрежата"
   },
   "lnd": {
-    "expired": "Изтекла",
-    "refill": "Зареди",
-    "refill_create": "За да продължите, моля създайте Биткойн портфейл",
-    "refill_lnd_balance": "Зареди Лайтнинг Баланс"
+    "expired": "Изтекла"
   },
   "lndViewInvoice": {
     "additional_info": "Допълнителна информация",
-    "for": "За:",
     "lightning_invoice": "Лайтнинг фактура",
-    "open_direct_channel": "Директно свързване с нода:",
-    "please_pay": "Моля, плати",
-    "sats": "сатоши",
-    "wasnt_paid_and_expired": "Фактурата не е платена и е изтекла."
+    "open_direct_channel": "Директно свързване с нода:"
   },
   "plausibledeniability": {
     "create_fake_storage": "Създайте Криптирано Хранилище",

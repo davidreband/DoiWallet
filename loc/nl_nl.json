@@ -42,21 +42,12 @@
   },
   "lnd": {
     "expired": "Verlopen",
-    "payment": "Betaling",
-    "placeholder": "Factuur of adres",
-    "refill": "Bijvullen",
-    "refill_create": "Om verder te gaan, moet u een Bitcoin-wallet maken om mee te vullen.",
-    "refill_lnd_balance": "Vul Lightning-walletsaldo bij"
+    "payment": "Betaling"
   },
   "lndViewInvoice": {
     "additional_info": "Extra informatie",
-    "for": "Voor:",
     "lightning_invoice": "Lightning-factuur",
-    "open_direct_channel": "Open een rechtstreeks kanaal met deze node:",
-    "please_pay_between_and": "Betaal alsjeblieft tussen de {min} en {max}",
-    "please_pay": "Betaal alstublieft",
-    "sats": "sats",
-    "wasnt_paid_and_expired": "Deze factuur is niet betaald en is verlopen"
+    "open_direct_channel": "Open een rechtstreeks kanaal met deze node:"
   },
   "plausibledeniability": {
     "create_fake_storage": "Creëer versleutelde opslag",
@@ -285,7 +276,6 @@
     "add_import_wallet": "Wallet importeren",
     "add_lightning": "Lightning",
     "add_lightning_explain": "Voor uitgaven met directe transacties",
-    "add_lndhub_placeholder": "Uw node adres",
     "add_placeholder": "Mijn eerste wallet",
     "add_title": "Wallet toevoegen",
     "add_wallet_name": "Naam",
@@ -347,7 +337,6 @@
     "select_wallet": "Selecteer wallet",
     "xpub_copiedToClipboard": "Gekopieerd naar het klembord.",
     "pull_to_refresh": "Pull om te refreshen.",
-    "add_ln_wallet_first": "U moet eerst een Lightning-wallet toevoegen.",
     "identity_pubkey": "Identiteit PubKey",
     "xpub_title": "Wallet XPUB"
   },
