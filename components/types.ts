@@ -1,4 +1,4 @@
-import { AccessibilityRole, ViewStyle } from 'react-native';
+import { AccessibilityRole, ColorValue, ViewStyle } from 'react-native';
 
 export interface Action {
   id: string | number;

@@ -8,7 +8,6 @@ import ListItem from '../../components/ListItem';
 import SafeArea from '../../components/SafeArea';
 import { useTheme } from '../../components/themes';
 import loc from '../../loc';
-import { useSettings } from '../../hooks/context/useSettings';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import { AddWalletStackParamList } from '../../navigation/AddWalletStack';
@@ -57,7 +56,6 @@ const WalletsAddMultisig: React.FC = () => {
     n: 3,
     format: MultisigHDWallet.FORMAT_P2WSH,
   });
-  const { isAdvancedModeEnabled } = useSettings();
 
   const stylesHook = StyleSheet.create({
     root: {
@@ -127,17 +125,15 @@ const WalletsAddMultisig: React.FC = () => {
           </Text>
         </Text>
       </View>
-      {isAdvancedModeEnabled && (
-        <View>
-          <ListItem
-            testID="VaultAdvancedCustomize"
-            onPress={showAdvancedOptionsModal}
-            title={loc.multisig.vault_advanced_customize}
-            subtitle={`${getCurrentlySelectedFormat('format')}, ${getCurrentlySelectedFormat('quorum')}`}
-            chevron
-          />
-        </View>
-      )}
+      <View>
+        <ListItem
+          testID="VaultAdvancedCustomize"
+          onPress={showAdvancedOptionsModal}
+          title={loc.multisig.vault_advanced_customize}
+          subtitle={`${getCurrentlySelectedFormat('format')}, ${getCurrentlySelectedFormat('quorum')}`}
+          chevron
+        />
+      </View>
       <View style={styles.buttonContainer}>
         <Button
           testID="LetsStart"
