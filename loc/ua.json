@@ -45,8 +45,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "Додаткова Інформація",
-    "lightning_invoice": "Lightning Рахунок",
-    "open_direct_channel": "Відкрийте прямий канал з цим вузлом:"
+    "lightning_invoice": "Lightning Рахунок"
   },
   "plausibledeniability": {
     "create_fake_storage": "Створити Зашифроване Сховище",
@@ -284,8 +283,8 @@
     "sort_status": "Статус"
   },
   "units": {
-    "DOI": "DOI",
     "MAX": "MAX",
+    "DOI": "DOI",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
     "swartz": "swartz"

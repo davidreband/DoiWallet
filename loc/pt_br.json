@@ -18,7 +18,6 @@
     "seed": "Seed",
     "success": "Sucesso",
     "wallet_key": "Chave da Carteira",
-    "invalid_animated_qr_code_fragment": "QR Code animado com fragmento inválido. Favor tentar de novo.",
     "close": "Fechar",
     "change_input_currency": "Alterar moeda de entrada",
     "refresh": "Atualizar",
@@ -57,8 +56,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "Informação adicional",
-    "lightning_invoice": "Fatura Lightning",
-    "open_direct_channel": "Abrir canal direto com este nó:"
+    "lightning_invoice": "Fatura Lightning"
   },
   "plausibledeniability": {
     "create_fake_storage": "Criar armazenamento criptografado",
@@ -213,7 +211,6 @@
     "currency_source": "A taxa é obtida de",
     "currency_fetch_error": "Ocorreu um erro ao tentar obter o índice da moeda selecionada.",
     "default_desc": "Quando desativado, a DoiWallet abrirá imediatamente a carteira selecionada ao ser iniciada.",
-    "default_info": "Informação Padrão",
     "default_title": "Ao abrir",
     "default_wallets": "Ver todas as carteiras",
     "electrum_connected": "Conectado",
@@ -237,7 +234,6 @@
     "electrum_reset_to_default_and_clear_history": "Redefinir para o padrão e limpar histórico",
     "encrypt_decrypt": "Descriptografar armazenamento",
     "encrypt_decrypt_q": "Tem certeza de que deseja descriptografar seu armazenamento? Isso permitirá que suas carteiras sejam acessadas sem uma senha.",
-    "encrypt_enc_and_pass": "Encriptado e protegido por senha",
     "encrypt_storage_explanation_headline": "Habilitar criptografia de armazenamento",
     "encrypt_storage_explanation_description_line1": "A ativação da criptografia de armazenamento adiciona uma camada extra de proteção ao seu aplicativo, protegendo a forma como os dados são armazenados no dispositivo. Isso torna mais difícil para qualquer pessoa acessar suas informações sem a sua permissão.",
     "encrypt_storage_explanation_description_line2": "Porém, é importante entender que essa criptografia protege apenas o acesso às suas carteiras armazenadas nas chaves do dispositivo. Não coloca senha ou qualquer proteção extra especificamente nas carteiras.",
@@ -251,7 +247,6 @@
     "set_as_preferred": "Definir como preferido",
     "set_as_preferred_electrum": "Definir {host}:{port} como servidor preferencial desabilitará a conexão com um servidor sugerido aleatoriamente.",
     "encrypted_feature_disabled": "Este recurso não pode ser usado com o armazenamento criptografado ativado.",
-    "encrypt_use_expl": "{type} será usado para confirmar sua identidade antes de fazer uma transação, desbloquear, exportar ou deletar uma carteira. {type} não será usado para desbloquear armazenamento encriptado.",
     "biometrics_fail": "Se {type} não estiver habilitado ou falhar ao desbloquear, você pode usar o código de acesso do seu dispositivo como alternativa.",
     "general": "Geral",
     "general_continuity": "Continuidade",
@@ -291,6 +286,8 @@
     "total_balance_explanation": "Exibir o saldo total de todas suas carteiras nos seus widgets da tela inicial.",
     "widgets": "Widgets",
     "tools": "Ferramentas",
+    "encrypt_enc_and_pass": "Encriptado e protegido por senha",
+    "encrypt_use_expl": "{type} será usado para confirmar sua identidade antes de fazer uma transação, desbloquear, exportar ou deletar uma carteira. {type} não será usado para desbloquear armazenamento encriptado.",
     "privacy_temporary_screenshots": "Permitir Screenshots",
     "privacy_temporary_screenshots_instructions": "A proteção de captura de tela será desligada para esta sesão, permitindo que você tire Screenshots. Uma vez que você fechar e reabrir a aplicação, a proteção estará ligada automáticamente.",
     "electrum_error_connect_tor": "Não foi possível conectar ao servidor Electrum informado. Verifique se o app Orbot está conectado e tente novamente.",
@@ -299,7 +296,8 @@
     "no_wallet_available": "Nenhuma carteira disponível. Crie ou importe uma carteira.",
     "no_wallet_selected": "Nenhuma carteira selecionada",
     "push_notifications": "Notificações push",
-    "receive_bitcoin_intent": "Atalho \"Receber Bitcoin\""
+    "receive_bitcoin_intent": "Atalho \"Receber Bitcoin\"",
+    "default_info": "Informação Padrão"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "Gostaria de receber notificações quando receber pagamentos?",
@@ -578,10 +576,10 @@
     "view_qrcode": "Ver QR Code"
   },
   "autofill_word": {
-    "title": "Gerar última palavra da seed mnemônica ",
     "enter": "Forneça sua seed mnemônica parcial",
     "generate_word": "Gerar última palavra",
-    "error": "Não foi fornecida seed mnemônica parcial no formato de 11 OU 23 palavras. Por favor, tente novamente."
+    "error": "Não foi fornecida seed mnemônica parcial no formato de 11 OU 23 palavras. Por favor, tente novamente.",
+    "title": "Gerar última palavra da seed mnemônica "
   },
   "cc": {
     "change": "Troco",

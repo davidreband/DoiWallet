@@ -18,7 +18,6 @@
     "seed": "Seed",
     "success": "Sukces",
     "wallet_key": "Klucz Portfela",
-    "invalid_animated_qr_code_fragment": "Nieprawidłowy fragment animowanego kodu QR. Spróbuj ponownie.",
     "close": "Zamknij",
     "change_input_currency": "Zmień walutę",
     "refresh": "Odśwież",
@@ -57,8 +56,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "Dodatkowe informacje",
-    "lightning_invoice": "Faktura Lightning",
-    "open_direct_channel": "Otwórz kanał bezpośredni z tym nodem:"
+    "lightning_invoice": "Faktura Lightning"
   },
   "plausibledeniability": {
     "create_fake_storage": "Utwórz zaszyfrowany magazyn danych",
@@ -215,7 +213,6 @@
     "currency_source": "Kurs pobrazny z",
     "currency_fetch_error": "Wystąpił błąd podczas pobierania kursu dla wybranej waluty.",
     "default_desc": "Gdy jest wyłączone, DoiWallet natychmiast otworzy wybrany domyślny portfel.",
-    "default_info": "Domyślny portfel",
     "default_title": "Po uruchomieniu",
     "default_wallets": "Wyświetl wszystkie portfele",
     "electrum_connected": "Połączony",
@@ -240,7 +237,6 @@
     "electrum_reset_to_default_and_clear_history": "Przywróć domyślne ustawienia i wyczyść historię",
     "encrypt_decrypt": "Odszyfruj Magazyn Danych",
     "encrypt_decrypt_q": "Czy jesteś pewien, że chcesz odszyfrować schowek? To pozwoli na dostęp do twoich portfeli bez hasła.",
-    "encrypt_enc_and_pass": "Szyfrowany i chroniony hasłem",
     "encrypt_storage_explanation_headline": "Włącz szyfrowanie danych",
     "encrypt_storage_explanation_description_line1": "Włączenie szyfrowania danych dodaje dodatkową warstwę ochrony do aplikacji, zabezpieczając sposób, w jaki dane są przechowywane na urządzeniu. Utrudnia to dostęp do Twoich informacji bez odpowiedniego upoważnienia.",
     "encrypt_storage_explanation_description_line2": "Jednak warto wiedzieć, że to szyfrowanie chroni jedynie dostęp do portfeli przechowywanych w pęku kluczy urządzenia. Nie zabezpiecza ono samych portfeli hasłem ani żadną dodatkową ochroną.",
@@ -254,7 +250,6 @@
     "set_as_preferred": "Ustaw jako preferowany",
     "set_as_preferred_electrum": "Ustawienie {host}:{port} jako preferowanego serwera wyłączy losowe łączenie się z sugerowanym serwerem.",
     "encrypted_feature_disabled": "Ta funkcja nie może być używana z włączonym szyfrowaniem pamięci.",
-    "encrypt_use_expl": "{type} będzie użyty w celu potwierdzenia twojej tożsamości przed wykonaniem transakcji, odblokowaniem, eksportem lub usunięciem portfela. {type} nie będzie użyty do odblokowania danych zaszyfrowanych.",
     "biometrics_fail": "Jeśli {type} nie jest włączony lub nie udaje się odblokować, możesz alternatywnie użyć kodu dostępu swojego urządzenia.",
     "general": "Ogólne",
     "general_continuity": "Funkcja Continuity",
@@ -294,12 +289,15 @@
     "total_balance_explanation": "Wyświetlaj saldo całkowite wszystkich Twoich portfeli wśród widżetów na ekranie domowym",
     "widgets": "Widżety",
     "tools": "Narzędzia",
+    "encrypt_enc_and_pass": "Szyfrowany i chroniony hasłem",
+    "encrypt_use_expl": "{type} będzie użyty w celu potwierdzenia twojej tożsamości przed wykonaniem transakcji, odblokowaniem, eksportem lub usunięciem portfela. {type} nie będzie użyty do odblokowania danych zaszyfrowanych.",
     "electrum_wrong_chain": "{server} śledzi inny łańcuch Doichain niż ten portfel, więc jego salda i potwierdzenia tutaj nie obowiązują. Serwer został usunięty.",
     "enable_receive_bitcoin_intent_desc": "Szybko pokazuje twój adres odbiorczy Bitcoin w postaci kodu QR.",
     "no_wallet_available": "Brak dostępnych portfeli. Utwórz lub zaimportuj portfel.",
     "no_wallet_selected": "Nie wybrano portfela",
     "push_notifications": "Powiadomienia push",
-    "receive_bitcoin_intent": "Skrót „Odbierz Bitcoin”"
+    "receive_bitcoin_intent": "Skrót „Odbierz Bitcoin”",
+    "default_info": "Domyślny portfel"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "Czy chcesz otrzymywać powiadomienia o nadchodzących płatnościach?",
@@ -578,10 +576,10 @@
     "view_qrcode": "Pokaż kod QR"
   },
   "autofill_word": {
-    "title": "Generuj ostatnie słowo mnemoniczne",
     "enter": "Wprowadź swój częściowy mnemonik",
     "generate_word": "Generuj ostatnie słowo",
-    "error": "Wprowadzone dane nie są 11- lub 23-wyrazowym częściowym mnemonikiem. Proszę spróbować ponownie."
+    "error": "Wprowadzone dane nie są 11- lub 23-wyrazowym częściowym mnemonikiem. Proszę spróbować ponownie.",
+    "title": "Generuj ostatnie słowo mnemoniczne"
   },
   "cc": {
     "change": "Reszta",

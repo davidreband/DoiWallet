@@ -90,7 +90,6 @@
     "biometrics": "بیومتریک",
     "biom_conf_identity": "هوویت خوتونه تایید بکؽت.",
     "currency": "واهد پیلٛ",
-    "default_info": "دونسمنیا پؽش فرز",
     "default_title": "مجال ر ونن",
     "electrum_offline_mode": "هالت آفلاین",
     "use_ssl": "SSL ن و کار بییر",
@@ -114,7 +113,8 @@
     "privacy_system_settings": "سامونیا دسگا",
     "rate": "نرخ",
     "widgets": "اوزارکیا",
-    "tools": "اوزاریا"
+    "tools": "اوزاریا",
+    "default_info": "دونسمنیا پؽش فرز"
   },
   "transactions": {
     "copy_link": "لٛف گری لینگ",

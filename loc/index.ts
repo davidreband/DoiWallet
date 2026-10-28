@@ -49,6 +49,9 @@ const setDateTimeLocale = async () => {
     case 'cy':
       require('dayjs/locale/cy');
       break;
+    case 'cs_cz':
+      require('dayjs/locale/cs');
+      break;
     case 'da_dk':
       require('dayjs/locale/da');
       break;
@@ -69,11 +72,14 @@ const setDateTimeLocale = async () => {
     case 'et':
       require('dayjs/locale/et');
       break;
+    case 'fa':
+      require('dayjs/locale/fa');
+      break;
     case 'fi_fi':
       require('dayjs/locale/fi');
       break;
-    case 'fa':
-      require('dayjs/locale/fa');
+    case 'fo':
+      require('dayjs/locale/fo');
       break;
     case 'fr_fr':
       require('dayjs/locale/fr');
@@ -97,6 +103,13 @@ const setDateTimeLocale = async () => {
       lang = 'ja';
       require('dayjs/locale/ja');
       break;
+    case 'kk@Cyrl':
+      lang = 'kk';
+      require('dayjs/locale/kk');
+      break;
+    case 'kn':
+      require('dayjs/locale/kn');
+      break;
     case 'ko_kr':
       lang = 'ko';
       require('dayjs/locale/ko');
@@ -105,20 +118,25 @@ const setDateTimeLocale = async () => {
       lang = 'fa';
       require('dayjs/locale/fa');
       break;
-    case 'kn':
-      require('dayjs/locale/kn');
-      break;
     case 'ms':
       require('dayjs/locale/ms');
-      break;
-    case 'ne':
-      require('dayjs/locale/ne');
       break;
     case 'nb_no':
       require('dayjs/locale/nb');
       break;
+    case 'ne':
+      require('dayjs/locale/ne');
+      break;
     case 'nl_nl':
       require('dayjs/locale/nl');
+      break;
+    case 'pcm':
+      // Nigerian Pidgin - using English as closest match (pcm is English-based creole)
+      lang = 'en';
+      require('dayjs/locale/en');
+      break;
+    case 'pl':
+      require('dayjs/locale/pl');
       break;
     case 'pt_br':
       lang = 'pt-br';
@@ -128,9 +146,6 @@ const setDateTimeLocale = async () => {
       lang = 'pt';
       require('dayjs/locale/pt');
       break;
-    case 'pl':
-      require('dayjs/locale/pl');
-      break;
     case 'ro':
       require('dayjs/locale/ro');
       break;
@@ -138,10 +153,14 @@ const setDateTimeLocale = async () => {
       require('dayjs/locale/ru');
       break;
     case 'si_lk':
-      require('dayjs/locale/si.js');
+      require('dayjs/locale/si');
       break;
     case 'sk_sk':
       require('dayjs/locale/sk');
+      break;
+    case 'sq_AL':
+      lang = 'sq';
+      require('dayjs/locale/sq');
       break;
     case 'sl_si':
       require('dayjs/locale/sl');
@@ -159,8 +178,19 @@ const setDateTimeLocale = async () => {
     case 'tr_tr':
       require('dayjs/locale/tr');
       break;
+    case 'ua':
+      require('dayjs/locale/uk');
+      break;
     case 'vi_vn':
       require('dayjs/locale/vi');
+      break;
+    case 'zar_afr':
+      require('dayjs/locale/af');
+      break;
+    case 'zar_xho':
+      // Xhosa - no dayjs locale available, using English as closest match
+      lang = 'en';
+      require('dayjs/locale/en');
       break;
     case 'zh_cn':
       lang = 'zh-cn';
@@ -222,8 +252,8 @@ const loc: ILocalization = new Localization({
   bg_bg: require('./bg_bg.json'),
   bqi: require('./bqi.json'),
   ca: require('./ca.json'),
-  cy: require('./cy.json'),
   cs_cz: require('./cs_cz.json'),
+  cy: require('./cy.json'),
   da_dk: require('./da_dk.json'),
   de_de: require('./de_de.json'),
   el: require('./el.json'),
@@ -232,6 +262,7 @@ const loc: ILocalization = new Localization({
   et: require('./et_EE.json'),
   fa: require('./fa.json'),
   fi_fi: require('./fi_fi.json'),
+  fo: require('./fo.json'),
   fr_fr: require('./fr_fr.json'),
   he: require('./he.json'),
   hr_hr: require('./hr_hr.json'),
@@ -239,21 +270,24 @@ const loc: ILocalization = new Localization({
   id_id: require('./id_id.json'),
   it: require('./it.json'),
   jp_jp: require('./jp_jp.json'),
+  'kk@Cyrl': require('./kk@Cyrl.json'),
+  kn: require('./kn.json'),
   ko_kr: require('./ko_KR.json'),
   lrc: require('./lrc.json'),
   ms: require('./ms.json'),
-  kn: require('./kn.json'),
-  ne: require('./ne.json'),
   nb_no: require('./nb_no.json'),
+  ne: require('./ne.json'),
   nl_nl: require('./nl_nl.json'),
+  pcm: require('./pcm.json'),
+  pl: require('./pl.json'),
   pt_br: require('./pt_br.json'),
   pt_pt: require('./pt_pt.json'),
-  pl: require('./pl.json'),
   ro: require('./ro.json'),
   ru: require('./ru.json'),
   si_lk: require('./si_LK.json'),
   sk_sk: require('./sk_sk.json'),
   sl_si: require('./sl_SI.json'),
+  sq_AL: require('./sq_AL.json'),
   sr_rs: require('./sr_RS.json'),
   sv_se: require('./sv_se.json'),
   th_th: require('./th_th.json'),
@@ -298,6 +332,20 @@ export const transactionTimeToReadable = (time: number | string) => {
     return String(time);
   }
   return ret;
+};
+
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+/** Formats a timestamp (milliseconds) for the transaction list. Uses relative time (e.g. "2 hours ago") for the past 24 hours, otherwise absolute date. */
+export const formatTransactionListDate = (timestampMs: number): string => {
+  const d = dayjs(timestampMs);
+  const now = dayjs();
+  const diff = now.valueOf() - timestampMs;
+  if (diff >= 0 && diff < ONE_DAY_MS) {
+    return d.fromNow();
+  }
+  const format = d.year() === now.year() ? 'MMM D, h:mm a' : 'MMM D, YYYY h:mm a';
+  return d.format(format);
 };
 
 export const removeTrailingZeros = (value: number | string): string => {

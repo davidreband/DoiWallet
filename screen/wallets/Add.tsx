@@ -33,6 +33,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import SafeAreaScrollView from '../../components/SafeAreaScrollView';
 import { BlueSpacing20, BlueSpacing40 } from '../../components/BlueSpacing';
 import { hexToUint8Array, uint8ArrayToHex } from '../../blue_modules/uint8array-extras';
+import { resetScanWasBBQR } from '../../helpers/scan-qr.ts';
 
 enum ButtonSelected {
   // @ts-ignore: Return later to update
@@ -263,7 +264,9 @@ const WalletsAdd: React.FC = () => {
   }, [HeaderRight, colorScheme, colors.foregroundColor, setOptions, toolTipActions]);
 
   useEffect(() => {
-    // the screen used to wait for the LNDHub URL before enabling Create; there is nothing to wait for
+    // resetting format of last camera qr scan, in case user will use camera to
+    // scan his wallet backup to import wallet
+    resetScanWasBBQR();
     setIsLoading(false);
   }, []);
 

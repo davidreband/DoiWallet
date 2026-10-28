@@ -14,8 +14,7 @@
     "no": "Nem",
     "seed": "jelszó sorozat",
     "success": "Sikeres",
-    "wallet_key": "Tárca kulcs",
-    "invalid_animated_qr_code_fragment": "Érvénytelen animált QR kód részlet, próbáld újra!"
+    "wallet_key": "Tárca kulcs"
   },
   "azteco": {
     "codeIs": "A kuponkódod ",
@@ -41,8 +40,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "További információk",
-    "lightning_invoice": "Villám Számla",
-    "open_direct_channel": "Közvetlen csatorna nyitása erre a csomópontra:"
+    "lightning_invoice": "Villám Számla"
   },
   "plausibledeniability": {
     "create_fake_storage": "Hamis tárhely létrehozása",
@@ -167,7 +165,6 @@
     "currency": "Valuta",
     "currency_fetch_error": "Hibatörtént a ráta lekérdezésekor a kijelölt fiat pénznél.",
     "default_desc": "Ha le van tiltva, a DoiWallet azonnal megnyitja a kiválasztott tárcát indításkor. ",
-    "default_info": "Alapértelmezett információ",
     "default_title": "Indításkor ",
     "default_wallets": "Összes tárca megtekintése",
     "electrum_connected": "Kapcsolódva",
@@ -186,11 +183,9 @@
     "electrum_reset": "alapértelmezett beállítások visszaállítása",
     "encrypt_decrypt": "Háttértár titkosításának feloldása",
     "encrypt_decrypt_q": "Biztosan feloldod a háttértár titkosítását? Ez lehetővé teszi a tárca jelszó nélküli használatát. ",
-    "encrypt_enc_and_pass": "Titkosítva és jelszóval védve",
     "encrypt_title": "Biztonság",
     "encrypt_tstorage": "tárhely",
     "encrypt_use": "használj {type}",
-    "encrypt_use_expl": "Igazolja személyazonosságát a {type} a tranzakció végrehajtása, a pénztárca feloldása, exportálása vagy törlése előtt. A {type} nem használható a titkosított tárolás feloldására.",
     "general": "Általános",
     "general_continuity": "Folytonosság",
     "general_continuity_e": "Ha engedélyezve van, láthatod a kiválasztott tárcákat és tranzakciókat más, csatlakoztatott Apple iCloud eszközökön.",
@@ -224,7 +219,10 @@
     "total_balance": "Teljes egyenleg",
     "total_balance_explanation": "Jelenítse meg az összes pénztárca egyenlegét a kezdőképernyő moduljain.",
     "widgets": "Widgetek",
-    "tools": "Eszközök"
+    "tools": "Eszközök",
+    "encrypt_enc_and_pass": "Titkosítva és jelszóval védve",
+    "encrypt_use_expl": "Igazolja személyazonosságát a {type} a tranzakció végrehajtása, a pénztárca feloldása, exportálása vagy törlése előtt. A {type} nem használható a titkosított tárolás feloldására.",
+    "default_info": "Alapértelmezett információ"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "Szeretnél értesítést a bejövő utalásokról? ",
@@ -453,10 +451,10 @@
     "sort_status": "Állapot"
   },
   "units": {
-    "DOI": "DOI",
     "MAX": "MAX",
-    "sat_byte": "swartz/byte",
     "sats": "swartz",
+    "DOI": "DOI",
+    "sat_byte": "swartz/byte",
     "swartz": "swartz"
   },
   "addresses": {

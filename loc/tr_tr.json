@@ -17,7 +17,6 @@
     "seed": "Seed",
     "success": "Başarılı",
     "wallet_key": "Cüzdan anahtarı",
-    "invalid_animated_qr_code_fragment": "Geçersiz animasyonlu QR Kod parçası. Lütfen tekrar deneyin.",
     "close": "Kapat",
     "change_input_currency": "Giriş para birimini değiştir"
   },
@@ -45,8 +44,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "Ek Bilgi",
-    "lightning_invoice": "Lightning faturası",
-    "open_direct_channel": "Bu noda direkt kanal aç: "
+    "lightning_invoice": "Lightning faturası"
   },
   "plausibledeniability": {
     "create_fake_storage": "Sahte şifreli depolama oluşturun",
@@ -206,10 +204,10 @@
     "sort_label": "Etiket"
   },
   "units": {
-    "DOI": "DOI",
     "MAX": "MAX",
-    "sat_byte": "swartz/byte",
     "sats": "swartz",
+    "DOI": "DOI",
+    "sat_byte": "swartz/byte",
     "swartz": "swartz"
   },
   "addresses": {

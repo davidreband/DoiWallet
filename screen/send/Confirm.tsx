@@ -220,7 +220,7 @@ const Confirm: React.FC = () => {
       let amount = 0;
       for (const recipient of recipients) {
         if (recipient.value) {
-          amount += recipient.value;
+          amount += Number(recipient.value);
         }
       }
 

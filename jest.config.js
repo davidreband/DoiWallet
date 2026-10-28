@@ -10,7 +10,7 @@ module.exports = {
   // that reaches `class/index.ts` dies on `export { ... }` in @react-navigation/native, which is
   // most of the wallet suites.
   transformIgnorePatterns: [
-    'node_modules/(?!((jest-)?react-native(-.*)?|@react-native(-community)?)|@rneui|@react-navigation|silent-payments/)',
+    'node_modules/(?!((jest-)?react-native(-.*)?|@react-native(-community)?)|@rneui|@react-navigation|@scure|silent-payments/)',
   ],
   setupFiles: ['./tests/setup.js'],
   watchPathIgnorePatterns: ['<rootDir>/node_modules'],

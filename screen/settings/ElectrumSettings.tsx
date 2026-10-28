@@ -1,34 +1,38 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Alert, Keyboard, LayoutAnimation, Platform, StyleSheet, Switch, TextInput, View } from 'react-native';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Alert, Keyboard, LayoutAnimation, Platform, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import DefaultPreference from 'react-native-default-preference';
+
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
+import { hardcodedPeers, presentResetToDefaultsAlert, suggestedServers } from '../../blue_modules/BlueElectrum';
+import { GROUP_IO_BLUEWALLET } from '../../blue_modules/currency';
 import triggerHapticFeedback, { HapticFeedbackTypes, triggerSelectionHapticFeedback } from '../../blue_modules/hapticFeedback';
-import { BlueCard, BlueText } from '../../BlueComponents';
 import DeeplinkSchemaMatch from '../../class/deeplink-schema-match';
+import AddressInput from '../../components/AddressInput';
 import presentAlert from '../../components/Alert';
 import Button from '../../components/Button';
-import loc from '../../loc';
+import { DismissKeyboardInputAccessory, DismissKeyboardInputAccessoryViewID } from '../../components/DismissKeyboardInputAccessory';
 import {
   DoneAndDismissKeyboardInputAccessory,
   DoneAndDismissKeyboardInputAccessoryViewID,
 } from '../../components/DoneAndDismissKeyboardInputAccessory';
-import DefaultPreference from 'react-native-default-preference';
-import { DismissKeyboardInputAccessory, DismissKeyboardInputAccessoryViewID } from '../../components/DismissKeyboardInputAccessory';
-import { useTheme } from '../../components/themes';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamList';
-import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
-import { CommonToolTipActions } from '../../typings/CommonToolTipActions';
-import { Divider } from '@rneui/themed';
-import { Header } from '../../components/Header';
-import AddressInput from '../../components/AddressInput';
-import { GROUP_IO_BLUEWALLET } from '../../blue_modules/currency';
-import { Action } from '../../components/types';
-import ListItem, { PressableWrapper } from '../../components/ListItem';
 import HeaderMenuButton from '../../components/HeaderMenuButton';
+import {
+  SettingsScrollView,
+  SettingsSection,
+  SettingsSectionHeader,
+  SettingsCard,
+  SettingsListItem,
+  SettingsSubtitle,
+  isAndroid,
+} from '../../components/platform';
+import { useTheme } from '../../components/themes';
+import { Action } from '../../components/types';
 import { useSettings } from '../../hooks/context/useSettings';
-import { suggestedServers, hardcodedPeers, presentResetToDefaultsAlert } from '../../blue_modules/BlueElectrum';
-import SafeAreaScrollView from '../../components/SafeAreaScrollView';
-import { BlueSpacing10, BlueSpacing20 } from '../../components/BlueSpacing';
+import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
+import loc from '../../loc';
+import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamList';
+import { CommonToolTipActions } from '../../typings/CommonToolTipActions';
 
 type RouteProps = RouteProp<DetailViewStackParamList, 'ElectrumSettings'>;
 
@@ -39,6 +43,7 @@ export interface ElectrumServerItem {
 }
 
 const SET_PREFERRED_PREFIX = 'set_preferred_';
+const horizontalPadding = isAndroid ? 20 : 16;
 
 const ElectrumSettings: React.FC = () => {
   const { colors } = useTheme();
@@ -51,6 +56,7 @@ const ElectrumSettings: React.FC = () => {
   const [host, setHost] = useState<string>('');
   const [port, setPort] = useState<number | undefined>();
   const [sslPort, setSslPort] = useState<number | undefined>(undefined);
+  const [serverBanner, setServerBanner] = useState<string>('');
   const [isAndroidNumericKeyboardFocused, setIsAndroidNumericKeyboardFocused] = useState(false);
   const [isAndroidAddressKeyboardVisible, setIsAndroidAddressKeyboardVisible] = useState(false);
   const { setIsElectrumDisabled, isElectrumDisabled } = useSettings();
@@ -86,24 +92,22 @@ const ElectrumSettings: React.FC = () => {
     usePort: {
       color: colors.foregroundColor,
     },
+    bannerText: {
+      color: colors.foregroundColor,
+    },
   });
 
   const configIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const fetchData = useCallback(async () => {
-    console.log('Fetching data...');
     const preferredServer = await BlueElectrum.getPreferredServer();
     const savedHost = preferredServer?.host;
     const savedPort = preferredServer?.tcp ? Number(preferredServer.tcp) : undefined;
     const savedSslPort = preferredServer?.ssl ? Number(preferredServer.ssl) : undefined;
     const serverHistoryStr = (await DefaultPreference.get(BlueElectrum.ELECTRUM_SERVER_HISTORY)) as string;
 
-    console.log('Preferred server:', preferredServer);
-    console.log('Server history string:', serverHistoryStr);
-
     const parsedServerHistory: ElectrumServerItem[] = serverHistoryStr ? JSON.parse(serverHistoryStr) : [];
 
-    // Allow duplicates for same host if ssl/tcp differs. Only skip if host, ssl, and tcp are all the same:
     const newServerHistoryArray: ElectrumServerItem[] = [];
     for (const item of parsedServerHistory) {
       const existing = newServerHistoryArray.find(s => s.host === item.host && s.tcp === item.tcp && s.ssl === item.ssl);
@@ -121,8 +125,6 @@ const ElectrumSettings: React.FC = () => {
           !hardcodedPeers.some(peer => peer.host === v.host && peer.tcp === v.tcp && peer.ssl === v.ssl),
       ),
     );
-
-    console.log('Filtered server history:', filteredServerHistory);
 
     setHost(savedHost || '');
     setPort(savedPort);
@@ -153,6 +155,17 @@ const ElectrumSettings: React.FC = () => {
       if (configIntervalRef.current) clearInterval(configIntervalRef.current);
     };
   }, [fetchData]);
+
+  // Fetch banner when connected
+  useEffect(() => {
+    if (config.connected === 1 && config.host && !isElectrumDisabled) {
+      BlueElectrum.getServerBanner()
+        .then(setServerBanner)
+        .catch(() => setServerBanner(''));
+    } else {
+      setServerBanner('');
+    }
+  }, [config.connected, config.host, config.port, isElectrumDisabled]);
 
   useEffect(() => {
     if (server) {
@@ -194,14 +207,10 @@ const ElectrumSettings: React.FC = () => {
           }
           await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
 
-          // Clear current data for the preferred host
-          console.log('Clearing current data for the preferred host');
           await DefaultPreference.clear(BlueElectrum.ELECTRUM_HOST);
           await DefaultPreference.clear(BlueElectrum.ELECTRUM_TCP_PORT);
           await DefaultPreference.clear(BlueElectrum.ELECTRUM_SSL_PORT);
 
-          // Save the new preferred host
-          console.log('Saving new preferred host');
           await DefaultPreference.set(BlueElectrum.ELECTRUM_HOST, serverHost);
           await DefaultPreference.set(BlueElectrum.ELECTRUM_TCP_PORT, serverPort);
           await DefaultPreference.set(BlueElectrum.ELECTRUM_SSL_PORT, serverSslPort);
@@ -304,12 +313,11 @@ const ElectrumSettings: React.FC = () => {
   type TCreateServerActionParameters = {
     value: ElectrumServerItem;
     seenHosts: Set<string>;
-    isPreferred?: boolean;
     isConnectedTo?: boolean;
     isSuggested?: boolean;
   };
   const createServerAction = useCallback(
-    ({ value, seenHosts, isPreferred: _unused, isConnectedTo = false, isSuggested = false }: TCreateServerActionParameters) => {
+    ({ value, seenHosts, isConnectedTo = false, isSuggested = false }: TCreateServerActionParameters) => {
       const hostKey = `${value.host}:${value.tcp ?? ''}:${value.ssl ?? ''}`;
 
       seenHosts.add(hostKey);
@@ -357,7 +365,6 @@ const ElectrumSettings: React.FC = () => {
           return createServerAction({
             value,
             seenHosts,
-            isPreferred: isPreferredServer,
             isConnectedTo,
             isSuggested,
           });
@@ -446,11 +453,9 @@ const ElectrumSettings: React.FC = () => {
   const onSSLPortChange = (value: boolean) => {
     Keyboard.dismiss();
     if (value) {
-      // Move the current port to sslPort
       setSslPort(port);
       setPort(undefined);
     } else {
-      // Move the current sslPort to port
       setPort(sslPort);
       setSslPort(undefined);
     }
@@ -478,90 +483,91 @@ const ElectrumSettings: React.FC = () => {
   const renderElectrumSettings = () => {
     return (
       <>
-        <Divider />
-        <BlueSpacing20 />
-        <Header leftText={loc.settings.electrum_status} />
-        <BlueSpacing20 />
+        <SettingsSectionHeader title={loc.settings.electrum_status} />
+        <SettingsSection compact>
+          <SettingsCard>
+            <View style={styles.cardContent}>
+              <View style={styles.connectWrap}>
+                <View style={[styles.container, config.connected === 1 ? stylesHook.containerConnected : stylesHook.containerDisconnected]}>
+                  <Text
+                    style={[styles.textConnectionStatus, config.connected === 1 ? stylesHook.textConnected : stylesHook.textDisconnected]}
+                  >
+                    {config.connected === 1 ? loc.settings.electrum_connected : loc.settings.electrum_connected_not}
+                  </Text>
+                </View>
+              </View>
+              <Text style={[styles.hostname, stylesHook.hostname]} onPress={checkServer} selectable>
+                {config.host}:{config.port}
+              </Text>
 
-        <BlueCard>
-          <View style={styles.connectWrap}>
-            <View style={[styles.container, config.connected === 1 ? stylesHook.containerConnected : stylesHook.containerDisconnected]}>
-              <BlueText
-                style={[styles.textConnectionStatus, config.connected === 1 ? stylesHook.textConnected : stylesHook.textDisconnected]}
-              >
-                {config.connected === 1 ? loc.settings.electrum_connected : loc.settings.electrum_connected_not}
-              </BlueText>
+              {serverBanner.length > 0 && <Text style={[styles.bannerText, stylesHook.bannerText]}>{serverBanner}</Text>}
             </View>
-          </View>
-          <BlueSpacing10 />
-          <BlueText style={[styles.hostname, stylesHook.hostname]} onPress={checkServer} selectable>
-            {config.host}:{config.port}
-          </BlueText>
-        </BlueCard>
-        <BlueSpacing20 />
+          </SettingsCard>
+        </SettingsSection>
 
-        <Divider />
-        <BlueSpacing10 />
-        <BlueSpacing20 />
+        <SettingsSectionHeader title={loc.settings.electrum_preferred_server} />
+        <SettingsSection compact>
+          <SettingsCard>
+            <View style={styles.cardContent}>
+              <SettingsSubtitle>{loc.settings.electrum_preferred_server_description}</SettingsSubtitle>
 
-        <Header leftText={loc.settings.electrum_preferred_server} />
-        <BlueCard>
-          <BlueText>{loc.settings.electrum_preferred_server_description}</BlueText>
-          <BlueSpacing20 />
-          <AddressInput
-            testID="HostInput"
-            placeholder={loc.formatString(loc.settings.electrum_host, { example: '10.20.30.40' })}
-            address={host}
-            onChangeText={text => setHost(text.trim())}
-            editable={!isLoading}
-            keyboardType="default"
-            onBlur={() => setIsAndroidAddressKeyboardVisible(false)}
-            onFocus={() => setIsAndroidAddressKeyboardVisible(true)}
-            inputAccessoryViewID={DoneAndDismissKeyboardInputAccessoryViewID}
-            isLoading={isLoading}
-          />
-          <BlueSpacing20 />
-          <View style={styles.portWrap}>
-            <View style={[styles.inputWrap, stylesHook.inputWrap]}>
-              <TextInput
-                placeholder={loc.formatString(loc.settings.electrum_port, { example: '50001' })}
-                value={sslPort?.toString() === '' || sslPort === undefined ? port?.toString() || '' : sslPort?.toString() || ''}
-                onChangeText={text => {
-                  const parsed = Number(text.trim());
-                  if (Number.isNaN(parsed)) {
-                    // Handle invalid input
-                    sslPort === undefined ? setPort(undefined) : setSslPort(undefined);
-                    return;
-                  }
-                  sslPort === undefined ? setPort(parsed) : setSslPort(parsed);
-                }}
-                numberOfLines={1}
-                style={[styles.inputText, stylesHook.inputText]}
-                editable={!isLoading}
-                placeholderTextColor="#81868e"
-                underlineColorAndroid="transparent"
-                autoCorrect={false}
-                autoCapitalize="none"
-                keyboardType="number-pad"
-                inputAccessoryViewID={DismissKeyboardInputAccessoryViewID}
-                testID="PortInput"
-                onFocus={() => setIsAndroidNumericKeyboardFocused(true)}
-                onBlur={() => setIsAndroidNumericKeyboardFocused(false)}
-              />
+              <View style={styles.inputGroupSpacing}>
+                <AddressInput
+                  testID="HostInput"
+                  placeholder={loc.formatString(loc.settings.electrum_host, { example: '10.20.30.40' })}
+                  address={host}
+                  onChangeText={text => setHost(text.trim())}
+                  editable={!isLoading}
+                  keyboardType="default"
+                  onBlur={() => setIsAndroidAddressKeyboardVisible(false)}
+                  onFocus={() => setIsAndroidAddressKeyboardVisible(true)}
+                  inputAccessoryViewID={DoneAndDismissKeyboardInputAccessoryViewID}
+                  isLoading={isLoading}
+                />
+              </View>
+
+              <View style={styles.portWrap}>
+                <View style={[styles.inputWrap, stylesHook.inputWrap]}>
+                  <TextInput
+                    placeholder={loc.formatString(loc.settings.electrum_port, { example: '50001' })}
+                    value={sslPort?.toString() === '' || sslPort === undefined ? port?.toString() || '' : sslPort?.toString() || ''}
+                    onChangeText={text => {
+                      const parsed = Number(text.trim());
+                      if (Number.isNaN(parsed)) {
+                        sslPort === undefined ? setPort(undefined) : setSslPort(undefined);
+                        return;
+                      }
+                      sslPort === undefined ? setPort(parsed) : setSslPort(parsed);
+                    }}
+                    numberOfLines={1}
+                    style={[styles.inputText, stylesHook.inputText]}
+                    editable={!isLoading}
+                    placeholderTextColor="#81868e"
+                    underlineColorAndroid="transparent"
+                    autoCorrect={false}
+                    autoCapitalize="none"
+                    keyboardType="number-pad"
+                    inputAccessoryViewID={DismissKeyboardInputAccessoryViewID}
+                    testID="PortInput"
+                    onFocus={() => setIsAndroidNumericKeyboardFocused(true)}
+                    onBlur={() => setIsAndroidNumericKeyboardFocused(false)}
+                  />
+                </View>
+                <Text style={[styles.usePort, stylesHook.usePort]}>{loc.settings.use_ssl}</Text>
+                <Switch
+                  testID="SSLPortInput"
+                  value={sslPort !== undefined}
+                  onValueChange={onSSLPortChange}
+                  disabled={host?.endsWith('.onion') || isLoading || host === '' || (port === undefined && sslPort === undefined)}
+                />
+              </View>
+
+              <View style={styles.buttonContainer}>
+                <Button disabled={saveDisabled} testID="Save" onPress={save} title={loc.settings.save} />
+              </View>
             </View>
-            <BlueText style={[styles.usePort, stylesHook.usePort]}>{loc.settings.use_ssl}</BlueText>
-            <Switch
-              testID="SSLPortInput"
-              value={sslPort !== undefined}
-              onValueChange={onSSLPortChange}
-              disabled={host?.endsWith('.onion') || isLoading || host === '' || (port === undefined && sslPort === undefined)}
-            />
-          </View>
-        </BlueCard>
-        <BlueCard>
-          <BlueSpacing20 />
-          <Button disabled={saveDisabled} testID="Save" onPress={save} title={loc.settings.save} />
-        </BlueCard>
+          </SettingsCard>
+        </SettingsSection>
 
         {Platform.select({
           ios: <DismissKeyboardInputAccessory />,
@@ -596,31 +602,36 @@ const ElectrumSettings: React.FC = () => {
   };
 
   return (
-    <SafeAreaScrollView
+    <SettingsScrollView
       keyboardShouldPersistTaps="always"
       automaticallyAdjustContentInsets
       contentInsetAdjustmentBehavior="automatic"
       automaticallyAdjustKeyboardInsets
       testID="ElectrumSettingsScrollView"
     >
-      <ListItem
-        Component={PressableWrapper}
-        title={loc.settings.electrum_offline_mode}
-        switch={{
-          onValueChange: onElectrumConnectionEnabledSwitchChange,
-          value: isElectrumDisabled,
-          testID: 'ElectrumConnectionEnabledSwitch',
-        }}
-        bottomDivider={false}
-        subtitle={loc.settings.electrum_offline_description}
-      />
+      <SettingsSection horizontalInset={false}>
+        <SettingsListItem
+          title={loc.settings.electrum_offline_mode}
+          subtitle={loc.settings.electrum_offline_description}
+          switch={{
+            onValueChange: onElectrumConnectionEnabledSwitchChange,
+            value: isElectrumDisabled,
+            testID: 'ElectrumConnectionEnabledSwitch',
+          }}
+          position="single"
+        />
+      </SettingsSection>
 
       {!isElectrumDisabled && renderElectrumSettings()}
-    </SafeAreaScrollView>
+    </SettingsScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  cardContent: {
+    paddingHorizontal: horizontalPadding,
+    paddingVertical: isAndroid ? 12 : 10,
+  },
   connectWrap: {
     width: 'auto',
     height: 34,
@@ -653,6 +664,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginTop: isAndroid ? 12 : 10,
   },
   inputText: {
     flex: 1,
@@ -664,7 +676,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   usePort: {
-    marginHorizontal: 16,
+    marginHorizontal: 14,
+  },
+  inputGroupSpacing: {
+    marginTop: isAndroid ? 12 : 10,
+  },
+  buttonContainer: {
+    marginTop: isAndroid ? 12 : 10,
+  },
+  bannerText: {
+    marginTop: isAndroid ? 16 : 12,
+    alignSelf: 'center',
+    fontFamily: 'monospace',
+    marginBottom: isAndroid ? 4 : 2,
   },
 });
 

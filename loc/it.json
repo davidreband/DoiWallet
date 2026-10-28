@@ -18,7 +18,6 @@
     "seed": "Seed",
     "success": "Operazione avvenuta con successo",
     "wallet_key": "Chiave del portafoglio",
-    "invalid_animated_qr_code_fragment": "Invalido frammento di codice QR animato. Prova di nuovo.",
     "close": "Chiudi",
     "change_input_currency": "Cambia la valuta di input",
     "refresh": "Aggiorna",
@@ -26,7 +25,9 @@
     "pick_file": "Scegli il file",
     "enter_amount": "Inserisci l'importo",
     "qr_custom_input_button": "Tocca 10 volte per inserire un input personalizzato",
-    "unlock": "Sblocca"
+    "unlock": "Sblocca",
+    "port": "Porta",
+    "ssl_port": "Porta SSL"
   },
   "azteco": {
     "codeIs": "Il codice del tuo voucher è",
@@ -53,8 +54,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "Ulteriori Informazioni",
-    "lightning_invoice": "Fattura Lightning",
-    "open_direct_channel": "Apri un canale diretto con questo nodo:"
+    "lightning_invoice": "Fattura Lightning"
   },
   "plausibledeniability": {
     "create_fake_storage": "Crea archivio criptato",
@@ -178,7 +178,6 @@
     "currency": "Valuta",
     "currency_fetch_error": "C'è stato un errore nel tentativo di ottenere il tasso di cambio per la valuta selezionata.",
     "default_desc": "Quando disabilitato, DoiWallet aprirà immediatamente il portafoglio selezionato all'avvio.",
-    "default_info": "Informazioni predefinite",
     "default_title": "All'avvio",
     "default_wallets": "Vedi tutti i portafogli",
     "electrum_connected": "Connesso",
@@ -196,11 +195,9 @@
     "electrum_reset": "Ripristino delle impostazioni predefinite",
     "encrypt_decrypt": "Decripta l'archivio",
     "encrypt_decrypt_q": "Desideri veramente decriptare il tuo archivio? Quest'azione avrà come conseguenza di permettere l'accesso ai portafogli senza una password.",
-    "encrypt_enc_and_pass": "Criptato e protetto da password",
     "encrypt_title": "Sicurezza",
     "encrypt_tstorage": "Archivio",
     "encrypt_use": "Usa {type}",
-    "encrypt_use_expl": "{type} verrà usato per confermare la tua identità prima di effettuare una transazione, sbloccare, esportare, o eliminare un wallet. {type} non sarà usato per sbloccare archivi cifrati.",
     "general": "Generali",
     "general_continuity": "Continuity",
     "general_continuity_e": "Una volta abilitato, sarai in grado di visualizzare i portafogli selezionati e le transazioni, utilizzando i tuoi altri dispositivi collegati ad Apple iCloud.",
@@ -232,7 +229,10 @@
     "total_balance": "Saldo totale",
     "total_balance_explanation": "Mostra il saldo totale del tutti i tuoi portafogli in una widget sulla tua schermata home.",
     "widgets": "Widgets",
-    "tools": "Strumenti"
+    "tools": "Strumenti",
+    "encrypt_enc_and_pass": "Criptato e protetto da password",
+    "encrypt_use_expl": "{type} verrà usato per confermare la tua identità prima di effettuare una transazione, sbloccare, esportare, o eliminare un wallet. {type} non sarà usato per sbloccare archivi cifrati.",
+    "default_info": "Informazioni predefinite"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "Desideri ricevere delle notifiche quando ricevi dei pagamenti?"

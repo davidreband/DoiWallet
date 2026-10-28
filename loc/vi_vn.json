@@ -44,8 +44,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "Thông tin thêm",
-    "lightning_invoice": "Hoá đơn Lightning",
-    "open_direct_channel": "Mở kênh trực tiếp với node này:"
+    "lightning_invoice": "Hoá đơn Lightning"
   },
   "plausibledeniability": {
     "create_fake_storage": "Tạo lưu trữ được mã hoá",
@@ -163,7 +162,6 @@
     "currency": "Tiền tệ",
     "currency_fetch_error": "Có một lỗi trong khi truy xuất tỷ lệ cho tiền tệ đã chọn.",
     "default_desc": "Nếu vô hiệu hoá, DoiWallet sẻ sẽ ngay mở ví được chọn khi khởi động.",
-    "default_info": "Thông tin mặc định",
     "default_title": "Khi khởi động",
     "default_wallets": "Xem các ví",
     "electrum_connected": "Đã kết nối",
@@ -181,11 +179,9 @@
     "electrum_reset": "Đặt lại về mặc định ",
     "encrypt_decrypt": "Giải mã lưu trữ",
     "encrypt_decrypt_q": "Bạn có chắc muốn giải mã lưu trữ không? Điều này sẽ làm cho ví của bạn có thể truy cập được mà không cần mật khẩu.",
-    "encrypt_enc_and_pass": "Được mã hóa và bảo vệ bằng mật khẩu",
     "encrypt_title": "An toàn",
     "encrypt_tstorage": "Lưu trữ",
     "encrypt_use": "Sử dùng {type}",
-    "encrypt_use_expl": "{type} sẽ được dùng để xác nhận danh tính của bạn trước khi thực hiện giao dịch, mở khoá ví, xuất ví, hoặc xoá ví. {type} sẽ không được dùng để mở khoá lưu trữ được mã hoá.",
     "general": "Cài đặt chung",
     "general_continuity": "Sự liên tục",
     "general_continuity_e": "Nếu kích hoạt, bạn sẽ xem những ví và giao dịch đã chọn trên các thiết bị Apple khác kết nối đến iCloud. ",
@@ -217,7 +213,10 @@
     "total_balance": "Tổng số dư",
     "total_balance_explanation": "Hiển thị tổng số dư của các ví của bạn trong widget màn hình Home. ",
     "widgets": "Các widgets",
-    "tools": "Các tools"
+    "tools": "Các tools",
+    "encrypt_enc_and_pass": "Được mã hóa và bảo vệ bằng mật khẩu",
+    "encrypt_use_expl": "{type} sẽ được dùng để xác nhận danh tính của bạn trước khi thực hiện giao dịch, mở khoá ví, xuất ví, hoặc xoá ví. {type} sẽ không được dùng để mở khoá lưu trữ được mã hoá.",
+    "default_info": "Thông tin mặc định"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "Bạn có muốn được thông báo khi nào nhận thanh toán đến không?"
@@ -431,10 +430,10 @@
     "sort_status": " Trạng thái"
   },
   "units": {
-    "DOI": "DOI",
     "MAX": "MAX",
-    "sat_byte": "swartz/byte",
     "sats": "swartz",
+    "DOI": "DOI",
+    "sat_byte": "swartz/byte",
     "swartz": "swartz"
   },
   "addresses": {

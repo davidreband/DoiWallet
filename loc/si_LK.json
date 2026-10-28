@@ -40,8 +40,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "අමතර තොරතුරු",
-    "lightning_invoice": "ලයිට්නින් ඉන්වොයිසිය",
-    "open_direct_channel": "මෙම නෝඩය සමග ඍජු නාලිකාව විවෘත කරන්න:"
+    "lightning_invoice": "ලයිට්නින් ඉන්වොයිසිය"
   },
   "plausibledeniability": {
     "create_fake_storage": "සංකේතනය කළ ගබඩාවක් සාදන්න",
@@ -158,7 +157,6 @@
     "currency": "මුදල්",
     "currency_fetch_error": "තෝරාගත් මුදල් සඳහා ගාස්තුව ලබා ගැනීමේදී දෝෂයක් ඇති විය.",
     "default_desc": "අක්‍රීය වූ විට, දියත් කිරීමේදී තෝරාගත් පසුම්බිය බ්ලූවොලට් වහාම විවෘත කරයි.",
-    "default_info": "පෙරනිමි තොරතුරු",
     "default_title": "දියත් කිරීමේදී",
     "default_wallets": "සියලුම පසුම්බි බලන්න",
     "electrum_connected": "සම්බන්ධයි",
@@ -176,11 +174,9 @@
     "electrum_reset": "පෙරනිමිය වෙත නැවත සකසන්න",
     "encrypt_decrypt": "විකේතන ගබඩාව",
     "encrypt_decrypt_q": "ඔබට ඔබේ ගබඩාව විකේතනය කිරීමට අවශ්‍ය බව විශ්වාසද? මුරපදයක් නොමැතිව ඔබේ මුදල් පසුම්බියට ප්‍රවේශ වීමට මෙය ඉඩ සලසයි.",
-    "encrypt_enc_and_pass": "සංකේතනය කර මුරපදය ආරක්ෂා කර ඇත",
     "encrypt_title": "ආරක්ෂාව",
     "encrypt_tstorage": "ගබඩාව",
     "encrypt_use": "{type} භාවිතා කරන්න",
-    "encrypt_use_expl": "මුදල් පසුම්බියක ගනුදෙනු කිරීමට, අගුළු හැරීමට, අපනයනය කිරීමට හෝ මැකීමට පෙර ඔබේ අනන්‍යතාවය තහවුරු කිරීමට {type} භාවිතා කෙරේ. සංකේතනය කළ ආචයනය අගුළු ඇරීමට {type} භාවිතා නොකරනු ඇත.",
     "general": "පොදු",
     "general_continuity": "අඛණ්ඩතාව",
     "general_continuity_e": "සක්‍රිය වූ විට, ඔබේ අනෙකුත් ඇපල් අයික්ලවුඩ් සම්බන්ධිත උපාංග භාවිතයෙන් තෝරාගත් පසුම්බි සහ ගනුදෙනු බැලීමට ඔබට හැකි වේ.",
@@ -212,7 +208,10 @@
     "total_balance": "මුළු ශේෂය",
     "total_balance_explanation": "ඔබේ මුදල් පසුම්බිවල මුළු ශේෂය ඔබේ මුල් තිරයේ විජට් වල පෙන්වන්න.",
     "widgets": "විජට්",
-    "tools": "මෙවලම්"
+    "tools": "මෙවලම්",
+    "encrypt_enc_and_pass": "සංකේතනය කර මුරපදය ආරක්ෂා කර ඇත",
+    "encrypt_use_expl": "මුදල් පසුම්බියක ගනුදෙනු කිරීමට, අගුළු හැරීමට, අපනයනය කිරීමට හෝ මැකීමට පෙර ඔබේ අනන්‍යතාවය තහවුරු කිරීමට {type} භාවිතා කෙරේ. සංකේතනය කළ ආචයනය අගුළු ඇරීමට {type} භාවිතා නොකරනු ඇත.",
+    "default_info": "පෙරනිමි තොරතුරු"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "ඔබට ගෙවීම් ලැබෙන විට දැනුම්දීම් ලැබීමට ඔබ කැමතිද?"
@@ -423,10 +422,10 @@
     "sort_status": "තත්ත්වය"
   },
   "units": {
-    "DOI": "DOI",
     "MAX": "MAX",
-    "sat_byte": "swartz/byte",
     "sats": "swartz",
+    "DOI": "DOI",
+    "sat_byte": "swartz/byte",
     "swartz": "swartz"
   },
   "addresses": {

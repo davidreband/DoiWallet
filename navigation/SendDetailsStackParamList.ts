@@ -90,6 +90,8 @@ export type SendDetailsStackParamList = {
     launchedBy?: string;
     psbt?: Psbt;
     txhex?: string;
+    deepLinkPSBT?: string;
+    onBarScanned?: string;
   };
   CreateTransaction: {
     memo?: string;
@@ -112,7 +114,7 @@ export type SendDetailsStackParamList = {
   PsbtMultisigQRCode: {
     memo?: string;
     psbtBase64: string;
-    fromWallet: string;
+    walletID: string;
     launchedBy?: string;
     isShowOpenScanner?: boolean;
     onBarScanned?: string;

@@ -40,8 +40,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "附加信息",
-    "lightning_invoice": "閃電賬單",
-    "open_direct_channel": "使用此節點來開啟直接頻道："
+    "lightning_invoice": "閃電賬單"
   },
   "plausibledeniability": {
     "create_fake_storage": "建立加密儲存",
@@ -147,7 +146,6 @@
     "biom_remove_decrypt": "您的所有錢包將被刪除，您的儲存空間將被解密。您確定要繼續嗎？",
     "currency": "貨幣",
     "default_desc": "停用後，BlueWallet將在啟動時立即打開選定的錢包。",
-    "default_info": "預設信息",
     "default_title": "啟動時",
     "default_wallets": "查看所有錢包",
     "electrum_connected": "已連接",
@@ -160,7 +158,6 @@
     "electrum_reset": "重設為預設值",
     "encrypt_decrypt": "解密儲存",
     "encrypt_decrypt_q": "您確定要解密儲存嗎？這樣一來，無需密碼即可訪問您的錢包。",
-    "encrypt_enc_and_pass": "加密和密碼保護的",
     "encrypt_title": "安全",
     "encrypt_tstorage": "儲存",
     "encrypt_use": "使用{type}",
@@ -189,7 +186,9 @@
     "total_balance": "結餘",
     "total_balance_explanation": "在主屏幕小工具上顯示您所有錢包的結餘。",
     "widgets": "小工具",
-    "tools": "工具"
+    "tools": "工具",
+    "encrypt_enc_and_pass": "加密和密碼保護的",
+    "default_info": "預設信息"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "您想在收到款項時得到通知嗎？"
@@ -378,10 +377,10 @@
     "sort_status": "狀態"
   },
   "units": {
-    "DOI": "DOI",
     "MAX": "MAX",
-    "sat_byte": "swartz/byte",
     "sats": "swartz",
+    "DOI": "DOI",
+    "sat_byte": "swartz/byte",
     "swartz": "swartz"
   },
   "addresses": {

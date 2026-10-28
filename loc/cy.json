@@ -32,8 +32,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "Gwybodaeth Ychwanegol",
-    "lightning_invoice": "Anfoneb Mellten",
-    "open_direct_channel": "Agor sianel uniongyrchol efo'r nodyn hwn:"
+    "lightning_invoice": "Anfoneb Mellten"
   },
   "plausibledeniability": {
     "create_fake_storage": "Creu storfa wedi encryptio",
@@ -187,8 +186,8 @@
     "change": "Newid"
   },
   "units": {
-    "DOI": "DOI",
     "MAX": "MAX",
+    "DOI": "DOI",
     "sat_byte": "swartz/byte",
     "sats": "swartz",
     "swartz": "swartz"

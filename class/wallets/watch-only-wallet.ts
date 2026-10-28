@@ -76,9 +76,24 @@ export class WatchOnlyWallet extends LegacyWallet {
   init() {
     let hdWalletInstance: THDWalletForWatchOnly;
 
-    // upstream builds an HDTaprootWallet for an m/86' path; taproot is not active on Doichain, see
-    // class/wallet-import.ts
-    if (this.secret.startsWith('xpub')) {
+    // Script type first, as parsed from a descriptor, then the path, then the key prefix. Upstream
+    // builds an HDTaprootWallet for tr() and m/86'; taproot is not active on Doichain (see
+    // class/wallet-import.ts), so those fall through to the prefix like any other key.
+    if (this.segwitType === 'p2wpkh') {
+      hdWalletInstance = new HDSegwitBech32Wallet();
+    } else if (this.segwitType === 'p2sh(p2wpkh)') {
+      hdWalletInstance = new HDSegwitP2SHWallet();
+    } else if (this.segwitType === 'p2pkh') {
+      hdWalletInstance = new HDLegacyP2PKHWallet();
+    }
+    // Fallback to path-based detection (for bare [fingerprint/path]xpub without descriptor wrapper)
+    else if (this._derivationPath?.startsWith("m/84'")) {
+      hdWalletInstance = new HDSegwitBech32Wallet();
+    } else if (this._derivationPath?.startsWith("m/49'")) {
+      hdWalletInstance = new HDSegwitP2SHWallet();
+    }
+    // Final fallback to xpub prefix (legacy behavior for bare xpub/ypub/zpub)
+    else if (this.secret.startsWith('xpub')) {
       hdWalletInstance = new HDLegacyP2PKHWallet();
     } else if (this.secret.startsWith('ypub')) hdWalletInstance = new HDSegwitP2SHWallet();
     else if (this.secret.startsWith('zpub')) hdWalletInstance = new HDSegwitBech32Wallet();

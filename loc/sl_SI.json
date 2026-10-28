@@ -40,8 +40,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "Dodatne Informacije",
-    "lightning_invoice": "Lightning Račun",
-    "open_direct_channel": "Odpri neposreden kanal s tem vozliščem:"
+    "lightning_invoice": "Lightning Račun"
   },
   "plausibledeniability": {
     "create_fake_storage": "Ustvari šifrirano shrambo",
@@ -163,7 +162,6 @@
     "currency": "Valuta",
     "currency_fetch_error": "Pri pridobivanju tečaja za izbrano valuto je prišlo do napake.",
     "default_desc": "Ko je onemogočeno, bo DoiWallet ob zagonu takoj odprl izbrano denarnico.",
-    "default_info": "Privzeto v",
     "default_title": "Ob zagonu",
     "default_wallets": "Prikaži vse denarnice",
     "electrum_connected": "Povezano",
@@ -181,11 +179,9 @@
     "electrum_reset": "Ponastavi na privzeto",
     "encrypt_decrypt": "Dešifriraj Shrambo",
     "encrypt_decrypt_q": "Ali ste prepričani, da želite dešifrirati shrambo? To bo omogočilo dostop do vaših denarnic brez gesla.",
-    "encrypt_enc_and_pass": "Šifrirano in zaščiteno z geslom",
     "encrypt_title": "Varnost",
     "encrypt_tstorage": "Shramba",
     "encrypt_use": "Uporabi {type}",
-    "encrypt_use_expl": "{type} bo uporabljen za potrditev vaše identitete pred izvedbo transakcije, odklepanjem, izvozom ali brisanjem denarnice. {type} ne bo uporabljen za odklepanje šifrirane shrambe.",
     "general": "Splošno",
     "general_continuity": "Neprekinjenost",
     "general_continuity_e": "Ko je omogočeno, si boste lahko ogledali izbrane denarnice in transakcije z uporabo vaših drugih naprav povezanih z Apple iCloud.",
@@ -217,7 +213,10 @@
     "total_balance": "Skupno stanje",
     "total_balance_explanation": "Prikaži skupno stanje vseh denarnic na pripomočkih na domačem zaslonu.",
     "widgets": "Pripomočki",
-    "tools": "Orodja"
+    "tools": "Orodja",
+    "encrypt_enc_and_pass": "Šifrirano in zaščiteno z geslom",
+    "encrypt_use_expl": "{type} bo uporabljen za potrditev vaše identitete pred izvedbo transakcije, odklepanjem, izvozom ali brisanjem denarnice. {type} ne bo uporabljen za odklepanje šifrirane shrambe.",
+    "default_info": "Privzeto v"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "Želite prikaz obvestil ob prejemu plačila?"
@@ -430,10 +429,10 @@
     "sort_status": "Stanje"
   },
   "units": {
-    "DOI": "DOI",
     "MAX": "MAX",
-    "sat_byte": "swartz/byte",
     "sats": "swartz",
+    "DOI": "DOI",
+    "sat_byte": "swartz/byte",
     "swartz": "swartz"
   },
   "addresses": {

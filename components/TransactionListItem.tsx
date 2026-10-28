@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, memo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { Image, Linking, View, ViewStyle, StyleSheet } from 'react-native';
+import { uint8ArrayToHex } from '../blue_modules/uint8array-extras';
+import { Image, Linking, Text, View, ViewStyle, StyleSheet } from 'react-native';
+import { NameOpTransaction } from '../types/transaction';
 import Lnurl from '../class/lnurl';
 import { LightningTransaction, Transaction } from '../class/wallets/types';
-import { NameOpTransaction } from '../types/transaction';
 import TransactionExpiredIcon from '../components/icons/TransactionExpiredIcon';
 import TransactionIncomingIcon from '../components/icons/TransactionIncomingIcon';
 import TransactionOffchainIcon from '../components/icons/TransactionOffchainIcon';
@@ -12,8 +13,9 @@ import TransactionOffchainIncomingIcon from '../components/icons/TransactionOffc
 import TransactionOnchainIcon from '../components/icons/TransactionOnchainIcon';
 import TransactionOutgoingIcon from '../components/icons/TransactionOutgoingIcon';
 import TransactionPendingIcon from '../components/icons/TransactionPendingIcon';
-import loc, { formatBalanceWithoutSuffix, transactionTimeToReadable } from '../loc';
+import loc, { formatBalanceWithoutSuffix, formatTransactionListDate, transactionTimeToReadable } from '../loc';
 import { DoichainUnit } from '../models/doichainUnits';
+import { getIPFSImageUrl } from '../utils/ipfs';
 import { useSettings } from '../hooks/context/useSettings';
 import ListItem from './ListItem';
 import { useTheme } from './themes';
@@ -26,8 +28,6 @@ import ToolTipMenu from './TooltipMenu';
 import { CommonToolTipActions } from '../typings/CommonToolTipActions';
 import { pop } from '../NavigationService';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import HighlightedText from './HighlightedText';
-import { getIPFSImageUrl } from '../utils/ipfs';
 
 const styles = StyleSheet.create({
   nameOpImage: {
@@ -35,8 +35,7 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 16,
   },
-  subtitle: {
-    color: 'colors.foregroundColor',
+  dateLine: {
     fontSize: 13,
   },
   highlight: {
@@ -69,7 +68,6 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
     renderHighlightedText,
     onPress: customOnPress,
   }: TransactionListItemProps) => {
-    const [subtitleNumberOfLines, setSubtitleNumberOfLines] = useState(1);
     const { colors } = useTheme();
     const { navigate } = useExtendedNavigation<NavigationProps>();
     const menuRef = useRef<ToolTipMenuProps>();
@@ -94,40 +92,85 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
       return name.substr(0, 7) + '...' + name.substr(name.length - 7, 7);
     };
 
-    const title = useMemo(() => {
-      if (item.confirmations === 0) {
-        return loc.transactions.pending;
-      } else {
-        return transactionTimeToReadable(item.timestamp);
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [item.confirmations, item.timestamp, language]);
-
     let counterparty;
     if (item.counterparty) {
       counterparty = counterpartyMetadata?.[item.counterparty]?.label ?? item.counterparty;
     }
-
     const txMemo = (counterparty ? `[${shortenContactName(counterparty)}] ` : '') + (txMetadata[item.hash]?.memo ?? '');
-    const subtitle = useMemo(() => {
-      let sub = '';
-      // Check for nameOp with IPFS URL
+    const noteForCopy = (txMemo || item.memo || '').trim() || undefined;
+
+    // A name operation shows the name it carries next to the note. A name_new only commits to a hash
+    // and carries no name at all, so it is shown by its operation instead of a literal "undefined".
+    const nameLabel = useMemo(() => {
       for (const output of item.outputs || []) {
         const nameOp = output?.scriptPubKey?.nameOp;
-        if (nameOp) {
-          // A name_new only commits to a hash and carries no name at all, so printing nameOp.name
-          // unchecked put the literal "undefined" in the transaction list. Name the operation then.
-          sub = `[${nameOp.name ?? nameOp.op}] `;
-          break;
-        }
+        if (nameOp) return `[${nameOp.name ?? nameOp.op}]`;
       }
-      sub += Number(item.confirmations) < 7 ? loc.formatString(loc.transactions.list_conf, { number: item.confirmations }) : '';
-      if (sub !== '') sub += ' ';
+      return undefined;
+    }, [item.outputs]);
+    const rightNote = [nameLabel, noteForCopy].filter(Boolean).join(' ') || undefined;
 
-      sub += txMemo;
-      if (item.memo) sub += item.memo;
-      return sub || undefined;
-    }, [txMemo, item.confirmations, item.memo, item.outputs]);
+    const [ipfsImageUrl, setIpfsImageUrl] = useState<string | null>(null);
+    const [isLoadingImage, setIsLoadingImage] = useState<boolean>(false);
+    const [imageError, setImageError] = useState<Error | null>(null);
+
+    useEffect(() => {
+      const fetchIPFSImage = async () => {
+        if (!item.outputs) return;
+
+        for (const output of item.outputs) {
+          const scriptPubKey = output?.scriptPubKey;
+          if (scriptPubKey?.nameOp?.value?.startsWith('ipfs://')) {
+            try {
+              setIsLoadingImage(true);
+              setImageError(null);
+              const imageUrl = await getIPFSImageUrl(scriptPubKey.nameOp.value);
+
+              if (imageUrl) {
+                setIpfsImageUrl(imageUrl);
+                break;
+              }
+            } catch (error) {
+              console.warn('Error fetching IPFS image:', error);
+              setImageError(error instanceof Error ? error : new Error('Failed to fetch IPFS image'));
+            } finally {
+              setIsLoadingImage(false);
+            }
+          }
+        }
+      };
+
+      fetchIPFSImage();
+    }, [item.outputs]);
+
+    const listTitleKey = useMemo((): 'pending' | 'sent' | 'received' => {
+      if (item.category === 'receive' && item.confirmations! < 3) return 'pending';
+      if (item.type === 'bitcoind_tx') return item.value! < 0 ? 'sent' : 'received';
+      if (item.type === 'paid_invoice') return 'sent';
+      if (item.type === 'user_invoice' || item.type === 'payment_request') {
+        if (!item.ispaid) return 'pending';
+        return 'received';
+      }
+      if (!item.confirmations) return 'pending';
+      return item.value! < 0 ? 'sent' : 'received';
+    }, [item.category, item.confirmations, item.type, item.value, item.ispaid]);
+
+    const listTitle = useMemo(() => {
+      if (listTitleKey === 'pending') return loc.transactions.pending;
+      if (listTitleKey === 'sent') return loc.transactions.list_title_sent;
+      return loc.transactions.list_title_received;
+    }, [listTitleKey]);
+
+    const isPending = listTitleKey === 'pending';
+
+    const dateLine = useMemo(() => {
+      if (isPending) return transactionTimeToReadable(item.timestamp);
+      return formatTransactionListDate(item.timestamp * 1000);
+      // language in deps so date format updates when locale changes (formatters use global locale)
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isPending, item.timestamp, language]);
+
+    const dateLineStyle = useMemo(() => [styles.dateLine, { color: colors.alternativeTextColor }], [colors.alternativeTextColor]);
 
     const formattedAmount = useMemo(() => {
       return formatBalanceWithoutSuffix(item.value && item.value, itemPriceUnit, true).toString();
@@ -146,6 +189,11 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
       }
       return formattedAmount;
     }, [item, formattedAmount]);
+
+    const rightMemoStyle = useMemo(
+      () => [styles.dateLine, { color: colors.alternativeTextColor, textAlign: 'right' as const }],
+      [colors.alternativeTextColor],
+    );
 
     const rowTitleStyle = useMemo(() => {
       let color = colors.successColor;
@@ -188,41 +236,8 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
       insets.left,
     ]);
 
-    const [ipfsImageUrl, setIpfsImageUrl] = useState<string | null>(null);
-    const [isLoadingImage, setIsLoadingImage] = useState<boolean>(false);
-    const [imageError, setImageError] = useState<Error | null>(null);
-
-    useEffect(() => {
-      const fetchIPFSImage = async () => {
-        if (!item.outputs) return;
-
-        for (const output of item.outputs) {
-          const scriptPubKey = output?.scriptPubKey;
-          if (scriptPubKey?.nameOp?.value?.startsWith('ipfs://')) {
-            try {
-              setIsLoadingImage(true);
-              setImageError(null);
-              const imageUrl = await getIPFSImageUrl(scriptPubKey.nameOp.value);
-
-              if (imageUrl) {
-                setIpfsImageUrl(imageUrl);
-                break;
-              }
-            } catch (error) {
-              console.warn('Error fetching IPFS image:', error);
-              setImageError(error instanceof Error ? error : new Error('Failed to fetch IPFS image'));
-            } finally {
-              setIsLoadingImage(false);
-            }
-          }
-        }
-      };
-
-      fetchIPFSImage();
-    }, [item.outputs]);
-
     const determineTransactionTypeAndAvatar = () => {
-      // Check for nameOp transactions with IPFS images
+      // a name operation whose value points at an IPFS image shows that image as its avatar
       const hasNameOpWithIpfs = (item as NameOpTransaction)?.outputs?.some(output => {
         const scriptPubKey = output?.scriptPubKey;
         return scriptPubKey?.nameOp?.value?.startsWith('ipfs://');
@@ -323,10 +338,6 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
       return `${formattedAmount}${unitSuffix}`;
     }, [formattedAmount, itemPriceUnit]);
 
-    useEffect(() => {
-      setSubtitleNumberOfLines(1);
-    }, [subtitle]);
-
     const onPress = useCallback(async () => {
       menuRef?.current?.dismissMenu?.();
       // If a custom onPress handler was provided, use it and return
@@ -348,7 +359,7 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
             const LN = new Lnurl(false, AsyncStorage);
             let paymentHash = item.payment_hash!;
             if (typeof paymentHash === 'object') {
-              paymentHash = Buffer.from(paymentHash.data).toString('hex');
+              paymentHash = uint8ArrayToHex(new Uint8Array((paymentHash as any).data));
             }
             const loaded = await LN.loadSuccessfulPayment(paymentHash);
             if (loaded) {
@@ -376,10 +387,6 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
       }
     }, [item, renderHighlightedText, navigate, walletID, wallets, customOnPress]);
 
-    const handleOnExpandNote = useCallback(() => {
-      setSubtitleNumberOfLines(0);
-    }, []);
-
     const handleOnDetailsPress = useCallback(() => {
       if (walletID && item && item.hash) {
         navigate('TransactionDetails', { tx: item, hash: item.hash, walletID });
@@ -396,7 +403,7 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
 
     const handleOnCopyAmountTap = useCallback(() => Clipboard.setString(rowTitle.replace(/[\s\\-]/g, '')), [rowTitle]);
     const handleOnCopyTransactionID = useCallback(() => Clipboard.setString(item.hash), [item.hash]);
-    const handleOnCopyNote = useCallback(() => Clipboard.setString(subtitle ?? ''), [subtitle]);
+    const handleOnCopyNote = useCallback(() => Clipboard.setString(noteForCopy ?? ''), [noteForCopy]);
     const handleOnViewOnBlockExplorer = useCallback(() => {
       const url = `${selectedBlockExplorer.url}/tx/${item.hash}`;
       Linking.canOpenURL(url).then(supported => {
@@ -417,8 +424,6 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
           handleOnCopyNote();
         } else if (id === CommonToolTipActions.OpenInBlockExplorer.id) {
           handleOnViewOnBlockExplorer();
-        } else if (id === CommonToolTipActions.ExpandNote.id) {
-          handleOnExpandNote();
         } else if (id === CommonToolTipActions.CopyBlockExplorerLink.id) {
           handleCopyOpenInBlockExplorerPress();
         } else if (id === CommonToolTipActions.CopyTXID.id) {
@@ -433,7 +438,6 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
         handleOnCopyNote,
         handleOnCopyTransactionID,
         handleOnDetailsPress,
-        handleOnExpandNote,
         handleOnViewOnBlockExplorer,
       ],
     );
@@ -445,7 +449,7 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
         },
         {
           ...CommonToolTipActions.CopyNote,
-          hidden: !subtitle,
+          hidden: !noteForCopy,
         },
         {
           ...CommonToolTipActions.CopyTXID,
@@ -456,24 +460,10 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
           hidden: !item.hash,
         },
         [{ ...CommonToolTipActions.OpenInBlockExplorer, hidden: !item.hash }, CommonToolTipActions.Details],
-        [
-          {
-            ...CommonToolTipActions.ExpandNote,
-            hidden: subtitleNumberOfLines !== 1,
-          },
-        ],
       ];
 
       return actions as Action[];
-    }, [rowTitle, subtitle, item.hash, subtitleNumberOfLines]);
-
-    const accessibilityState = useMemo(() => {
-      return {
-        expanded: subtitleNumberOfLines === 0,
-      };
-    }, [subtitleNumberOfLines]);
-
-    const subtitleProps = useMemo(() => ({ numberOfLines: subtitleNumberOfLines }), [subtitleNumberOfLines]);
+    }, [rowTitle, noteForCopy, item.hash]);
 
     return (
       <ToolTipMenu
@@ -481,34 +471,19 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
         actions={toolTipActions}
         onPressMenuItem={onToolTipPress}
         onPress={onPress}
-        accessibilityLabel={`${transactionTypeLabel}, ${amountWithUnit}, ${subtitle ?? title}`}
+        accessibilityLabel={`${transactionTypeLabel}, ${amountWithUnit}, ${dateLine}`}
         accessibilityRole="button"
-        accessibilityState={accessibilityState}
       >
         <ListItem
           leftAvatar={avatar}
-          title={title}
-          subtitleNumberOfLines={subtitleNumberOfLines}
-          subtitle={
-            subtitle ? (
-              renderHighlightedText ? (
-                renderHighlightedText(subtitle, searchQuery ?? '')
-              ) : (
-                <HighlightedText
-                  text={subtitle}
-                  query={searchQuery ?? ''}
-                  caseSensitive={false}
-                  highlightOnlyFirstMatch={searchQuery ? searchQuery.length === 1 : false}
-                  style={styles.subtitle}
-                />
-              )
-            ) : undefined
-          }
+          title={listTitle}
+          subtitle={<Text style={dateLineStyle}>{dateLine}</Text>}
           Component={View}
-          subtitleProps={subtitleProps}
           chevron={false}
           rightTitle={rowTitle}
           rightTitleStyle={rowTitleStyle}
+          rightSubtitle={rightNote}
+          rightSubtitleStyle={rightMemoStyle}
           containerStyle={combinedStyle}
           testID="TransactionListItem"
         />

@@ -46,8 +46,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "اطلاعات بیشتر",
-    "lightning_invoice": "صورت‌حساب لایتنینگ",
-    "open_direct_channel": "کانال مستقیمی با این گره باز کن:"
+    "lightning_invoice": "صورت‌حساب لایتنینگ"
   },
   "plausibledeniability": {
     "create_fake_storage": "ایجاد فضای ذخیره‌سازی رمزگذاری‌شده",
@@ -169,7 +168,6 @@
     "currency": "واحد پول",
     "currency_fetch_error": "حین دریافت نرخ برای واحد پول انتخاب‌شده خطایی رخ داد.",
     "default_desc": "درصورت غیرفعال‌کردن، DoiWallet بلافاصله کیف پول انتخابی را هنگام راه‌اندازی باز می‌کند.",
-    "default_info": "اطلاعات پیش‌فرض",
     "default_title": "هنگام راه‌اندازی",
     "default_wallets": "مشاهدهٔ همهٔ کیف پول‌ها",
     "electrum_connected": "متصل",
@@ -187,11 +185,9 @@
     "electrum_reset": "بازنشانی به پیش‌فرض",
     "encrypt_decrypt": "رمزگشایی فضای ذخیره‌سازی",
     "encrypt_decrypt_q": "آیا از رمزگشایی فضای ذخیره‌سازی خود اطمینان دارید؟ این کار اجازه می‌دهد تا کیف پول‌های شما بدون گذرواژه قابل‌دسترسی باشند.",
-    "encrypt_enc_and_pass": "رمزگذاری و محافظت با گذرواژه",
     "encrypt_title": "امنیت",
     "encrypt_tstorage": "فضای ذخیره‌سازی",
     "encrypt_use": "از {type} استفاده کنید",
-    "encrypt_use_expl": "از {type} برای تأیید هویت شما قبل از انجام تراکنش، بازکردن قفل، صادرکردن، یا حذف کیف پول استفاده خواهد شد. از {type} برای بازکردن فضای ذخیره‌سازی رمزگذاری‌شده استفاده نخواهد شد.",
     "general": "عمومی",
     "general_continuity": "پیوستگی",
     "general_continuity_e": "درصورت فعال‌بودن، می‌توانید کیف پول‌های انتخاب‌شده و تراکنش‌ها را با استفاده از سایر دستگاه‌های متصل به Apple iCloud خود مشاهده کنید.",
@@ -225,7 +221,10 @@
     "total_balance": "موجودی کل",
     "total_balance_explanation": "نمایش موجودی کل تمام کیف پول‌های شما در ابزارک‌های صفحهٔ اصلی",
     "widgets": "ابزارک‌ها",
-    "tools": "ابزارها"
+    "tools": "ابزارها",
+    "encrypt_enc_and_pass": "رمزگذاری و محافظت با گذرواژه",
+    "encrypt_use_expl": "از {type} برای تأیید هویت شما قبل از انجام تراکنش، بازکردن قفل، صادرکردن، یا حذف کیف پول استفاده خواهد شد. از {type} برای بازکردن فضای ذخیره‌سازی رمزگذاری‌شده استفاده نخواهد شد.",
+    "default_info": "اطلاعات پیش‌فرض"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "آیا می‌خواهید هنگام دریافت وجه اعلان دریافت کنید؟"
@@ -444,10 +443,10 @@
     "sort_status": "وضعیت"
   },
   "units": {
-    "DOI": "DOI",
     "MAX": "MAX",
-    "sat_byte": "swartz/byte",
     "sats": "swartz",
+    "DOI": "DOI",
+    "sat_byte": "swartz/byte",
     "swartz": "swartz"
   },
   "addresses": {

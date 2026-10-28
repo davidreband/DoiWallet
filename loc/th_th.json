@@ -38,8 +38,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "ข้อมูลเพิ่มเติม",
-    "lightning_invoice": "ใบแจ้งหนี้ไลท์นิง",
-    "open_direct_channel": "เปิดช่องโดยตรงไปที่โหนดนี้"
+    "lightning_invoice": "ใบแจ้งหนี้ไลท์นิง"
   },
   "plausibledeniability": {
     "create_fake_storage": "สร้างที่เก็บข้อมูลเทียม",
@@ -297,10 +296,10 @@
     "sort_status": "สถานะ"
   },
   "units": {
+    "sats": "swartz",
     "DOI": "DOI",
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
-    "sats": "swartz",
     "swartz": "swartz"
   },
   "addresses": {

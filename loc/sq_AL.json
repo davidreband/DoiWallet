@@ -17,7 +17,6 @@
     "seed": "Fara",
     "success": "Sukses",
     "wallet_key": "Fjalkalimi i portofolit",
-    "invalid_animated_qr_code_fragment": "Kodi QR nuk është i vlefshëm. Provo sërisht.",
     "close": "Mbylle",
     "change_input_currency": "Ndrysho valuten e hyrjes",
     "refresh": "Rifresko",
@@ -54,8 +53,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "Informacione të tjera",
-    "lightning_invoice": "Fatura Lightning",
-    "open_direct_channel": "Hap një kanal direkt me këtë nyje:"
+    "lightning_invoice": "Fatura Lightning"
   },
   "plausibledeniability": {
     "create_fake_storage": "Krijo një memorie të kriptuar",

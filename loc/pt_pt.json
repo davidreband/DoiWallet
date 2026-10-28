@@ -41,8 +41,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "Informação adicional",
-    "lightning_invoice": "Fatura Lightning",
-    "open_direct_channel": "Abrir canal directo com este nó:"
+    "lightning_invoice": "Fatura Lightning"
   },
   "plausibledeniability": {
     "create_fake_storage": "Criar armazenamento encriptado",
@@ -146,7 +145,6 @@
     "biom_remove_decrypt": "Todas suas carteiras serão removidas e seu armazenamento será descriptografado. Tem certeza que deseja proceder?",
     "currency": "Moeda",
     "default_desc": "Quando desactivado, a DoiWallet abrirá imediatamente a carteira seleccionada no lançamento.",
-    "default_info": "Carteira padrão",
     "default_title": "A abrir",
     "default_wallets": "Ver todas as carteiras",
     "electrum_connected": "Conectado",
@@ -160,7 +158,6 @@
     "electrum_reset": "Resetar para o padrão",
     "encrypt_decrypt": "Desencriptar armazenamento",
     "encrypt_decrypt_q": "Tem certeza de que deseja desencriptar o seu armazenamento? Isso permitirá que suas carteiras sejam acessadas sem uma senha.",
-    "encrypt_enc_and_pass": "Encriptado e protegido por password",
     "encrypt_title": "Segurança",
     "encrypt_tstorage": "Armazenamento",
     "encrypt_use": "Usar {type}",
@@ -189,7 +186,9 @@
     "total_balance": "Saldo Total",
     "total_balance_explanation": "Mostrar o saldo total de todas as suas carteiras nos widgets do ecrã inicial.",
     "widgets": "Widgets",
-    "tools": "Ferramentas"
+    "tools": "Ferramentas",
+    "encrypt_enc_and_pass": "Encriptado e protegido por password",
+    "default_info": "Carteira padrão"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "Você gostaria de receber notificações quando você receber pagamentos?"
@@ -309,10 +308,10 @@
     "sort_status": "Estado"
   },
   "units": {
+    "sats": "swartz",
     "DOI": "DOI",
     "MAX": "MAX",
     "sat_byte": "swartz/byte",
-    "sats": "swartz",
     "swartz": "swartz"
   },
   "addresses": {

@@ -40,8 +40,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "Información adicional",
-    "lightning_invoice": "Factura Lighting",
-    "open_direct_channel": "Abrir un canal directo con este nodo:"
+    "lightning_invoice": "Factura Lighting"
   },
   "plausibledeniability": {
     "create_fake_storage": "Crear almacenamiento cifrado",
@@ -163,7 +162,6 @@
     "currency": "Divisa",
     "currency_fetch_error": "Se ha producido un error al obtener el tipo de cambio de la divisa seleccionada.",
     "default_desc": "Cuando esté deshabilitado, DoiWallet abrirá por defecto la cartera seleccionada al iniciar la aplicación.",
-    "default_info": "Información por defecto",
     "default_title": "Al iniciar",
     "default_wallets": "Ver todas las carteras",
     "electrum_connected": "Conectado",
@@ -181,11 +179,9 @@
     "electrum_reset": "Restablecer valores predeterminados",
     "encrypt_decrypt": "Desencriptar almacenamiento",
     "encrypt_decrypt_q": "¿Seguro que quieres desencriptar tu almacenamiento? Al hacerlo, se podrá acceder a tus carteras sin contraseña.",
-    "encrypt_enc_and_pass": "Encriptado y protegido mediante contraseña",
     "encrypt_title": "Seguridad",
     "encrypt_tstorage": "Almacenamiento",
     "encrypt_use": "Usar {type}",
-    "encrypt_use_expl": "{type} se utilizará para confirmar tu identidad antes de realizar una transacción, desbloquear, exportar o eliminar una billetera. {type} no se utilizará para desbloquear el almacenamiento encriptado.",
     "general": "General",
     "general_continuity": "Continuidad",
     "general_continuity_e": "Al activarlo, podrá ver las transacciones y carteras seleccionadas usando cualquiera de sus dispositivos Apple conectados a iCloud.",
@@ -217,7 +213,10 @@
     "total_balance": "Balance total",
     "total_balance_explanation": "Muestra el balance total de todas tus carteras en los widgets de tu pantalla principal.",
     "widgets": "Widgets",
-    "tools": "Herramientas"
+    "tools": "Herramientas",
+    "encrypt_enc_and_pass": "Encriptado y protegido mediante contraseña",
+    "encrypt_use_expl": "{type} se utilizará para confirmar tu identidad antes de realizar una transacción, desbloquear, exportar o eliminar una billetera. {type} no se utilizará para desbloquear el almacenamiento encriptado.",
+    "default_info": "Información por defecto"
   },
   "notifications": {
     "would_you_like_to_receive_notifications": "¿Quires recibir notificaciones cuando detectemos transferencias entrantes?"
@@ -432,10 +431,10 @@
     "sort_status": "Estado"
   },
   "units": {
-    "DOI": "DOI",
     "MAX": "MAX",
-    "sat_byte": "swartz/byte",
     "sats": "swartz",
+    "DOI": "DOI",
+    "sat_byte": "swartz/byte",
     "swartz": "swartz"
   },
   "addresses": {

@@ -185,7 +185,6 @@
     "currency": "واهڌ پیل",
     "currency_source": "نرخ ب دست ٱووڌه ز",
     "currency_fetch_error": "منه گرؽڌن نرخ سی واهڌ پیل پسند بیڌه ی ختا پؽش اووڌ.",
-    "default_info": "دووسمندیا پؽش فرز",
     "default_title": "موقه ره وندن",
     "default_wallets": "نیشتن پوی کیفا پیل",
     "electrum_connected": "منپیز",
@@ -204,7 +203,6 @@
     "electrum_history": "ویرگار",
     "electrum_reset": "ورگندن و پؽش فرز",
     "encrypt_decrypt": "رزم گوشایی جاگه زفت کردنی",
-    "encrypt_enc_and_pass": "رزم ناهاڌن وو زفت کردن وا رزم",
     "encrypt_storage_explanation_headline": "فعال کردن رزم ناهاڌن ری جاگه زفت کردنی",
     "i_understand": "افئموم",
     "block_explorer": "گشت گر بلاک",
@@ -240,7 +238,9 @@
     "saved": "زفت وابی",
     "total_balance": "پوی مۉجۊدی",
     "widgets": "اوزارکا",
-    "tools": "اوزارا"
+    "tools": "اوزارا",
+    "encrypt_enc_and_pass": "رزم ناهاڌن وو زفت کردن وا رزم",
+    "default_info": "دووسمندیا پؽش فرز"
   },
   "transactions": {
     "cancel_title": "ای تراکونشن لقو کوݩ (RBF)",

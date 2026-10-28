@@ -47,8 +47,7 @@
   },
   "lndViewInvoice": {
     "additional_info": "Informació addicional",
-    "lightning_invoice": "Factura Lightning",
-    "open_direct_channel": "Obrir un canal directe amb aquest node:"
+    "lightning_invoice": "Factura Lightning"
   },
   "plausibledeniability": {
     "create_fake_storage": "Crear informació xifrada falsa",
@@ -144,7 +143,6 @@
     "biometrics": "Biometria",
     "biom_conf_identity": "Si us plau, confirmeu la vostra identitat.",
     "currency": "Moneda",
-    "default_info": "Informació predeterminada",
     "default_wallets": "Veure tots els moneders",
     "electrum_connected": "Conectat",
     "electrum_connected_not": "No conectat",
@@ -172,7 +170,8 @@
     "save": "guardar",
     "saved": "Desat",
     "total_balance": "Saldo total",
-    "tools": "Eines"
+    "tools": "Eines",
+    "default_info": "Informació predeterminada"
   },
   "transactions": {
     "cancel_title": "Cancel·lar aquesta transacció (RBF)",
