@@ -3,7 +3,7 @@ import * as bitcoin from '@doichain/doichainjs-lib';
 
 import { DOICHAIN } from '../../blue_modules/network.js';
 import ecc from '../../blue_modules/noble_ecc';
-import { TaprootWallet } from '../../class';
+import { TaprootWallet } from '../../class/wallets/taproot-wallet';
 
 /**
  * The same private key the upstream BlueWallet test used, re-encoded as a Doichain WIF, and the

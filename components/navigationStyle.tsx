@@ -66,10 +66,13 @@ const getHandleCloseAction = (
 const navigationStyle = (
   {
     closeButtonPosition,
+    closeButtonIfFirstInStack,
     onCloseButtonPressed,
     ...opts
   }: NativeStackNavigationOptions & {
     closeButtonPosition?: CloseButtonPosition;
+    /** When set, show this close control only if this screen is the first route in the stack (e.g. Coin Control opened from wallet details). */
+    closeButtonIfFirstInStack?: CloseButtonPosition;
     onCloseButtonPressed?: (deps: { navigation: any; route: any }) => void;
   },
   formatter?: OptionsFormatter,
@@ -80,7 +83,10 @@ const navigationStyle = (
       const isModal = route.params?.presentation === 'modal' || route.params?.presentation === 'transparentModal';
       const isFormSheet = route.params?.presentation === 'formSheet';
 
-      const closeButton = getCloseButtonPosition(closeButtonPosition, isFirstRouteInStack, isModal);
+      const closeButton =
+        closeButtonIfFirstInStack && isFirstRouteInStack
+          ? closeButtonIfFirstInStack
+          : getCloseButtonPosition(closeButtonPosition, isFirstRouteInStack, isModal);
       const handleClose = getHandleCloseAction(onCloseButtonPressed, navigation, route);
 
       let headerRight;
@@ -124,12 +130,17 @@ const navigationStyle = (
 
       const leftCloseButtonStyle = isLeftCloseButtonAndroid ? { headerBackImageSource: theme.closeImage } : { headerLeft };
 
+      // statusBarStyle: auto is not supported on Android, so we get it based on the theme.barStyle
+      const statusBarStyle: NativeStackNavigationOptions['statusBarStyle'] =
+        opts.statusBarStyle && opts.statusBarStyle !== 'auto' ? opts.statusBarStyle : theme.barStyle === 'light-content' ? 'light' : 'dark';
+
       let options: NativeStackNavigationOptions = {
         ...baseHeaderStyle,
         ...leftCloseButtonStyle,
         headerBackButtonDisplayMode: 'minimal',
         headerRight,
         ...opts,
+        statusBarStyle,
       };
 
       if (formatter) {

@@ -7,7 +7,7 @@ import { sha256 } from '@noble/hashes/sha256';
 import { SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import { satoshiToLocalCurrency } from '../../blue_modules/currency';
-import { HDSegwitBech32Wallet } from '../../class';
+import { HDSegwitBech32Wallet } from '../../class/wallets/hd-segwit-bech32-wallet';
 import { ContactList } from '../../class/contact-list';
 import { AbstractHDElectrumWallet } from '../../class/wallets/abstract-hd-electrum-wallet';
 import presentAlert from '../../components/Alert';
@@ -134,7 +134,7 @@ export default function PaymentCodesList() {
         break;
       }
       case String(Actions.rename): {
-        const newName = await prompt(loc.bip47.rename, loc.bip47.provide_name, true, 'plain-text');
+        const newName = await prompt(loc.bip47.rename, loc.bip47.provide_name, { type: 'plain-text' });
         if (!newName) return;
 
         counterpartyMetadata[pc] = { label: newName };
@@ -227,7 +227,8 @@ export default function PaymentCodesList() {
         actions={toolTipActions}
         onPressMenuItem={(item: any) => onToolTipPress(item, pc)}
         isButton={true}
-        isMenuPrimaryAction={true}
+        shouldOpenOnLongPress={false}
+        buttonStyle={styles.tooltipButton}
       >
         <View style={styles.contactRowContainer}>
           <View style={[styles.circle, { backgroundColor: '#' + color }]} />
@@ -244,7 +245,7 @@ export default function PaymentCodesList() {
 
   const onAddContactPress = async () => {
     try {
-      const newPc = await prompt(loc.bip47.add_contact, loc.bip47.provide_payment_code, true, 'plain-text');
+      const newPc = await prompt(loc.bip47.add_contact, loc.bip47.provide_payment_code, { type: 'plain-text' });
       if (!newPc) return;
 
       await _addContact(newPc);
@@ -293,8 +294,11 @@ export default function PaymentCodesList() {
     setIsLoading(true);
 
     const notificationTx = foundWallet.getBIP47NotificationTransaction(newPc);
+    // Normalize once so both branches treat a mempool tx (undefined confirmations) as 0.
+    // Without this, a fresh mempool notification tx falls through to creating a duplicate.
+    const notificationTxConfirmations = notificationTx?.confirmations ?? 0;
 
-    if (notificationTx && notificationTx.confirmations > 0) {
+    if (notificationTx && notificationTxConfirmations > 0) {
       // we previously sent notification transaction to him, so just need to add him to internals
       foundWallet.addBIP47Receiver(newPc);
       await foundWallet.syncBip47ReceiversAddresses(newPc); // so we can unwrap and save all his possible addresses
@@ -304,7 +308,7 @@ export default function PaymentCodesList() {
       return;
     }
 
-    if (notificationTx && notificationTx.confirmations === 0) {
+    if (notificationTx && notificationTxConfirmations === 0) {
       // for a rare case when we just sent the confirmation tx and it havent confirmed yet
       presentAlert({ message: loc.bip47.notification_tx_unconfirmed });
       return;
@@ -393,8 +397,9 @@ const styles = StyleSheet.create({
     height: 35,
     borderRadius: 25,
   },
-  contactRowBody: { flex: 6, justifyContent: 'center', top: -3 },
-  contactRowNameText: { marginLeft: 10, fontSize: 16 },
+  contactRowBody: { justifyContent: 'center', top: -3, marginLeft: 10, flexShrink: 1 },
+  contactRowNameText: { fontSize: 16 },
   contactRowContainer: { flexDirection: 'row', padding: 15 },
   stick: { borderStyle: 'solid', borderWidth: 0.5, borderColor: 'gray', opacity: 0.5, top: 0, left: -10, width: '110%' },
+  tooltipButton: { width: '100%', alignSelf: 'stretch' },
 });

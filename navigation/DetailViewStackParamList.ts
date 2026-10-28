@@ -1,6 +1,7 @@
 import { AztecoVoucher } from '../class/azteco';
-import { LightningTransaction, Transaction, TWallet } from '../class/wallets/types';
-import { Chain } from '../models/doichainUnits';
+import { LightningTransaction, TWallet } from '../class/wallets/types';
+import { DoichainUnit, Chain } from '../models/doichainUnits';
+import { PromptPasswordConfirmationParams } from '../screen/PromptPasswordConfirmationSheet.types';
 import { ElectrumServerItem } from '../screen/settings/ElectrumSettings';
 import { NavigatorScreenParams } from '@react-navigation/native';
 import { SendDetailsParams, SendDetailsStackParamList, TNavigationWrapper } from './SendDetailsStackParamList';
@@ -19,14 +20,26 @@ export type ScanQRCodeParamList = {
   animatedQRCodeData?: Record<string, any>;
 };
 
+type VaultKeyData = {
+  keyIndex: number;
+  seed: string;
+  passphrase?: string;
+  xpub: string;
+  fp: string;
+  path: string;
+  cosignerXpubURv2: string;
+  exportFilename: string;
+  exportString?: string;
+};
+
 export type DetailViewStackParamList = {
   DrawerRoot: undefined;
   UnlockWithScreen: undefined;
   WalletsList: { onBarScanned?: string };
   WalletTransactions: { isLoading?: boolean; walletID: string; walletType: string; onBarScanned?: string };
   WalletDetails: { walletID: string };
-  TransactionDetails: { tx: Transaction; hash: string; walletID: string };
-  TransactionStatus: { hash: string; walletID?: string };
+  // TODO: type tx properly once Transaction and ElectrumTransaction are unified
+  TransactionStatus: { hash: string; walletID: string; tx?: any };
   CPFP: {
     wallet: TWallet | null;
     txid: string;
@@ -80,13 +93,13 @@ export type DetailViewStackParamList = {
   Settings: undefined;
   Currency: undefined;
   GeneralSettings: undefined;
-  PlausibleDeniability: undefined;
   Licensing: undefined;
   NetworkSettings: undefined;
   About: undefined;
   // DefaultView: undefined; // Commented out - not accessible from UI
   ElectrumSettings: { server?: ElectrumServerItem; onBarScanned?: string };
   SettingsBlockExplorer: undefined;
+  PlausibleDeniability: undefined;
   EncryptStorage: undefined;
   Language: undefined;
   LightningSettings: {
@@ -97,7 +110,27 @@ export type DetailViewStackParamList = {
   SelfTest: undefined;
   ReleaseNotes: undefined;
   SettingsTools: undefined;
-  ViewEditMultisigCosignersRoot: { walletID: string; cosigners: string[] };
+  ViewEditMultisigCosigners: {
+    walletID: string;
+    cosigners: string[];
+    sheetAction?: string;
+    sheetImportText?: string;
+    sheetAskPassphrase?: boolean;
+    sheetCurrentlyEditingCosignerNum?: number;
+  };
+  ViewEditMultisigCosignerViewSheet: { walletID: string; vaultKeyData: VaultKeyData };
+  ViewEditMultisigProvideMnemonicsSheet: {
+    walletID: string;
+    currentlyEditingCosignerNum: number;
+    importText: string;
+    askPassphrase: boolean;
+  };
+  ViewEditMultisigShareCosignerSheet: {
+    walletID: string;
+    cosignerXpub: string;
+    cosignerXpubURv2: string;
+    exportFilename: string;
+  };
   WalletXpub: { walletID: string; xpub: string };
   SignVerifyRoot: {
     screen: 'SignVerify';
@@ -110,10 +143,18 @@ export type DetailViewStackParamList = {
     walletID?: string;
     address: string;
   };
+  ReceiveCustomAmount: {
+    address: string;
+    currentLabel?: string;
+    currentAmount?: string;
+    currentUnit?: DoichainUnit;
+    preferredUnit?: DoichainUnit;
+  };
   ScanQRCode: ScanQRCodeParamList;
   PaymentCodeList: {
     paymentCode: string;
     walletID: string;
   };
+  PromptPasswordConfirmationSheet: PromptPasswordConfirmationParams | undefined;
   ManageWallets: undefined;
 };

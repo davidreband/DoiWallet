@@ -136,6 +136,14 @@ export class AbstractWallet {
     return DoichainUnit.DOI;
   }
 
+  setPreferredBalanceUnit(unit: DoichainUnit): void {
+    if (Object.values(DoichainUnit).includes(unit)) {
+      this.preferredBalanceUnit = unit;
+      return;
+    }
+    this.preferredBalanceUnit = DoichainUnit.DOI;
+  }
+
   async allowOnchainAddress(): Promise<boolean> {
     throw new Error('allowOnchainAddress: Not implemented');
   }

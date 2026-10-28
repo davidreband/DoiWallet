@@ -1,9 +1,9 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { Icon } from '@rneui/themed';
+import Icon from '../../components/Icon';
 import React, { useEffect, useState } from 'react';
 import { I18nManager, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { BlueText } from '../../BlueComponents';
+import BlueText from '../../components/BlueText';
 import Azteco from '../../class/azteco';
 import { TWallet } from '../../class/wallets/types';
 import presentAlert from '../../components/Alert';

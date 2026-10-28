@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RouteProp, useFocusEffect, useRoute, useLocale } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Icon } from '@rneui/themed';
+import Icon from '../../components/Icon';
 import assert from 'assert';
 import BigNumber from 'bignumber.js';
 import { TOptions } from 'bip21';
@@ -17,7 +17,6 @@ import {
   findNodeHandle,
   FlatList,
   Keyboard,
-  LayoutAnimation,
   NativeScrollEvent,
   NativeSyntheticEvent,
   Platform,
@@ -25,14 +24,17 @@ import {
   Text,
   TextInput,
   Pressable,
+  ScrollView,
   View,
 } from 'react-native';
 import RNFS from 'react-native-fs';
 import { btcToSatoshi, fiatToBTC } from '../../blue_modules/currency';
 import * as fs from '../../blue_modules/fs';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
-import { BlueText } from '../../BlueComponents';
-import { HDSegwitBech32Wallet, MultisigHDWallet, WatchOnlyWallet } from '../../class';
+import BlueText from '../../components/BlueText';
+import { HDSegwitBech32Wallet } from '../../class/wallets/hd-segwit-bech32-wallet';
+import { MultisigHDWallet } from '../../class/wallets/multisig-hd-wallet';
+import { WatchOnlyWallet } from '../../class/wallets/watch-only-wallet';
 import { ContactList } from '../../class/contact-list';
 import DeeplinkSchemaMatch from '../../class/deeplink-schema-match';
 import { AbstractHDElectrumWallet } from '../../class/wallets/abstract-hd-electrum-wallet';
@@ -83,7 +85,7 @@ const SendDetails = () => {
   const { wallets, sleep, txMetadata, saveToDisk } = useStorage();
   const navigation = useExtendedNavigation<NavigationProps>();
   const { direction } = useLocale();
-  const selectedDataProcessor = useRef<ToolTipAction | undefined>();
+  const selectedDataProcessor = useRef<ToolTipAction | undefined>(undefined);
   const setParams = navigation.setParams;
   const route = useRoute<RouteProps>();
   const feeUnit = route.params?.feeUnit ?? DoichainUnit.DOI;
@@ -96,6 +98,8 @@ const SendDetails = () => {
   const routeParams = route.params;
   const scrollView = useRef<FlatList<any>>(null);
   const scrollIndex = useRef(0);
+  /** Used so we only clear coin-selection (utxos) when the user switches wallet, not on first mount (e.g. Send opened from wallet details with pre-selected UTXOs). */
+  const prevWalletIdForCoinResetRef = useRef<string | null>(null);
   const { colors } = useTheme();
 
   // state
@@ -119,8 +123,9 @@ const SendDetails = () => {
   // if utxo is limited we use it to calculate available balance
   const balance: number = utxos ? utxos.reduce((prev, curr) => prev + curr.value, 0) : (wallet?.getBalance() ?? 0);
   const allBalance = formatBalanceWithoutSuffix(balance, DoichainUnit.DOI, true);
-
-  // if customFee is not set, we need to choose highest possible fee for wallet balance
+  // estimated sendable amount when MAX is selected (null if not applicable)
+  const [maxSendableAmount, setMaxSendableAmount] = useState<number | null>(null);
+  // if cutomFee is not set, we need to choose highest possible fee for wallet balance
   // if there are no funds for even Slow option, use 1 sat/vbyte fee
   const feeRate = useMemo(() => {
     console.log('SendDetails: feeRate useMemo - customFee:', customFee);
@@ -347,16 +352,20 @@ const SendDetails = () => {
   useEffect(() => {
     if (!wallet) return;
 
-    // reset other values
     setChangeAddress(null);
+    const prevId = prevWalletIdForCoinResetRef.current;
+    const currentId = wallet.getID();
+    const walletActuallyChanged = prevId !== null && prevId !== currentId;
+
     setParams({
-      utxos: null,
+      ...(walletActuallyChanged ? { utxos: null } : {}),
       isTransactionReplaceable: wallet.type === HDSegwitBech32Wallet.type && !routeParams.isTransactionReplaceable ? true : undefined,
     });
+    prevWalletIdForCoinResetRef.current = currentId;
+
     wallet
       .fetchUtxo()
       .then(() => {
-        // we need to re-calculate fees
         setDumb(v => !v);
       })
       .catch(e => console.log('fetchUtxo error', e));
@@ -440,6 +449,16 @@ const SendDetails = () => {
 
     if (JSON.stringify(feePrecalc) !== JSON.stringify(newFeePrecalc)) {
       setFeePrecalc(newFeePrecalc);
+    }
+
+    // Calculate maxSendableAmount (only for single recipient with MAX)
+    if (addresses.length === 1 && addresses[0].amount === DoichainUnit.MAX && newFeePrecalc.current !== null) {
+      // use lutxo to match what coinSelectSplit actually receives
+      const spendableBalance = lutxo.reduce((prev: number, curr: { value: number }) => prev + curr.value, 0);
+      const sendable = spendableBalance - newFeePrecalc.current;
+      setMaxSendableAmount(sendable > 0 ? sendable : null);
+    } else {
+      setMaxSendableAmount(null);
     }
 
     if (frozenBalance !== undefined) {
@@ -1130,7 +1149,11 @@ const SendDetails = () => {
   }, [addresses, amountUnit]);
 
   const onRemoveAllRecipientsConfirmed = useCallback(() => {
+    scrollIndex.current = 0;
     setAddresses([{ address: '', key: String(Math.random()), unit: amountUnit }]);
+    setTimeout(() => {
+      scrollView.current?.scrollToOffset({ offset: 0, animated: false });
+    }, 0);
   }, [amountUnit]);
 
   const handleRemoveAllRecipients = useCallback(() => {
@@ -1476,7 +1499,6 @@ const SendDetails = () => {
             number={utxos.length}
             onContainerPress={handleCoinControl}
             onClose={() => {
-              LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
               setParams({ utxos: null });
             }}
           />
@@ -1517,7 +1539,7 @@ const SendDetails = () => {
   const renderBitcoinTransactionInfoFields = (params: { item: IPaymentDestinations; index: number }) => {
     const { item, index } = params;
     return (
-      <View style={[styles.transactionItemContainer, { width: dimensions.width }]} testID={'Transaction' + index}>
+      <View style={[styles.transactionItemContainer, { width: dimensions.width }]} testID={'Transaction' + index} collapsable={false}>
         <View style={styles.amountInputContainer}>
           <AmountInput.AmountInput
             isLoading={isLoading}
@@ -1570,6 +1592,8 @@ const SendDetails = () => {
             editable={isEditable}
             disabled={!isEditable}
             inputAccessoryViewID={InputAccessoryAllFundsAccessoryViewID}
+            maxSendableAmount={index === scrollIndex.current ? maxSendableAmount : null}
+            isMaxAmountEstimate={!(item.address && wallet?.isAddressValid(item.address))}
           />
         </View>
 
@@ -1588,20 +1612,28 @@ const SendDetails = () => {
         <View style={styles.addressInputContainer}>
           <AddressInput
             onChangeText={text => {
-              const { address, amount, memo, payjoinUrl: pjUrl } = DeeplinkSchemaMatch.decodeBitcoinUri(text.trim());
-
-              console.log('____Decoded Bitcoin URI:', { address, amount, memo, pjUrl });
+              const trimmedText = text.trim();
+              const { address, amount, memo, payjoinUrl: pjUrl } = DeeplinkSchemaMatch.decodeBitcoinUri(trimmedText);
+              const hasPositiveAmount = Number(amount) > 0;
               setAddresses(addrs => {
-                item.address = address || text.trim();
-                item.amount = amount || item.amount;
-                addrs[index] = item;
-                return [...addrs];
+                const updatedAddresses = [...addrs];
+                const updatedItem = { ...updatedAddresses[index] };
+                updatedItem.address = address || trimmedText;
+
+                if (hasPositiveAmount) {
+                  updatedItem.amount = amount;
+                  updatedItem.amountSats = btcToSatoshi(amount!);
+                  updatedItem.unit = DoichainUnit.DOI;
+                }
+
+                updatedAddresses[index] = updatedItem;
+                return updatedAddresses;
               });
               if (memo) {
                 setParams({ transactionMemo: memo });
               }
               setIsLoading(false);
-              setParams({ payjoinUrl: pjUrl });
+              setParams(hasPositiveAmount ? { payjoinUrl: pjUrl, amountUnit: DoichainUnit.DOI } : { payjoinUrl: pjUrl });
             }}
             address={item.address}
             isLoading={isLoading}
@@ -1638,71 +1670,79 @@ const SendDetails = () => {
   });
 
   return (
-    <SafeArea style={[styles.root, stylesHook.root]}>
-      <View>
-        <FlatList
-          onLayout={handleLayout}
-          keyboardShouldPersistTaps="always"
-          scrollEnabled={addresses.length > 1}
-          data={addresses}
-          renderItem={renderBitcoinTransactionInfoFields}
-          horizontal
-          ref={scrollView}
-          automaticallyAdjustKeyboardInsets
-          pagingEnabled
-          removeClippedSubviews={false}
-          onMomentumScrollBegin={Keyboard.dismiss}
-          onScroll={handleRecipientsScroll}
-          scrollEventThrottle={16}
-          scrollIndicatorInsets={styles.scrollViewIndicator}
-          contentContainerStyle={styles.scrollViewContent}
-          getItemLayout={getItemLayout}
-        />
-        <View style={[styles.memo, stylesHook.memo]}>
-          <TextInput
-            onChangeText={setTransactionMemo}
-            placeholder={loc.send.details_note_placeholder}
-            placeholderTextColor="#81868e"
-            value={transactionMemo}
-            numberOfLines={1}
-            style={styles.memoText}
-            editable={!isLoading}
-            onSubmitEditing={Keyboard.dismiss}
-            inputAccessoryViewID={DismissKeyboardInputAccessoryViewID}
+    <SafeArea style={[styles.root, stylesHook.root]} ignoreTopInset>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.screenContent}
+        automaticallyAdjustKeyboardInsets
+        contentInsetAdjustmentBehavior="never"
+      >
+        <View>
+          <FlatList
+            onLayout={handleLayout}
+            keyboardShouldPersistTaps="always"
+            scrollEnabled={addresses.length > 1}
+            data={addresses}
+            renderItem={renderBitcoinTransactionInfoFields}
+            horizontal
+            ref={scrollView}
+            automaticallyAdjustKeyboardInsets
+            pagingEnabled
+            removeClippedSubviews={false}
+            onMomentumScrollBegin={Keyboard.dismiss}
+            onScroll={handleRecipientsScroll}
+            scrollEventThrottle={16}
+            scrollIndicatorInsets={styles.scrollViewIndicator}
+            contentContainerStyle={styles.scrollViewContent}
+            getItemLayout={getItemLayout}
           />
-        </View>
-        <Pressable
-          testID="chooseFee"
-          accessibilityRole="button"
-          onPress={() => {
-            Keyboard.dismiss();
-            navigation.navigate('SelectFee', {
-              networkTransactionFees,
-              feePrecalc,
-              feeRate,
-              feeUnit,
-              walletID: wallet?.getID() || '',
-              customFee,
-            });
-          }}
-          disabled={isLoading}
-          style={({ pressed }) => [pressed && styles.pressed, styles.fee]}
-        >
-          <Text style={[styles.feeLabel, stylesHook.feeLabel]}>{loc.send.create_fee}</Text>
+          <View style={[styles.memo, stylesHook.memo]}>
+            <TextInput
+              onChangeText={setTransactionMemo}
+              placeholder={loc.send.details_note_placeholder}
+              placeholderTextColor="#81868e"
+              value={transactionMemo}
+              numberOfLines={1}
+              style={styles.memoText}
+              editable={!isLoading}
+              onSubmitEditing={Keyboard.dismiss}
+              inputAccessoryViewID={DismissKeyboardInputAccessoryViewID}
+            />
+          </View>
+          <Pressable
+            testID="chooseFee"
+            accessibilityRole="button"
+            onPress={() => {
+              Keyboard.dismiss();
+              const selectedRecipientUnit = addresses[scrollIndex.current]?.unit || amountUnit;
+              navigation.navigate('SelectFee', {
+                networkTransactionFees,
+                feePrecalc,
+                feeRate,
+                feeUnit: selectedRecipientUnit,
+                walletID: wallet?.getID() || '',
+                customFee,
+              });
+            }}
+            disabled={isLoading}
+            style={({ pressed }) => [pressed && styles.pressed, styles.fee]}
+          >
+            <Text style={[styles.feeLabel, stylesHook.feeLabel]}>{loc.send.create_fee}</Text>
 
-          {networkTransactionFeesIsLoading ? (
-            <ActivityIndicator />
-          ) : (
             <View style={[styles.feeRow, stylesHook.feeRow]}>
-              <Text style={stylesHook.feeValue}>
-                {feePrecalc.current ? formatFee(feePrecalc.current) : feeRate + ' ' + loc.units.sat_byte}
-              </Text>
+              {networkTransactionFeesIsLoading ? (
+                <ActivityIndicator />
+              ) : (
+                <Text style={stylesHook.feeValue}>
+                  {feePrecalc.current ? formatFee(feePrecalc.current) : feeRate + ' ' + loc.units.sat_byte}
+                </Text>
+              )}
             </View>
-          )}
-        </Pressable>
-        {renderCustomFeeWarning()}
-        {renderCreateButton()}
-      </View>
+          </Pressable>
+          {renderCustomFeeWarning()}
+          {renderCreateButton()}
+        </View>
+      </ScrollView>
       <DismissKeyboardInputAccessory />
       {Platform.select({
         ios: <InputAccessoryAllFunds canUseAll={balance > 0} onUseAllPressed={onUseAllPressed} balance={String(allBalance)} />,
@@ -1710,7 +1750,6 @@ const SendDetails = () => {
           <InputAccessoryAllFunds canUseAll={balance > 0} onUseAllPressed={onUseAllPressed} balance={String(allBalance)} />
         ),
       })}
-
       {renderWalletSelectionOrCoinsSelected()}
     </SafeArea>
   );
@@ -1721,7 +1760,10 @@ export default SendDetails;
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
+  },
+  screenContent: {
+    paddingBottom: 16,
   },
   scrollViewContent: {
     flexDirection: 'row',
@@ -1787,6 +1829,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
     minHeight: 33,
     color: '#81868e',
+    fontSize: 15,
+    lineHeight: 19,
   },
   fee: {
     flexDirection: 'row',

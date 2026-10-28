@@ -6,7 +6,7 @@ import { DoichainUnit } from '../../models/doichainUnits';
 import { DOICHAIN } from '../../blue_modules/network.js';
 import React, { useCallback, useEffect } from 'react';
 import { Alert, FlatList, Linking, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, ListRenderItemInfo } from 'react-native';
-import { Icon } from '@rneui/themed';
+import Icon from '../../components/Icon';
 import RNFS from 'react-native-fs';
 import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 import Share from 'react-native-share';
@@ -14,7 +14,7 @@ import { SecondButton } from '../../components/SecondButton';
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import { satoshiToBTC } from '../../blue_modules/currency';
 import { isDesktop } from '../../blue_modules/environment';
-import { BlueText } from '../../BlueComponents';
+import BlueText from '../../components/BlueText';
 import presentAlert from '../../components/Alert';
 import { DynamicQRCode } from '../../components/DynamicQRCode';
 import { useTheme } from '../../components/themes';
@@ -89,8 +89,9 @@ const SendCreate = () => {
       }
     }
     try {
-      await BlueElectrum.ping();
-      await BlueElectrum.waitTillConnected();
+      if (!(await BlueElectrum.ensureConnected())) {
+        throw new Error(loc.errors.network);
+      }
       if (!wallet) throw new Error('No wallet to broadcast from');
       const result = await wallet.broadcastTx(tx);
       if (result) {
@@ -216,7 +217,7 @@ const SendCreate = () => {
       <>
         <View>
           {item.index !== undefined ? (
-            <Text style={[styles.transactionDetailsTitle, styleHooks.transactionDetailsTitle]}>{loc.transactions.details_from}</Text>
+            <Text style={[styles.transactionDetailsTitle, styleHooks.transactionDetailsTitle]}>{loc.transactions.details_inputs}</Text>
           ) : item.isIncluded !== true ? (
             <Text style={[styles.transactionDetailsTitleRed, styleHooks.transactionDetailsTitleRed]}>{loc.send.foreign_address}</Text>
           ) : (

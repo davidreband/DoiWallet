@@ -14,7 +14,7 @@
  */
 import assert from 'assert';
 
-import { HDSegwitBech32Wallet } from '../../class';
+import { HDSegwitBech32Wallet } from '../../class/wallets/hd-segwit-bech32-wallet';
 import { CreateTransactionUtxo } from '../../class/wallets/types';
 import { MIN_NAME_AMOUNT, broadcast, cli, fundAddress, isNodeUp, nameOutputOf, nameShow, testAccept, uniqueName } from './rpc';
 

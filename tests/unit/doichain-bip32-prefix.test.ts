@@ -4,7 +4,7 @@
 import assert from 'assert';
 
 import { DOICHAIN } from '../../blue_modules/network.js';
-import { MultisigHDWallet } from '../../class';
+import { MultisigHDWallet } from '../../class/wallets/multisig-hd-wallet';
 
 describe('#34 - a standard extended private key is accepted on mainnet', () => {
   it('takes the BIP32 private prefix Doichain Core uses', () => {

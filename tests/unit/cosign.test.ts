@@ -3,8 +3,9 @@ import assert from 'assert';
 import * as bitcoin from '@doichain/doichainjs-lib';
 import { DOICHAIN } from '../../blue_modules/network.js';
 
-// import { HDLegacyP2PKHWallet, HDSegwitBech32Wallet, HDSegwitP2SHWallet, WatchOnlyWallet } from '../../class';
-import { HDLegacyP2PKHWallet, HDSegwitBech32Wallet, HDSegwitP2SHWallet } from '../../class';
+import { HDLegacyP2PKHWallet } from '../../class/wallets/hd-legacy-p2pkh-wallet';
+import { HDSegwitBech32Wallet } from '../../class/wallets/hd-segwit-bech32-wallet';
+import { HDSegwitP2SHWallet } from '../../class/wallets/hd-segwit-p2sh-wallet';
 import { hexToUint8Array } from '../../blue_modules/uint8array-extras/index';
 
 describe('AbstractHDElectrumWallet.cosign', () => {

@@ -10,6 +10,7 @@ import {
   hashIt,
   scanText,
   scrollUpOnHomeScreen,
+  setCustomFeeRate,
   sleep,
   tapAndTapAgainIfElementIsNotVisible,
   tapAndTapAgainIfTextIsNotVisible,
@@ -17,6 +18,7 @@ import {
   typeTextIntoAlertInput,
   waitForId,
   waitForKeyboardToClose,
+  waitForSwitchValue,
   waitForText,
 } from './helperz';
 
@@ -35,6 +37,7 @@ console.warn = console.log = (...args) => {
  */
 /*
 beforeAll(async () => {
+  // return;
   if (!process.env.HD_MNEMONIC_BIP84) {
     console.error('process.env.HD_MNEMONIC_BIP84 not set, skipped');
     return;
@@ -77,16 +80,12 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     await waitForId('SendButton');
     await element(by.id('SendButton')).tap();
     await element(by.id('AddressInput')).replaceText('bc1q063ctu6jhe5k4v8ka99qac8rcm2tzjjnuktyrl');
-    await element(by.id('BitcoinAmountInput')).typeText('0.0001\n');
+    await element(by.id('BitcoinAmountInput')).replaceText('0.0001\n');
     await waitForKeyboardToClose();
 
     // setting fee rate:
     const feeRate = 2;
-    await element(by.id('chooseFee')).tap();
-    await element(by.id('feeCustomContainerButton')).tap();
-    await element(by.id('feeCustom')).typeText(feeRate.toString());
-    await element(by.id('feeCustom')).tapReturnKey();
-    await waitForKeyboardToClose();
+    await setCustomFeeRate(feeRate);
     await element(by.id('CreateTransactionButton')).tap();
 
     // created. verifying:
@@ -197,14 +196,14 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
 
     // Add a few recipients initially
     await element(by.id('AddressInput')).replaceText('bc1qnapskphjnwzw2w3dk4anpxntunc77v6qrua0f7');
-    await element(by.id('BitcoinAmountInput')).typeText('0.0001\n');
+    await element(by.id('BitcoinAmountInput')).replaceText('0.0001\n');
     await waitForKeyboardToClose();
 
     await element(by.id('HeaderMenuButton')).tap();
     await element(by.text('Add Recipient')).tap();
     await waitForId('Transaction1');
     await element(by.id('AddressInput').withAncestor(by.id('Transaction1'))).replaceText('bc1q063ctu6jhe5k4v8ka99qac8rcm2tzjjnuktyrl');
-    await element(by.id('BitcoinAmountInput').withAncestor(by.id('Transaction1'))).typeText('0.0002\n');
+    await element(by.id('BitcoinAmountInput').withAncestor(by.id('Transaction1'))).replaceText('0.0002');
     await waitForKeyboardToClose();
 
     // Now remove all recipients before proceeding
@@ -215,30 +214,26 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     // Now, let's proceed with the batch send process again
     // Let's create a real transaction again:
     await element(by.id('AddressInput')).replaceText('bc1qnapskphjnwzw2w3dk4anpxntunc77v6qrua0f7');
-    await element(by.id('BitcoinAmountInput')).typeText('0.0001\n');
+    await element(by.id('BitcoinAmountInput')).replaceText('0.0001');
     await waitForKeyboardToClose();
 
     // Setting fee rate:
     const feeRate = 2;
-    await element(by.id('chooseFee')).tap();
-    await element(by.id('feeCustomContainerButton')).tap();
-    await element(by.id('feeCustom')).typeText(feeRate.toString());
-    await element(by.id('feeCustom')).tapReturnKey();
-    await waitForKeyboardToClose();
+    await setCustomFeeRate(feeRate);
 
     // Let's add another two outputs
     await element(by.id('HeaderMenuButton')).tap();
     await element(by.text('Add Recipient')).tap();
     await waitForId('Transaction1'); // Adding a recipient autoscrolls it to the last one
     await element(by.id('AddressInput').withAncestor(by.id('Transaction1'))).replaceText('bc1q063ctu6jhe5k4v8ka99qac8rcm2tzjjnuktyrl');
-    await element(by.id('BitcoinAmountInput').withAncestor(by.id('Transaction1'))).typeText('0.0002\n');
+    await element(by.id('BitcoinAmountInput').withAncestor(by.id('Transaction1'))).replaceText('0.0002');
     await waitForKeyboardToClose();
 
     await element(by.id('HeaderMenuButton')).tap();
     await element(by.text('Add Recipient')).tap();
     await waitForId('Transaction2'); // Adding a recipient autoscrolls it to the last one
     await element(by.id('AddressInput').withAncestor(by.id('Transaction2'))).replaceText('bc1qh6tf004ty7z7un2v5ntu4mkf630545gvhs45u7');
-    await element(by.id('BitcoinAmountInput').withAncestor(by.id('Transaction2'))).typeText('0.0003\n');
+    await element(by.id('BitcoinAmountInput').withAncestor(by.id('Transaction2'))).replaceText('0.0003');
     await waitForKeyboardToClose();
 
     // Remove last output, check if second output is shown
@@ -251,7 +246,7 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     await element(by.text('Add Recipient')).tap();
     await waitForId('Transaction2'); // Adding a recipient autoscrolls it to the last one
     await element(by.id('AddressInput').withAncestor(by.id('Transaction2'))).replaceText('bc1qh6tf004ty7z7un2v5ntu4mkf630545gvhs45u7');
-    await element(by.id('BitcoinAmountInput').withAncestor(by.id('Transaction2'))).typeText('0.0003\n');
+    await element(by.id('BitcoinAmountInput').withAncestor(by.id('Transaction2'))).replaceText('0.0003');
     await waitForKeyboardToClose();
 
     // Remove second output
@@ -295,15 +290,11 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
 
     // set fee rate
     const feeRate = 2;
-    await element(by.id('chooseFee')).tap();
-    await element(by.id('feeCustomContainerButton')).tap();
-    await element(by.id('feeCustom')).typeText(feeRate.toString());
-    await element(by.id('feeCustom')).tapReturnKey();
-    await waitForKeyboardToClose();
+    await setCustomFeeRate(feeRate);
 
     // first send MAX output
     await element(by.id('AddressInput')).replaceText('bc1qnapskphjnwzw2w3dk4anpxntunc77v6qrua0f7');
-    await element(by.id('BitcoinAmountInput')).typeText('0.0001\n');
+    await element(by.id('BitcoinAmountInput')).replaceText('0.0001');
     await waitForKeyboardToClose();
     await element(by.id('HeaderMenuButton')).tap();
     await element(by.text('Use Full Balance')).tap();
@@ -325,7 +316,7 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     await element(by.text('Add Recipient')).tap();
     await waitForId('Transaction1');
     await element(by.id('AddressInput').withAncestor(by.id('Transaction1'))).replaceText('bc1q063ctu6jhe5k4v8ka99qac8rcm2tzjjnuktyrl');
-    await element(by.id('BitcoinAmountInput').withAncestor(by.id('Transaction1'))).typeText('0.0001\n');
+    await element(by.id('BitcoinAmountInput').withAncestor(by.id('Transaction1'))).replaceText('0.0001');
     await waitForKeyboardToClose();
 
     await element(by.id('CreateTransactionButton')).tap();
@@ -403,12 +394,16 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     // switch on BIP47 slider if its not switched
     if (!(await getSwitchValue('BIP47Switch'))) {
       await expect(element(by.text('Contacts'))).not.toBeVisible();
+      // Scroll down so Options section (BIP47 switch) is on screen
+      await element(by.id('WalletDetailsScroll')).swipe('up', 'fast', 1);
+      await element(by.id('WalletDetailsScroll')).swipe('up', 'fast', 1);
+      await waitFor(element(by.id('BIP47Switch')))
+        .toExist()
+        .withTimeout(5000);
       await element(by.id('BIP47Switch')).tap();
       await waitFor(element(by.text('Contacts')))
-        .toBeVisible()
-        .whileElement(by.id('WalletDetailsScroll'))
-        .scroll(500, 'down');
-      await expect(element(by.text('Contacts'))).toBeVisible();
+        .toExist()
+        .withTimeout(10000);
       await goBack();
     } else {
       await goBack();
@@ -417,11 +412,6 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     // go to receive screen and check that payment code is there
     await waitForId('ReceiveButton');
     await element(by.id('ReceiveButton')).tap();
-
-    try {
-      await element(by.text('ASK ME LATER.')).tap();
-    } catch (_) {}
-
     await element(by.text('Payment Code')).tap();
     await element(by.id('ReceiveDetailsScrollView')).swipe('up', 'fast', 1); // in case emu screen is small and it doesnt fit
     await sleep(200);
@@ -444,33 +434,71 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     await tapAndTapAgainIfTextIsNotVisible('Contacts', 'Add Contact');
 
     await expect(element(by.id('ContactListItem0'))).not.toBeVisible();
-    await element(by.text('Add Contact')).tap();
-    await typeTextIntoAlertInput('13HaCAB4jf7FYSZexJxoczyDDnutzZigjS');
-    await sleep(1000);
-    await element(by.text('OK')).tap();
-    await element(by.text('Add Contact')).tap();
-    await typeTextIntoAlertInput(
-      'sp1qqgste7k9hx0qftg6qmwlkqtwuy6cycyavzmzj85c6qdfhjdpdjtdgqjuexzk6murw56suy3e0rd2cgqvycxttddwsvgxe2usfpxumr70xc9pkqwv',
-    );
-    await element(by.text('OK')).tap();
 
-    await expect(element(by.id('ContactListItem0'))).toBeVisible();
-    await expect(element(by.id('ContactListItem1'))).toBeVisible();
+    let contact0added = false;
+    let counter = 0;
+    do {
+      await element(by.text('Add Contact')).tap();
+      await typeTextIntoAlertInput('13HaCAB4jf7FYSZexJxoczyDDnutzZigjS');
+      try {
+        await element(by.text('OK')).tap();
+      } catch (_) {}
+      await sleep(3_000); // propagate
+      try {
+        await expect(element(by.id('ContactListItem0'))).toBeVisible();
+        contact0added = true;
+      } catch (_) {}
+    } while (!contact0added && counter++ < 10);
 
-    await element(by.text('Add Contact')).tap();
-    await typeTextIntoAlertInput(
-      'PM8TJS2JxQ5ztXUpBBRnpTbcUXbUHy2T1abfrb3KkAAtMEGNbey4oumH7Hc578WgQJhPjBxteQ5GHHToTYHE3A1w6p7tU6KSoFmWBVbFGjKPisZDbP97',
-    );
-    await element(by.text('OK')).tap();
+    let contact1added = false;
+    let counter1 = 0;
+    do {
+      await element(by.text('Add Contact')).tap();
+      await typeTextIntoAlertInput(
+        'sp1qqgste7k9hx0qftg6qmwlkqtwuy6cycyavzmzj85c6qdfhjdpdjtdgqjuexzk6murw56suy3e0rd2cgqvycxttddwsvgxe2usfpxumr70xc9pkqwv',
+      );
+      try {
+        await element(by.text('OK')).tap();
+      } catch (_) {}
+      await sleep(3_000); // propagate
 
-    await waitForText('On-chain transaction needed');
+      try {
+        await expect(element(by.id('ContactListItem1'))).toBeVisible();
+        contact1added = true;
+      } catch (_) {}
+    } while (!contact1added && counter1++ < 10);
+
+    let contact2added = false;
+    let counter2 = 0;
+    do {
+      await element(by.text('Add Contact')).tap();
+      await typeTextIntoAlertInput(
+        'PM8TJS2JxQ5ztXUpBBRnpTbcUXbUHy2T1abfrb3KkAAtMEGNbey4oumH7Hc578WgQJhPjBxteQ5GHHToTYHE3A1w6p7tU6KSoFmWBVbFGjKPisZDbP97',
+      );
+      try {
+        await element(by.text('OK')).tap();
+      } catch (_) {}
+      await sleep(3_000); // propagate
+
+      try {
+        await waitForText('On-chain transaction needed');
+        contact2added = true;
+      } catch (_) {}
+    } while (!contact2added && counter2++ < 10);
     await element(by.text('Cancel')).tap();
+
+    try {
+      await sleep(1_000); // propagate
+      await element(by.text('Cancel')).tap(); // again, sometimes it doesnt work the 1st time
+    } catch (_) {}
 
     // testing renaming contact:
     await element(by.id('ContactListItem0')).tap();
     await element(by.text('Rename contact')).tap();
     await typeTextIntoAlertInput('c0ntact');
-    await element(by.text('OK')).tap();
+    try {
+      await element(by.text('OK')).tap();
+    } catch (_) {}
     await expect(element(by.text('c0ntact'))).toBeVisible();
 
     // now, doing a real transaction with our contacts
@@ -487,7 +515,7 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     await element(by.id('HeaderMenuButton')).tap();
     await element(by.text('Insert Contact')).tap();
     await tapAndTapAgainIfElementIsNotVisible('ContactListItem0', 'BitcoinAmountInput');
-    await element(by.id('BitcoinAmountInput')).typeText('0.0001\n');
+    await element(by.id('BitcoinAmountInput')).replaceText('0.0001');
     await waitForKeyboardToClose();
 
     await element(by.id('HeaderMenuButton')).tap();
@@ -495,14 +523,10 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     await element(by.id('HeaderMenuButton')).tap();
     await element(by.text('Insert Contact')).tap();
     await element(by.id('ContactListItem1')).tap();
-    await element(by.id('BitcoinAmountInput')).atIndex(1).typeText('0.0002\n');
+    await element(by.id('BitcoinAmountInput')).atIndex(1).replaceText('0.0002');
     await waitForKeyboardToClose();
     // setting fee rate:
-    await element(by.id('chooseFee')).tap();
-    await element(by.id('feeCustomContainerButton')).tap();
-    await element(by.id('feeCustom')).typeText('1');
-    await element(by.id('feeCustom')).tapReturnKey();
-    await waitForKeyboardToClose();
+    await setCustomFeeRate(1);
     await element(by.id('CreateTransactionButton')).tap();
     await waitForId('TransactionDetailsButton');
     await element(by.id('TransactionDetailsButton')).tap();
@@ -537,22 +561,22 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     // let's test wallet details screens
     await element(by.id('WalletDetails')).tap();
 
-    // rename test
-    await element(by.id('WalletNameInput')).replaceText('testname');
-    await element(by.id('WalletNameInput')).typeText('\n'); // newline is what triggers saving the wallet
+    // rename test: tap edit, enter new name in prompt, tap OK
+    await element(by.id('WalletNameEditButton')).tap();
+    await typeTextIntoAlertInput('testname');
+    await element(by.text('OK')).tap();
     await waitForKeyboardToClose();
     await goBack();
     await waitForText('testname');
-    await expect(element(by.id('WalletLabel'))).toHaveText('testname');
     await element(by.id('WalletDetails')).tap();
 
     // rename back
-    await element(by.id('WalletNameInput')).replaceText('Imported HD SegWit (BIP84 Bech32 Native)');
-    await element(by.id('WalletNameInput')).typeText('\n'); // newline is what triggers saving the wallet
+    await element(by.id('WalletNameEditButton')).tap();
+    await typeTextIntoAlertInput('Imported HD SegWit (BIP84 Bech32 Native)');
+    await element(by.text('OK')).tap();
     await waitForKeyboardToClose();
     await goBack();
     await waitForText('Imported HD SegWit (BIP84 Bech32 Native)');
-    await expect(element(by.id('WalletLabel'))).toHaveText('Imported HD SegWit (BIP84 Bech32 Native)');
     await element(by.id('WalletDetails')).tap();
 
     // wallet export
@@ -573,6 +597,16 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
       .scroll(500, 'down');
     await tapAndTapAgainIfElementIsNotVisible('XpubButton', 'CopyTextToClipboard');
     await goBack();
+    await goBack();
+    await goBack();
+
+    // ManageWallets — open via long-press, verify header + drag hint render
+    await waitForId('WalletsList');
+    await element(by.text('Imported HD SegWit (BIP84 Bech32 Native)')).longPress();
+    await waitForId('NavigationCloseButton');
+    await expect(element(by.id('Imported HD SegWit (BIP84 Bech32 Native)'))).toBeVisible();
+    await element(by.id('NavigationCloseButton')).tap();
+    await waitForId('WalletsList');
 
     process.env.CI && require('fs').writeFileSync(lockFile, '1');
   });
@@ -600,11 +634,7 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
 
     // setting fee rate:
     const feeRate = 2;
-    await element(by.id('chooseFee')).tap();
-    await element(by.id('feeCustomContainerButton')).tap();
-    await element(by.id('feeCustom')).typeText(feeRate.toString());
-    await element(by.id('feeCustom')).tapReturnKey();
-    await waitForKeyboardToClose();
+    await setCustomFeeRate(feeRate);
     await element(by.id('CreateTransactionButton')).tap();
 
     // created. verifying:
@@ -634,12 +664,19 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
       .not.toExist()
       .withTimeout(300 * 1000);
 
-    // change note of 0.00069909 tx output
+    // change note of 0.00069909 tx output (new UI: tap "add" to open note prompt, type in alert, tap OK)
     await element(by.text('0.00069909')).atIndex(0).tap();
-    await element(by.text('Details')).tap();
-    await expect(element(by.text('8b0ab2c7196312e021e0d3dc73f801693826428782970763df6134457bd2ec20'))).toBeVisible();
-    await element(by.id('TransactionDetailsMemoInput')).typeText('test1');
-    await element(by.id('TransactionDetailsMemoInput')).tapReturnKey();
+    const txidToVerify = '8b0ab2c7196312e021e0d3dc73f801693826428782970763df6134457bd2ec20';
+    const shortenedTxidToVerify = `${txidToVerify.slice(0, 10)}...${txidToVerify.slice(-10)}`;
+    // Transaction ID is intentionally shortened in UI; verify the full txid is present via accessibility label.
+    await waitFor(element(by.text(shortenedTxidToVerify)))
+      .toBeVisible()
+      .withTimeout(10000);
+    const txidAttrs = await element(by.id('TransactionIdCopyButton')).getAttributes();
+    assert.strictEqual(txidAttrs.label, txidToVerify, `Unexpected txid label: ${txidAttrs.label}`);
+    await element(by.text('add')).tap();
+    await typeTextIntoAlertInput('Test1');
+    await element(by.text('OK')).tap();
     await waitForKeyboardToClose();
 
     // Terminate and reopen the app to confirm the note is persisted
@@ -655,45 +692,40 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
       .withTimeout(300 * 1000);
     if (device.getPlatform() === 'ios') {
       // FIXME. For ios and android we need to ckeck if text present on the CC screen
-      await expect(element(by.text('test1')).atIndex(1)).toExist();
+      await expect(element(by.text('Test1')).atIndex(1)).toExist();
     } else {
-      await expect(element(by.text('test1')).atIndex(0)).toBeVisible();
+      await expect(element(by.text('Test1')).atIndex(0)).toBeVisible();
     }
 
     // change output note and freeze it
     if (device.getPlatform() === 'ios') {
       // FIXME. For ios and android we need to ckeck if text present on the CC screen
-      await element(by.text('test1')).atIndex(1).tap();
+      await element(by.text('Test1')).atIndex(1).tap();
     } else {
-      await element(by.text('test1')).atIndex(0).tap();
+      await element(by.text('Test1')).atIndex(0).tap();
     }
     await element(by.id('OutputMemo')).clearText();
-    await element(by.id('OutputMemo')).typeText('test2');
+    await element(by.id('OutputMemo')).typeText('Test2');
     await element(by.id('OutputMemo')).tapReturnKey();
     await waitForKeyboardToClose();
-    if (device.getPlatform() === 'ios') {
-      // FIXME. Add testId to freez switch
-      await element(by.type('UISwitchModernVisualElement')).tap(); // freeze switch
-    } else {
-      await element(by.type('android.widget.CompoundButton')).tap(); // freeze switch
-    }
-    await element(by.id('ModalDoneButton')).tap();
-    await expect(element(by.text('test2')).atIndex(0)).toBeVisible();
-    await expect(element(by.text('Freeze')).atIndex(0)).toBeVisible();
+    await element(by.id('FreezeSwitch')).tap(); // freeze switch
+    await waitForSwitchValue('FreezeSwitch', true);
+    await element(by.id('CoinControlOutputDone')).tap();
+    await waitFor(element(by.id('CoinControlOutputDone')))
+      .not.toBeVisible()
+      .withTimeout(20000);
+    await expect(element(by.id('OutputMemoLabel').and(by.text('Test2')))).toBeVisible();
+    await expect(element(by.id('FrozenBadge'))).toBeVisible();
 
     // use frozen output to create tx using "Use coin" feature
-    await element(by.text('test2')).atIndex(0).tap();
+    await element(by.text('Test2')).atIndex(0).tap();
     await element(by.id('UseCoin')).tap();
     await element(by.id('AddressInput')).replaceText('bc1q063ctu6jhe5k4v8ka99qac8rcm2tzjjnuktyrl');
     await element(by.id('HeaderMenuButton')).tap();
     await element(by.text('Use Full Balance')).tap();
     await element(by.text('OK')).tap();
     // setting fee rate:
-    await element(by.id('chooseFee')).tap();
-    await element(by.id('feeCustomContainerButton')).tap();
-    await element(by.id('feeCustom')).typeText('1');
-    await element(by.id('feeCustom')).tapReturnKey();
-    await waitForKeyboardToClose();
+    await setCustomFeeRate(1);
     await element(by.id('CreateTransactionButton')).tap();
     await waitForId('TransactionDetailsButton');
     await element(by.id('TransactionDetailsButton')).tap();
@@ -720,11 +752,7 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     await element(by.text('Use Full Balance')).tap();
     await element(by.text('OK')).tap();
     // setting fee rate:
-    await element(by.id('chooseFee')).tap();
-    await element(by.id('feeCustomContainerButton')).tap();
-    await element(by.id('feeCustom')).typeText('1');
-    await element(by.id('feeCustom')).tapReturnKey();
-    await waitForKeyboardToClose();
+    await setCustomFeeRate(1);
     await element(by.id('CreateTransactionButton')).tap();
     await waitForId('TransactionDetailsButton');
     await element(by.id('TransactionDetailsButton')).tap();

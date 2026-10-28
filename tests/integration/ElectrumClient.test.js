@@ -53,7 +53,7 @@ describe('ElectrumClient', () => {
         reached++;
       } catch (e) {
         // Demanding all three answer makes this fail whenever any one of them has a bad minute,
-        // and these servers do. The wallet does not need all three either - connectMain() walks
+        // and these servers do. The wallet does not need all three either - ensureConnected() walks
         // the list until one answers - so an unreachable server is reported, not a failure. A
         // server that answers wrongly still is one, because the assertions above throw here too.
         unreachable.push(`${peer.host}: ${e.message || 'connection failed'}`);

@@ -2,17 +2,15 @@ import assert from 'assert';
 import fs from 'fs';
 
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
-import {
-  HDAezeedWallet,
-  HDLegacyElectrumSeedP2PKHWallet,
-  HDSegwitBech32Wallet,
-  HDSegwitElectrumSeedP2WPKHWallet,
-  LegacyWallet,
-  SegwitBech32Wallet,
-  SegwitP2SHWallet,
-  SLIP39SegwitBech32Wallet,
-  WatchOnlyWallet,
-} from '../../class';
+import { HDAezeedWallet } from '../../class/wallets/hd-aezeed-wallet';
+import { HDLegacyElectrumSeedP2PKHWallet } from '../../class/wallets/hd-legacy-electrum-seed-p2pkh-wallet';
+import { HDSegwitBech32Wallet } from '../../class/wallets/hd-segwit-bech32-wallet';
+import { HDSegwitElectrumSeedP2WPKHWallet } from '../../class/wallets/hd-segwit-electrum-seed-p2wpkh-wallet';
+import { LegacyWallet } from '../../class/wallets/legacy-wallet';
+import { SegwitBech32Wallet } from '../../class/wallets/segwit-bech32-wallet';
+import { SegwitP2SHWallet } from '../../class/wallets/segwit-p2sh-wallet';
+import { SLIP39SegwitBech32Wallet } from '../../class/wallets/slip39-wallets';
+import { WatchOnlyWallet } from '../../class/wallets/watch-only-wallet';
 import startImport from '../../class/wallet-import';
 import { TWallet } from '../../class/wallets/types';
 
@@ -26,7 +24,9 @@ afterAll(async () => {
 beforeAll(async () => {
   // awaiting for Electrum to be connected. For RN Electrum would naturally connect
   // while app starts up, but for tests we need to wait for it
-  await BlueElectrum.connectMain();
+  if (!(await BlueElectrum.ensureConnected())) {
+    throw new Error('failed to connect to Electrum');
+  }
 });
 
 type THistoryItem = { action: 'progress'; data: string } | { action: 'wallet'; data: TWallet } | { action: 'password'; data: string };

@@ -9,7 +9,7 @@ import { ECPairAPI, ECPairFactory, Signer } from 'ecpair';
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import ecc from '../../blue_modules/noble_ecc';
 import { hexToUint8Array, concatUint8Arrays } from '../../blue_modules/uint8array-extras';
-import { HDSegwitBech32Wallet } from '..';
+import type { HDSegwitBech32Wallet as HDSegwitBech32WalletT } from './hd-segwit-bech32-wallet';
 import { randomBytes } from '../rng';
 import { AbstractWallet } from './abstract-wallet';
 import { CreateTransactionResult, CreateTransactionTarget, CreateTransactionUtxo, Transaction, Utxo } from './types';
@@ -22,14 +22,20 @@ bitcoin.initEccLib(ecc);
  */
 export class LegacyWallet extends AbstractWallet {
   static readonly type = 'legacy';
-  static readonly typeReadable = 'Legacy (P2PKH)';
+  static readonly defaultTypeReadable = 'Legacy (P2PKH)';
   // @ts-ignore: override
   public readonly type = LegacyWallet.type;
   // @ts-ignore: override
-  public readonly typeReadable = LegacyWallet.typeReadable;
+  public readonly typeReadable: string;
 
   _txs_by_external_index: Transaction[] = [];
   _txs_by_internal_index: Transaction[] = [];
+
+  constructor(typeReadable?: string) {
+    super();
+
+    this.typeReadable = typeReadable ?? LegacyWallet.defaultTypeReadable;
+  }
 
   /**
    * Simple function which says that we havent tried to fetch balance
@@ -410,6 +416,9 @@ export class LegacyWallet extends AbstractWallet {
     this._txs_by_external_index = this._txs_by_external_index || [];
     this._txs_by_internal_index = [];
 
+    const { HDSegwitBech32Wallet } = require('./hd-segwit-bech32-wallet') as {
+      HDSegwitBech32Wallet: typeof HDSegwitBech32WalletT;
+    };
     const hd = new HDSegwitBech32Wallet();
     return hd.getTransactions.apply(this);
   }

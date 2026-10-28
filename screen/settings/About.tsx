@@ -2,10 +2,10 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import React, { useCallback } from 'react';
 import { Image, Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { getApplicationName, getBuildNumber, getBundleId, getUniqueIdSync, getVersion, hasGmsSync } from 'react-native-device-info';
-import Icon from 'react-native-vector-icons/FontAwesome5';
+import Icon from '@react-native-vector-icons/fontawesome6';
 
 import A from '../../blue_modules/analytics';
-import { BlueTextCentered } from '../../BlueComponents';
+import BlueTextCentered from '../../components/BlueTextCentered';
 import presentAlert from '../../components/Alert';
 import { BlueSpacing20 } from '../../components/BlueSpacing';
 import Button from '../../components/Button';
@@ -99,7 +99,7 @@ const About: React.FC = () => {
       {
         id: 'github',
         title: loc.settings.about_sm_github,
-        leftIcon: <Icon name="github" size={24} color={colors.foregroundColor} />,
+        leftIcon: <Icon name="github" size={24} color={colors.foregroundColor} iconStyle="brand" />,
         onPress: handleOnGithubPress,
         section: 2,
       },

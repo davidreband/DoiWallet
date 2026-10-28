@@ -2,7 +2,7 @@ import assert from 'assert';
 import * as bitcoin from '@doichain/doichainjs-lib';
 import { DOICHAIN } from '../../blue_modules/network.js';
 
-import { SegwitBech32Wallet } from '../../class';
+import { SegwitBech32Wallet } from '../../class/wallets/segwit-bech32-wallet';
 
 describe('Segwit P2SH wallet', () => {
   it('can create transaction', async () => {

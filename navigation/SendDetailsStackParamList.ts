@@ -1,5 +1,5 @@
 import { Psbt } from '@doichain/doichainjs-lib';
-import { CreateTransactionTarget, CreateTransactionUtxo, TWallet } from '../class/wallets/types';
+import { CreateTransactionTarget, CreateTransactionUtxo, TWallet, Utxo } from '../class/wallets/types';
 import { DoichainUnit, Chain } from '../models/doichainUnits';
 import { ScanQRCodeParamList } from './DetailViewStackParamList';
 import { IFee } from '../screen/send/SendDetails';
@@ -61,6 +61,10 @@ export type TNavigationWrapper = {
 
 export type SendDetailsStackParamList = {
   SendDetails: SendDetailsParams;
+  CoinControlOutput: {
+    walletID: string;
+    utxo: Utxo;
+  };
   SelectFee: {
     networkTransactionFees: {
       fastestFee: number;

@@ -5,7 +5,7 @@ import assert from 'assert';
 import { nameops, address as libAddress } from '@doichain/doichainjs-lib';
 
 import { DOICHAIN, MIN_NAME_AMOUNT_SAT } from '../../blue_modules/network.js';
-import { HDSegwitBech32Wallet } from '../../class';
+import { HDSegwitBech32Wallet } from '../../class/wallets/hd-segwit-bech32-wallet';
 
 const MNEMONIC = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
 

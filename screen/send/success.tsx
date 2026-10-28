@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import BigNumber from 'bignumber.js';
 import LottieView from 'lottie-react-native';
-import { StyleSheet, View, Linking } from 'react-native';
-import { Text } from '@rneui/themed';
-import { BlueCard } from '../../BlueComponents';
+import { Linking, StyleSheet, Text, View } from 'react-native';
+import BlueCard from '../../components/BlueCard';
 import Button from '../../components/Button';
 import { DoichainUnit } from '../../models/doichainUnits';
 import SafeArea from '../../components/SafeArea';
@@ -15,14 +14,15 @@ import HandOffComponent from '../../components/HandOffComponent';
 import { HandOffActivityType } from '../../components/types';
 import ToolTipMenu from '../../components/TooltipMenu';
 import { SendDetailsStackParamList } from '../../navigation/SendDetailsStackParamList.ts';
-import { useExtendedNavigation } from '../../hooks/useExtendedNavigation.ts';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type RouteProps = RouteProp<SendDetailsStackParamList, 'Success'>;
+type NavigationProps = NativeStackNavigationProp<SendDetailsStackParamList, 'Success'>;
 
 const Success = () => {
-  const navigation = useExtendedNavigation();
   const { colors } = useTheme();
   const route = useRoute<RouteProps>();
+  const navigation = useNavigation<NavigationProps>();
   const { amount, fee, amountUnit = DoichainUnit.DOI, invoiceDescription = '', txid } = route.params || {};
   const stylesHook = StyleSheet.create({
     root: {
@@ -43,8 +43,8 @@ const Success = () => {
   });
 
   const onDonePressed = () => {
-    // @ts-ignore idk
-    navigation?.getParent().pop();
+    // Close SendDetails modal stack and return to the underlying wallet view.
+    navigation.getParent()?.goBack();
   };
 
   useEffect(() => {
@@ -68,7 +68,7 @@ const Success = () => {
   const toolTipMenuActions = [
     {
       id: actionKeys.CopyToClipboard,
-      text: loc.transactions.copy_link,
+      text: loc.transactions.details_copy_block_explorer_link,
       icon: actionIcons.Clipboard,
     },
   ];
