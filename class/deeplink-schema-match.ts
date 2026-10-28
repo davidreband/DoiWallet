@@ -3,7 +3,7 @@ import * as bitcoin from '@doichain/doichainjs-lib';
 import URL from 'url';
 import { readFileOutsideSandbox } from '../blue_modules/fs';
 import { Chain } from '../models/doichainUnits';
-import { WatchOnlyWallet } from './';
+import { WatchOnlyWallet } from './wallets/watch-only-wallet';
 import Azteco from './azteco';
 import Lnurl from './lnurl';
 import type { TWallet } from './wallets/types';

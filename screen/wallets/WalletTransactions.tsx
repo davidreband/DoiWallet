@@ -6,7 +6,7 @@ import {
   Dimensions,
   findNodeHandle,
   FlatList,
-  LayoutAnimation,
+  Platform,
   PixelRatio,
   ScrollView,
   StyleSheet,
@@ -14,15 +14,15 @@ import {
   View,
   RefreshControl,
 } from 'react-native';
-import { Icon } from '@rneui/themed';
+import Icon from '../../components/Icon';
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import { isDesktop } from '../../blue_modules/environment';
 import * as fs from '../../blue_modules/fs';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
-import { MultisigHDWallet, WatchOnlyWallet } from '../../class';
-import WalletGradient from '../../class/wallet-gradient';
+import { MultisigHDWallet } from '../../class/wallets/multisig-hd-wallet';
+import { WatchOnlyWallet } from '../../class/wallets/watch-only-wallet';
 import presentAlert, { AlertType } from '../../components/Alert';
-import { FButton, FContainer } from '../../components/FloatButtons';
+import { FButton, FContainer, FloatButtonsBottomFade } from '../../components/FloatButtons';
 import { useTheme } from '../../components/themes';
 import { TransactionListItem } from '../../components/TransactionListItem';
 import TransactionsNavigationHeader from '../../components/TransactionsNavigationHeader';
@@ -43,6 +43,7 @@ import useWalletSubscribe from '../../hooks/useWalletSubscribe';
 import { getClipboardContent } from '../../blue_modules/clipboard';
 import HandOffComponent from '../../components/HandOffComponent';
 import { HandOffActivityType } from '../../components/types';
+import WalletGradient from '../../class/wallet-gradient';
 
 const buttonFontSize =
   PixelRatio.roundToNearestPixel(Dimensions.get('window').width / 26) > 22
@@ -73,6 +74,11 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { rout
   const [lastFetchTimestamp, setLastFetchTimestamp] = useState(() => wallet._lastTxFetch || 0);
   const [fetchFailures, setFetchFailures] = useState(0);
   const [balance, setBalance] = useState(wallet.getBalance());
+  const [displayUnit, setDisplayUnit] = useState(wallet.preferredBalanceUnit);
+  const [isUnitSwitching, setIsUnitSwitching] = useState(false);
+  const [isWatchOnlyWarningVisible, setIsWatchOnlyWarningVisible] = useState<boolean>(() => {
+    return wallet.type === WatchOnlyWallet.type && (wallet as any).isWatchOnlyWarningVisible;
+  });
   const MAX_FAILURES = 3;
   const flatListRef = useRef<FlatList<Transaction>>(null);
   const headerRef = useRef<View>(null);
@@ -90,7 +96,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { rout
       backgroundColor: colors.background,
     },
     gradientBackground: {
-      backgroundColor: headerHeight > 0 ? WalletGradient.headerColorFor(wallet.type) : colors.background,
+      backgroundColor: WalletGradient.headerColorFor(wallet.type),
       height: headerHeight > 0 ? headerHeight : '30%',
     },
     activityIndicatorStyle: {
@@ -98,6 +104,27 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { rout
     },
     sendIcon: { transform: [{ rotate: direction === 'rtl' ? '-225deg' : '225deg' }] },
     receiveIcon: { transform: [{ rotate: direction === 'rtl' ? '-45deg' : '45deg' }] },
+    headerBottomBar: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      bottom: 12,
+      height: 12,
+      backgroundColor: colors.background,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      ...Platform.select({
+        ios: {
+          shadowColor: colors.shadowColor,
+          shadowOffset: { width: 0, height: -8 },
+          shadowOpacity: 0.1,
+          shadowRadius: 6,
+        },
+        android: {
+          elevation: 0.5,
+        },
+      }),
+    },
   });
 
   useFocusEffect(
@@ -132,6 +159,21 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { rout
       navigation.setParams({ onBarScanned: undefined });
     }
   }, [navigation, onBarCodeRead, route.params]);
+
+  useEffect(() => {
+    // keep local display unit in sync when wallet changes (e.g., switching wallets)
+    console.debug('[UnitSwitch] sync from wallet preferred unit', { walletID, preferred: wallet.preferredBalanceUnit });
+    setDisplayUnit(wallet.preferredBalanceUnit);
+  }, [wallet, walletID]);
+
+  useEffect(() => {
+    setIsWatchOnlyWarningVisible(wallet.type === WatchOnlyWallet.type && (wallet as any).isWatchOnlyWarningVisible);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [walletID]);
+
+  useEffect(() => {
+    console.debug('[UnitSwitch] display unit state changed', { walletID, displayUnit, switching: isUnitSwitching });
+  }, [walletID, displayUnit, isUnitSwitching]);
 
   const sortedTransactions = useMemo(() => {
     const txs = wallet.getTransactions();
@@ -168,7 +210,9 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { rout
 
       let smthChanged = false;
       try {
-        await BlueElectrum.waitTillConnected();
+        if (!(await BlueElectrum.ensureConnected())) {
+          throw new Error(loc.errors.network);
+        }
         if (wallet.allowBIP47() && wallet.isBIP47Enabled() && 'fetchBIP47SenderPaymentCodes' in wallet) {
           await wallet.fetchBIP47SenderPaymentCodes();
         }
@@ -233,11 +277,8 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { rout
   };
 
   const navigateToViewEditCosigners = useCallback(() => {
-    navigate('ViewEditMultisigCosignersRoot', {
-      screen: 'ViewEditMultisigCosigners',
-      params: {
-        walletID,
-      },
+    navigate('ViewEditMultisigCosigners', {
+      walletID,
     });
   }, [navigate, walletID]);
 
@@ -248,13 +289,24 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { rout
   });
 
   const renderItem = useCallback(
-    // item is the row being rendered, not a component prop; the rule reads this destructured
-    // callback parameter as one
+    // react/no-unused-prop-types misfires on inline arrow renderers: it reads the
+    // destructured `item: Transaction` annotation as a propTypes definition and
+    // ignores that the value is consumed on the next line.
     // eslint-disable-next-line react/no-unused-prop-types
     ({ item }: { item: Transaction }) => (
-      <TransactionListItem key={item.hash} item={item} itemPriceUnit={wallet.preferredBalanceUnit} walletID={walletID} />
+      // Ark wallet rows lack on-chain `hash` and instead carry a synthetic
+      // `txid` (`swap-…`, `ark-…`, `boarding-…`, `boarding-utxo-…`). Falling
+      // back to `txid` prevents multiple Ark rows from sharing
+      // `key={undefined}`, which made React reuse stale memoized renders
+      // across rows.
+      <TransactionListItem
+        key={item.hash ?? (item as { txid?: string }).txid}
+        item={item}
+        itemPriceUnit={displayUnit}
+        walletID={walletID}
+      />
     ),
-    [wallet.preferredBalanceUnit, walletID],
+    [displayUnit, walletID],
   );
 
   const choosePhoto = () => {
@@ -271,7 +323,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { rout
       });
   };
 
-  const _keyExtractor = useCallback((_item: any, index: number) => index.toString(), []);
+  const _keyExtractor = useCallback((item: Transaction, index: number) => item.hash || item.txid || index.toString(), []);
 
   const pasteFromClipboard = async () => {
     onBarCodeRead({ data: await getClipboardContent() });
@@ -364,17 +416,22 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { rout
     }, [walletID, unregisterTransactionsHandler]),
   );
 
-  useEffect(() => {
-    const interval = setInterval(() => setBalance(wallet.getBalance()), 1000);
-    return () => clearInterval(interval);
-  }, [wallet]);
+  useFocusEffect(
+    useCallback(() => {
+      // sync once on focus so balance is fresh after returning to screen
+      setBalance(wallet.getBalance());
+      const interval = setInterval(() => setBalance(wallet.getBalance()), 1000);
+      return () => clearInterval(interval);
+    }, [wallet]),
+  );
 
   const walletBalance = useMemo(() => {
     if (wallet.hideBalance) return '';
-    if (isNaN(balance) || balance === 0) return '';
-    return formatBalance(balance, wallet.preferredBalanceUnit, true);
+    if (!Number.isFinite(balance)) return '';
+    const formatted = formatBalance(balance, displayUnit, true);
+    return formatted || '0';
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallet, wallet.hideBalance, wallet.preferredBalanceUnit, balance]);
+  }, [wallet, wallet.hideBalance, displayUnit, balance]);
 
   const handleScroll = useCallback(
     (event: any) => {
@@ -418,16 +475,29 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { rout
     return () => clearTimeout(timer);
   }, [walletID, measureHeaderHeight]);
 
-  const ListHeaderComponent = useCallback(
+  const ListHeaderComponent = useMemo(
     () => (
       <View ref={headerRef} onLayout={measureHeaderHeight}>
         <TransactionsNavigationHeader
           wallet={wallet}
           onWalletUnitChange={async selectedUnit => {
-            wallet.preferredBalanceUnit = selectedUnit;
+            console.debug('[UnitSwitch] requested', { walletID, from: displayUnit, to: selectedUnit });
+            setIsUnitSwitching(true);
+            setDisplayUnit(selectedUnit);
+            if ('setPreferredBalanceUnit' in wallet) {
+              wallet.setPreferredBalanceUnit(selectedUnit);
+            } else {
+              (wallet as any).preferredBalanceUnit = selectedUnit;
+            }
             await saveToDisk();
+            console.debug('[UnitSwitch] persisted preferred unit', { walletID, unit: selectedUnit });
+            setTimeout(() => {
+              setIsUnitSwitching(false);
+              console.debug('[UnitSwitch] complete', { walletID, unit: selectedUnit });
+            }, 50);
           }}
-          unit={wallet.preferredBalanceUnit}
+          unit={displayUnit}
+          unitSwitching={isUnitSwitching}
           onWalletBalanceVisibilityChange={async isShouldBeVisible => {
             const isBiometricsEnabled = await isBiometricUseCapableAndEnabled();
             if (wallet.hideBalance && isBiometricsEnabled) {
@@ -443,6 +513,9 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { rout
             }
           }}
         />
+        <View style={styles.headerBottomBarSpacer}>
+          <View style={stylesHook.headerBottomBar} />
+        </View>
         <>
           <View style={[styles.flex, stylesHook.backgroundContainer]}>
             <View style={styles.listHeaderTextRow}>
@@ -450,11 +523,11 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { rout
             </View>
           </View>
           <View style={stylesHook.backgroundContainer}>
-            {wallet.type === WatchOnlyWallet.type && wallet.isWatchOnlyWarningVisible && (
+            {wallet.type === WatchOnlyWallet.type && isWatchOnlyWarningVisible && (
               <WatchOnlyWarning
                 handleDismiss={() => {
+                  setIsWatchOnlyWarningVisible(false);
                   wallet.isWatchOnlyWarningVisible = false;
-                  LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
                   saveToDisk();
                 }}
               />
@@ -465,12 +538,17 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { rout
     ),
     [
       wallet,
+      walletID,
+      displayUnit,
+      isUnitSwitching,
       measureHeaderHeight,
       stylesHook.backgroundContainer,
+      stylesHook.headerBottomBar,
       stylesHook.listHeaderText,
       saveToDisk,
       isBiometricUseCapableAndEnabled,
       navigateToViewEditCosigners,
+      isWatchOnlyWarningVisible,
     ],
   );
 
@@ -491,7 +569,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { rout
         onEndReached={loadMoreTransactions}
         ListFooterComponent={renderListFooterComponent}
         data={getTransactions(limit)}
-        extraData={wallet}
+        extraData={[wallet, displayUnit, wallet.hideBalance]}
         keyExtractor={_keyExtractor}
         renderItem={renderItem}
         initialNumToRender={10}
@@ -518,6 +596,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }: { rout
         }
       />
 
+      <FloatButtonsBottomFade />
       <FContainer ref={walletActionButtonsRef}>
         {wallet.allowReceive() && (
           <FButton
@@ -578,10 +657,11 @@ export default WalletTransactions;
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
+  headerBottomBarSpacer: { position: 'relative', height: 12 },
   scrollViewContent: { flex: 1, justifyContent: 'center', paddingHorizontal: 16, paddingBottom: 500 },
   activityIndicator: { marginVertical: 20 },
-  listHeaderTextRow: { flex: 1, margin: 16, flexDirection: 'row', justifyContent: 'space-between' },
-  listHeaderText: { marginTop: 8, marginBottom: 8, fontWeight: 'bold', fontSize: 24 },
+  listHeaderTextRow: { flex: 1, marginHorizontal: 16, flexDirection: 'row', justifyContent: 'space-between' },
+  listHeaderText: { marginTop: 0, marginBottom: 16, fontWeight: 'bold', fontSize: 24 },
   refreshIndicatorBackground: {
     position: 'absolute',
     top: 0,

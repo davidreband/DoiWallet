@@ -1,20 +1,17 @@
 import React, { forwardRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
-import { Icon } from '@rneui/themed';
+import Icon, { type IconProps } from './Icon';
 
 import { useTheme } from './themes';
 
-type IconProps = {
-  name: string;
-  type: string;
-  color: string;
-};
+type IconButtonProps = Pick<IconProps, 'name' | 'type'> & { color: string };
 
 type SecondButtonProps = {
   backgroundColor?: string;
   disabled?: boolean;
-  icon?: IconProps;
-  title?: string;
+  icon?: IconButtonProps;
+  title: string;
+  textColor?: string;
   onPress?: () => void;
   loading?: boolean;
   testID?: string;
@@ -23,7 +20,7 @@ type SecondButtonProps = {
 export const SecondButton = forwardRef<React.ElementRef<typeof TouchableOpacity>, SecondButtonProps>((props, ref) => {
   const { colors } = useTheme();
   let backgroundColor = props.backgroundColor ? props.backgroundColor : colors.buttonGrayBackgroundColor;
-  let fontColor = colors.secondButtonTextColor;
+  let fontColor = props.textColor ?? colors.secondButtonTextColor;
   if (props.disabled === true) {
     backgroundColor = colors.buttonDisabledBackgroundColor;
     fontColor = colors.buttonDisabledTextColor;
@@ -33,7 +30,7 @@ export const SecondButton = forwardRef<React.ElementRef<typeof TouchableOpacity>
     <ActivityIndicator size="small" color={colors.buttonTextColor} />
   ) : (
     <View style={styles.view}>
-      {props.icon && <Icon name={props.icon.name} type={props.icon.type} color={props.icon.color} />}
+      {props.icon && <Icon {...props.icon} />}
       {props.title && <Text style={[styles.text, { color: fontColor }]}>{props.title}</Text>}
     </View>
   );

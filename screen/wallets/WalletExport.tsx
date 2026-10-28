@@ -1,16 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { Icon } from '@rneui/themed';
+import Icon from '../../components/Icon';
 import { LayoutChangeEvent, ScrollView, StyleSheet, Pressable, View } from 'react-native';
 import { useScreenProtect } from '../../hooks/useScreenProtect';
 import { validateMnemonic } from '../../blue_modules/bip39';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
-import { BlueText } from '../../BlueComponents';
-import { WatchOnlyWallet } from '../../class';
-
+import BlueText from '../../components/BlueText';
+import { WatchOnlyWallet } from '../../class/wallets/watch-only-wallet';
 import HandOffComponent from '../../components/HandOffComponent';
-import QRCodeComponent from '../../components/QRCodeComponent';
+import QRCode from '../../components/QRCode';
 import SeedWords from '../../components/SeedWords';
 import { useTheme } from '../../components/themes';
 import { HandOffActivityType } from '../../components/types';
@@ -39,7 +38,7 @@ const CopyBox: React.FC<{ text: string; onPress: () => void }> = ({ text, onPres
         </BlueText>
       </View>
       <View style={styles.copyRight}>
-        <Icon name="copy" type="font-awesome-5" color={colors.foregroundColor} />
+        <Icon name="copy" type="font-awesome-6" color={colors.foregroundColor} />
       </View>
     </Pressable>
   );
@@ -50,7 +49,7 @@ const DoNotDisclose: React.FC = () => {
 
   return (
     <View style={[styles.warningBox, { backgroundColor: colors.changeText }]}>
-      <Icon type="font-awesome-5" name="exclamation-circle" color="white" />
+      <Icon type="font-awesome-6" name="circle-exclamation" size={24} color="white" />
       <BlueText style={styles.warning}>{loc.wallets.warning_do_not_disclose}</BlueText>
     </View>
   );
@@ -141,7 +140,7 @@ const WalletExport: React.FC = () => {
 
   const Scroll = useCallback(
     // eslint-disable-next-line react/no-unused-prop-types
-    ({ children }: { children: React.ReactNode | React.ReactNodeArray }) => (
+    ({ children }: { children: React.ReactNode | React.ReactNode[] }) => (
       <ScrollView
         automaticallyAdjustContentInsets
         contentInsetAdjustmentBehavior="automatic"
@@ -195,7 +194,7 @@ const WalletExport: React.FC = () => {
       <BlueText style={styles.scanText}>{loc.wallets.scan_import}</BlueText>
 
       <View style={styles.qrCodeContainer}>
-        <QRCodeComponent isMenuAvailable={false} value={secret} size={qrCodeSize} logoSize={70} />
+        <QRCode isMenuAvailable={false} value={secret} size={qrCodeSize} logoSize={70} />
       </View>
 
       {/* Do not allow to copy mnemonic */}

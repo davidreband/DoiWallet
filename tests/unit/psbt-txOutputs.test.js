@@ -1,7 +1,7 @@
 import assert from 'assert';
 import * as bitcoin from '@doichain/doichainjs-lib';
 import { DOICHAIN, VERSION } from '../../blue_modules/network.js';
-import { HDSegwitBech32Wallet } from '../../class';
+import { HDSegwitBech32Wallet } from '../../class/wallets/hd-segwit-bech32-wallet';
 import { getNameOPStackScript } from '../../utils/getNameOPStackScript';
 
 describe('AbstractHDElectrumWallet', () => {

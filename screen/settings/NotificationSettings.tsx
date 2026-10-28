@@ -102,8 +102,6 @@ const NotificationSettings: React.FC = () => {
           await AsyncStorage.setItem(NOTIFICATIONS_NO_AND_DONT_ASK_FLAG, 'true');
           setNotificationsEnabledState(false);
         }
-
-        setNotificationsEnabledState(await isNotificationsEnabled());
       } catch (error) {
         console.error(error);
         presentAlert({ message: (error as Error).message });
@@ -202,9 +200,7 @@ const NotificationSettings: React.FC = () => {
         <View style={[styles.divider, { backgroundColor: colors.lightBorder ?? colors.borderTopColor }]} />
         <SettingsCard style={styles.card}>
           <View style={styles.cardContent}>
-            <Pressable onPress={handleTap}>
-              <Text style={[styles.multilineText, { color: colors.foregroundColor }]}>{loc.settings.groundcontrol_explanation}</Text>
-            </Pressable>
+            <Text style={[styles.multilineText, { color: colors.foregroundColor }]}>{loc.settings.groundcontrol_explanation}</Text>
           </View>
         </SettingsCard>
 
@@ -263,7 +259,9 @@ const NotificationSettings: React.FC = () => {
     return (
       <SettingsCard compact style={styles.notificationsExplanationCard}>
         <View style={styles.cardContent}>
-          <SettingsSubtitle>{loc.settings.push_notifications_explanation}</SettingsSubtitle>
+          <Pressable onPress={handleTap}>
+            <SettingsSubtitle>{loc.settings.push_notifications_explanation}</SettingsSubtitle>
+          </Pressable>
         </View>
       </SettingsCard>
     );

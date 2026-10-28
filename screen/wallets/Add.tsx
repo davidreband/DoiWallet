@@ -13,8 +13,11 @@ import {
 import assert from 'assert';
 
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
-import { BlueButtonLink, BlueFormLabel } from '../../BlueComponents';
-import { HDSegwitBech32Wallet, HDSegwitP2SHWallet, SegwitP2SHWallet } from '../../class';
+import BlueButtonLink from '../../components/BlueButtonLink';
+import BlueFormLabel from '../../components/BlueFormLabel';
+import { HDSegwitBech32Wallet } from '../../class/wallets/hd-segwit-bech32-wallet';
+import { HDSegwitP2SHWallet } from '../../class/wallets/hd-segwit-p2sh-wallet';
+import { SegwitP2SHWallet } from '../../class/wallets/segwit-p2sh-wallet';
 import presentAlert from '../../components/Alert';
 import Button from '../../components/Button';
 import { useTheme } from '../../components/themes';

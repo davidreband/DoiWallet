@@ -25,11 +25,8 @@ afterAll(() => {
 });
 
 beforeAll(async () => {
-  try {
-    await BlueElectrum.connectMain();
-  } catch (err) {
-    console.log('failed to connect to Electrum:', err);
-    process.exit(1);
+  if (!(await BlueElectrum.ensureConnected())) {
+    throw new Error('failed to connect to Electrum');
   }
 });
 

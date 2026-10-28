@@ -731,10 +731,12 @@ export class BlueApp {
         }
       }
     } else {
-      for (const wallet of this.wallets) {
-        console.log('fetching balance for', wallet.getLabel());
-        await wallet.fetchBalance();
-      }
+      await Promise.all(
+        this.wallets.map(async wallet => {
+          console.log('fetching balance for', wallet.getLabel());
+          await wallet.fetchBalance();
+        }),
+      );
     }
   };
 
@@ -784,14 +786,16 @@ export class BlueApp {
         console.error('Failed to fetch sender payment codes for wallet', index, error);
       }
     } else {
-      for (const wallet of this.wallets) {
-        try {
-          if (!(wallet.allowBIP47() && wallet.isBIP47Enabled() && 'fetchBIP47SenderPaymentCodes' in wallet)) continue;
-          await wallet.fetchBIP47SenderPaymentCodes();
-        } catch (error) {
-          console.error('Failed to fetch sender payment codes for wallet', wallet.label, error);
-        }
-      }
+      await Promise.all(
+        this.wallets.map(async wallet => {
+          try {
+            if (!(wallet.allowBIP47() && wallet.isBIP47Enabled() && 'fetchBIP47SenderPaymentCodes' in wallet)) return;
+            await wallet.fetchBIP47SenderPaymentCodes();
+          } catch (error) {
+            console.error('Failed to fetch sender payment codes for wallet', wallet.label, error);
+          }
+        }),
+      );
     }
   };
 

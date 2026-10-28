@@ -10,21 +10,19 @@ import BlueCrypto from 'react-native-blue-crypto';
 import wif from 'wif';
 import { DOICHAIN } from '../../blue_modules/network.js';
 
-import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import * as encryption from '../../blue_modules/encryption';
 import * as fs from '../../blue_modules/fs';
 import ecc from '../../blue_modules/noble_ecc';
 import { hexToUint8Array, uint8ArrayToHex } from '../../blue_modules/uint8array-extras';
-import { BlueText } from '../../BlueComponents';
-import {
-  HDAezeedWallet,
-  HDSegwitBech32Wallet,
-  HDSegwitP2SHWallet,
-  LegacyWallet,
-  SegwitP2SHWallet,
-  SLIP39LegacyP2PKHWallet,
-  TaprootWallet,
-} from '../../class';
+import BlueText from '../../components/BlueText';
+import * as BlueElectrum from '../../blue_modules/BlueElectrum';
+import { HDAezeedWallet } from '../../class/wallets/hd-aezeed-wallet';
+import { HDSegwitBech32Wallet } from '../../class/wallets/hd-segwit-bech32-wallet';
+import { HDSegwitP2SHWallet } from '../../class/wallets/hd-segwit-p2sh-wallet';
+import { LegacyWallet } from '../../class/wallets/legacy-wallet';
+import { SegwitP2SHWallet } from '../../class/wallets/segwit-p2sh-wallet';
+import { SLIP39LegacyP2PKHWallet } from '../../class/wallets/slip39-wallets';
+import { TaprootWallet } from '../../class/wallets/taproot-wallet';
 import presentAlert from '../../components/Alert';
 import Button from '../../components/Button';
 import SaveFileButton from '../../components/SaveFileButton';
@@ -37,6 +35,7 @@ import { SettingsCard, SettingsScrollView } from '../../components/platform';
 const bip32 = BIP32Factory(ecc);
 
 type TState = {
+  started?: boolean;
   isLoading?: boolean;
   isOk?: boolean;
   errorMessage?: string;
@@ -52,6 +51,9 @@ const styles = StyleSheet.create({
   center: {
     alignItems: 'center',
   },
+  fullWidth: {
+    width: '100%',
+  },
 });
 
 export default class SelfTest extends Component {
@@ -60,7 +62,8 @@ export default class SelfTest extends Component {
   constructor(props: any) {
     super(props);
     this.state = {
-      isLoading: true,
+      started: false,
+      isLoading: false,
     };
   }
 
@@ -78,12 +81,21 @@ export default class SelfTest extends Component {
     }
   };
 
-  async componentDidMount() {
-    console.debug('SelfTest - componentDidMount');
+  runSelfTest = async () => {
+    console.debug('SelfTest - runSelfTest');
+    this.setState({
+      started: true,
+      isLoading: true,
+      isOk: undefined,
+      errorMessage: '',
+    });
+
     let errorMessage = '';
     let isOk = true;
 
     try {
+      await new Promise(resolve => setTimeout(resolve, 1_000)); // propagate ui
+
       if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
         const uniqs: Record<string, 1> = {};
         const w = new SegwitP2SHWallet();
@@ -102,8 +114,7 @@ export default class SelfTest extends Component {
 
 
       if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
-        await BlueElectrum.ping();
-        await BlueElectrum.waitTillConnected();
+        if (!(await BlueElectrum.ensureConnected())) throw new Error('could not connect to Electrum');
         const addr4elect = 'NJWoTYFUepniDXffwg1WYvRH86JhMqTfTP';
         const electrumBalance = await BlueElectrum.getBalanceByAddress(addr4elect);
         // The balance was 51432 when this was written and is whatever the chain says now. Pinning
@@ -358,50 +369,73 @@ export default class SelfTest extends Component {
       isOk,
       errorMessage,
     });
-  }
+  };
 
   render() {
-    return <SelfTestContent state={this.state} onPressImportDocument={this.onPressImportDocument} />;
+    return <SelfTestContent state={this.state} onPressImportDocument={this.onPressImportDocument} onPressRunSelfTest={this.runSelfTest} />;
   }
 }
 
-const SelfTestContent: React.FC<{ state: TState; onPressImportDocument: () => void }> = ({ state, onPressImportDocument }) => {
+const SelfTestContent: React.FC<{ state: TState; onPressImportDocument: () => void; onPressRunSelfTest: () => void }> = ({
+  state,
+  onPressImportDocument,
+  onPressRunSelfTest,
+}) => {
+  let selfTestResult: React.ReactNode = null;
+
+  if (state.started) {
+    if (state.isLoading) {
+      selfTestResult = <BlueLoading />;
+    } else if (state.isOk) {
+      selfTestResult = (
+        <View style={styles.center}>
+          <BlueText testID="SelfTestOk" h4>
+            OK
+          </BlueText>
+          <BlueSpacing20 />
+          <BlueText>{loc.settings.about_selftest_ok}</BlueText>
+        </View>
+      );
+    } else {
+      selfTestResult = (
+        <View style={styles.center}>
+          <BlueText h4 numberOfLines={0}>
+            {state.errorMessage}
+          </BlueText>
+        </View>
+      );
+    }
+  }
+
   return (
     <SettingsScrollView automaticallyAdjustContentInsets contentInsetAdjustmentBehavior="automatic">
       <SettingsCard>
         <BlueSpacing20 />
 
-        {state.isLoading ? (
-          <BlueLoading testID="SelfTestLoading" />
-        ) : (
-          (() => {
-            if (state.isOk) {
-              return (
-                <View style={styles.center}>
-                  <BlueText testID="SelfTestOk" h4>
-                    OK
-                  </BlueText>
-                  <BlueSpacing20 />
-                  <BlueText>{loc.settings.about_selftest_ok}</BlueText>
-                </View>
-              );
-            } else {
-              return (
-                <View style={styles.center}>
-                  <BlueText h4 numberOfLines={0}>
-                    {state.errorMessage}
-                  </BlueText>
-                </View>
-              );
-            }
-          })()
+        {selfTestResult}
+        {!state.isLoading && (
+          <>
+            <BlueSpacing20 />
+            <View style={styles.fullWidth}>
+              <Button title="Run self-test" onPress={onPressRunSelfTest} testID="SelfTestLoading" />
+            </View>
+            <BlueSpacing20 />
+            <View style={styles.fullWidth}>
+              <SaveFileButton
+                fileName="bluewallet-selftest.txt"
+                fileContent={'Success on ' + new Date().toUTCString()}
+                style={styles.fullWidth}
+              >
+                <Button title="Test Save to Storage" />
+              </SaveFileButton>
+            </View>
+            <BlueSpacing20 />
+            <View style={styles.fullWidth}>
+              <Button title="Test File Import" onPress={onPressImportDocument} />
+            </View>
+            <BlueSpacing20 />
+          </>
         )}
-        <BlueSpacing20 />
-        <SaveFileButton fileName="bluewallet-selftest.txt" fileContent={'Success on ' + new Date().toUTCString()}>
-          <Button title="Test Save to Storage" />
-        </SaveFileButton>
-        <BlueSpacing20 />
-        <Button title="Test File Import" onPress={onPressImportDocument} />
       </SettingsCard>
     </SettingsScrollView>
   );

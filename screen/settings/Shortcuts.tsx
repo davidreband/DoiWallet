@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { TNavigationWrapper } from '../../navigation/SendDetailsStackParamList';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect, useReducer, useState } from 'react';
-import { ScrollView, TouchableWithoutFeedback, View, Platform } from 'react-native';
+import { ScrollView, View, Platform } from 'react-native';
 import { TWallet } from '../../class/wallets/types';
 import ListItem from '../../components/ListItem';
 import { useStorage } from '../../hooks/context/useStorage';
@@ -178,7 +178,6 @@ const ShortcutSettings: React.FC = () => {
           <View>
             <ListItem
               title={loc.settings.default_wallets}
-              Component={TouchableWithoutFeedback}
               switch={{
                 onValueChange: onViewAllWalletsSwitchValueChanged,
                 value: state.isViewAllWalletsSwitchEnabled,
@@ -199,7 +198,6 @@ const ShortcutSettings: React.FC = () => {
 
             <ListItem
               title={loc.settings.receive_bitcoin_intent}
-              Component={TouchableWithoutFeedback}
               switch={{
                 onValueChange: onReceiveBitcoinIntentSwitchValueChanged,
                 value: state.useReceiveBitcoinIntent,

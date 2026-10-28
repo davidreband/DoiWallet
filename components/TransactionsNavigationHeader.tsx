@@ -1,8 +1,9 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import LinearGradient from 'react-native-linear-gradient';
-import { MultisigHDWallet } from '../class';
+import { MultisigHDWallet } from '../class/wallets/multisig-hd-wallet';
 import WalletGradient from '../class/wallet-gradient';
 import { TWallet } from '../class/wallets/types';
 import loc, { formatBalance, formatBalanceWithoutSuffix } from '../loc';
@@ -20,6 +21,7 @@ interface TransactionsNavigationHeaderProps {
   onWalletUnitChange: (unit: DoichainUnit) => void;
   onManageFundsPressed?: (id?: string) => void;
   onWalletBalanceVisibilityChange?: (isShouldBeVisible: boolean) => void;
+  unitSwitching?: boolean;
 }
 
 const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> = ({
@@ -28,10 +30,14 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
   onManageFundsPressed,
   onWalletBalanceVisibilityChange,
   unit = DoichainUnit.DOI,
+  unitSwitching = false,
 }) => {
   const { hideBalance } = wallet;
   const { preferredFiatCurrency } = useSettings();
   const { direction } = useLocale();
+  const balanceOpacity = useSharedValue(1);
+  const balanceTranslateY = useSharedValue(0);
+  const previousBalance = useRef<string | undefined>(undefined);
 
   const handleCopyPress = useCallback(() => {
     const value = formatBalance(wallet.getBalance(), unit);
@@ -47,6 +53,8 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
   const changeWalletBalanceUnit = () => {
     let newWalletPreferredUnit = wallet.getPreferredBalanceUnit();
 
+    console.debug('[UnitSwitch/UI] tap unit change', { walletID: wallet.getID?.(), current: newWalletPreferredUnit });
+
     if (newWalletPreferredUnit === DoichainUnit.DOI) {
       newWalletPreferredUnit = DoichainUnit.SWARTZ;
     } else if (newWalletPreferredUnit === DoichainUnit.SWARTZ) {
@@ -55,6 +63,7 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
       newWalletPreferredUnit = DoichainUnit.DOI;
     }
 
+    console.debug('[UnitSwitch/UI] next unit resolved', { walletID: wallet.getID?.(), next: newWalletPreferredUnit });
     onWalletUnitChange(newWalletPreferredUnit);
   };
 
@@ -86,6 +95,36 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
   }, [unit, currentBalance]);
 
   const balance = !wallet.hideBalance && formattedBalance;
+  const safeBalance = balance ? String(balance) : undefined;
+
+  useEffect(() => {
+    if (hideBalance) {
+      previousBalance.current = undefined;
+      balanceOpacity.value = 1;
+      balanceTranslateY.value = 0;
+      return;
+    }
+
+    if (previousBalance.current !== undefined && previousBalance.current !== safeBalance) {
+      balanceOpacity.value = 0;
+      balanceTranslateY.value = 6;
+      balanceOpacity.value = withTiming(1, { duration: 180 });
+      balanceTranslateY.value = withSpring(0, { damping: 16, stiffness: 220 });
+    }
+
+    previousBalance.current = safeBalance;
+  }, [safeBalance, hideBalance, balanceOpacity, balanceTranslateY]);
+
+  const balanceAnimationKey = useMemo(
+    () => `${wallet.getID?.() ?? ''}-${unit}-${hideBalance}-${safeBalance ?? ''}`,
+    [safeBalance, hideBalance, unit, wallet],
+  );
+  const balanceAnimatedStyle = useAnimateOnChange(balanceAnimationKey);
+
+  const animatedBalanceTextStyle = useAnimatedStyle(() => ({
+    opacity: balanceOpacity.value,
+    transform: [{ translateY: balanceTranslateY.value }],
+  }));
 
   const toolTipWalletBalanceActions = useMemo(() => {
     return hideBalance
@@ -116,83 +155,73 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
         ];
   }, [hideBalance]);
 
-  const imageSource = useMemo(() => {
-    switch (wallet.type) {
-      case MultisigHDWallet.type:
-        return direction === 'rtl' ? require('../img/vault-shape-rtl.png') : require('../img/vault-shape.png');
-      default:
-        return direction === 'rtl' ? require('../img/btc-shape-rtl.png') : require('../img/btc-shape.png');
-    }
-  }, [direction, wallet.type]);
-
-  useAnimateOnChange(balance);
-  useAnimateOnChange(hideBalance);
-  useAnimateOnChange(unit);
-  useAnimateOnChange(wallet.getID?.());
+  useEffect(() => {
+    console.debug('[UnitSwitch/UI] render state', {
+      walletID: wallet.getID?.(),
+      unit,
+      hideBalance,
+      preferredFiat: preferredFiatCurrency?.endPointKey,
+      switching: unitSwitching,
+    });
+  }, [wallet, unit, hideBalance, preferredFiatCurrency, unitSwitching]);
 
   return (
     <LinearGradient colors={WalletGradient.gradientsFor(wallet.type)} style={styles.lineaderGradient}>
-      <ImageBackground source={imageSource} style={styles.chainIcon} />
-
-      <Text testID="WalletLabel" numberOfLines={1} style={[styles.walletLabel, { writingDirection: direction }]}>
-        {wallet.getLabel()}
-      </Text>
-      <View style={styles.walletBalanceAndUnitContainer}>
-        <ToolTipMenu
-          isMenuPrimaryAction
-          isButton
-          enableAndroidRipple={false}
-          buttonStyle={styles.walletBalance}
-          onPressMenuItem={onPressMenuItem}
-          actions={toolTipWalletBalanceActions}
-        >
-          <View style={styles.walletBalance}>
-            {hideBalance ? (
-              <BlurredBalanceView />
-            ) : (
-              <View>
-                <Text
-                  key={String(balance)} // force component recreation on balance change. To fix right-to-left languages, like Farsis
-                  testID="WalletBalance"
-                  numberOfLines={1}
-                  minimumFontScale={0.5}
-                  adjustsFontSizeToFit
-                  style={styles.walletBalanceText}
-                >
-                  {balance}
-                </Text>
-              </View>
-            )}
-          </View>
-        </ToolTipMenu>
-        <TouchableOpacity style={styles.walletPreferredUnitView} onPress={changeWalletBalanceUnit}>
-          <Text style={styles.walletPreferredUnitText}>
-            {unit === DoichainUnit.LOCAL_CURRENCY ? (preferredFiatCurrency?.endPointKey ?? FiatUnit.USD) : unit}
-          </Text>
-        </TouchableOpacity>
+      <View style={styles.contentContainer}>
+        <Text testID="WalletLabel" numberOfLines={1} style={[styles.walletLabel, { writingDirection: direction }]}>
+          {wallet.getLabel()}
+        </Text>
+        <Animated.View style={[styles.walletBalanceAndUnitContainer, balanceAnimatedStyle]}>
+          <ToolTipMenu
+            shouldOpenOnLongPress
+            isButton
+            enableAndroidRipple={false}
+            buttonStyle={styles.walletBalance}
+            onPressMenuItem={onPressMenuItem}
+            actions={toolTipWalletBalanceActions}
+          >
+            <View style={styles.walletBalance}>
+              {hideBalance ? (
+                <BlurredBalanceView />
+              ) : (
+                <View key={`wallet-balance-textwrap-${wallet.getID?.() ?? ''}-${String(balance)}`}>
+                  <Animated.Text
+                    key={`wallet-balance-text-${wallet.getID?.() ?? ''}-${String(balance)}`} // force recreation on balance change for RTL correctness
+                    testID="WalletBalance"
+                    numberOfLines={1}
+                    minimumFontScale={0.5}
+                    adjustsFontSizeToFit
+                    style={[styles.walletBalanceText, animatedBalanceTextStyle]}
+                  >
+                    {balance}
+                  </Animated.Text>
+                </View>
+              )}
+            </View>
+          </ToolTipMenu>
+          <TouchableOpacity style={styles.walletPreferredUnitView} onPress={changeWalletBalanceUnit} disabled={unitSwitching}>
+            <Text style={styles.walletPreferredUnitText}>
+              {unit === DoichainUnit.LOCAL_CURRENCY ? (preferredFiatCurrency?.endPointKey ?? FiatUnit.USD) : unit}
+            </Text>
+          </TouchableOpacity>
+        </Animated.View>
+        {wallet.type === MultisigHDWallet.type && (
+          <TouchableOpacity style={styles.manageFundsButton} accessibilityRole="button" onPress={() => handleManageFundsPressed()}>
+            <Text style={styles.manageFundsButtonText}>{loc.multisig.manage_keys}</Text>
+          </TouchableOpacity>
+        )}
       </View>
-
-      {wallet.type === MultisigHDWallet.type && (
-        <TouchableOpacity style={styles.manageFundsButton} accessibilityRole="button" onPress={() => handleManageFundsPressed()}>
-          <Text style={styles.manageFundsButtonText}>{loc.multisig.manage_keys}</Text>
-        </TouchableOpacity>
-      )}
     </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   lineaderGradient: {
-    padding: 15,
     minHeight: 140,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   },
-  chainIcon: {
-    width: 99,
-    height: 94,
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
+  contentContainer: {
+    padding: 15,
   },
   walletLabel: {
     backgroundColor: 'transparent',

@@ -6,7 +6,7 @@ import { Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-n
 import Base43 from '../../blue_modules/base43';
 import * as fs from '../../blue_modules/fs';
 import { BlueURDecoder, decodeUR, extractSingleWorkload } from '../../blue_modules/ur';
-import { BlueText } from '../../BlueComponents';
+import BlueText from '../../components/BlueText';
 import { openPrivacyDesktopSettings } from '../../class/camera';
 import Button from '../../components/Button';
 import { useTheme } from '../../components/themes';
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     left: '50%',
     transform: [{ translateX: -30 }],
   },
-  backdoorInputWrapper: { position: 'absolute', left: '5%', top: '0%', width: '90%', height: '70%', backgroundColor: 'white' },
+  backdoorInputWrapper: { position: 'absolute', left: '5%', top: '10%', width: '90%', height: '70%', backgroundColor: 'white' },
   progressWrapper: { position: 'absolute', alignSelf: 'center', alignItems: 'center', top: '50%', padding: 8, borderRadius: 8 },
   backdoorInput: {
     height: '50%',
@@ -105,14 +105,11 @@ const ScanQRCode = () => {
       if (decoder.isComplete()) {
         const data = decoder.toString();
         decoder = undefined; // nullify for future use (?)
-        if (launchedBy) {
-          const merge = true;
-          const popToAction = StackActions.popTo(launchedBy, { onBarScanned: data }, { merge });
-          if (onBarScanned) {
-            onBarScanned(data, useBBQRRef.current);
-          }
-
-          navigation.dispatch(popToAction);
+        if (onBarScanned) {
+          onBarScanned(data, useBBQRRef.current);
+          navigation.goBack();
+        } else if (launchedBy) {
+          navigation.dispatch(StackActions.popTo(launchedBy, { onBarScanned: data }, { merge: true }));
         }
       } else {
         setUrTotal(100);
@@ -144,14 +141,11 @@ const ScanQRCode = () => {
           // its something else. probably plain text is expected
           data = uint8ArrayToString(hexToUint8Array(String(payload)));
         }
-        if (launchedBy) {
-          const merge = true;
-          const popToAction = StackActions.popTo(launchedBy, { onBarScanned: data }, { merge });
-          if (onBarScanned) {
-            onBarScanned(data, useBBQRRef.current);
-          }
-
-          navigation.dispatch(popToAction);
+        if (onBarScanned) {
+          onBarScanned(data, useBBQRRef.current);
+          navigation.goBack();
+        } else if (launchedBy) {
+          navigation.dispatch(StackActions.popTo(launchedBy, { onBarScanned: data }, { merge: true }));
         }
       } else {
         setAnimatedQRCodeData(animatedQRCodeData);
@@ -204,27 +198,23 @@ const ScanQRCode = () => {
       bitcoin.Psbt.fromHex(hex); // if it doesnt throw - all good
       const data = uint8ArrayToBase64(hexToUint8Array(hex));
 
-      if (launchedBy) {
-        const merge = true;
-        const popToAction = StackActions.popTo(launchedBy, { onBarScanned: data }, { merge });
-        if (onBarScanned) {
-          onBarScanned(data, useBBQRRef.current);
-        }
-        navigation.dispatch(popToAction);
+      if (onBarScanned) {
+        onBarScanned(data, useBBQRRef.current);
+        navigation.goBack();
+      } else if (launchedBy) {
+        navigation.dispatch(StackActions.popTo(launchedBy, { onBarScanned: data }, { merge: true }));
       }
       return;
     } catch (_) {
-      if (!isLoading && launchedBy) {
+      if (!isLoading) {
         setIsLoading(true);
         try {
-          const merge = true;
-
-          const popToAction = StackActions.popTo(launchedBy, { onBarScanned: ret.data }, { merge });
           if (onBarScanned) {
             onBarScanned(ret.data, useBBQRRef.current);
+            navigation.goBack();
+          } else if (launchedBy) {
+            navigation.dispatch(StackActions.popTo(launchedBy, { onBarScanned: ret.data }, { merge: true }));
           }
-
-          navigation.dispatch(popToAction);
         } catch (e) {
           console.log(e);
         }

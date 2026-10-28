@@ -19,7 +19,8 @@ import { Chain } from '../models/doichainUnits';
 import { navigationRef } from '../NavigationService';
 import ActionSheet from '../screen/ActionSheet';
 import { useStorage } from './context/useStorage';
-import RNQRGenerator from 'rn-qr-generator';
+import { detectQRCodeInImage } from 'react-native-camera-kit-no-google';
+import RNFS from 'react-native-fs';
 import presentAlert from '../components/Alert';
 import useWidgetCommunication from './useWidgetCommunication';
 import useWatchConnectivity from './useWatchConnectivity';
@@ -47,7 +48,7 @@ const useCompanionListeners = (skipIfNotInitialized = true) => {
     walletsInitialized,
   } = useStorage();
   const appState = useRef<AppStateStatus>(AppState.currentState);
-  const clipboardContent = useRef<undefined | string>();
+  const clipboardContent = useRef<undefined | string>(undefined);
   const navigation = useExtendedNavigation();
 
   // We need to call hooks unconditionally before any conditional logic
@@ -85,6 +86,8 @@ const useCompanionListeners = (skipIfNotInitialized = true) => {
         const wasTapped = payload.foreground === false || (payload.foreground === true && payload.userInteraction);
 
         console.log('processing push notification:', payload);
+
+
         let wallet;
         switch (+payload.type) {
           case 2:
@@ -125,6 +128,8 @@ const useCompanionListeners = (skipIfNotInitialized = true) => {
           const wasTapped = payload.foreground === false || (payload.foreground === true && payload.userInteraction);
 
           console.log('processing push notification:', payload);
+
+
           let wallet;
           switch (+payload.type) {
             case 2:
@@ -178,7 +183,7 @@ const useCompanionListeners = (skipIfNotInitialized = true) => {
       console.error('Failed to process push notifications:', error);
     }
     return false;
-  }, [shouldActivateListeners, wallets, fetchAndSaveWalletTransactions, navigation, refreshAllWalletTransactions]);
+  }, [shouldActivateListeners, wallets, fetchAndSaveWalletTransactions, saveToDisk, navigation, refreshAllWalletTransactions]);
 
   useEffect(() => {
     if (!shouldActivateListeners) return;
@@ -202,35 +207,23 @@ const useCompanionListeners = (skipIfNotInitialized = true) => {
         }
         const fileName = decodedUrl.split('/').pop()?.toLowerCase() || '';
         if (/\.(jpe?g|png)$/i.test(fileName)) {
-          let qrResult;
+          let base64: string;
           try {
-            qrResult = await RNQRGenerator.detect({ uri: decodedUrl });
-          } catch (e) {
-            console.error('QR detection first attempt failed:', e);
+            base64 = await RNFS.readFile(decodedUrl, 'base64');
+          } catch {
+            base64 = await RNFS.readFile(decodedUrl.replace(/^file:\/\//, ''), 'base64');
           }
-          if (!qrResult || !qrResult.values || qrResult.values.length === 0) {
-            const altUrl = decodedUrl.replace(/^file:\/\//, '');
-            try {
-              qrResult = await RNQRGenerator.detect({ uri: altUrl });
-            } catch (e) {
-              console.error('QR detection second attempt failed:', e);
-            }
-          }
-          if (qrResult?.values?.length) {
-            triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
-            DeeplinkSchemaMatch.navigationRouteFor(
-              { url: qrResult.values[0] },
-              (value: [string, any]) => navigationRef.navigate(...value),
-              {
-                wallets,
-                addWallet,
-                saveToDisk,
-                setSharedCosigner,
-              },
-            );
-          } else {
+          const qrValue = await detectQRCodeInImage(base64);
+          if (!qrValue) {
             throw new Error(loc.send.qr_error_no_qrcode);
           }
+          triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
+          DeeplinkSchemaMatch.navigationRouteFor({ url: qrValue }, (value: [string, any]) => navigationRef.navigate(...value), {
+            wallets,
+            addWallet,
+            saveToDisk,
+            setSharedCosigner,
+          });
         } else {
           DeeplinkSchemaMatch.navigationRouteFor(event, (value: [string, any]) => navigationRef.navigate(...value), {
             wallets,
@@ -319,7 +312,7 @@ const useCompanionListeners = (skipIfNotInitialized = true) => {
         appState.current = nextAppState;
       }
     },
-    [processPushNotifications, showClipboardAlert, wallets, shouldActivateListeners],
+    [processPushNotifications, fetchAndSaveWalletTransactions, showClipboardAlert, wallets, shouldActivateListeners],
   );
 
   const addListeners = useCallback(() => {

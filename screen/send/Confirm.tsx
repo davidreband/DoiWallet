@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useReducer } from 'react';
-import { ActivityIndicator, FlatList, TouchableOpacity, StyleSheet, Switch, View } from 'react-native';
-import { Text } from '@rneui/themed';
+import { ActivityIndicator, FlatList, TouchableOpacity, StyleSheet, Switch, Text, View } from 'react-native';
 import { PayjoinClient } from 'payjoin-client';
 import BigNumber from 'bignumber.js';
 import * as bitcoin from '@doichain/doichainjs-lib';
-import { BlueText, BlueCard } from '../../BlueComponents';
+import BlueCard from '../../components/BlueCard';
+import BlueText from '../../components/BlueText';
 import { DoichainUnit } from '../../models/doichainUnits';
 import loc, { formatBalance, formatBalanceWithoutSuffix } from '../../loc';
 import { useRoute, RouteProp } from '@react-navigation/native';
@@ -23,7 +23,7 @@ import { SendDetailsStackParamList } from '../../navigation/SendDetailsStackPara
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import { ContactList } from '../../class/contact-list';
 import { useStorage } from '../../hooks/context/useStorage';
-import { HDSegwitBech32Wallet } from '../../class';
+import { HDSegwitBech32Wallet } from '../../class/wallets/hd-segwit-bech32-wallet';
 import { useSettings } from '../../hooks/context/useSettings';
 import { DOICHAIN } from '../../blue_modules/network';
 import { majorTomToGroundControl } from '../../blue_modules/notifications';
@@ -112,6 +112,9 @@ const Confirm: React.FC = () => {
     },
     payjoinWrapper: {
       backgroundColor: colors.buttonDisabledBackgroundColor,
+    },
+    addressSection: {
+      color: colors.alternativeTextColor2,
     },
   });
 
@@ -245,8 +248,9 @@ const Confirm: React.FC = () => {
   };
 
   const broadcastTransaction = async (transaction: string) => {
-    await BlueElectrum.ping();
-    await BlueElectrum.waitTillConnected();
+    if (!(await BlueElectrum.ensureConnected())) {
+      throw new Error(loc.errors.network);
+    }
 
     const result = await wallet.broadcastTx(transaction);
     if (!result) {
@@ -292,7 +296,9 @@ const Confirm: React.FC = () => {
         <BlueCard>
           <Text style={[styles.transactionDetailsTitle, stylesHook.transactionDetailsTitle]}>{loc.send.create_to}</Text>
           <Text testID="TransactionAddress" style={[styles.transactionDetailsSubtitle, stylesHook.transactionDetailsSubtitle]}>
-            {item.address}
+            <Text style={stylesHook.addressSection}>{item?.address?.slice(0, 6)}</Text>
+            <Text>{item?.address?.slice(6, -6)}</Text>
+            <Text style={stylesHook.addressSection}>{item?.address?.slice(-6)}</Text>
           </Text>
           {contact ? <Text style={[styles.transactionDetailsSubtitle, stylesHook.transactionDetailsSubtitle]}>[{contact}]</Text> : null}
         </BlueCard>

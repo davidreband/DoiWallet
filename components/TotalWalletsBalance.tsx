@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback } from 'react';
-import { TouchableOpacity, Text, StyleSheet, LayoutAnimation, View } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 import { useStorage } from '../hooks/context/useStorage';
 import loc, { formatBalanceWithoutSuffix } from '../loc';
 import { DoichainUnit } from '../models/doichainUnits';
@@ -53,9 +53,8 @@ const TotalWalletsBalance: React.FC = React.memo(() => {
     [preferredFiatCurrency, totalBalancePreferredUnit],
   );
 
-  const onPressMenuItem = useMemo(
-    () => async (id: string | number) => {
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+  const onPressMenuItem = useCallback(
+    async (id: string) => {
       switch (id) {
         case CommonToolTipActions.ViewInFiat.id:
           await setTotalBalancePreferredUnitStorage(DoichainUnit.LOCAL_CURRENCY);
@@ -80,7 +79,6 @@ const TotalWalletsBalance: React.FC = React.memo(() => {
   );
 
   const handleBalanceOnPress = useCallback(async () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     const nextUnit =
       totalBalancePreferredUnit === DoichainUnit.DOI
         ? DoichainUnit.SWARTZ
@@ -90,10 +88,10 @@ const TotalWalletsBalance: React.FC = React.memo(() => {
     await setTotalBalancePreferredUnitStorage(nextUnit);
   }, [totalBalancePreferredUnit, setTotalBalancePreferredUnitStorage]);
 
-  if (wallets.length <= 1 || !isTotalBalanceEnabled) return null;
+  if (!isTotalBalanceEnabled) return null;
 
   return (
-    <ToolTipMenu actions={toolTipActions} onPressMenuItem={onPressMenuItem}>
+    <ToolTipMenu actions={toolTipActions} onPressMenuItem={onPressMenuItem} shouldOpenOnLongPress style={styles.menuContainer}>
       <View style={styles.container}>
         <Text style={styles.label}>{loc.wallets.total_balance}</Text>
         <TouchableOpacity onPress={handleBalanceOnPress}>
@@ -110,14 +108,18 @@ const TotalWalletsBalance: React.FC = React.memo(() => {
 });
 
 const styles = StyleSheet.create({
+  menuContainer: {
+    alignSelf: 'stretch',
+  },
   container: {
     flexDirection: 'column',
     alignItems: 'flex-start',
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
   },
   label: {
     fontSize: 14,
-    marginBottom: 4,
+    marginBottom: 2,
     color: '#9BA0A9',
   },
   balance: {

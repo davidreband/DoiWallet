@@ -1,7 +1,7 @@
 import assert from 'assert';
 import * as bitcoin from '@doichain/doichainjs-lib';
 
-import { LegacyWallet } from '../../class';
+import { LegacyWallet } from '../../class/wallets/legacy-wallet';
 
 describe('Legacy wallet', () => {
   it('can validate addresses', () => {

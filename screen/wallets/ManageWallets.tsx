@@ -1,33 +1,34 @@
-import React, { useEffect, useLayoutEffect, useReducer, useCallback, useMemo, useRef, useState, lazy, Suspense } from 'react';
+import React, { useEffect, useLayoutEffect, useReducer, useCallback, useMemo, useRef, useState, startTransition } from 'react';
 import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  Alert,
   Animated,
-  FlatList,
-  ActivityIndicator,
-  UIManager,
-  Platform,
   Keyboard,
+  Text,
+  Pressable,
+  View,
+  FlatList,
+  ListRenderItemInfo,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useLocale, usePreventRemove } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useLocale } from '@react-navigation/native';
 import { useTheme } from '../../components/themes';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import loc from '../../loc';
 import { useStorage } from '../../hooks/context/useStorage';
-import { TTXMetadata } from '../../class';
+import { TTXMetadata } from '../../class/blue-app';
 import { ExtendedTransaction, LightningTransaction, Transaction, TWallet } from '../../class/wallets/types';
 import useBounceAnimation from '../../hooks/useBounceAnimation';
-import HeaderRightButton from '../../components/HeaderRightButton';
-import DragList, { DragListRenderItemInfo } from 'react-native-draglist';
-import useDebounce from '../../hooks/useDebounce';
+import DraggableFlatList, { RenderItemParams, DragEndParams } from 'react-native-draggable-flatlist';
 import { ItemType, AddressItemData } from '../../models/itemTypes';
-import { WalletGroupComponent } from '../../components/ManageWalletsListItem';
+import ManageWalletsListItem, { WalletGroupComponent } from '../../components/ManageWalletsListItem';
 import HighlightedText from '../../components/HighlightedText';
-
-const ManageWalletsListItem = lazy(() => import('../../components/ManageWalletsListItem'));
+import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
+import DragIcon from '../../img/Search/drag';
 
 interface WalletItem {
   type: ItemType.WalletSection;
@@ -56,7 +57,6 @@ type Item = WalletItem | TransactionItem | AddressItem | WalletGroupItem;
 const SET_SEARCH_QUERY = 'SET_SEARCH_QUERY';
 const SET_IS_SEARCH_FOCUSED = 'SET_IS_SEARCH_FOCUSED';
 const SET_INITIAL_DATA = 'SET_INITIAL_DATA';
-const SET_MANAGED_DATA = 'SET_MANAGED_DATA';
 const SAVE_CHANGES = 'SAVE_CHANGES';
 
 interface SaveChangesAction {
@@ -79,28 +79,19 @@ interface SetInitialDataAction {
   payload: { wallets: TWallet[]; txMetadata: TTXMetadata };
 }
 
-interface SetManagedDataAction {
-  type: typeof SET_MANAGED_DATA;
-  payload: Item[];
-}
-
-type Action = SetSearchQueryAction | SetIsSearchFocusedAction | SetInitialDataAction | SetManagedDataAction | SaveChangesAction;
+type Action = SetSearchQueryAction | SetIsSearchFocusedAction | SetInitialDataAction | SaveChangesAction;
 
 interface State {
   searchQuery: string;
   isSearchFocused: boolean;
-  originalWallets: TWallet[]; // Only used for verifying unsaved changes
   walletsCopy: TWallet[]; // Copy used for display and filtering
-  managedWalletsData: Item[];
   txMetadata: TTXMetadata;
 }
 
 const initialState: State = {
   searchQuery: '',
   isSearchFocused: false,
-  originalWallets: [],
   walletsCopy: [],
-  managedWalletsData: [],
   txMetadata: {},
 };
 
@@ -116,34 +107,15 @@ const reducer = (state: State, action: Action): State => {
       return { ...state, isSearchFocused: action.payload };
     case SET_INITIAL_DATA: {
       const walletsCopy = deepCopyWallets(action.payload.wallets);
-      const managedWalletsData: WalletItem[] = walletsCopy.map(wallet => ({
-        type: ItemType.WalletSection,
-        data: wallet,
-      }));
-
       return {
         ...state,
-        originalWallets: deepCopyWallets(action.payload.wallets),
         walletsCopy,
         txMetadata: action.payload.txMetadata,
-        managedWalletsData,
-      };
-    }
-    case SET_MANAGED_DATA: {
-      const updatedWalletsCopy = action.payload
-        .filter((item): item is WalletItem => item.type === ItemType.WalletSection)
-        .map(item => item.data);
-
-      return {
-        ...state,
-        walletsCopy: updatedWalletsCopy.length > 0 ? updatedWalletsCopy : state.walletsCopy,
-        managedWalletsData: action.payload,
       };
     }
     case SAVE_CHANGES: {
       return {
         ...state,
-        originalWallets: deepCopyWallets(action.payload),
         walletsCopy: deepCopyWallets(action.payload),
       };
     }
@@ -152,36 +124,49 @@ const reducer = (state: State, action: Action): State => {
   }
 };
 
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
-
 const ManageWallets: React.FC = () => {
-  const { colors, closeImage } = useTheme();
+  const { colors, closeImage, dark } = useTheme();
   const { wallets: persistedWallets, setWalletsWithNewOrder, txMetadata } = useStorage();
   const initialWalletsRef = useRef<TWallet[]>(deepCopyWallets(persistedWallets));
-  const { navigate, setOptions, goBack, dispatch: navigationDispatch } = useExtendedNavigation();
+  const { navigate, setOptions, goBack } = useExtendedNavigation();
   const { direction } = useLocale();
   const [state, dispatch] = useReducer(reducer, initialState);
-  const debouncedSearchQuery = useDebounce(state.searchQuery, 300);
   const bounceAnim = useBounceAnimation(state.searchQuery);
   const stylesHook = {
-    root: {
-      backgroundColor: colors.elevated,
-    },
     noResultsText: {
       color: colors.foregroundColor,
       writingDirection: direction,
     },
+    clearSearchButton: {
+      backgroundColor: colors.buttonBackgroundColor,
+    },
   };
   const [noResultsOpacity] = useState(new Animated.Value(0));
 
-  const listRef = useRef<FlatList<Item> | null>(null);
-  const [saveInProgress, setSaveInProgress] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const debouncedSearch = useCallback((text: string) => {
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    if (text.length === 0) {
+      dispatch({ type: SET_SEARCH_QUERY, payload: '' });
+      return;
+    }
+    searchTimerRef.current = setTimeout(() => {
+      startTransition(() => {
+        dispatch({ type: SET_SEARCH_QUERY, payload: text });
+      });
+    }, 300);
+  }, []);
 
-  const getFilteredWalletsData = useCallback(() => {
-    if (debouncedSearchQuery) {
-      const lowerQuery = debouncedSearchQuery.toLowerCase();
+  useEffect(() => {
+    return () => {
+      if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    };
+  }, []);
+
+  const getFilteredWalletsData = useCallback((search: string, walletsSource: TWallet[], metadataSource: TTXMetadata): Item[] => {
+    if (search) {
+      const lowerQuery = search.toLowerCase();
 
       const walletsWithMatches = new Map<
         string,
@@ -192,16 +177,16 @@ const ManageWallets: React.FC = () => {
         }
       >();
 
-      const walletIdSet = new Set(state.walletsCopy.map(wallet => wallet.getID()));
+      const walletIdSet = new Set(walletsSource.map(wallet => wallet.getID()));
 
-      const matchingTxids = Object.entries(state.txMetadata).filter(
+      const matchingTxids = Object.entries(metadataSource).filter(
         ([_, metadata]) => metadata.memo && metadata.memo.toLowerCase().includes(lowerQuery),
       );
 
       if (matchingTxids.length > 0) {
         const txidToWalletMap = new Map<string, string>();
 
-        state.walletsCopy.forEach(wallet => {
+        walletsSource.forEach(wallet => {
           try {
             const transactions = wallet.getTransactions();
             if (transactions && transactions.length) {
@@ -219,7 +204,7 @@ const ManageWallets: React.FC = () => {
         matchingTxids.forEach(([txid]) => {
           const walletID = txidToWalletMap.get(txid);
           if (walletID && walletIdSet.has(walletID)) {
-            const wallet = state.walletsCopy.find(w => w.getID() === walletID);
+            const wallet = walletsSource.find(w => w.getID() === walletID);
             if (wallet) {
               if (!walletsWithMatches.has(walletID)) {
                 walletsWithMatches.set(walletID, {
@@ -248,7 +233,7 @@ const ManageWallets: React.FC = () => {
         });
       }
 
-      state.walletsCopy.forEach(wallet => {
+      walletsSource.forEach(wallet => {
         const walletID = wallet.getID();
         const walletLabel = wallet.getLabel() || '';
 
@@ -262,7 +247,7 @@ const ManageWallets: React.FC = () => {
       });
 
       if (walletsWithMatches.size < 10) {
-        state.walletsCopy.forEach(wallet => {
+        walletsSource.forEach(wallet => {
           const walletID = wallet.getID();
 
           if (walletsWithMatches.has(walletID)) return;
@@ -277,7 +262,7 @@ const ManageWallets: React.FC = () => {
                 const txid = tx.hash || tx.txid;
 
                 const txAmount = tx.value?.toString() || '';
-                const txIdMatches = txid.toLowerCase().includes(lowerQuery);
+                const txIdMatches = typeof txid === 'string' && txid.length > 0 ? txid.toLowerCase().includes(lowerQuery) : false;
                 const txDataMatches = txAmount.includes(lowerQuery);
 
                 if (txIdMatches || txDataMatches) {
@@ -311,7 +296,15 @@ const ManageWallets: React.FC = () => {
 
                 for (let i = 0; i < addressLimit; i++) {
                   const address = addresses[i];
-                  const addressValue = typeof address === 'string' ? address : (address as { address: string }).address || '';
+                  const addressValue =
+                    typeof address === 'string'
+                      ? address
+                      : address &&
+                          typeof address === 'object' &&
+                          'address' in (address as any) &&
+                          typeof (address as any).address === 'string'
+                        ? ((address as any).address as string)
+                        : '';
 
                   if (addressValue.toLowerCase().includes(lowerQuery)) {
                     if (!walletsWithMatches.has(walletID)) {
@@ -386,15 +379,25 @@ const ManageWallets: React.FC = () => {
       return result;
     }
 
-    return state.managedWalletsData;
-  }, [debouncedSearchQuery, state.managedWalletsData, state.walletsCopy, state.txMetadata]);
+    return walletsSource.map(wallet => ({
+      type: ItemType.WalletSection,
+      data: wallet,
+    }));
+  }, []);
+
+  const listData = useMemo(
+    () => getFilteredWalletsData(state.searchQuery, state.walletsCopy, state.txMetadata),
+    [getFilteredWalletsData, state.searchQuery, state.walletsCopy, state.txMetadata],
+  );
+  /** When true, use FlatList instead of DraggableFlatList (search/focus churn + drag list stresses Fabric). */
+  const isDragDisabled = state.walletsCopy.length <= 1 || state.searchQuery.length > 0 || state.isSearchFocused;
 
   useEffect(() => {
     dispatch({ type: SET_INITIAL_DATA, payload: { wallets: initialWalletsRef.current, txMetadata } });
   }, [txMetadata]);
 
   useEffect(() => {
-    if (state.searchQuery && getFilteredWalletsData().length === 0) {
+    if (state.searchQuery && listData.length === 0) {
       Animated.timing(noResultsOpacity, {
         toValue: 1,
         duration: 300,
@@ -403,151 +406,67 @@ const ManageWallets: React.FC = () => {
     } else {
       noResultsOpacity.setValue(0);
     }
-  }, [getFilteredWalletsData, state.searchQuery, noResultsOpacity]);
+  }, [listData.length, state.searchQuery, noResultsOpacity]);
 
-  const hasUnsavedChanges = useMemo(() => {
-    if (state.searchQuery.length > 0 || state.isSearchFocused) {
-      return false;
-    }
-
-    const currentWalletIds = state.managedWalletsData
-      .filter((item): item is WalletItem => item.type === ItemType.WalletSection)
-      .map(item => item.data.getID());
-
-    const originalWalletIds = state.originalWallets.map(wallet => wallet.getID());
-
-    if (currentWalletIds.length !== originalWalletIds.length) {
-      return true;
-    }
-
-    for (let i = 0; i < currentWalletIds.length; i++) {
-      if (currentWalletIds[i] !== originalWalletIds[i]) {
-        return true;
-      }
-    }
-
-    const modifiedWallets = state.managedWalletsData
-      .filter((item): item is WalletItem => item.type === ItemType.WalletSection)
-      .map(item => item.data);
-
-    for (const modifiedWallet of modifiedWallets) {
-      const originalWallet = state.originalWallets.find(w => w.getID() === modifiedWallet.getID());
-      if (originalWallet && originalWallet.hideBalance !== modifiedWallet.hideBalance) {
-        return true;
-      }
-    }
-
-    return false;
-  }, [state.managedWalletsData, state.originalWallets, state.searchQuery, state.isSearchFocused]);
-
-  usePreventRemove(hasUnsavedChanges && !saveInProgress, ({ data: preventRemoveData }) => {
-    Alert.alert(loc._.discard_changes, loc._.discard_changes_explain, [
-      { text: loc._.cancel, style: 'cancel' },
-      {
-        text: loc._.ok,
-        style: 'destructive',
-        onPress: () => navigationDispatch(preventRemoveData.action),
-      },
-    ]);
-  });
-
-  useEffect(() => {
-    if (saveInProgress) {
-      goBack();
-      setSaveInProgress(false);
-    }
-  }, [saveInProgress, goBack]);
-
-  const handleClose = useCallback(() => {
-    if (state.searchQuery.length === 0 && !state.isSearchFocused) {
-      const reorderedWallets = state.managedWalletsData
-        .filter((item): item is WalletItem => item.type === ItemType.WalletSection)
-        .map(item => item.data);
-
-      setWalletsWithNewOrder(reorderedWallets);
-      dispatch({ type: SAVE_CHANGES, payload: reorderedWallets });
-      initialWalletsRef.current = deepCopyWallets(reorderedWallets);
-
-      setSaveInProgress(true);
-    } else {
-      dispatch({ type: SET_SEARCH_QUERY, payload: '' });
-      dispatch({ type: SET_IS_SEARCH_FOCUSED, payload: false });
-    }
-  }, [setWalletsWithNewOrder, state.searchQuery, state.isSearchFocused, state.managedWalletsData]);
-
-  const buttonOpacity = useMemo(() => ({ opacity: saveInProgress ? 0.5 : 1 }), [saveInProgress]);
   const HeaderLeftButton = useMemo(
     () => (
       <TouchableOpacity
         accessibilityRole="button"
         accessibilityLabel={loc._.close}
-        style={[styles.button, buttonOpacity]}
+        style={styles.button}
         onPress={goBack}
-        disabled={saveInProgress}
         testID="NavigationCloseButton"
       >
         <Image source={closeImage} />
       </TouchableOpacity>
     ),
-    [buttonOpacity, goBack, saveInProgress, closeImage],
-  );
-
-  const SaveButton = useMemo(
-    () => <HeaderRightButton disabled={!hasUnsavedChanges} title={loc.send.input_done} onPress={handleClose} />,
-    [handleClose, hasUnsavedChanges],
+    [goBack, closeImage],
   );
 
   useLayoutEffect(() => {
     const searchBarOptions = {
       hideWhenScrolling: false,
-      onChangeText: (event: { nativeEvent: { text: any } }) => dispatch({ type: SET_SEARCH_QUERY, payload: event.nativeEvent.text }),
-      onClear: () => dispatch({ type: SET_SEARCH_QUERY, payload: '' }),
+      onChangeText: (event: { nativeEvent: { text: any } }) => debouncedSearch(event.nativeEvent.text),
+      onClear: () => debouncedSearch(''),
       onFocus: () => dispatch({ type: SET_IS_SEARCH_FOCUSED, payload: true }),
       onBlur: () => dispatch({ type: SET_IS_SEARCH_FOCUSED, payload: false }),
       placeholder: loc.wallets.manage_wallets_search_placeholder,
     };
     setOptions({
       headerLeft: () => HeaderLeftButton,
-      headerRight: () => SaveButton,
+      headerRight: undefined,
       headerSearchBarOptions: searchBarOptions,
     });
-  }, [setOptions, HeaderLeftButton, SaveButton]);
+  }, [setOptions, HeaderLeftButton, debouncedSearch]);
 
   const renderHighlightedText = useCallback(
     (text: string, query: string) => {
-      return <HighlightedText text={text} query={query} bounceAnim={bounceAnim} />;
+      return (
+        <HighlightedText
+          text={text}
+          query={query}
+          bounceAnim={bounceAnim}
+          style={{ color: colors.foregroundColor }}
+          highlightStyle={dark ? StyleSheet.flatten([styles.searchHighlightDark, { color: colors.foregroundColor }]) : undefined}
+        />
+      );
     },
-    [bounceAnim],
-  );
-
-  const handleToggleHideBalance = useCallback(
-    (wallet: TWallet) => {
-      const updatedOrder = state.managedWalletsData.map(item => {
-        if (item.type === ItemType.WalletSection && item.data.getID() === wallet.getID()) {
-          item.data.hideBalance = !item.data.hideBalance;
-          return {
-            ...item,
-            data: item.data,
-          };
-        }
-        return item;
-      });
-
-      dispatch({ type: SET_MANAGED_DATA, payload: updatedOrder });
-    },
-    [state.managedWalletsData],
+    [bounceAnim, colors.foregroundColor, dark],
   );
 
   const navigateToWallet = useCallback(
     (wallet: TWallet) => {
       Keyboard.dismiss();
       const walletID = wallet.getID();
-      navigate('WalletTransactions', {
-        walletID,
-        walletType: wallet.type,
-      });
+      goBack();
+      setTimeout(() => {
+        navigate('WalletTransactions', {
+          walletID,
+          walletType: wallet.type,
+        });
+      }, 0);
     },
-    [navigate],
+    [navigate, goBack],
   );
 
   const navigateToAddress = useCallback(
@@ -561,10 +480,24 @@ const ManageWallets: React.FC = () => {
     [navigate],
   );
 
-  const renderItem = useCallback(
-    (info: DragListRenderItemInfo<Item>) => {
-      const { item, onDragStart, isActive } = info;
+  const handleToggleHideBalance = useCallback(
+    (wallet: TWallet) => {
+      const walletID = wallet.getID();
+      const updatedWallets = deepCopyWallets(state.walletsCopy).map(w => {
+        if (w.getID() === walletID) {
+          w.hideBalance = !w.hideBalance;
+        }
+        return w;
+      });
 
+      setWalletsWithNewOrder(updatedWallets);
+      dispatch({ type: SAVE_CHANGES, payload: updatedWallets });
+    },
+    [state.walletsCopy, setWalletsWithNewOrder],
+  );
+
+  const renderListItem = useCallback(
+    (item: Item, drag: (() => void) | undefined, isActive: boolean) => {
       const compatibleState = {
         wallets: state.walletsCopy,
         searchQuery: state.searchQuery,
@@ -581,7 +514,6 @@ const ManageWallets: React.FC = () => {
             navigateToWallet={navigateToWallet}
             navigateToAddress={navigateToAddress}
             renderHighlightedText={renderHighlightedText}
-            isSearching={state.searchQuery.length > 0}
           />
         );
       }
@@ -589,70 +521,175 @@ const ManageWallets: React.FC = () => {
       return (
         <ManageWalletsListItem
           item={item}
-          onPressIn={undefined}
-          onPressOut={undefined}
-          isDraggingDisabled={state.searchQuery.length > 0 || state.isSearchFocused}
+          isDraggingDisabled={isDragDisabled}
+          handleToggleHideBalance={handleToggleHideBalance}
           state={compatibleState}
           navigateToWallet={navigateToWallet}
           navigateToAddress={navigateToAddress}
           renderHighlightedText={renderHighlightedText}
-          handleToggleHideBalance={handleToggleHideBalance}
           isActive={isActive}
-          drag={onDragStart}
+          drag={isDragDisabled ? undefined : drag}
+          globalDragActive={dragging}
         />
       );
     },
     [
+      handleToggleHideBalance,
       state.walletsCopy,
       state.searchQuery,
       state.isSearchFocused,
       navigateToWallet,
       navigateToAddress,
       renderHighlightedText,
-      handleToggleHideBalance,
+      dragging,
+      isDragDisabled,
     ],
   );
 
-  const onReordered = useCallback(
-    (fromIndex: number, toIndex: number) => {
-      if (state.searchQuery.length > 0 || state.isSearchFocused) {
-        return;
-      }
-
-      const updatedOrder = [...state.managedWalletsData];
-      const removed = updatedOrder.splice(fromIndex, 1);
-      updatedOrder.splice(toIndex, 0, removed[0]);
-
-      dispatch({ type: SET_MANAGED_DATA, payload: updatedOrder });
-    },
-    [state.managedWalletsData, state.searchQuery, state.isSearchFocused],
+  const renderDraggableItem = useCallback(
+    ({ item, drag, isActive }: RenderItemParams<Item>) => renderListItem(item, drag, isActive),
+    [renderListItem],
   );
 
-  const keyExtractor = useCallback((_item: any, index: number) => index.toString(), []);
+  const renderPlainListItem = useCallback(
+    (info: ListRenderItemInfo<Item>) => renderListItem(info.item, undefined, false),
+    [renderListItem],
+  );
+
+  const keyExtractor = useCallback((item: Item, index: number) => {
+    if (item.type === ItemType.WalletSection) {
+      return `wallet-${item.data.getID()}`;
+    }
+
+    if (item.type === ItemType.TransactionSection) {
+      const txid = item.data.hash || item.data.txid || index;
+      return `tx-${txid}-${item.data.walletID || ''}`;
+    }
+
+    if (item.type === ItemType.AddressSection) {
+      return `addr-${item.data.address}-${item.data.walletID}-${item.data.index ?? index}`;
+    }
+
+    if (item.type === ItemType.WalletGroupSection) {
+      return `group-${item.wallet.getID()}`;
+    }
+
+    return index.toString();
+  }, []);
+
+  const listContentStyle = useMemo(() => [styles.listContentContainer], []);
+  const listExtraData = useMemo(
+    () => ({ searchQuery: state.searchQuery, isSearchFocused: state.isSearchFocused }),
+    [state.searchQuery, state.isSearchFocused],
+  );
+
+  const shouldShowReorderHint = useMemo(
+    () => state.searchQuery.length === 0 && state.walletsCopy.length > 1,
+    [state.searchQuery.length, state.walletsCopy.length],
+  );
+
+  const ListHeaderComponent = useMemo(() => {
+    if (!shouldShowReorderHint) return null;
+
+    const hintTextColor = dark ? colors.foregroundColor : colors.alternativeTextColor;
+    return (
+      <Pressable accessibilityRole="text" style={styles.reorderHintContainer} testID="DragToReorderHint">
+        <View style={styles.reorderHintIcon}>
+          <DragIcon color={hintTextColor} />
+        </View>
+        <View style={styles.reorderHintTextContainer}>
+          <Text style={[styles.reorderHintTitle, { color: hintTextColor, writingDirection: direction }]}>{loc.wallets.wallets}</Text>
+          <Text style={[styles.reorderHintSubtitle, { color: hintTextColor, writingDirection: direction }]}>
+            {loc.wallets.drag_to_reorder}
+          </Text>
+        </View>
+      </Pressable>
+    );
+  }, [colors.alternativeTextColor, colors.foregroundColor, dark, direction, shouldShowReorderHint]);
+
+  const ListEmptyComponent = useMemo(() => {
+    if (!state.searchQuery) return null;
+    return (
+      <Animated.View style={[styles.noResultsContainer, { opacity: noResultsOpacity }]}>
+        <Animated.Text style={[styles.noResultsText, stylesHook.noResultsText]}>{loc.wallets.no_results_found}</Animated.Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={loc.wallets.clear_search}
+          style={({ pressed }) => [styles.clearSearchButton, stylesHook.clearSearchButton, pressed && styles.clearSearchButtonPressed]}
+          android_ripple={{ color: colors.buttonDisabledTextColor, borderless: false }}
+          onPress={() => {
+            dispatch({ type: SET_SEARCH_QUERY, payload: '' });
+            dispatch({ type: SET_IS_SEARCH_FOCUSED, payload: false });
+          }}
+        >
+          <Text style={[styles.clearSearchText, { color: colors.buttonTextColor }]}>{loc.wallets.clear_search}</Text>
+        </Pressable>
+      </Animated.View>
+    );
+  }, [
+    colors.buttonDisabledTextColor,
+    colors.buttonTextColor,
+    noResultsOpacity,
+    state.searchQuery,
+    stylesHook.clearSearchButton,
+    stylesHook.noResultsText,
+  ]);
+
+  const listSharedProps = {
+    data: listData,
+    keyExtractor,
+    contentContainerStyle: listContentStyle,
+    extraData: listExtraData,
+    ListHeaderComponent,
+    ListEmptyComponent,
+    automaticallyAdjustContentInsets: true,
+    contentInsetAdjustmentBehavior: 'automatic' as const,
+    keyboardShouldPersistTaps: 'handled' as const,
+    keyboardDismissMode: 'on-drag' as const,
+  };
 
   return (
-    <Suspense fallback={<ActivityIndicator size="large" color={colors.brandingColor} />}>
-      <GestureHandlerRootView style={[{ backgroundColor: colors.background }, styles.root]}>
-        {state.searchQuery && getFilteredWalletsData().length === 0 ? (
-          <Animated.View style={[styles.noResultsContainer, { opacity: noResultsOpacity }]}>
-            <Animated.Text style={[styles.noResultsText, stylesHook.noResultsText]}>{loc.wallets.no_results_found}</Animated.Text>
-          </Animated.View>
-        ) : (
-          <DragList
-            automaticallyAdjustContentInsets
-            automaticallyAdjustsScrollIndicatorInsets
-            contentInsetAdjustmentBehavior="automatic"
-            data={getFilteredWalletsData()}
-            containerStyle={[{ backgroundColor: colors.background }, styles.root]}
-            keyExtractor={keyExtractor}
-            onReordered={onReordered}
-            renderItem={renderItem}
-            ref={listRef}
-            extraData={debouncedSearchQuery}
-          />
-        )}
-      </GestureHandlerRootView>
-    </Suspense>
+    <SafeAreaView style={[{ backgroundColor: colors.background }, styles.root]} edges={['top', 'left', 'right']}>
+      <KeyboardAvoidingView style={styles.gestureRoot} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <GestureHandlerRootView style={styles.gestureRoot}>
+          {isDragDisabled ? (
+            <FlatList<Item> {...listSharedProps} style={styles.listContainer} renderItem={renderPlainListItem} />
+          ) : (
+            <DraggableFlatList<Item>
+              {...listSharedProps}
+              renderItem={renderDraggableItem}
+              containerStyle={styles.listContainer}
+              onDragBegin={() => {
+                setDragging(true);
+              }}
+              onDragEnd={({ from, to, data }: DragEndParams<Item>) => {
+                setDragging(false);
+
+                if (state.searchQuery.length > 0 || state.isSearchFocused) {
+                  return;
+                }
+
+                if (from === to) {
+                  return;
+                }
+
+                const reorderedWallets = data
+                  .filter((item): item is WalletItem => item.type === ItemType.WalletSection)
+                  .map(item => item.data);
+                setWalletsWithNewOrder(reorderedWallets);
+                dispatch({ type: SAVE_CHANGES, payload: reorderedWallets });
+                triggerHapticFeedback(HapticFeedbackTypes.ImpactLight);
+              }}
+              activationDistance={8}
+              autoscrollThreshold={32}
+              autoscrollSpeed={16}
+              dragItemOverflow
+              animationConfig={{ damping: 26, mass: 0.6, stiffness: 260, overshootClamping: true }}
+            />
+          )}
+        </GestureHandlerRootView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
@@ -661,6 +698,30 @@ export default React.memo(ManageWallets);
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+  },
+  gestureRoot: {
+    flex: 1,
+  },
+  listContainer: {
+    flex: 1,
+  },
+  listContentContainer: {
+    paddingBottom: 20,
+  },
+  clearSearchButton: {
+    marginTop: 12,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 160,
+  },
+  clearSearchButtonPressed: {
+    opacity: 0.85,
+  },
+  clearSearchText: {
+    fontWeight: '600',
   },
   button: {
     padding: 16,
@@ -677,5 +738,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+  },
+  reorderHintContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 24,
+  },
+  reorderHintIcon: {
+    marginRight: 12,
+  },
+  reorderHintTextContainer: {
+    flex: 1,
+  },
+  reorderHintTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    lineHeight: 22,
+  },
+  reorderHintSubtitle: {
+    fontSize: 16,
+    fontWeight: '500',
+    lineHeight: 20,
+    opacity: 0.55,
+  },
+  searchHighlightDark: {
+    backgroundColor: 'rgba(255, 245, 192, 0.22)',
+    borderColor: 'rgba(255, 255, 255, 0.25)',
   },
 });

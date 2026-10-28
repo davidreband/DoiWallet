@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { Dimensions, LayoutAnimation, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Text } from '@rneui/themed';
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { encodeUR } from '../blue_modules/ur';
 import { BlueCurrentTheme } from '../components/themes';
 import loc from '../loc';
-import QRCodeComponent from './QRCodeComponent';
+import QRCode from './QRCode';
 import { BlueSpacing20 } from './BlueSpacing';
 
 const { height, width } = Dimensions.get('window');
@@ -41,6 +40,10 @@ export class DynamicQRCode extends Component<DynamicQRCodeProps, DynamicQRCodeSt
   }
 
   fragments: string[] = [];
+
+  componentWillUnmount() {
+    this.stopAutoMove();
+  }
 
   componentDidMount() {
     const { value, capacity = 175, hideControls = true, walletID } = this.props;
@@ -156,13 +159,12 @@ export class DynamicQRCode extends Component<DynamicQRCodeProps, DynamicQRCodeSt
           accessibilityRole="button"
           testID="DynamicCode"
           onPress={() => {
-            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
             this.setState(prevState => ({ hideControls: !prevState.hideControls }));
           }}
         >
           {this.state.displayQRCode && (
             <View style={animatedQRCodeStyle.qrcodeContainer}>
-              <QRCodeComponent
+              <QRCode
                 isLogoRendered={false}
                 value={currentFragment.toUpperCase()}
                 size={this.state.qrCodeHeight}
