@@ -215,8 +215,6 @@
     "currency_source": "La tarifa se obtiene de",
     "currency_fetch_error": "Se produjo un error al obtener el tipo de cambio de la divisa seleccionada.",
     "default_title": "Al inicio",
-    "donate": "Donar",
-    "donate_description": "¡Ayúdanos a mantener Blue libre!",
     "electrum_connected": "Conectado",
     "electrum_connected_not": "No Conectado",
     "electrum_error_connect": "No se puede conectar al servidor Electrum proporcionado",

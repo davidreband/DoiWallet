@@ -215,8 +215,6 @@
     "currency_source": "Rate is obtained from",
     "currency_fetch_error": "There was an error while obtaining the rate for the selected currency.",
     "default_title": "On Launch",
-    "donate": "Donate",
-    "donate_description": "Help us keep Blue free!",
     "electrum_connected": "Connected",
     "electrum_connected_not": "Not Connected",
     "electrum_error_connect": "Cannot connect to the provided Electrum server",

@@ -1,5 +1,5 @@
-import React, { useMemo, useLayoutEffect, useCallback } from 'react';
-import { View, StyleSheet, Linking, Image, Platform } from 'react-native';
+import React, { useLayoutEffect } from 'react';
+import { Platform } from 'react-native';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import loc from '../../loc';
 import { SettingsScrollView, SettingsSection, SettingsListItem, getSettingsHeaderOptions } from '../../components/platform';
@@ -18,33 +18,9 @@ const Settings = () => {
     setOptions(getSettingsHeaderOptions(loc.settings.header, { ...colors, background: settingsScreenBackgroundColor }, dark));
   }, [setOptions, language, colors, settingsScreenBackgroundColor, dark]); // Include language to trigger re-render when language changes
 
-  const handleDonatePress = useCallback(() => {
-    Linking.openURL('https://donate.bluewallet.io/');
-  }, []);
-
-  const donateIcon = useMemo(
-    () => (
-      <View style={styles.donateIconContainer}>
-        <Image source={require('../../img/bluebeast.png')} style={styles.donateIconImage} resizeMode="contain" />
-      </View>
-    ),
-    [],
-  );
-
   return (
     <SettingsScrollView testID="SettingsRoot" style={{ backgroundColor: settingsScreenBackgroundColor }}>
-      <SettingsSection compact horizontalInset={false}>
-        <SettingsListItem
-          title={loc.settings.donate}
-          subtitle={loc.settings.donate_description}
-          leftIcon={donateIcon}
-          onPress={handleDonatePress}
-          testID="Donate"
-          position="single"
-          itemBackgroundColor={settingsListItemBackgroundColor}
-        />
-      </SettingsSection>
-
+      {/* no Donate item: it went to BlueWallet's donation page */}
       <SettingsSection horizontalInset={false}>
         <SettingsListItem
           title={loc.settings.general}
@@ -125,13 +101,3 @@ const Settings = () => {
 };
 
 export default Settings;
-
-const styles = StyleSheet.create({
-  donateIconContainer: {
-    padding: 4,
-  },
-  donateIconImage: {
-    width: 48,
-    height: 48,
-  },
-});

@@ -215,8 +215,6 @@
     "currency_source": "汇率来源于",
     "currency_fetch_error": "获取所选货币的汇率时出错。",
     "default_title": "启动时",
-    "donate": "打赏",
-    "donate_description": "请帮助我们保持 BlueWallet 独立！",
     "electrum_connected": "已连接",
     "electrum_connected_not": "未连接",
     "electrum_error_connect": "无法连接到提供的 Electrum 服务器。",
